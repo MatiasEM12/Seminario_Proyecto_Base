@@ -28,6 +28,9 @@ public class Usuario {
 		
 		crearCodigo();
 	}
+	public String toString() {
+		return("usuario:"+this.getUsuario()+" nombre:"+this.getNombre()+" Email:"+this.getEmail()+" rol:"+this.getRolName());
+	}
 
 	public String getUsuario() {
 		return usuario;
