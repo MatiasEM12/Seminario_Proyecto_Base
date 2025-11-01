@@ -4,44 +4,113 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Rol;
-import ar.edu.unrn.seminario.modelo.Usuario;
 
 public class RolDAOJDBC implements RolDao {
 
 	@Override
 	public void create(Rol rol) {
-		// TODO Auto-generated method stub
+		try {
+
+			Connection conn = ConnectionManager.getConnection();
+			PreparedStatement statement = conn
+					.prepareStatement("INSERT INTO rol(codigo, nombre, descripcion,estado) "
+							+ "VALUES (?, ?, ?, ?)");
+
+			statement.setInt(1, rol.getCodigo());
+			statement.setString(2, rol.getNombre());
+			statement.setString(3, rol.getDescripcion());
+			statement.setBoolean(4, rol.isActivo());
+			int cantidad = statement.executeUpdate();
+			if (cantidad > 0) {
+				// System.out.println("Modificando " + cantidad + " registros");
+			} else {
+				System.out.println("Error al actualizar");
+				// TODO: disparar Exception propia
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error al procesar consulta");
+			// TODO: disparar Exception propia
+		} finally {
+			ConnectionManager.disconnect();
+		}
 
 	}
 
 	@Override
 	public void update(Rol rol) {
-		// TODO Auto-generated method stub
+		try {
 
-//		if (e instanceof SQLIntegrityConstraintViolationException) {
-//	        // Duplicate entry
-//	    } else {
-//	        // Other SQL Exception
-//	    }
+			Connection conn = ConnectionManager.getConnection();
+			PreparedStatement statement = conn
+					.prepareStatement("UPDATE rol SET nombre = ?, descripcion = ?, estado = ? WHERE codigo = ?");
 
+			statement.setString(1, rol.getNombre());
+			statement.setString(2, rol.getDescripcion());
+			statement.setBoolean(3, rol.isActivo());
+			statement.setInt(4, rol.getCodigo());
+			int cantidad = statement.executeUpdate();
+			if (cantidad > 0) {
+				 System.out.println("El Rol se ha actualizado correctamente");
+			} else {
+				System.out.println("Error al actualizar");
+				// TODO: disparar Exception propia
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Error al procesar consulta");
+			// TODO: disparar Exception propia
+		} finally {
+			ConnectionManager.disconnect();
+		}
 	}
 
-	@Override
-	public void remove(Long id) {
-		// TODO Auto-generated method stub
+	public void remove(Integer codigo) {
+		try {
+			 Connection conn = ConnectionManager.getConnection();
+		        PreparedStatement statement = conn.prepareStatement(
+		            "DELETE FROM rol WHERE codigo = ?"
+		        );
 
+		        statement.setInt(1, codigo);
+
+		        int cantidad = statement.executeUpdate();
+		        if (cantidad > 0) {
+		            System.out.println("Rol eliminado correctamente.");
+		        } else {
+		            System.out.println("No se encontró el rol con ese código.");
+		        }
+			
+		}catch(SQLException e) {
+			System.out.println("Error al Eliminar rol");
+		}
 	}
 
 	@Override
 	public void remove(Rol rol) {
-		// TODO Auto-generated method stub
+		try {
+			 Connection conn = ConnectionManager.getConnection();
+		        PreparedStatement statement = conn.prepareStatement(
+		            "DELETE FROM rol WHERE codigo = ?"
+		        );
 
+		        statement.setInt(1, rol.getCodigo());
+
+		        int cantidad = statement.executeUpdate();
+		        if (cantidad > 0) {
+		            System.out.println("Rol eliminado correctamente.");
+		        } else {
+		            System.out.println("No se encontró el rol con ese código.");
+		        }
+			
+		}catch(SQLException e) {
+			System.out.println("Error al Eliminar rol");
+		}
 	}
 
 	@Override
