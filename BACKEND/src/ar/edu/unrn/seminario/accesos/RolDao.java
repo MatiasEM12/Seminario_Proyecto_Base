@@ -9,7 +9,7 @@ public interface RolDao {
 
 	void update(Rol rol);
 
-	void remove(Long id);
+	void remove(Integer id);
 
 	void remove(Rol rol);
 
