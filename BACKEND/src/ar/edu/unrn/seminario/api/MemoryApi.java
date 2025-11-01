@@ -206,7 +206,7 @@ public class MemoryApi implements IApi {
     public List<RolDTO> obtenerRoles() {
         List<RolDTO> dtos = new ArrayList<>();
         for (Rol r : this.roles) {
-            dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo(), r.getDescripcion()));
+            dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo()));
         }
         return dtos;
     }
@@ -216,7 +216,7 @@ public class MemoryApi implements IApi {
         List<RolDTO> dtos = new ArrayList<>();
         for (Rol r : this.roles) {
             if (r.isActivo())
-                dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.getDescripcion()));
+                dtos.add(new RolDTO(r.getCodigo(), r.getNombre(),r.isActivo(), r.getDescripcion()));
         }
         return dtos;
     }
