@@ -18,7 +18,7 @@ public class TestAcceso {
 
 		UsuarioDao usuarioDao = new UsuarioDAOJDBC();
 		try {
-			Usuario usuario = new Usuario("ldifabio", "1234", "diego", "ldifabio@unrn.edu.ar", new Rol(1, "admin"));
+			Usuario usuario = new Usuario("ldifabio", "1234", "diego", "ldifabio@unrn.edu.ar", new Rol(1, ""));
 			crearUsuario(usuarioDao,usuario);
 		} catch (DataEmptyException e) {
 			// TODO Auto-generated catch block
