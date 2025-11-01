@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
@@ -16,13 +17,19 @@ public class TestAcceso {
 		}
 
 		UsuarioDao usuarioDao = new UsuarioDAOJDBC();
-//		Usuario usuario = new Usuario("ldifabio", "1234", "Lucas", "ldifabio@unrn.edu.ar", new Rol(1, ""));
+		try {
+			Usuario usuario = new Usuario("ldifabio", "1234", "diego", "ldifabio@unrn.edu.ar", new Rol(1, "admin"));
+			crearUsuario(usuarioDao,usuario);
+		} catch (DataEmptyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		usuarioDao.create(usuario);
-		
-//		List<Usuario> usuarios = usuarioDao.findAll();
-//			for (Usuario u: usuarios) {
-//			System.out.println(u);
-//		}
+		System.out.print("lista de nuevo usuario");
+		List<Usuario> usuarios = usuarioDao.findAll();
+			for (Usuario u: usuarios) {
+			System.out.println(u.toString());
+		}
 			
 //		System.out.println(usuarioDao.find("ldifabio"));
 	}
@@ -32,7 +39,7 @@ public class TestAcceso {
 	}
 	public static void crearUsuario(RolDao rol_A,Rol rol_B) {
 		rol_A.create(rol_B);
-		System.out.println("Usuario creado: " + rol_B.getNombre());
+		System.out.println("Rol creado: " + rol_B.getNombre());
 	}
 
 }
