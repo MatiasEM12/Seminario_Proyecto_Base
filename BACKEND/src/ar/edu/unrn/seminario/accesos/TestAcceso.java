@@ -35,11 +35,9 @@ public class TestAcceso {
 	}
 	public static void crearUsuario(UsuarioDao usuario_A,Usuario usuario_B) {
 		usuario_A.create(usuario_B);
-		System.out.println("Usuario creado: " + usuario_B.getNombre());
 	}
-	public static void crearUsuario(RolDao rol_A,Rol rol_B) {
-		rol_A.create(rol_B);
-		System.out.println("Rol creado: " + rol_B.getNombre());
+	public static void crearUsuario(RolDao rolDao, Rol rol) {
+		rolDao.create(rol);
 	}
 
 }
