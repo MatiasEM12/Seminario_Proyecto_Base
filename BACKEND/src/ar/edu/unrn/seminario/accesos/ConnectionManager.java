@@ -8,7 +8,7 @@ public class ConnectionManager {
 	private static String DRIVER = "com.mysql.jdbc.Driver";
 	private static String URL_DB = "jdbc:mysql://localhost:3306/";
 	// cambie el nombre de protected static String DB = "jdbc_seminario"; por el nombre corecto de la base de datos porque sino son iguales no se conecta
-	protected static String DB = "grsu_seminario";
+	protected static String DB = "seminario_2024_6";
 	protected static String user = "root";
 	protected static String pass = "";
 	protected static Connection conn = null;
