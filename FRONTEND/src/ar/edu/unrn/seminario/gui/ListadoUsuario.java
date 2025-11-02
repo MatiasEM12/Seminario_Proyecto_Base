@@ -138,10 +138,10 @@ public class ListadoUsuario extends JFrame {
 	                    "Estas seguro que queres cambiar el estado del Usuario?", "Confirmar cambio de estado.",
 	                    JOptionPane.YES_NO_OPTION);
 	            if (opcionSeleccionada == JOptionPane.YES_OPTION) {
-	                String username = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+	                String username = (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
 	                try {
 	                    api.activarUsuario(username);
-	                    actualizarTabla();
+	                    filtrar(lUsuarioBox, textField);
 	                } catch (StateChangeException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
@@ -158,10 +158,10 @@ public class ListadoUsuario extends JFrame {
 	            int reply = JOptionPane.showConfirmDialog(null, "Estas seguro que queres cambiar el estado del Usuario?",
 	                    "Confirmar cambio de estado.", JOptionPane.YES_NO_OPTION);
 	            if (reply == JOptionPane.YES_OPTION) {
-	                String username = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+	                String username = (String) table.getModel().getValueAt(table.getSelectedRow(), 2);
 	                try {
 	                    api.desactivarUsuario(username);
-	                    actualizarTabla();
+	                    filtrar(lUsuarioBox, textField);
 	                } catch (StateChangeException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
@@ -198,23 +198,9 @@ public class ListadoUsuario extends JFrame {
 
 	}
 	
-	private void actualizarTabla() {
-		// Obtiene el model del table
-		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-		// Obtiene la lista de usuarios a mostrar
-		List<UsuarioDTO> usuarios = api.obtenerUsuarios();
-		// Resetea el model
-		modelo.setRowCount(0);
-
-		// Agrega los usuarios en el model
-		for (UsuarioDTO u : usuarios) {
-			modelo.addRow(new Object[] { u.getUsername(), u.getNombre(), u.getEmail(), u.getEstado(), u.getRol() });
-		}
-
-	}
 	
 	private void filtrar(JComboBox<String> combo, JTextField texto) {
-		
+		modelo.setRowCount(0);
 		String filtro =combo.getSelectedItem().toString();
 		List<UsuarioDTO> usuarios;
 	
