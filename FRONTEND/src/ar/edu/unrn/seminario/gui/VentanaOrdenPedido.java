@@ -1,14 +1,17 @@
 package ar.edu.unrn.seminario.gui;
 
-import java.awt.EventQueue;
-import java.util.ArrayList;
+
+import java.util.stream.Collectors;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
-import ar.edu.unrn.seminario.api.MemoryApi;
+
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaOrdenPedido extends JFrame {
 
@@ -19,7 +22,7 @@ public class VentanaOrdenPedido extends JFrame {
     private java.util.List<OrdenPedidoDTO> ordenes;
     private AltaOrdenRetiro ventanaRetiro;
     IApi api;
-    private JButton btnNewButton;
+
     private JButton btnCancelar;
 
 
@@ -51,18 +54,7 @@ public class VentanaOrdenPedido extends JFrame {
         };
 
         // Cargar datos desde la API (INSTANCIA, no estático)
-        ArrayList<OrdenPedidoDTO> ordenes = api.obtenerOrdenesPedido();
-        for (OrdenPedidoDTO o : ordenes) {
-            modelo.addRow(new Object[] {
-                o.getCodigo(),
-                o.isCargaPesada(),
-                o.getObservaciones(),
-                o.getFechaEmision(),
-                o.getEstado(),
-                o.getCodDonante(),
-                o.getCodDonacion()
-            });
-        }
+       cargarOrdenes();
 
         tabla = new JTable(modelo);
         JScrollPane scroll = new JScrollPane(tabla);
@@ -74,6 +66,14 @@ public class VentanaOrdenPedido extends JFrame {
         contentPane.add(btnSeleccionar);
         
         btnCancelar = new JButton("Cancelar");
+        btnCancelar.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		
+        		setVisible(false);
+				dispose();
+        	}
+        });
         btnCancelar.setBounds(464, 269, 85, 21);
         contentPane.add(btnCancelar);
         cargarOrdenes();
@@ -94,6 +94,7 @@ public class VentanaOrdenPedido extends JFrame {
 
     private void cargarOrdenes() {
         ordenes = api.obtenerOrdenesPedido();
+        ordenes= ordenes.stream().filter(o->o.getEstado().equals("Pendiente")).collect(Collectors.toList());
         modelo.setRowCount(0);
         for (OrdenPedidoDTO o : ordenes) {
             modelo.addRow(new Object[]{
