@@ -14,6 +14,7 @@ public class Donante extends Persona {
 	
 	public Donante(String nombre, String apellido, String preferenciaContacto) {
 		super(nombre, apellido, preferenciaContacto);
+		crearCodigo();
 	}
 	public Donante(String nombre, String apellido, String preferenciaContacto,Ubicacion ubicacion) {
 		super(nombre, apellido, preferenciaContacto);
