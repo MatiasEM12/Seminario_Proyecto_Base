@@ -14,7 +14,7 @@ public interface DonanteDao {
 
 	void remove(Donante Donante);
 
-	Donante find(Integer codigo);
+	Donante find(String codigo);
 
 	List<Donante> findAll();
 }
