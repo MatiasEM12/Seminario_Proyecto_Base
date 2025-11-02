@@ -63,14 +63,14 @@ public interface IApi {
 	public void registrarOrdenRetiro(OrdenRetiro orden);
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden);
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
-	ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes);
+
 	
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
 	public void registrarOrdenPedido(OrdenPedido orden);
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
-	ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes);
+
 	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
 	
 	//Donante
