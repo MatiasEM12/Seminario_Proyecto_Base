@@ -2,10 +2,13 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Donante;
+import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class DonanteDAOJDBC implements DonanteDao{
 
@@ -111,14 +114,54 @@ public class DonanteDAOJDBC implements DonanteDao{
 		}
 	}
 
-	public Donante find(Integer codigo) {
-		// TODO Auto-generated method stub
-		return null;
+	//public Donante find(Integer codigo) { lo cambie porque nustro codigo es de tipo string
+	public Donante find(String codigo) {
+		Donante donante= null;
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
+			sent.setString(1, codigo);
+			ResultSet rs = sent.executeQuery();
+			if (rs.next()) {
+				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
+				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
+				donante.setUbicacion(ubicacion);
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return donante;
 	}
 
 	public List<Donante> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Donante> donantes = new ArrayList<>();
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
+			ResultSet rs = sent.executeQuery();
+			while (rs.next()) {
+				Donante donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
+				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
+				donante.setUbicacion(ubicacion);
+				donantes.add(donante);
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return donantes;
 	}
-
 }
