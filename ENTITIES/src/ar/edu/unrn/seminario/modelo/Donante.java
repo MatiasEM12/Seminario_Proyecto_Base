@@ -12,6 +12,9 @@ public class Donante extends Persona {
 	private ArrayList<Donacion> donaciones;
 	
 	
+	public Donante(String nombre, String apellido, String preferenciaContacto) {
+		super(nombre, apellido, preferenciaContacto);
+	}
 	public Donante(String nombre, String apellido, String preferenciaContacto,Ubicacion ubicacion) {
 		super(nombre, apellido, preferenciaContacto);
 		this.ubicacion=ubicacion;
