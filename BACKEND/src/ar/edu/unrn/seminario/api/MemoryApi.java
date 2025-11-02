@@ -3,7 +3,7 @@ package ar.edu.unrn.seminario.api;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+import java.util.stream.Stream;
 
 import ar.edu.unrn.seminario.modelo.*;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
@@ -23,8 +23,6 @@ public class MemoryApi implements IApi {
     private Map<String, Voluntario> voluntariosByUser = new HashMap<>();
     
   
-    private ArrayList<Visita> visitasRetiro = new ArrayList<>();
-    
     private ArrayList<BienDTO> bienes = new ArrayList<>();
     private ArrayList<VisitaDTO> visitas = new ArrayList<>();
     private List<OrdenPedido> ordenes = new ArrayList<>();
@@ -59,8 +57,8 @@ public class MemoryApi implements IApi {
     //USUARIOS 
     private void inicializarUsuarios()  {
         try {
-        	/*
-            registrarUsuario("admin", "1234", "admin@unrn.edu.ar", "Admin", 1);
+        	
+            registrarUsuario("admin", "1234", "admin@unrn.edu.ar", "Admin", 1);/*
             registrarUsuario("ldifabio", "4", "ldifabio@unrn.edu.ar", "Lucas", 2);
             registrarUsuario("bjgorosito", "1234", "bjgorosito@unrn.edu.ar", "Bruno", 3);*/
         	
@@ -114,7 +112,7 @@ public class MemoryApi implements IApi {
 
         Usuario u = usuariosByUsername.get(username);
         if (u != null) {
-            return new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
+            return 	new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
                     u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo());
         }
         return null;
@@ -206,7 +204,7 @@ public class MemoryApi implements IApi {
     public List<RolDTO> obtenerRoles() {
         List<RolDTO> dtos = new ArrayList<>();
         for (Rol r : this.roles) {
-            dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo()));
+            dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo(), r.getDescripcion()));
         }
         return dtos;
     }
@@ -216,7 +214,7 @@ public class MemoryApi implements IApi {
         List<RolDTO> dtos = new ArrayList<>();
         for (Rol r : this.roles) {
             if (r.isActivo())
-                dtos.add(new RolDTO(r.getCodigo(), r.getNombre(),r.isActivo(), r.getDescripcion()));
+                dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.getDescripcion()));
         }
         return dtos;
     }
@@ -392,19 +390,8 @@ public class MemoryApi implements IApi {
 		        // Verificamos que el bien no sea nulo antes de crear su DTO
 		        if (bien != null) {
 
-		            // Creamos el DTO del bien copiando todos sus datos
-		            BienDTO dto = new BienDTO(
-		                bien.getCodigo(),          // Código del bien
-		                bien.getTipo(),            // Tipo (por ejemplo: Ropa, Comida, Mueble)
-		                bien.getPeso(),            // Peso en kg
-		                bien.getNombre(),          // Nombre descriptivo
-		                bien.getDescripcion(),     // Detalles del bien
-		                bien.getNivelNecesidad(),  // Nivel de prioridad o necesidad
-		                bien.getFechaVencimiento(),// Fecha de vencimiento (si aplica)
-		                bien.getTalle(),           // Talle (solo si es ropa)
-		                bien.getMaterial()         // Material (solo si es ropa)
-		            );
-
+		            // Creamos el DTO del bien 
+		            BienDTO dto = toBienDTO(bien);
 		            // Verificamos si ya existe un bien con el mismo código en la lista 'bienes'
 		            boolean existe = false;
 		            for (BienDTO b : this.bienes) {
@@ -485,26 +472,12 @@ public class MemoryApi implements IApi {
         OrdenPedido orden;
         for (int i = 0; i < ordenes.size(); i++) {
             orden = ordenes.get(i);
-            ordenesDTO.add( new OrdenPedidoDTO(orden.getFechaEmision(),orden.getEstado().toString(),orden.getTipo(),orden.getCodigo(),orden.isCargaPesada(), orden.getObservaciones(),orden.getCodDonante(),orden.getCodDonacion()));
+            ordenesDTO.add( new OrdenPedidoDTO(orden.getFechaEmision(),orden.getEstado().toString(),OrdenPedido.getTipo(),orden.getCodigo(),orden.isCargaPesada(), orden.getObservaciones(),orden.getCodDonante(),orden.getCodDonacion()));
            
         }
         return ordenesDTO;
     }
-    
-	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes) {
-		ArrayList<OrdenDTO> pedidos = new ArrayList<>();
-
-	    for (OrdenDTO o : ordenes) {
-	        if (o instanceof OrdenPedidoDTO) {
-	            pedidos.add((OrdenPedidoDTO) o);
-	        }
-	    }
-
-	    return pedidos;
-	}
-
-
+   
 	
     // OrdenRetiro
 
@@ -525,7 +498,7 @@ public class MemoryApi implements IApi {
 	            ordenesDTO.add(new OrdenRetiroDTO(
 	                orden.getFechaEmision(),
 	                orden.getEstado().toString(),
-	                orden.getTipo(),
+	                OrdenRetiro.getTipo(),
 	                orden.getCodigo(),
 	                orden.getPedido() != null ? orden.getPedido().getCodigo() : null,
 	                null,
@@ -536,24 +509,6 @@ public class MemoryApi implements IApi {
 	    return ordenesDTO;
 	}
 	
-	
-	
-
-	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes) {
-		ArrayList<OrdenDTO> retiros = new ArrayList<>();
-
-	    for (OrdenDTO o : ordenes) {
-	        if (o instanceof OrdenRetiroDTO) {
-	            retiros.add((OrdenRetiroDTO) o);
-	        }
-	    }
-
-	    return retiros;
-	}
-    
-    
-
 
     // Donacion
 
@@ -621,10 +576,7 @@ public class MemoryApi implements IApi {
                 donante.getPreferenciaContacto(), donante.getUbicacion().getCodigo());
     }
 
-    private DonacionDTO toDonacionDTO(Donacion d) {
-        return new DonacionDTO(d.getCodigo(), d.getFechaDonacion(), d.getObservacion(), d.getBienes(), d.getCod_Donante());
-    }
-    
+
     //Orden
 
 	@Override
@@ -700,38 +652,34 @@ public class MemoryApi implements IApi {
 	}
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
-	    ArrayList<BienDTO> resultado = new ArrayList<>();
-
 	    if (codVisita == null || codVisita.trim().isEmpty()) {
-	        return resultado;
+	        return new ArrayList<>();
 	    }
 
-	    // Buscar la visita con ese código
-	    VisitaDTO visitaEncontrada = null;
-	    for (VisitaDTO v : visitas) { 
-	        if (v.getCodigo().equalsIgnoreCase(codVisita)) {
-	            visitaEncontrada = v;
-	            break;
-	        }
-	    }
+	    // Buscar la visita 
+	    VisitaDTO visitaEncontrada = visitas.stream()
+	        .filter(Objects::nonNull)
+	        .filter(v -> codVisita.equalsIgnoreCase(v.getCodigo()))
+	        .findFirst()
+	        .orElse(null);
 
-	    // Si no se encontró la visita, retornar lista vacía
 	    if (visitaEncontrada == null || visitaEncontrada.getCodBienesRecolectados() == null) {
-	        return resultado;
+	        return new ArrayList<>();
 	    }
 
-	    // Buscar los bienes cuyos códigos estén en la visita
-	    for (String cod : visitaEncontrada.getCodBienesRecolectados()) {
-	        for (BienDTO b : bienes) { 
-	            if (b.getCodigo().equalsIgnoreCase(cod)) {
-	                resultado.add(b);
-	                break;
-
-	            }
-	        }
-	    }
-	    return resultado;
+	    // Mapear códigos de la visita a los BienDTO (buscando el primero que coincide)
+	    return Arrays.stream(visitaEncontrada.getCodBienesRecolectados())
+	        .filter(Objects::nonNull)
+	        .flatMap(cod -> bienes.stream()
+	            .filter(Objects::nonNull)
+	            .filter(b -> b.getCodigo().equalsIgnoreCase(cod))
+	            .findFirst()
+	            .map(Stream::of)
+	            .orElseGet(Stream::empty)
+	        )
+	        .collect(Collectors.toCollection(ArrayList::new));
 	}
+	
 	public String[] obtenerCodigosDeBien(BienDTO bien) {
 	    if (bien == null || bien.getCodigo() == null) {
 	        return new String[0]; // retorna array vacío si no hay bien o código
@@ -759,36 +707,22 @@ public class MemoryApi implements IApi {
 	}
 
 	public ArrayList<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
-	    ArrayList<BienDTO> resultado = new ArrayList<>();
-
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-	        return resultado;
+	        return new ArrayList<>();
 	    }
 
-	    for (OrdenRetiro orden : ordenesRetiro) {
-	        if (orden == null) continue;
-	        if (codOrdenRetiro.equalsIgnoreCase(orden.getCodigo())) {
-	            List<Bien> bienesRecolec = orden.getRecolectados(); // ajusta si el getter tiene otro nombre
-	            if (bienesRecolec != null) {
-	                for (Bien bien : bienesRecolec) {
-	                    if (bien == null) continue;
-	                    // Usé la firma: BienDTO(nombre, descripcion, fechaVencimiento, tipo)
-	                    BienDTO dto = new BienDTO(
-	                    		bien.getCodigo(),
-	                    		bien.getTipo()
-	                    		, bien.getPeso(),
-	                    		bien.getNombre(),bien.getDescripcion(), 
-	                    		bien.getNivelNecesidad(),
-	                			bien.getFechaVencimiento(), bien.getTalle(), bien.getMaterial()
-	                    );
-	                    resultado.add(dto);
-	                }
-	            }
-	            break;
-	        }
-	    }
-	    return resultado;
+	    return ordenesRetiro.stream()
+	        .filter(Objects::nonNull)
+	        .filter(o -> codOrdenRetiro.equalsIgnoreCase(o.getCodigo()))
+	        .findFirst()
+	        .map(OrdenRetiro::getRecolectados) // Optional<List<Bien>>
+	        .map(list -> list.stream()
+	                .filter(Objects::nonNull)
+	                .map(this::toBienDTO)
+	                .collect(Collectors.toCollection(ArrayList::new)))
+	        .orElseGet(ArrayList::new);
 	}
+
 
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden) {
 		
@@ -831,17 +765,9 @@ public class MemoryApi implements IApi {
 		                if (bienesDonacion != null) {
 		                    for (Bien bien : bienesDonacion) {
 		                        if (bien != null) {
-		                            BienDTO dto = new BienDTO(
-		                                bien.getCodigo(),
-		                                bien.getTipo(),
-		                                bien.getPeso(),
-		                                bien.getNombre(),
-		                                bien.getDescripcion(),
-		                                bien.getNivelNecesidad(),
-		                                bien.getFechaVencimiento(),
-		                                bien.getTalle(),
-		                                bien.getMaterial()
-		                            );
+		                            BienDTO dto = toBienDTO(bien);
+		                           
+		                            
 		                            retirar.add(dto);
 		                        }
 		                    }
@@ -855,42 +781,48 @@ public class MemoryApi implements IApi {
          return retirar; 
 	}
 	public ArrayList<BienDTO> obtenerBienesPorDonacion(String codDonacion) {
-	    ArrayList<BienDTO> resultado = new ArrayList<>();
-
 	    if (codDonacion == null || codDonacion.trim().isEmpty()) {
-	        return resultado;
+	        return new ArrayList<>();
 	    }
 
-	    for (Donacion donacion : donaciones) {
-	        if (donacion != null && codDonacion.equalsIgnoreCase(donacion.getCodigo())) {
-	            ArrayList<Bien> bienes = donacion.getBienes();
-
-	            if (bienes != null) {
-	                for (Bien bien : bienes) {
-	                    if (bien != null) {
-	                        BienDTO dto = new BienDTO(
-	                            bien.getCodigo(),
-	                            bien.getTipo(),
-	                            bien.getPeso(),
-	                            bien.getNombre(),
-	                            bien.getDescripcion(),
-	                            bien.getNivelNecesidad(),
-	                            bien.getFechaVencimiento(),
-	                            bien.getTalle(),
-	                            bien.getMaterial()
-	                        );
-	                        resultado.add(dto);
-	                    }
-	                }
-	            }
-	            // El código de donación es único, así que salimos del bucle
-	            break;
-	        }
-	    }
+	    ArrayList<BienDTO> resultado = donaciones.stream()
+	        .filter(Objects::nonNull)
+	        .filter(d -> codDonacion.equalsIgnoreCase(d.getCodigo()))
+	        .findFirst()                      // Optional<Donacion>
+	        .map(Donacion::getBienes)         // Optional<List<Bien>>
+	        .map(List::stream)                // Optional<Stream<Bien>>
+	        .orElseGet(Stream::empty)         // Stream<Bien>
+	        .filter(Objects::nonNull)
+	        .map(bien -> toBienDTO(bien
+	        ))
+	        .collect(Collectors.toCollection(ArrayList::new)); // ArrayList<BienDTO>
 
 	    return resultado;
 	}
 
+	
+	//HELPERS 
+	
+	private BienDTO toBienDTO(Bien bien) {
+	    if (bien == null) return null;
+	    return new BienDTO(
+	        bien.getCodigo(),
+	        bien.getTipo(),
+	        bien.getPeso(),
+	        bien.getNombre(),
+	        bien.getDescripcion(),
+	        bien.getNivelNecesidad(),
+	        bien.getFechaVencimiento(),
+	        bien.getTalle(),
+	        bien.getMaterial()
+	    );
+	    
+	
+	}
+
+
+
+
+
 
 }
-
