@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
@@ -69,23 +68,8 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 	@Override
 	public void remove(Usuario rol) {
-		//me parese que quiere eliminar todos los usuarios que tengan ese rol
-		try {
-			 Connection conn = ConnectionManager.getConnection();
-		        PreparedStatement statement = conn.prepareStatement("DELETE FROM usuario WHERE rol = ?");
-			        
-		        //conseguimos el codigo del usuario
-		        statement.setInt(1,rol.getRol().getCodigo());
-			    int cantidad = statement.executeUpdate();
-		        if (cantidad > 0) {
-		            System.out.println("se eliminaron correctamente. un total de "+cantidad+ " usuarios");
-		        } else {
-		            System.out.println("No se encontró usuarios con ese tipo de rol.");
-		        }
-	
-		}catch(SQLException e) {
-			System.out.println("Error al Eliminar usuario");
-		}
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -132,14 +116,8 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			while (rs.next()) {
 
 				Rol rol = new Rol(rs.getInt("codigo_rol"), rs.getString("nombre_rol"));
-				Usuario usuario = null;
-				try {
-					usuario = new Usuario(rs.getString("usuario"), rs.getString("contrasena"),
-							rs.getString("nombre"), rs.getString("email"), rol);
-				} catch (DataEmptyException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Usuario usuario = new Usuario(rs.getString("usuario"), rs.getString("contrasena"),
+						rs.getString("nombre"), rs.getString("email"), rol);
 
 				usuarios.add(usuario);
 			}
