@@ -116,7 +116,7 @@ public class ListadoUsuario extends JFrame {
 	            if (opcion == JOptionPane.YES_OPTION) {
 	                int filaSeleccionada = table.getSelectedRow();
 	                if (filaSeleccionada >= 0) {
-	                    String user = (String) table.getValueAt(filaSeleccionada, 0);
+	                    String user = (String) table.getValueAt(filaSeleccionada, 2);
 	                    api.eliminarUsuario(user);
 	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                    model.removeRow(filaSeleccionada);
@@ -197,10 +197,9 @@ public class ListadoUsuario extends JFrame {
 		btnDesactivar.setEnabled(b);
 
 	}
-	
-	
+
 	private void filtrar(JComboBox<String> combo, JTextField texto) {
-		modelo.setRowCount(0);
+		 modelo.setRowCount(0); 
 		String filtro =combo.getSelectedItem().toString();
 		List<UsuarioDTO> usuarios;
 	
