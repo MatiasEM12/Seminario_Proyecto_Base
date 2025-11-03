@@ -58,28 +58,29 @@ public class MemoryApi implements IApi {
     private void inicializarUsuarios()  {
         try {
         	
-            registrarUsuario("admin", "1234", "admin@unrn.edu.ar", "Admin", 1);/*
+            registrarUsuario("admin", "1234", "admin@x.com", "Admin", 1,true);/*
             registrarUsuario("ldifabio", "4", "ldifabio@unrn.edu.ar", "Lucas", 2);
             registrarUsuario("bjgorosito", "1234", "bjgorosito@unrn.edu.ar", "Bruno", 3);*/
         	
         	
         	
             // crear ejemplo de donante / voluntario para pruebas
-            registrarUsuario("pedro_don", "p", "pedro@x.com", "Pedro Donante", 4);
-            registrarUsuario("matias_don", "m", "matias@x.com", "Matias Donante", 4);
-            registrarUsuario("juan_vol", "v", "juan@x.com", "Juan Vol", 5);
+            registrarUsuario("pedro_don", "p", "pedro@x.com", "Pedro.C", 4,true);
+            registrarUsuario("matias_don", "m", "matias@x.com", "Matias. M", 4,false);
+            registrarUsuario("ian_don", "i", "ian@x.com", "Ian.H", 4,false);
+            registrarUsuario("juan_vol", "v", "juan@x.com", "Juan Vol", 5,true);
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol) throws DataEmptyException {
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException {
 
    
         if (!existeUsuario(username)) {
             Rol role = this.buscarRol(rol);
-            Usuario usuario = new Usuario(username, password, nombre, email, role);
+            Usuario usuario = new Usuario(username, password, nombre, email, role,activo);
             this.usuariosByUsername.put(username, usuario);
             
             // mapUsuarios.put(username, password); // eliminado
@@ -711,16 +712,16 @@ public class MemoryApi implements IApi {
 	        return new ArrayList<>();
 	    }
 
-	    return ordenesRetiro.stream()
-	        .filter(Objects::nonNull)
-	        .filter(o -> codOrdenRetiro.equalsIgnoreCase(o.getCodigo()))
-	        .findFirst()
-	        .map(OrdenRetiro::getRecolectados) // Optional<List<Bien>>
-	        .map(list -> list.stream()
-	                .filter(Objects::nonNull)
-	                .map(this::toBienDTO)
-	                .collect(Collectors.toCollection(ArrayList::new)))
-	        .orElseGet(ArrayList::new);
+	   return ordenesRetiro.stream() // Convierte la lista de órdenes de retiro en un flujo (Stream)
+	            .filter(Objects::nonNull) // Elimina las referencias nulas
+	            .filter(o -> codOrdenRetiro.equalsIgnoreCase(o.getCodigo())) // Busca la orden con el código indicado (sin importar mayúsculas/minúsculas)
+	            .findFirst() // Obtiene la primera coincidencia (devuelve un Optional<OrdenRetiro>)
+	            .map(OrdenRetiro::getRecolectados) // Si existe, obtiene la lista de bienes recolectados (Optional<List<Bien>>)
+	            .map(list -> list.stream() // Convierte esa lista en un Stream<Bien>
+	                    .filter(Objects::nonNull) // Elimina los bienes nulos
+	                    .map(this::toBienDTO) // Convierte cada Bien a BienDTO usando el método toBienDTO()
+	                    .collect(Collectors.toCollection(ArrayList::new))) // Junta los resultados en un ArrayList<BienDTO>
+	            .orElseGet(ArrayList::new); // Si no se encontró la orden o la lista es nula, devuelve una lista vacía
 	}
 
 
@@ -785,17 +786,16 @@ public class MemoryApi implements IApi {
 	        return new ArrayList<>();
 	    }
 
-	    ArrayList<BienDTO> resultado = donaciones.stream()
-	        .filter(Objects::nonNull)
-	        .filter(d -> codDonacion.equalsIgnoreCase(d.getCodigo()))
-	        .findFirst()                      // Optional<Donacion>
-	        .map(Donacion::getBienes)         // Optional<List<Bien>>
-	        .map(List::stream)                // Optional<Stream<Bien>>
-	        .orElseGet(Stream::empty)         // Stream<Bien>
-	        .filter(Objects::nonNull)
-	        .map(bien -> toBienDTO(bien
-	        ))
-	        .collect(Collectors.toCollection(ArrayList::new)); // ArrayList<BienDTO>
+	    ArrayList<BienDTO> resultado = donaciones.stream() // Convierte la lista de donaciones en un flujo (Stream)
+	            .filter(Objects::nonNull) // Filtra las donaciones que no sean nulas
+	            .filter(d -> codDonacion.equalsIgnoreCase(d.getCodigo())) // Filtra la donación que coincida con el código dado (sin importar mayúsculas/minúsculas)
+	            .findFirst() // Obtiene la primera donación que cumpla con la condición (devuelve un Optional<Donacion>)
+	            .map(Donacion::getBienes) // Si existe, obtiene su lista de bienes (devuelve Optional<List<Bien>>)
+	            .map(List::stream) // Convierte esa lista de bienes en un Stream 
+	            .orElseGet(Stream::empty) // Si no se encontró la donación, devuelve un Stream vacío
+	            .filter(Objects::nonNull) // Filtra los bienes no nulos
+	            .map(bien -> toBienDTO(bien)) // Convierte cada Bien a un BienDTO mediante el método toBienDTO()
+	            .collect(Collectors.toCollection(ArrayList::new)); // Recolecta el resultado en un ArrayList<BienDTO>
 
 	    return resultado;
 	}
@@ -821,35 +821,9 @@ public class MemoryApi implements IApi {
 	}
 
 	@Override
-	public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,
-			boolean activo) throws DataEmptyException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void guardarRol(Integer codigo, String descripcion, boolean estado) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void registrarUsuario1(String username, String password, String email, String nombre, Integer codigoRol)
-			throws DataEmptyException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 
