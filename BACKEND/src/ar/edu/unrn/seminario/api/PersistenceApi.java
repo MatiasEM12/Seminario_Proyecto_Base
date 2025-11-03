@@ -32,14 +32,22 @@ public class PersistenceApi implements IApi {
 	public PersistenceApi() {
 		rolDao = new RolDAOJDBC();
 		usuarioDao = new UsuarioDAOJDBC();
+		
+		//registrarDonante
+		
 	}
 
+	/*public void registrarDonante() {
+		
+	}*/
+
 	@Override
-	public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException {
-		Rol rol = rolDao.find(codigoRol);
-		Usuario usuario = new Usuario(username, password, nombre, email, rol);
-		this.usuarioDao.create(usuario);
+	public void registrarUsuario(String username, String password, String nombre, String email, Integer codigoRol, boolean activo) throws DataEmptyException {
+	    Rol rol = rolDao.find(codigoRol);
+	    Usuario usuario = new Usuario(username, password, nombre, email, rol, activo);
+	    this.usuarioDao.create(usuario);
 	}
+
 
 	@Override
 	public List<UsuarioDTO> obtenerUsuarios() {
@@ -47,7 +55,7 @@ public class PersistenceApi implements IApi {
 		List<Usuario> usuarios = usuarioDao.findAll();
 		for (Usuario u : usuarios) {
 			dtos.add(new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
-					u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(), null));
+					u.getRol().getNombre(), u.isActivo(), u.obtenerEstado()));
 		}
 		return dtos;
 	}
@@ -60,7 +68,7 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public void eliminarUsuario(String username) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -75,15 +83,24 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
+
 	public List<RolDTO> obtenerRolesActivos() {
-		// TODO Auto-generated method stub
-		return null;
+	    List<RolDTO> rolesActivos = new ArrayList<>();
+	    for (Rol rol : rolDao.findAll()) {
+	        if (rol.isActivo()) {
+	            rolesActivos.add(new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo()));
+	        }
+	    }
+	    return rolesActivos;
 	}
 
+
+	@Override
 	public void guardarRol(Integer codigo, String descripcion, boolean estado) {
-		// TODO Auto-generated method stub
-
+		Rol rol= new Rol(codigo,descripcion,estado);
+		this.rolDao.create(rol);
 	}
+	
 
 	@Override
 	public RolDTO obtenerRolPorCodigo(Integer codigo) {
@@ -122,15 +139,12 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
-	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void guardarRol(RolDTO rol) {
-		// TODO Auto-generated method stub
+		Rol rolN = new Rol(rol.getCodigo(),rol.getNombre(),rol.getDescripcion(),rol.isActivo());
+		this.rolDao.create(rolN);
+		
 		
 	}
 
@@ -171,12 +185,6 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
 		return null;
@@ -190,12 +198,6 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -273,15 +275,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,
-			boolean activo) throws DataEmptyException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registrarUsuario1(String username, String password, String email, String nombre, Integer codigoRol)
-			throws DataEmptyException {
+	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) {
 		// TODO Auto-generated method stub
 		
 	}
