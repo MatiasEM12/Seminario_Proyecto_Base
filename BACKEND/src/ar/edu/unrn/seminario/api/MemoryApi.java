@@ -820,6 +820,38 @@ public class MemoryApi implements IApi {
 	
 	}
 
+	@Override
+	public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,
+			boolean activo) throws DataEmptyException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void guardarRol(Integer codigo, String descripcion, boolean estado) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarUsuario1(String username, String password, String email, String nombre, Integer codigoRol)
+			throws DataEmptyException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 
