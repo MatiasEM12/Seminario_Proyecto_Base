@@ -17,14 +17,14 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO Donante(nombre, apellido, preferenciaContacto, ubicacion, username) "
-							+ "VALUES (?, ?, ?, ?,?)");
-
-			statement.setString(1, donante.getNombre());
-			statement.setString(2, donante.getApellido());
-			statement.setString(3, donante.getPreferenciaContacto());
-			statement.setObject(4, donante.getUbicacion());
-			statement.setString(5, donante.getUsername());
+					.prepareStatement("INSERT INTO Donante(codigo,nombre, apellido, preferenciaContacto, ubicacion, username) "
+							+ "VALUES (?,?, ?, ?, ?,?)");
+			statement.setString(1, donante.getCodigo());
+			statement.setString(2, donante.getNombre());
+			statement.setString(3, donante.getApellido());
+			statement.setString(4, donante.getPreferenciaContacto());
+			statement.setObject(5, donante.getUbicacion());
+			statement.setString(6, donante.getUsername());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -47,8 +47,8 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE rol SET nombre = ?, apellido = ?, preferenciaContacto = ?, ubicacion = ? WHERE username = ?");
-
+					.prepareStatement("UPDATE rol SET codigo ?, nombre = ?, apellido = ?, preferenciaContacto = ?, ubicacion = ? WHERE username = ?");
+			statement.setString(1, donante.getCodigo());
 			statement.setString(1, donante.getNombre());
 			statement.setString(2, donante.getApellido());
 			statement.setString(3, donante.getPreferenciaContacto());
@@ -82,13 +82,13 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("Rol eliminado correctamente.");
+		            System.out.println("Donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró al donante.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol");
+			System.out.println("Error al Eliminar donanre");
 		}
 		
 	}
@@ -97,24 +97,24 @@ public class DonanteDAOJDBC implements DonanteDao{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM rol WHERE username = ?"
+		            "DELETE FROM donante WHERE username = ? AND codigo=?"
 		        );
 
 		        statement.setString(1, donante.getUsername());
+		        statement.setString(2, donante.getCodigo());
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("Rol eliminado correctamente.");
+		            System.out.println("donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró el donante.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol");
+			System.out.println("Error al Eliminar donante");
 		}
 	}
 
-	//public Donante find(Integer codigo) { lo cambie porque nustro codigo es de tipo string
 	public Donante find(String codigo) {
 		Donante donante= null;
 		try {
@@ -123,9 +123,10 @@ public class DonanteDAOJDBC implements DonanteDao{
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
-				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
-				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
-				donante.setUbicacion(ubicacion);
+				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));	
+				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"), ubicacion);
+				
+				
 			}
 		}
 		catch(SQLException e){
@@ -147,9 +148,9 @@ public class DonanteDAOJDBC implements DonanteDao{
 			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
-				Donante donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
-				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
-				donante.setUbicacion(ubicacion);
+				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));	
+				Donante donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"), ubicacion);
+				
 				donantes.add(donante);
 			}
 		}
