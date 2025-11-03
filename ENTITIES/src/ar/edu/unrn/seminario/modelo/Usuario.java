@@ -28,8 +28,24 @@ public class Usuario {
 		
 		crearCodigo();
 	}
-	public String toString() {
-		return("usuario:"+this.getUsuario()+" nombre:"+this.getNombre()+" Email:"+this.getEmail()+" rol:"+this.getRolName());
+	public Usuario(String usuario, String contrasena, String nombre, String email, Rol rol,boolean activo) throws DataEmptyException {
+
+		if (usuario == null) {
+			System.out.println("usuario no puede ser nulo");
+			//TODO: disparar exception propia
+		}
+		
+		validarCampoVacio(usuario, "usuario");
+		validarCampoVacio(contrasena, "contraseña");
+		
+		this.usuario = usuario;
+		this.contrasena = contrasena;
+		this.nombre = nombre;
+		this.email = email;
+		this.rol = rol;
+		this.activo=activo;
+		
+		crearCodigo();
 	}
 
 	public String getUsuario() {
