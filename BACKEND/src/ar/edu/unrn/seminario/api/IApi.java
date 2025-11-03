@@ -94,4 +94,16 @@ public interface IApi {
 
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP);
 
+	void registrarUsuario1(String username, String password, String email, String nombre, Integer codigoRol)
+			throws DataEmptyException;
+
+	ArrayList<OrdenDTO> obtenerOrdenesRetiro(List<OrdenDTO> ordenes);
+
+	ArrayList<OrdenDTO> obtenerOrdenesPedido(List<OrdenDTO> ordenes);
+
+	void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo)
+			throws DataEmptyException;
+
+	void guardarRol(Integer codigo, String descripcion, boolean estado);
+
 }
