@@ -272,4 +272,18 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
+	@Override
+	public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,
+			boolean activo) throws DataEmptyException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarUsuario1(String username, String password, String email, String nombre, Integer codigoRol)
+			throws DataEmptyException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
