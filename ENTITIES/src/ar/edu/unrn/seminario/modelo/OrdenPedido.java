@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class OrdenPedido extends Orden {
 	
 	private static int contadorOrdenPedido = 0;
-	private static String tipo="ORDEN_PEDIDO";
+	public static String tipo="ORDEN_PEDIDO";
 	private String codigo;
 	private boolean cargaPesada;
 	private String observaciones;

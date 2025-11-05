@@ -1,17 +1,17 @@
 package ar.edu.unrn.seminario.gui;
 
-import java.awt.EventQueue;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
-import ar.edu.unrn.seminario.dto.VisitaDTO;
+
 
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
@@ -25,7 +25,7 @@ public class ListadoBienes extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private DefaultTableModel modelo;
-	private JTextField textField;
+	
 	IApi api;
 
 	/**

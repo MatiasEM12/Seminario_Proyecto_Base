@@ -5,17 +5,13 @@ import java.util.ArrayList;
 public class Donante extends Persona {
 	
 	private static int contadorDonante = 0;
-	private Ubicacion ubicacion;
+	private Ubicacion ubicacion; 
 	private String username; 
 	private String codigo;
 	private ArrayList<OrdenPedido> ordenesPedido;
 	private ArrayList<Donacion> donaciones;
 	
 	
-	public Donante(String nombre, String apellido, String preferenciaContacto) {
-		super(nombre, apellido, preferenciaContacto);
-		crearCodigo();
-	}
 	public Donante(String nombre, String apellido, String preferenciaContacto,Ubicacion ubicacion) {
 		super(nombre, apellido, preferenciaContacto);
 		this.ubicacion=ubicacion;
@@ -23,14 +19,18 @@ public class Donante extends Persona {
 		
 	}
 	
+	
 	public Donante(String nombre, String apellido, String preferenciaContacto,Ubicacion ubicacion,String username) {
 		super(nombre, apellido, preferenciaContacto);
 		this.ubicacion=ubicacion;
 		this.username=username;
 		crearCodigo();
 	}
-	
 
+
+	
+	
+	
 	public Ubicacion getUbicacion() {
 		return ubicacion;
 	}
@@ -100,6 +100,12 @@ public class Donante extends Persona {
 	public void addOrdenPedido(OrdenPedido ordenPedido) {
 		
 		this.ordenesPedido.add(ordenPedido);
+	}
+
+
+	@Override
+	public String toString() {
+		return "Donante [username=" + username + ", codigo=" + codigo + "]";
 	}
 
 	

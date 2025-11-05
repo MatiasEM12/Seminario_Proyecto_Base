@@ -35,7 +35,8 @@ public interface IApi {
 
 	List<RolDTO> obtenerRolesActivos();
 
-	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado); // crear el objeto de dominio �Rol�
+	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado); // crear el objeto de dominio  Rol
+
 
 	RolDTO obtenerRolPorCodigo(Integer codigo); // recuperar el rol almacenado
 
@@ -94,5 +95,8 @@ public interface IApi {
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP);
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado);
+
+
+	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException;
 
 }

@@ -12,6 +12,18 @@ public class Ubicacion {
 		Barrio = barrio;
 		this.direccion = direccion;
 	}
+	
+	
+
+	public Ubicacion(String codigo, String zona, String barrio, String direccion) {
+		super();
+		this.codigo = codigo;
+		this.zona = zona;
+		Barrio = barrio;
+		this.direccion = direccion;
+	}
+
+
 
 	public String getZona() {
 		return zona;

@@ -5,30 +5,31 @@ public class RolDTO {
 	private Integer codigo;
 	private String nombre;
 	private String descripcion;
-	private boolean b;
 	private boolean activo;
 
-	public RolDTO(Integer codigo, String nombre, boolean activo) {
+	public RolDTO(Integer codigo, String nombre, String descripcion) {
+		super();
+		this.codigo = codigo;
+		this.nombre = nombre;
+		this.descripcion=descripcion;	}
+
+	public RolDTO(Integer codigo, String nombre, boolean activo, String descripcion) {
 		super();
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.activo = activo;
 		this.descripcion=descripcion;
 	}
+	
+	
 
-	public RolDTO(Integer codigo, String nombre, String desc) {
-		super();
-		this.codigo = codigo;
-		this.nombre = nombre;
-		this.descripcion=desc;
-	}
-	public RolDTO(Integer codigo, String nombre,boolean activo, String desc) {
+	public RolDTO(Integer codigo, String nombre, boolean activo) {
 		super();
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.activo = activo;
-		this.descripcion=desc;
 	}
+
 	public Integer getCodigo() {
 		return codigo;
 	}

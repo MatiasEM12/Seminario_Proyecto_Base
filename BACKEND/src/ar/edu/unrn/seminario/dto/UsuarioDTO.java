@@ -23,6 +23,17 @@ public class UsuarioDTO {
 		this.codigo=codigo;
 	}
 
+	public UsuarioDTO(String usuario, String contrasena, String nombre, String email,String rol, boolean activo,String obtenerEstado) {
+		this.username = usuario;
+		this.password = contrasena;
+		this.nombre = nombre;
+		this.email = email;
+		this.rol=rol;
+		this.activo = activo;
+		this.estado=obtenerEstado;
+
+	}
+
 	public String getUsername() {
 		return username;
 	}

@@ -23,12 +23,13 @@ public class Rol {
 		this.descripcion=descripcion;
 	}
 	
-	public Rol(Integer codigo,  String descripcion , boolean estado) {
+	public Rol(Integer codigo,  String nombre , boolean estado) {
 		super();
 		this.codigo = codigo;
-		this.descripcion=descripcion;
+		this.nombre=nombre;
 		this.activo=estado;
 	}
+	
 	
 
 	public Rol(Integer codigo, String nombre,  String descripcion ,boolean estado ) {

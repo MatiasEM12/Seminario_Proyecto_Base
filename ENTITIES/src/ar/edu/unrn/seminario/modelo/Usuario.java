@@ -19,6 +19,7 @@ public class Usuario {
 		
 		validarCampoVacio(usuario, "usuario");
 		validarCampoVacio(contrasena, "contraseña");
+		validarCampoVacio(email, "contraseña");
 		
 		this.usuario = usuario;
 		this.contrasena = contrasena;
@@ -159,6 +160,11 @@ public class Usuario {
 
 	public void setActivo(boolean activo) {
 		this.activo = activo;
+	}
+	@Override
+	public String toString() {
+		return "Usuario [codigo=" + codigo + ", usuario=" + usuario + ", nombre=" + nombre + ", email=" + email
+				+ ", rol=" + rol + ", activo=" + activo + "]";
 	}
 	
 	

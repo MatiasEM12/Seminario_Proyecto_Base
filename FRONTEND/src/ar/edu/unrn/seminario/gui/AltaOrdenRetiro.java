@@ -1,11 +1,9 @@
 package ar.edu.unrn.seminario.gui;
 
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
@@ -20,8 +18,6 @@ import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 
 import javax.swing.JButton;
-import javax.swing.JSeparator;
-import javax.swing.BoxLayout;
 
 public class AltaOrdenRetiro extends JFrame {
 
@@ -29,12 +25,11 @@ public class AltaOrdenRetiro extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JFrame frame;
+
 	private JPanel contentPane;
 	private OrdenPedidoDTO ordenSeleccionada;
-	private JTextField txtVncgnbcgv;
-	private JTextField textField_4;
-	private JTextField textField_5;
+
+
 	private JTextField txtFecha;
 	private JTextField txtEstado;
 	private JTextField txtCodigo;
@@ -151,7 +146,7 @@ public class AltaOrdenRetiro extends JFrame {
 	}
 	public void recibirOrdenPedido(OrdenPedidoDTO orden) {
 	    this.ordenSeleccionada = orden;
-	    // Completar campos
+	 
 	    txtCodigo.setText(orden.getCodigo()); 
 	    txtEstado.setText(orden.getEstado());
 	    txtFecha.setText(orden.getFechaEmision().toString());

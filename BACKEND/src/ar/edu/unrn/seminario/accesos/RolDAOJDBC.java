@@ -18,13 +18,13 @@ public class RolDAOJDBC implements RolDao {
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO rol(codigo, nombre, descripcion,estado) "
-							+ "VALUES (?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO roles(codigo, nombre,activo) "  //elimine descripcion para probar tabla base
+							+ "VALUES (?, ?, ?)");
 
 			statement.setInt(1, rol.getCodigo());
 			statement.setString(2, rol.getNombre());
-			statement.setString(3, rol.getDescripcion());
-			statement.setBoolean(4, rol.isActivo());
+			//statement.setString(3, rol.getDescripcion());
+			statement.setBoolean(3, rol.isActivo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -48,12 +48,12 @@ public class RolDAOJDBC implements RolDao {
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE rol SET nombre = ?, descripcion = ?, estado = ? WHERE codigo = ?");
+					.prepareStatement("UPDATE roles SET nombre = ?, activo = ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
 
 			statement.setString(1, rol.getNombre());
 			statement.setString(2, rol.getDescripcion());
-			statement.setBoolean(3, rol.isActivo());
-			statement.setInt(4, rol.getCodigo());
+			//statement.setBoolean(3, rol.isActivo());
+			statement.setInt(3, rol.getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("El Rol se ha actualizado correctamente");
@@ -74,7 +74,7 @@ public class RolDAOJDBC implements RolDao {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM rol WHERE codigo = ?"
+		            "DELETE FROM roles WHERE codigo = ?"
 		        );
 
 		        statement.setInt(1, codigo);
@@ -96,7 +96,7 @@ public class RolDAOJDBC implements RolDao {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM rol WHERE codigo = ?"
+		            "DELETE FROM roles WHERE codigo = ?"
 		        );
 
 		        statement.setInt(1, rol.getCodigo());
@@ -119,12 +119,21 @@ public class RolDAOJDBC implements RolDao {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("SELECT r.codigo, r.nombre " + " FROM roles r " + " WHERE r.codigo = ?");
+					.prepareStatement("SELECT r.codigo, r.nombre ,r.activo" + " FROM roles r " + " WHERE r.codigo = ?");
 
 			statement.setInt(1, codigo);
 			ResultSet rs = statement.executeQuery();
+		
+			
 			if (rs.next()) {
-				rol = new Rol(rs.getInt("codigo"), rs.getString("nombre"));
+				
+				boolean activo;
+				if(rs.getInt("activo")==1){
+					activo=true;
+				}else {
+					activo=false;
+				}
+				rol = new Rol(rs.getInt("codigo"), rs.getString("nombre"),activo);
 			}
 
 		} catch (SQLException e) {

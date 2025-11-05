@@ -17,14 +17,16 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO Donante(codigo,nombre, apellido, preferenciaContacto, ubicacion, username) "
-							+ "VALUES (?,?, ?, ?, ?,?)");
+					.prepareStatement("INSERT INTO donante(codigo, nombre, email, username, codUbicacion, activo)"
+							+ " VALUES (?, ?, ?, ?, ?, ?)");
+			
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
-			statement.setString(3, donante.getApellido());
-			statement.setString(4, donante.getPreferenciaContacto());
-			statement.setObject(5, donante.getUbicacion());
-			statement.setString(6, donante.getUsername());
+			//statement.setString(3, donante.getApellido());
+			statement.setString(3, donante.getPreferenciaContacto());
+			statement.setString(4, donante.getUsername());
+			statement.setObject(5, donante.getUbicacion() != null ? donante.getUbicacion().getCodigo() : null);
+			statement.setBoolean(6, false);
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -47,13 +49,15 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE rol SET codigo ?, nombre = ?, apellido = ?, preferenciaContacto = ?, ubicacion = ? WHERE username = ?");
+					.prepareStatement("UPDATE donante SET codigo ?, nombre = ?, email = ?, codUbicacion = ? WHERE username = ?");
 			statement.setString(1, donante.getCodigo());
-			statement.setString(1, donante.getNombre());
-			statement.setString(2, donante.getApellido());
+			statement.setString(2, donante.getNombre());
+			//statement.setString(2, donante.getApellido());
 			statement.setString(3, donante.getPreferenciaContacto());
-			statement.setObject(4, donante.getUbicacion());
+			statement.setObject(4, donante.getUbicacion().getCodigo());
 			statement.setString(5, donante.getUsername());
+			
+			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("El Donante se ha actualizado correctamente");
@@ -119,12 +123,12 @@ public class DonanteDAOJDBC implements DonanteDao{
 		Donante donante= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.email, D.codUbicacion,D.username "+ "FROM donante D "+ "WHERE D.codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
-				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));	
-				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"), ubicacion);
+				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 //Null ya que no tenemos tabla Ubicacion 
+				donante=new Donante(rs.getString("nombre"),null,rs.getString("email"), ubicacion,rs.getString("username"));
 				
 				
 			}
@@ -145,11 +149,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 		List<Donante> donantes = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.email, D.codUbicacion,D.username "+ "FROM donante D ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
-				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));	
-				Donante donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"), ubicacion);
+				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 //Null ya que no tenemos tabla Ubicacion 
+				Donante donante=new Donante(rs.getString("nombre"),null,rs.getString("email"), ubicacion,rs.getString("username"));
 				
 				donantes.add(donante);
 			}
@@ -165,4 +169,12 @@ public class DonanteDAOJDBC implements DonanteDao{
 		}	 
 		return donantes;
 	}
+
+	@Override
+	public void remove(Long id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

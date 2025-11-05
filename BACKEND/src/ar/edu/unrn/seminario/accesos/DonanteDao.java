@@ -4,17 +4,17 @@ import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Donante;
 
-
 public interface DonanteDao {
-	void create(Donante Donante);
+	void create(Donante Usuario);
 
-	void update(Donante Donante);
+	void update(Donante Usuario);
 
-	void remove(String username);
+	void remove(Long id);
 
-	void remove(Donante Donante);
+	void remove(Donante Usuario);
 
-	Donante find(String codigo);
+	Donante find(String username);
 
 	List<Donante> findAll();
+
 }

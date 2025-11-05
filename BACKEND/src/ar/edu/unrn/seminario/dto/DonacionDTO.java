@@ -9,14 +9,12 @@ public class DonacionDTO {
 	private String codigo;
 	private LocalDateTime fechaDonacion;
 	private String observacion;
-	//ian: cambie el bien por un arraylist para que sea igual que tanto donacion como visita sean arraylist
-	//private Bien bienes[];//vercion original
+	
 	private ArrayList<Bien> bienes;
 	private String codDonante;
 	private String codPedido;
 	private String codRetiro;
-	//public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, Bien[] bienes, Donante donacion) {
-	//original
+
 	public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, String codDonante) {
 		super();
 		this.codigo = codigo;
@@ -74,13 +72,12 @@ public class DonacionDTO {
 	public void setObservacion(String observacion) {
 		this.observacion = observacion;
 	}
-	//original
-	//public Bien[] getBienes() {
+	
 	public ArrayList<Bien> getBienes() {
 		return this.bienes;
 	}
-	//original
-	//public void setBienes(Bien[] bienes) {
+	
+	
 	public void setBienes(ArrayList<Bien> bienes){
 		this.bienes = bienes;
 	}

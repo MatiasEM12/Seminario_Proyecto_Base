@@ -33,20 +33,28 @@ public class PersistenceApi implements IApi {
 		rolDao = new RolDAOJDBC();
 		usuarioDao = new UsuarioDAOJDBC();
 		
-		//registrarDonante
+		
 		
 	}
 
-	/*public void registrarDonante() {
-		
-	}*/
+	
 
 	@Override
-	public void registrarUsuario(String username, String password, String nombre, String email, Integer codigoRol, boolean activo) throws DataEmptyException {
-	    Rol rol = rolDao.find(codigoRol);
-	    Usuario usuario = new Usuario(username, password, nombre, email, rol, activo);
-	    this.usuarioDao.create(usuario);
+	public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException {
+		Rol rol = rolDao.find(codigoRol);
+		Usuario usuario = new Usuario(username, password, nombre, email, rol);
+		this.usuarioDao.create(usuario);
 	}
+	
+	@Override
+	public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,
+			boolean activo) throws DataEmptyException {
+		Rol rolN = rolDao.find(rol);
+		Usuario usuario = new Usuario(username, password, nombre, email, rolN,activo);
+		this.usuarioDao.create(usuario);
+		
+	}
+
 
 
 	@Override
@@ -69,7 +77,8 @@ public class PersistenceApi implements IApi {
 	@Override
 	public void eliminarUsuario(String username) {
 		
-
+		Usuario user= this.usuarioDao.find(username);
+		this.usuarioDao.remove(user);
 	}
 
 	@Override
@@ -96,8 +105,8 @@ public class PersistenceApi implements IApi {
 
 
 	@Override
-	public void guardarRol(Integer codigo, String descripcion, boolean estado) {
-		Rol rol= new Rol(codigo,descripcion,estado);
+	public void guardarRol(Integer codigo, String nombre, boolean estado) {
+		Rol rol= new Rol(codigo,nombre,estado);
 		this.rolDao.create(rol);
 	}
 	
@@ -276,8 +285,10 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) {
-		// TODO Auto-generated method stub
+		Rol rol= new Rol(codigo,nombre,descripcion,estado);
+		this.rolDao.create(rol);
 		
 	}
+
 
 }

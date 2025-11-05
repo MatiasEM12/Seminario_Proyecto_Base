@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class OrdenRetiro extends Orden{
 
-	private static final String tipo="ORDEN_RETIRO";
+	public static final String tipo="ORDEN_RETIRO";
 	private static int contadorOrdenRetiro = 0;
 	
 	private String codigo;

@@ -16,7 +16,7 @@ public class MemoryApi implements IApi {
     private List<Rol> roles = new ArrayList<>();
 
 
-    // Lookups rápidos y perfiles separados
+    
     //username-objeto
     private Map<String, Usuario> usuariosByUsername = new HashMap<>();
     private Map<String, Donante> donantesByUser = new HashMap<>();
@@ -40,14 +40,14 @@ public class MemoryApi implements IApi {
         this.roles.add(new Rol(3, "INVITADO"));*/
         // agregar roles necesarios para dominio
         
-        this.roles.add(new Rol(4, "DONANTE"));
-        this.roles.add(new Rol(5, "VOLUNTARIO"));
+        this.roles.add(new Rol(2, "DONANTE"));
+        this.roles.add(new Rol(3, "VOLUNTARIO"));
         //this.roles.add(new Rol(6, "BENEFICIARIO"));
 
         activarRol(1);
-        activarRol(4);
-        activarRol(5);
-        activarRol(6);
+        activarRol(2);
+        activarRol(3);
+        //activarRol(6);
 
         inicializarUsuarios();
         inicializarOrdenesPedido();
@@ -65,10 +65,10 @@ public class MemoryApi implements IApi {
         	
         	
             // crear ejemplo de donante / voluntario para pruebas
-            registrarUsuario("pedro_don", "p", "pedro@x.com", "Pedro.C", 4,true);
-            registrarUsuario("matias_don", "m", "matias@x.com", "Matias. M", 4,false);
-            registrarUsuario("ian_don", "i", "ian@x.com", "Ian.H", 4,false);
-            registrarUsuario("juan_vol", "v", "juan@x.com", "Juan Vol", 5,true);
+            registrarUsuario("pedro_don", "p", "pedro@x.com", "Pedro.C", 2,true);
+            registrarUsuario("matias_don", "m", "matias@x.com", "Matias. M", 2,false);
+            registrarUsuario("ian_don", "i", "ian@x.com", "Ian.H", 2,false);
+            registrarUsuario("juan_vol", "v", "juan@x.com", "Juan Vol", 3,true);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -271,7 +271,7 @@ public class MemoryApi implements IApi {
         Usuario user = this.buscarUsuario(usuario);
         if (user != null) {
             user.setContrasena(passWord);
-            // ya no hay que sincronizar otros mapas
+           
         }
     }
 
@@ -377,12 +377,12 @@ public class MemoryApi implements IApi {
 		    retiro.agregarBien(b1);
 		    retiro.agregarBien(b2);
 		    Visita v2 = new Visita(LocalDateTime.now(), "Segunda visita retiro realizado correctamente", "RETIRO", retiro, bienesSegundaVisita);
-		    v2.setEstado(Orden.EstadoOrden.COMPLETADA.toString());
+		    v2.setEstado(Orden.EstadoOrden.COMPLETADA.toString());//
 
 		    // asociar visitas a la orden (entidad)
 		    ArrayList<Visita> visitasParaOrden = new ArrayList<>();
 		    visitasParaOrden.add(v1);
-		   visitasParaOrden.add(v2);
+		   visitasParaOrden.add(v2); //
 		    retiro.setVisitas(visitasParaOrden);
 
 		    // registrar bienes como DTOs para que obtenerBienesDeVisita los encuentre
@@ -821,7 +821,15 @@ public class MemoryApi implements IApi {
 	}
 
 	@Override
-	public void guardarRol(Integer codigo, String descripcion, boolean estado) {
+	public void guardarRol(Integer codigo, String nombre, boolean estado) {
+		  Rol rol = new Rol(codigo, nombre, estado);
+	        this.roles.add(rol);
+		
+	}
+
+	@Override
+	public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol)
+			throws DataEmptyException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -831,4 +839,7 @@ public class MemoryApi implements IApi {
 
 
 
+
+
 }
+
