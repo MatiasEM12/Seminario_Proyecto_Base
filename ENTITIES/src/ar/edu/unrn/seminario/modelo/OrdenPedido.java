@@ -28,6 +28,7 @@ public class OrdenPedido extends Orden {
 	public String getCodigo() {
 		return codigo;
 	}
+	
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
@@ -71,7 +72,6 @@ public class OrdenPedido extends Orden {
 	public static void setTipo(String tipo) {
 		OrdenPedido.tipo = tipo;
 	}
-	
 	
 	
 }
