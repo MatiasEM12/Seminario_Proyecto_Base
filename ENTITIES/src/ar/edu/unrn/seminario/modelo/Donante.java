@@ -1,11 +1,13 @@
 package ar.edu.unrn.seminario.modelo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.exception.*;
 public class Donante extends Persona  {
 	
 	private static int contadorDonante = 0;
+	
 	private Ubicacion ubicacion; 
 	private String username; 
 	private String codigo;
@@ -14,8 +16,8 @@ public class Donante extends Persona  {
 	
 	
 	
-	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion) throws DataEmptyException,DataObjectException {
-		super(nombre, apellido, Contacto);
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+		super(nombre, apellido, dni, fecha_nac, Contacto);
 		
 		this.validarObjectNull(ubicacion);
 		this.ubicacion=ubicacion;
@@ -24,12 +26,12 @@ public class Donante extends Persona  {
 	}
 	
 	
-	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException{
-		super(nombre, apellido, Contacto);
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
+		super(nombre, apellido, dni, fecha_nac, Contacto);
 		
 		this.validarObjectNull(ubicacion);
 		this.validarCampoNull(username);
-		this.validarCampoVacio(this.username, username);
+		this.validarCampoVacio( username,this.username);
 		this.ubicacion=ubicacion;
 		this.username=username;
 		crearCodigo();
@@ -61,12 +63,7 @@ public class Donante extends Persona  {
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
-	public String getPreferenciaContacto() {
-		return preferenciaContacto;
-	}
-	public void setPreferenciaContacto(String preferenciaContacto) {
-		this.preferenciaContacto = preferenciaContacto;
-	}
+
 
 	public String getUsername() {
 		return username;
@@ -121,9 +118,9 @@ public class Donante extends Persona  {
 			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
 		}
 	}
-	private void validarCampoNull( String nombreCampo) throws DataEmptyException {
+	private void validarCampoNull( String nombreCampo) throws DataNullException {
 		if (nombreCampo==null) {
-			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser nulo");
+			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
 		}
 	}
 	private void validarObjectNull( Object ob) throws DataObjectException {
