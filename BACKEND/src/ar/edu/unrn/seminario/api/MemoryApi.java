@@ -470,7 +470,6 @@ public class MemoryApi implements IApi {
     public void registrarOrdenPedido(OrdenPedido orden) {
         ordenes.add(orden);
     }
-
     public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() {
         ArrayList<OrdenPedidoDTO> ordenesDTO = new ArrayList<>();
         OrdenPedido orden;
