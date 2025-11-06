@@ -2,7 +2,7 @@ package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
+import ar.edu.unrn.seminario.exception.ExceptionOrdenRetiro;
 
 
 public class OrdenRetiro extends Orden{
@@ -19,7 +19,7 @@ public class OrdenRetiro extends Orden{
 	private ArrayList<Bien> recolectados;
 	
 	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas) {
+			ArrayList<Visita> visitas)throws Exception{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		this.pedido = pedido;
 		this.visitas = visitas;
@@ -28,7 +28,7 @@ public class OrdenRetiro extends Orden{
 	}
 	
 
-	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) {
+	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) throws Exception{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		this.pedido = pedido;
 		crearCodigo();
@@ -38,7 +38,7 @@ public class OrdenRetiro extends Orden{
 
 
 	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas,Voluntario voluntario) {
+			ArrayList<Visita> visitas,Voluntario voluntario) throws Exception{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		this.pedido = pedido;
 		this.visitas = visitas;
@@ -146,6 +146,4 @@ public class OrdenRetiro extends Orden{
 	public int getCantBienes() {
 		return (recolectados == null) ? 0 : recolectados.size();
 	}
-	
-	
 }
