@@ -34,7 +34,7 @@ public class OrdenRetiro extends Orden{
 	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) throws DataNullException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		if(pedido==null) {
-			throw new DataNullException("La orden de pedido no puede ser vacio");
+			throw new DataNullException("La orden de pedido no puede ser null");
 		}
 		this.pedido = pedido;
 		crearCodigo();
@@ -47,10 +47,10 @@ public class OrdenRetiro extends Orden{
 			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		if(pedido==null) {
-			throw new DataNullException("La orden de pedido no puede ser vacio");
+			throw new DataNullException("La orden de pedido no puede ser null");
 		}
 		if(voluntario==null) {
-			throw new DataNullException("El voluntario no puede ser vacio");
+			throw new DataNullException("El voluntario no puede ser null");
 		}
 		this.pedido = pedido;
 		this.visitas = visitas;
