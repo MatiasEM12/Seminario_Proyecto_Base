@@ -16,6 +16,7 @@ import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.RolDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
+import ar.edu.unrn.seminario.dto.VoluntarioDTO;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
@@ -23,12 +24,14 @@ import ar.edu.unrn.seminario.modelo.OrdenPedido;
 import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Usuario;
+import ar.edu.unrn.seminario.modelo.Visita;
+import ar.edu.unrn.seminario.modelo.Voluntario;
 
 public class PersistenceApi implements IApi {
 
 	private RolDao rolDao;
 	private UsuarioDao usuarioDao;
-
+	private VoluntarioDao voluntarioDao; 
 	public PersistenceApi() {
 		rolDao = new RolDAOJDBC();
 		usuarioDao = new UsuarioDAOJDBC();
@@ -193,12 +196,12 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
+/*	@Override
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	@Override
 	public void registrarOrdenPedido(OrdenPedido orden) {
 		// TODO Auto-generated method stub
@@ -210,13 +213,13 @@ public class PersistenceApi implements IApi {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+/*
 	@Override
 	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	@Override
 	public void registrarDonante(Donante donante) {
 		// TODO Auto-generated method stub
@@ -258,13 +261,13 @@ public class PersistenceApi implements IApi {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+/*
 	@Override
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	@Override
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
@@ -289,6 +292,48 @@ public class PersistenceApi implements IApi {
 		this.rolDao.create(rol);
 		
 	}
+
+
+
+	@Override
+	public void registrarVoluntario(Voluntario voluntario) {
+		voluntarios.add(voluntario);
+		
+	}
+
+	@Override
+	public List<VoluntarioDTO> obtenerVoluntarios() {
+		ArrayList<VoluntarioDTO> voluntariosDTO = new ArrayList<>();
+		List<Voluntario> voluntarios = voluntariosDao.findAll();
+        Voluntario voluntario;
+        for (int i = 0; i < voluntarios.size(); i++) {
+            voluntario = voluntarios.get(i);
+            voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),
+            		voluntario.getApellido(),voluntario.getPreferenciaContacto(),
+            		voluntario.getTarea(),voluntario.isDisponible(),voluntario.getUsername()));
+           
+        }
+        return voluntariosDTO;
+        
+	}
+	public void registrarVisita(VisitaDTO visita) {
+		visitas.add(visita);
+	}
+	public void registrarVisita(Visita visita) {
+		visitass.add(visita);
+	}
+	
+	public void inicializarVoluntarios() {
+		Voluntario v1=new Voluntario(
+		        "Matias",               // nombre
+		        "Mellado",           // apellido
+		        "WhatsApp",            // preferencia de contacto
+		        "matiM"               // username);
+		        );
+		
+		registrarVoluntario(v1);
+	}
+	
 
 
 }
