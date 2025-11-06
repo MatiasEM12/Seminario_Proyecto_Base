@@ -1,7 +1,8 @@
 package ar.edu.unrn.seminario.modelo;
 
 import java.util.ArrayList;
-import ar.edu.unrn.seminario.exception.DataEmptyException;
+
+import ar.edu.unrn.seminario.exception.*;
 public class Donante extends Persona  {
 	
 	private static int contadorDonante = 0;
@@ -13,17 +14,22 @@ public class Donante extends Persona  {
 	
 	
 	
-	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion) {
+	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion) throws DataEmptyException,DataObjectException {
 		super(nombre, apellido, Contacto);
 		
+		this.validarObjectNull(ubicacion);
 		this.ubicacion=ubicacion;
 		crearCodigo();
 		
 	}
 	
 	
-	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion,String username) {
+	public Donante(String nombre, String apellido, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException{
 		super(nombre, apellido, Contacto);
+		
+		this.validarObjectNull(ubicacion);
+		this.validarCampoNull(username);
+		this.validarCampoVacio(this.username, username);
 		this.ubicacion=ubicacion;
 		this.username=username;
 		crearCodigo();
@@ -120,9 +126,9 @@ public class Donante extends Persona  {
 			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser nulo");
 		}
 	}
-	private void validarCampoNull( Object ob) throws DataEmptyException {
+	private void validarObjectNull( Object ob) throws DataObjectException {
 		if (ob==null) {
-			throw new DataEmptyException("Contiene instancia nula ");
+			throw new DataObjectException("Contiene instancia nula ");
 		}
 	}
 }
