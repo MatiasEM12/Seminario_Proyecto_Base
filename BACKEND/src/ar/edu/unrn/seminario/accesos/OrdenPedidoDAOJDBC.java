@@ -21,10 +21,10 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO donante(fechaemision, cargaPesada, observaciones, codDonante, codDonacion)"
+					.prepareStatement("INSERT INTO ordenPedido (fechaemision, cargaPesada, observaciones, codDonante, codDonacion)"
 							+ " VALUES (?, ?, ?, ?)");
 			
-			statement.setString(1, orden.getFechaEmision());
+			statement.setObject(1, orden.getFechaEmision());
 			statement.setBoolean(2, orden.isCargaPesada());
 			statement.setString(3, orden.getObservaciones());
 			statement.setString(4, orden.getCodDonante());
@@ -129,7 +129,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			statement.setString(1, codigo);
 			ResultSet rs = statement.executeQuery();
 			if (rs.next()) {
-				orden = new OrdenPedido(rs.getTimestamp("fechaEmision"),rs.getBoolean("cargaPesada"),
+				orden = new OrdenPedido(rs.getObject("fechaEmision"),rs.getBoolean("cargaPesada"),
 						rs.getString("observaciones"), rs.getString("codDonante"),rs.getString("codDonacion"));
 			}
 			

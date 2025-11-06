@@ -1,5 +1,18 @@
 package ar.edu.unrn.seminario.accesos;
 
-public interface OrdenRetiroDao {
+import java.util.List;
+import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 
+public interface OrdenRetiroDao {
+	void create(OrdenRetiro orden);
+
+	void update(OrdenRetiro orden);
+
+	void remove(String id);
+
+	void remove(OrdenRetiro orden);
+
+	OrdenRetiro find(String username);
+
+	List<OrdenRetiro> findAll();
 }
