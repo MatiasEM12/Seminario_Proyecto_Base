@@ -16,5 +16,7 @@ public interface RolDao {
 	Rol find(Integer codigo);
 
 	List<Rol> findAll();
+	
+	
 
 }

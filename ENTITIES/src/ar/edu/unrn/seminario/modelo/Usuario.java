@@ -148,7 +148,11 @@ public class Usuario {
 			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
 		}
 	}
-	
+	private void validarCampoNull( String nombreCampo) throws DataEmptyException {
+		if (nombreCampo==null) {
+			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser nulo");
+		}
+	}
 	private void crearCodigo() {
 		  contadorUsuario++;
 		  this.codigo = "U" + String.format("%05d", contadorUsuario);
