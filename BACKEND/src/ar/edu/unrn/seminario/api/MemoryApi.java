@@ -28,6 +28,8 @@ public class MemoryApi implements IApi {
     private List<OrdenPedido> ordenes = new ArrayList<>();
     private List<Donacion> donaciones = new ArrayList<>();
     private List<OrdenRetiro> ordenesRetiro = new ArrayList<>();
+    private List<Voluntario> voluntarios = new ArrayList<>();
+    private List<Visita> visitass = new ArrayList<>();
 
     public MemoryApi() {
         // datos iniciales
@@ -51,6 +53,7 @@ public class MemoryApi implements IApi {
 
         inicializarUsuarios();
         inicializarOrdenesPedido();
+        inicializarVoluntarios();
   
     }
 
@@ -411,7 +414,7 @@ public class MemoryApi implements IApi {
 
 		    // crear y agregar VisitaDTOs para que ListadoVisitas las muestre
 		    // v1 (sin bienes)
-		    VisitaDTO dtoV1 = new VisitaDTO(
+	/*	    VisitaDTO dtoV1 = new VisitaDTO(
 		        v1.getCodigo(),
 		        v1.getFechaVisita(),
 		        v1.getObservaciones(),
@@ -455,7 +458,7 @@ public class MemoryApi implements IApi {
     	     return Orden.EstadoOrden.PENDIENTE;
     	}
     		return Orden.EstadoOrden.CANCELADA;	
-    	
+  */  	
     
        
       
@@ -652,7 +655,7 @@ public class MemoryApi implements IApi {
 	    throw new RuntimeException("No se encontró OrdenRetiro con código: " + codOrdenRetiro);
 	}
 	
-	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
+	/*public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
 	    if (codVisita == null || codVisita.trim().isEmpty()) {
 	        return new ArrayList<>();
 	    }
@@ -679,7 +682,7 @@ public class MemoryApi implements IApi {
 	            .orElseGet(Stream::empty)
 	        )
 	        .collect(Collectors.toCollection(ArrayList::new));
-	}
+	}*/
 	
 	public String[] obtenerCodigosDeBien(BienDTO bien) {
 	    if (bien == null || bien.getCodigo() == null) {
@@ -689,7 +692,7 @@ public class MemoryApi implements IApi {
 	    String[] cod = { bien.getCodigo() };
 	    return cod;
 	}
-	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro){
+	/*public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro){
 	    ArrayList<VisitaDTO> resultado = new ArrayList<>();
 
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
@@ -706,7 +709,7 @@ public class MemoryApi implements IApi {
 
 	    return resultado;
 	}
-
+*/
 	public ArrayList<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
 	        return new ArrayList<>();
@@ -834,12 +837,43 @@ public class MemoryApi implements IApi {
 		
 	}
 
+	@Override
+	public void registrarVoluntario(Voluntario voluntario) {
+		voluntarios.add(voluntario);
+		
+	}
 
-
-
-
-
-
-
+	@Override
+	public List<VoluntarioDTO> obtenerVoluntarios() {
+		ArrayList<VoluntarioDTO> voluntariosDTO = new ArrayList<>();
+        Voluntario voluntario;
+        for (int i = 0; i < voluntarios.size(); i++) {
+            voluntario = voluntarios.get(i);
+            voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),
+            		voluntario.getApellido(),voluntario.getPreferenciaContacto(),
+            		voluntario.getTarea(),voluntario.isDisponible(),voluntario.getUsername()));
+           
+        }
+        return voluntariosDTO;
+        
+	}
+	public void registrarVisita(VisitaDTO visita) {
+		visitas.add(visita);
+	}
+	public void registrarVisita(Visita visita) {
+		visitass.add(visita);
+	}
+	
+	public void inicializarVoluntarios() {
+		Voluntario v1=new Voluntario(
+		        "Matias",               // nombre
+		        "Mellado",           // apellido
+		        "WhatsApp",            // preferencia de contacto
+		        "matiM"               // username);
+		        );
+		
+		registrarVoluntario(v1);
+	}
+	
 }
 

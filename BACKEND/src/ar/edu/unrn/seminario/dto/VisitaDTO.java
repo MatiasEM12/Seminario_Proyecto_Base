@@ -2,30 +2,27 @@ package ar.edu.unrn.seminario.dto;
 
 import java.time.LocalDateTime;
 
+import ar.edu.unrn.seminario.modelo.Voluntario;
+
 
 public class VisitaDTO {
-	
 	
 	private String codigo;
 	private LocalDateTime fechaVisita;
 	private String observaciones;
 	private String tipo;
-	private String codOrdenRetiro;
-	private String[] codBienesRecolectados;
-	private String estado;
+	private String codVoluntario;
 	
-	public VisitaDTO(String codigo, LocalDateTime fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
-			String[] codBienesRecolectados, String estado) {
+	public VisitaDTO(String codigo, LocalDateTime fechaVisita, String codVoluntario,String observaciones, String tipo) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.codOrdenRetiro = codOrdenRetiro;
-		this.codBienesRecolectados = codBienesRecolectados;
-		this.estado = estado;
+		this.codVoluntario=codVoluntario;
 	}
-
+	
+	
 	public String getCodigo() {
 		return codigo;
 	}
@@ -42,20 +39,9 @@ public class VisitaDTO {
 		return tipo;
 	}
 
-	public String getCodOrdenRetiro() {
-		return codOrdenRetiro;
+	public String getCodVoluntario() {
+		return this.codVoluntario;
 	}
-
-	public String[] getCodBienesRecolectados() {
-		return codBienesRecolectados;
-	}
-
-	public String getEstado() {
-		return estado;
-	}
-	
-	
-	
 	
 	
 }

@@ -65,13 +65,13 @@ public interface IApi {
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
 	
-	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
+	//public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
 	public void registrarOrdenPedido(OrdenPedido orden);
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
 
-	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
+	//ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
 	
 	//Donante
 	public void registrarDonante(Donante donante);
@@ -79,6 +79,8 @@ public interface IApi {
 	List<UsuarioDTO> obtenerUserDonantes();
 
 	//Voluntario 
+	public void registrarVoluntario(Voluntario voluntario);
+	List<VoluntarioDTO> obtenerVoluntarios();
 	List<UsuarioDTO> obtenerUserVoluntarios();
 	//Administrador 
 	List<UsuarioDTO> obtenerUserAdministrador();
@@ -87,7 +89,7 @@ public interface IApi {
 	public void registrarDonacion(Donacion donacion);
 	ArrayList<DonacionDTO> obtenerDonaciones();
 	
-	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
+	//public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	public void inicializarOrdenesRetiro(String codPedido);
@@ -98,5 +100,9 @@ public interface IApi {
 
 
 	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException;
-
+	
+	//Visitas
+	public void registrarVisita(Visita visita);
+	public void registrarVisita(VisitaDTO visita);
+	
 }
