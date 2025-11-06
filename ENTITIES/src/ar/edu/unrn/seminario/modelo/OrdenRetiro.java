@@ -2,7 +2,7 @@ package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import ar.edu.unrn.seminario.exception.ExceptionOrdenRetiro;
+import ar.edu.unrn.seminario.exception.*;
 
 
 public class OrdenRetiro extends Orden{
@@ -19,8 +19,11 @@ public class OrdenRetiro extends Orden{
 	private ArrayList<Bien> recolectados;
 	
 	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas)throws Exception{
+			ArrayList<Visita> visitas)throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
+		if(pedido==null) {
+			throw new DataNullException("La orden de pedido no puede ser vacio");
+		}
 		this.pedido = pedido;
 		this.visitas = visitas;
 		this.recolectados = new ArrayList<>();
@@ -28,8 +31,11 @@ public class OrdenRetiro extends Orden{
 	}
 	
 
-	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) throws Exception{
+	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) throws DataNullException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
+		if(pedido==null) {
+			throw new DataNullException("La orden de pedido no puede ser vacio");
+		}
 		this.pedido = pedido;
 		crearCodigo();
 		this.visitas= new ArrayList<>();
@@ -38,8 +44,14 @@ public class OrdenRetiro extends Orden{
 
 
 	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas,Voluntario voluntario) throws Exception{
+			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
+		if(pedido==null) {
+			throw new DataNullException("La orden de pedido no puede ser vacio");
+		}
+		if(voluntario==null) {
+			throw new DataNullException("El voluntario no puede ser vacio");
+		}
 		this.pedido = pedido;
 		this.visitas = visitas;
 		this.recolectados = new ArrayList<>();
