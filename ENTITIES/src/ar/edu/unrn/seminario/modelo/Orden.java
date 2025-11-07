@@ -1,14 +1,14 @@
 package ar.edu.unrn.seminario.modelo;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public abstract class Orden {
 
-    private LocalDateTime fechaEmision;
+    private LocalDate fechaEmision;
     private EstadoOrden estado;
     private String tipo;
 
-    protected Orden(LocalDateTime fechaEmision, EstadoOrden estado,String tipo) {
+    protected Orden(LocalDate fechaEmision, EstadoOrden estado,String tipo) {
         this.fechaEmision = fechaEmision;
         this.estado = estado;
         this.tipo=tipo;
@@ -32,11 +32,11 @@ public abstract class Orden {
         }
     }
 
-    public LocalDateTime getFechaEmision() {
+    public LocalDate getFechaEmision() {
         return fechaEmision;
     }
 
-    public void setFechaEmision(LocalDateTime fechaEmision) {
+    public void setFechaEmision(LocalDate fechaEmision) {
         this.fechaEmision = fechaEmision;
     }
 

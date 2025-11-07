@@ -1,38 +1,58 @@
 package ar.edu.unrn.seminario.modelo;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 import java.util.ArrayList;
+
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 public class Visita {
 	
 	private static int contadorVisita = 0;
 	
 	private String codigo;
-	private LocalDateTime fechaVisita;
+	private LocalDate fechaVisita;
 	private String observaciones;
 	private String tipo;
-	private OrdenRetiro retiro;
+	private String codOrdenRetiro;
 	private ArrayList<Bien> bienesRecolectados;
 	private String estado;
 	
-	public Visita(LocalDateTime fechaVisita, String observaciones, String tipo, OrdenRetiro retiro,
-			ArrayList<Bien> bienesRecolectados) {
+	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
+			ArrayList<Bien> bienesRecolectados) throws DataNullException, DataLengthException{
 		super();
+		if (fechaVisita==null) {
+			throw new DataNullException("El campo Fecha no puede estar VACIO"); 
+		}
+		if (observaciones == null) {
+			throw new DataNullException("El campo  no puede estar VACIO"); 
+		}
+		if (observaciones.length()>300) {
+			throw new DataLengthException("El campo observaciones no puede exceder los 300 caracteres"); 
+		}
+		if (tipo == null) {
+			throw new DataNullException("El campo codigo donante no puede estar VACIO"); 
+		}
+		if (codOrdenRetiro == null) {
+			throw new DataNullException("Debe haber al menos una ordenRetiro"); 
+		}
+
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.retiro = retiro;
+		this.codOrdenRetiro = codOrdenRetiro;
 		this.bienesRecolectados = bienesRecolectados;
 		crearCodigo();
 	}
 	
-	public Visita(LocalDateTime fechaVisita, String observaciones, String tipo, OrdenRetiro retiro,
+	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
 			Bien bien) {
 		super();
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.retiro = retiro;
+		this.codOrdenRetiro = codOrdenRetiro;
 		this.bienesRecolectados = new ArrayList<>();
 		this.bienesRecolectados.add(bien);
 		crearCodigo();
@@ -42,10 +62,10 @@ public class Visita {
 		return codigo;
 	}
 
-	public LocalDateTime getFechaVisita() {
+	public LocalDate getFechaVisita() {
 		return fechaVisita;
 	}
-	public void setFechaVisita(LocalDateTime fechaVisita) {
+	public void setFechaVisita(LocalDate fechaVisita) {
 		this.fechaVisita = fechaVisita;
 	}
 	public String getObservaciones() {
@@ -60,11 +80,11 @@ public class Visita {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-	public OrdenRetiro getRetiro() {
-		return retiro;
+	public String getRetiro() {
+		return codOrdenRetiro;
 	}
-	public void setRetiro(OrdenRetiro retiro) {
-		this.retiro = retiro;
+	public void setcodOrdenRetiro(String codOrdenRetiro) {
+		this.codOrdenRetiro = codOrdenRetiro;
 	}
 	public ArrayList<Bien> getBienesRecolectados() {
 		return bienesRecolectados;
@@ -88,5 +108,9 @@ public class Visita {
 	private void crearCodigo() {
 		  contadorVisita++;
 		  this.codigo = "VI" + String.format("%05d", contadorVisita);
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 }
