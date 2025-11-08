@@ -20,18 +20,18 @@ public class Bien {
 	
 	
 
-	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) throws DataNullException,DataEmptyException { //alimento,medicamento 
+	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) throws DataNullException{ //alimento,medicamento 
 		super();
-		if(nombre.equals("")) {
-			throw new DataEmptyException("Nombre ingresado es invalido");
+		if(nombre==null) {
+			throw new DataNullException("Nombre ingresado es invalido");
 		}
 		//la descripcion no se si es necesaria por si las dudas lo pongo
-		if(descripcion.equals("")) {
-			throw new DataEmptyException("Descripcion ingresada es invalida");
+		if(descripcion==null) {
+			throw new DataNullException("Descripcion ingresada es invalida");
 		}
 		//este tambien podria no ser nesesario que sea obligatorio
-		if(tipo.equals("")) {
-			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		if(tipo==null) {
+			throw new DataNullException("Se deve ingresar un tipo valido");
 		}
 		if(fechaVencimiento==null) {
 			throw new DataNullException("Fecha de vencimiento invalida");
@@ -48,16 +48,16 @@ public class Bien {
 	
 	
 	
-	public Bien(double peso, String nombre, String descripcion, String material,String tipo)throws DataEmptyException,DataDoubleException{ //mueble, electrodomestico 
+	public Bien(double peso, String nombre, String descripcion, String material,String tipo)throws DataNullException,DataDoubleException{ //mueble, electrodomestico 
 		super();
 		if(peso <= 0) {
 		    throw new DataDoubleException("Ingrese un peso valido");
 		}
-		if(nombre.equals("")) {
-			throw new DataEmptyException("El nombre es invalido");
+		if(nombre==null) {
+			throw new DataNullException("El nombre es invalido");
 		}
-		if(tipo.equals("")) {
-			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		if(tipo==null) {
+			throw new DataNullException("Se deve ingresar un tipo valido");
 		}
 		this.tipo=tipo;
 		this.peso = peso;
@@ -71,19 +71,19 @@ public class Bien {
 
 
 // le cambie el talle lo aviamos puesto como Double que era una objeto enves de doueble
-	public Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataEmptyException,DataDoubleException { //ropa
+	public Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataNullException,DataDoubleException { //ropa
 		super();
-		if(nombre.equals("")) {
-			throw new DataEmptyException("Nombre ingresado es invalido");
+		if(nombre==null) {
+			throw new DataNullException("Nombre ingresado es invalido");
 		}
-		if(descripcion.equals("")) {
-			throw new DataEmptyException("Descripcion ingresada es invalida");
+		if(descripcion==null) {
+			throw new DataNullException("Descripcion ingresada es invalida");
 		}	
 		if(talle <= 0) {
 		    throw new DataDoubleException("Se deve ingresar un talle valido");
 		}
-		if(tipo.equals("")) {
-			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		if(tipo==null) {
+			throw new DataNullException("Se deve ingresar un tipo valido");
 		}
 		
 		this.tipo=tipo;
@@ -99,16 +99,16 @@ public class Bien {
 
 
 	public Bien(double peso, String nombre, String descripcion, LocalDateTime fechaVencimiento, double talle,
-			String material, String tipo) throws DataEmptyException,DataDoubleException,DataNullException { //otro
+			String material, String tipo) throws DataNullException { //otro
 		super();
-		if(nombre.equals("")) {
-			throw new DataEmptyException("Nombre ingresado es invalido");
+		if(nombre==null) {
+			throw new DataNullException("Nombre ingresado es invalido");
 		}
-		if(descripcion.equals("")) {
-			throw new DataEmptyException("Descripcion ingresada es invalida");
+		if(descripcion==null) {
+			throw new DataNullException("Descripcion ingresada es invalida");
 		}
-		if(tipo.equals("")) {
-			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		if(tipo==null) {
+			throw new DataNullException("Se deve ingresar un tipo valido");
 		}
 		this.tipo=tipo;
 		this.peso = peso;
