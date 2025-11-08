@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import ar.edu.unrn.seminario.exception.*;
 public class Donante extends Persona  {
@@ -21,55 +22,68 @@ public class Donante extends Persona  {
 		
 		this.validarObjectNull(ubicacion);
 		this.ubicacion=ubicacion;
+		ordenesPedido= new ArrayList<>();
+		donaciones= new ArrayList<>();
 		crearCodigo();
 		
 	}
 	
 	
-	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
-		super(nombre, apellido, dni, fecha_nac, Contacto);
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
+		super(nombre, apellido, dni, fecha_nac, contacto);
 		
 		this.validarObjectNull(ubicacion);
 		this.validarCampoNull(username);
 		this.validarCampoVacio( username,this.username);
 		this.ubicacion=ubicacion;
 		this.username=username;
+		ordenesPedido= new ArrayList<>();
+		donaciones= new ArrayList<>();
 		crearCodigo();
 	}
 
 
-	
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username,String codigo) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
+		super(nombre, apellido, dni, fecha_nac, contacto);
+		
+		
+		
+		this.validarObjectNull(ubicacion);
+		this.validarCampoNull(username);
+		this.validarCampoVacio( username,this.username);
+		this.validarCampoNull(codigo);
+		this.validarCampoVacio( codigo,this.codigo);
+		this.ubicacion=ubicacion;
+		this.username=username;
+		ordenesPedido= new ArrayList<>();
+		donaciones= new ArrayList<>();
+		crearCodigo();
+	}
+
 	
 	
 	public Ubicacion getUbicacion() {
 		return ubicacion;
 	}
-	public void setUbicacion(Ubicacion ubicacion) {
+	public void setUbicacion(Ubicacion ubicacion) throws DataObjectException {
+		this.validarObjectNull(ubicacion);
 		this.ubicacion = ubicacion;
 	}
-	public String getNombre() {
-		return nombre;
-	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+
 	public String getCodigo() {
 		return codigo;
 	}
 	
-	public String getApellido() {
-		return apellido;
-	}
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
-	}
+
 
 
 	public String getUsername() {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(String username) throws DataNullException, DataEmptyException {
+		this.validarCampoNull(username);
+		this.validarCampoVacio( username,this.username);
 		this.username = username;
 	}
 	
@@ -80,7 +94,8 @@ public class Donante extends Persona  {
 		return ordenesPedido;
 	}
 
-	public void setOrdenesPedido(ArrayList<OrdenPedido> ordenesPedido) {
+	public void setOrdenesPedido(ArrayList<OrdenPedido> ordenesPedido) throws DataListException {
+		this.validarListPedido(ordenesPedido);
 		this.ordenesPedido = ordenesPedido;
 	}
 
@@ -88,7 +103,8 @@ public class Donante extends Persona  {
 		return donaciones;
 	}
 
-	public void setDonaciones(ArrayList<Donacion> donaciones) {
+	public void setDonaciones(ArrayList<Donacion> donaciones) throws DataListException {
+		this.validarListDonacion(donaciones);
 		this.donaciones = donaciones;
 	}
 
@@ -98,12 +114,13 @@ public class Donante extends Persona  {
 	}
 	
 	
-	private void addDonacion(Donacion donacion) {
+	private void addDonacion(Donacion donacion) throws DataObjectException {
+		this.validarObjectNull(donacion);
 		this.donaciones.add(donacion);
 	}
 	
-	public void addOrdenPedido(OrdenPedido ordenPedido) {
-		
+	public void addOrdenPedido(OrdenPedido ordenPedido) throws DataObjectException {
+		this.validarObjectNull(ordenPedido);
 		this.ordenesPedido.add(ordenPedido);
 	}
 
@@ -128,4 +145,19 @@ public class Donante extends Persona  {
 			throw new DataObjectException("Contiene instancia nula ");
 		}
 	}
+	
+	
+	private void validarListDonacion( ArrayList<Donacion> donaciones2) throws DataListException {
+		if (donaciones2==null) {
+			throw new DataListException("List invalida");
+		}
+	}
+	
+	private void validarListPedido( ArrayList<OrdenPedido> ordenesPedido2) throws DataListException {
+		if (ordenesPedido2==null) {
+			throw new DataListException("List invalida");
+		}
+	}
+	
+	
 }
