@@ -1,6 +1,6 @@
 package ar.edu.unrn.seminario.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
@@ -13,8 +13,7 @@ public class OrdenRetiroDTO extends OrdenDTO{
 	private String codVoluntario;
 	private String[] codVisitas;
 	
-
-	public OrdenRetiroDTO(LocalDateTime fechaEmision, String estado, String tipo, String codigo, String codPedido,
+	public OrdenRetiroDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, String codPedido,
 			String codVoluntario, String[] codVisitas) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
@@ -25,7 +24,7 @@ public class OrdenRetiroDTO extends OrdenDTO{
 	
 	
 
-	public OrdenRetiroDTO(LocalDateTime fechaEmision, String estado, String tipo, String codigo, String codPedido,
+	public OrdenRetiroDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, String codPedido,
 			String codVoluntario) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
