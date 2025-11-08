@@ -2,6 +2,8 @@ package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDateTime;
 
+import ar.edu.unrn.seminario.exception.*;
+
 public class Bien {
 	
 	private static int contadorBien = 0;
@@ -18,8 +20,23 @@ public class Bien {
 	
 	
 
-	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) { //alimento,medicamento 
+	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) throws DataNullException,DataEmptyException { //alimento,medicamento 
 		super();
+		if(nombre.equals("")) {
+			throw new DataEmptyException("Nombre ingresado es invalido");
+		}
+		//la descripcion no se si es necesaria por si las dudas lo pongo
+		if(descripcion.equals("")) {
+			throw new DataEmptyException("Descripcion ingresada es invalida");
+		}
+		//este tambien podria no ser nesesario que sea obligatorio
+		if(tipo.equals("")) {
+			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		}
+		if(fechaVencimiento==null) {
+			throw new DataNullException("Fecha de vencimiento invalida");
+		}
+		
 		this.tipo=tipo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
@@ -31,8 +48,17 @@ public class Bien {
 	
 	
 	
-	public Bien(double peso, String nombre, String descripcion, String material,String tipo) { //mueble, electrodomestico 
+	public Bien(double peso, String nombre, String descripcion, String material,String tipo)throws DataEmptyException,DataDoubleException{ //mueble, electrodomestico 
 		super();
+		if(peso <= 0) {
+		    throw new DataDoubleException("Ingrese un peso valido");
+		}
+		if(nombre.equals("")) {
+			throw new DataEmptyException("El nombre es invalido");
+		}
+		if(tipo.equals("")) {
+			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		}
 		this.tipo=tipo;
 		this.peso = peso;
 		this.nombre = nombre;
@@ -44,9 +70,21 @@ public class Bien {
 	
 
 
-
-	public Bien(String nombre, String descripcion, Double talle, String material,String tipo) { //ropa
+// le cambie el talle lo aviamos puesto como Double que era una objeto enves de doueble
+	public Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataEmptyException,DataDoubleException { //ropa
 		super();
+		if(nombre.equals("")) {
+			throw new DataEmptyException("Nombre ingresado es invalido");
+		}
+		if(descripcion.equals("")) {
+			throw new DataEmptyException("Descripcion ingresada es invalida");
+		}	
+		if(talle <= 0) {
+		    throw new DataDoubleException("Se deve ingresar un talle valido");
+		}
+		if(tipo.equals("")) {
+			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		}
 		
 		this.tipo=tipo;
 		this.nombre = nombre;
@@ -60,9 +98,18 @@ public class Bien {
 	
 
 
-	public Bien(double peso, String nombre, String descripcion, LocalDateTime fechaVencimiento, Double talle,
-			String material, String tipo) { //otro
+	public Bien(double peso, String nombre, String descripcion, LocalDateTime fechaVencimiento, double talle,
+			String material, String tipo) throws DataEmptyException,DataDoubleException,DataNullException { //otro
 		super();
+		if(nombre.equals("")) {
+			throw new DataEmptyException("Nombre ingresado es invalido");
+		}
+		if(descripcion.equals("")) {
+			throw new DataEmptyException("Descripcion ingresada es invalida");
+		}
+		if(tipo.equals("")) {
+			throw new DataEmptyException("Se deve ingresar un tipo valido");
+		}
 		this.tipo=tipo;
 		this.peso = peso;
 		this.nombre = nombre;
