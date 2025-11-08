@@ -1,5 +1,7 @@
 package ar.edu.unrn.seminario.modelo;
 
+import ar.edu.unrn.seminario.exception.*;
+
 public class Rol {
 	private Integer codigo;
 	private String nombre;
@@ -9,22 +11,43 @@ public class Rol {
 	public Rol() {
 
 	}
-	
-	public Rol(Integer codigo, String nombre ) {
+	// podriamos agregar un .isEmpty en la condicion para que codigo no pueda ""
+	public Rol(Integer codigo, String nombre )throws DataNullException {
 		super();
+		if(codigo==null) {
+			throw new DataNullException("El codigo es invalido");
+		}
+		if(nombre==null) {
+			throw new DataNullException("El nombre es invalido");
+		}
 		this.codigo = codigo;
 		this.nombre = nombre;
 	}
 	
-	public Rol(Integer codigo, String nombre,  String descripcion ) {
+	public Rol(Integer codigo, String nombre,  String descripcion )throws DataNullException {
 		super();
+		if(codigo==null) {
+			throw new DataNullException("El codigo es invalido");
+		}
+		if(nombre==null) {
+			throw new DataNullException("El nombre es invalido");
+		}	
+		if(descripcion==null) {
+			throw new DataNullException("Descrpcion incalida");
+		}
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.descripcion=descripcion;
 	}
 	
-	public Rol(Integer codigo,  String nombre , boolean estado) {
+	public Rol(Integer codigo,  String nombre , boolean estado)throws DataNullException {
 		super();
+		if(codigo==null) {
+			throw new DataNullException("El codigo es invalido");
+		}
+		if(nombre==null) {
+			throw new DataNullException("El nombre es invalido");
+		}
 		this.codigo = codigo;
 		this.nombre=nombre;
 		this.activo=estado;
@@ -32,8 +55,17 @@ public class Rol {
 	
 	
 
-	public Rol(Integer codigo, String nombre,  String descripcion ,boolean estado ) {
+	public Rol(Integer codigo, String nombre,  String descripcion ,boolean estado )throws DataNullException {
 		super();
+		if(codigo==null) {
+			throw new DataNullException("El codigo es invalido");
+		}
+		if(nombre==null) {
+			throw new DataNullException("El nombre es invalido");
+		}	
+		if(descripcion==null) {
+			throw new DataNullException("Descrpcion incalida");
+		}
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.descripcion=descripcion;
@@ -64,13 +96,20 @@ public class Rol {
 	public void setActivo(boolean activo) {
 		this.activo = activo;
 	}
+	
+	public void activar() throws StateChangeException {
+		if (this.activo==true) {
+			throw new StateChangeException("Ya se encuentra activo");
+		}
+		this.activo=true;
 
-	public void activar() {
-		this.activo = true;
 	}
 
-	public void desactivar() {
-		this.activo = false;
+	public void desactivar() throws StateChangeException{
+		if (this.activo==false) {
+			throw new StateChangeException("Ya se encuentra desactivado");
+		}
+		this.activo=false;
 	}
 
 	
