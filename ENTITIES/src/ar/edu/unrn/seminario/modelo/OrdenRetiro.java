@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.modelo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import ar.edu.unrn.seminario.exception.*;
@@ -17,13 +18,15 @@ public class OrdenRetiro extends Orden{
 	
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> recolectados;
-	
-	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
+	//le cambie el localdatetime a LocalDate
+	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
 			ArrayList<Visita> visitas)throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
+		
 		if(pedido==null) {
-			throw new DataNullException("La orden de pedido no puede ser vacio");
+			throw new DataNullException("La orden de pedido no puede ser null");
 		}
+		
 		this.pedido = pedido;
 		this.visitas = visitas;
 		this.recolectados = new ArrayList<>();
@@ -31,7 +34,7 @@ public class OrdenRetiro extends Orden{
 	}
 	
 
-	public OrdenRetiro(LocalDateTime fechaEmision, OrdenPedido pedido) throws DataNullException{
+	public OrdenRetiro(LocalDate fechaEmision, OrdenPedido pedido) throws DataNullException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		if(pedido==null) {
 			throw new DataNullException("La orden de pedido no puede ser null");
@@ -43,7 +46,7 @@ public class OrdenRetiro extends Orden{
 	}
 
 
-	public OrdenRetiro( LocalDateTime fechaEmision, OrdenPedido pedido,
+	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
 			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		if(pedido==null) {
