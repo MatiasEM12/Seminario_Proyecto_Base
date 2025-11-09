@@ -67,14 +67,7 @@ public abstract class PersonaDTO {
 		this.contacto = contacto;
 	}
 
-	public String getCodUbicacion() {
-		return codUbicacion;
-	}
 
-	public void setCodUbicacion(String codUbicacion) {
-		this.codUbicacion = codUbicacion;
-	}
-	
 	
 	
 }
