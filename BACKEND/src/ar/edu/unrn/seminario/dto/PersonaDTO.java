@@ -1,17 +1,27 @@
 package ar.edu.unrn.seminario.dto;
 
+import java.time.LocalDate;
+
 public abstract class PersonaDTO {
 
+	protected String codUbicacion;
 	protected String nombre;
 	protected String codigo;
 	protected String apellido;
-	protected String preferenciaContacto;
+	protected String contacto;
+	protected LocalDate fecha_nac;
+	protected String  dni;
 	
-	protected PersonaDTO(String nombre, String apellido, String preferenciaContacto) {
+	
+	protected PersonaDTO(String nombre, String apellido, String contacto,String dni, LocalDate fecha_nac,String codUbicacion) {
 		
 		this.nombre = nombre;
 		this.apellido = apellido;
-		this.preferenciaContacto = preferenciaContacto;
+		this.contacto = contacto;
+		this.dni=dni;
+		this.fecha_nac=fecha_nac;
+		this.codUbicacion=codUbicacion;
+		
 	}
 
 	public String getNombre() {
@@ -26,9 +36,46 @@ public abstract class PersonaDTO {
 		return apellido;
 	}
 
-	public String getPreferenciaContacto() {
-		return preferenciaContacto;
+	public String getContacto() {
+		return contacto;
 	}
+
+	public LocalDate getFecha_nac() {
+		return fecha_nac;
+	}
+
+	public void setFecha_nac(LocalDate fecha_nac) {
+		this.fecha_nac = fecha_nac;
+	}
+
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	public void setContacto(String contacto) {
+		this.contacto = contacto;
+	}
+
+	public String getCodUbicacion() {
+		return codUbicacion;
+	}
+
+	public void setCodUbicacion(String codUbicacion) {
+		this.codUbicacion = codUbicacion;
+	}
+	
 	
 	
 }

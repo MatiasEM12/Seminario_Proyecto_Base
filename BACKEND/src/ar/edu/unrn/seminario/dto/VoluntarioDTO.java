@@ -1,57 +1,119 @@
 package ar.edu.unrn.seminario.dto;
 
-public class VoluntarioDTO {
+import java.time.LocalDate;
+import java.util.ArrayList;
 
-    private final String codigo;
-    private final String nombre;
-    private final String apellido;
-    private final String preferenciaContacto;
-    private final String tarea;
-    private final boolean disponible;
-    private final String username;
+import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 
-    public VoluntarioDTO(String codigo, String nombre, String apellido, String preferenciaContacto,
-                         String tarea, boolean disponible, String username) {
-        this.codigo = codigo;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.preferenciaContacto = preferenciaContacto;
-        this.tarea = tarea;
-        this.disponible = disponible;
-        this.username = username;
-    }
+public class VoluntarioDTO extends PersonaDTO{
 
-    public String getCodigo() {
-        return codigo;
-    }
+    private  String codigo;
+    private  String tarea;
+    private  boolean disponible;
+    private  String username;
+	private ArrayList<OrdenRetiroDTO> ordenesRetiro;
+    
+    
+    
+ 
 
-    public String getNombre() {
-        return nombre;
-    }
+    public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
+			String codUbicacion, String codigo, String nombre2, String apellido2, String contacto2, String tarea,
+			boolean disponible, String username, ArrayList<OrdenRetiroDTO> ordenesRetiro) {
+		super(nombre, apellido, contacto, dni, fecha_nac, codUbicacion);
+		this.codigo = codigo;
+		nombre = nombre2;
+		apellido = apellido2;
+		contacto = contacto2;
+		this.tarea = tarea;
+		this.disponible = disponible;
+		this.username = username;
+		this.ordenesRetiro = ordenesRetiro;
+	}
 
-    public String getApellido() {
-        return apellido;
-    }
 
-    public String getPreferenciaContacto() {
-        return preferenciaContacto;
-    }
 
-    public String getTarea() {
-        return tarea;
-    }
 
-    public boolean isDisponible() {
-        return disponible;
-    }
 
-    public String getUsername() {
-        return username;
-    }
+	public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
+			String codUbicacion, String codigo, boolean disponible) {
+		super(nombre, apellido, contacto, dni, fecha_nac, codUbicacion);
+		this.codigo = codigo;
+		this.disponible = disponible;
+	}
 
-    @Override
-    public String toString() {
-        // Esto permite que el comboBox muestre el nombre y apellido del voluntario
-        return nombre + " " + apellido;
-    }
+
+
+
+
+	public String getTarea() {
+		return tarea;
+	}
+
+
+
+
+
+	public void setTarea(String tarea) {
+		this.tarea = tarea;
+	}
+
+
+
+
+
+	public boolean isDisponible() {
+		return disponible;
+	}
+
+
+
+
+
+	public void setDisponible(boolean disponible) {
+		this.disponible = disponible;
+	}
+
+
+
+
+
+	public String getUsername() {
+		return username;
+	}
+
+
+
+
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+
+
+
+
+	public ArrayList<OrdenRetiroDTO> getOrdenesRetiro() {
+		return ordenesRetiro;
+	}
+
+
+
+
+
+	public void setOrdenesRetiro(ArrayList<OrdenRetiroDTO> ordenesRetiro) {
+		this.ordenesRetiro = ordenesRetiro;
+	}
+
+
+
+
+
+	public String getCodigo() {
+		return codigo;
+	}
+    
+    
+
 }
