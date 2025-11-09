@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 
 
@@ -22,20 +23,15 @@ public class OrdenPedido extends Orden {
 	public OrdenPedido(LocalDate fechaEmision, boolean cargaPesada,
 			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
-		if (fechaEmision==null) {
-			throw new DataNullException("El campo Fecha no puede estar VACIO"); 
-		}
-		if (observaciones == null) {
-			throw new DataNullException("El campo  no puede estar VACIO"); 
+		try {
+			validarStringsPedido(observaciones,"Observaciones");
+			validarStringsPedido(codDonante,"Codigo de donante");
+			validarStringsPedido(codDonacion,"Codigo de donacion");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
 		}
 		if (observaciones.length()>300) {
 			throw new DataLengthException("El campo observaciones no puede exceder los 300 caracteres"); 
-		}
-		if (codDonante == null) {
-			throw new DataNullException("El campo codigo donante no puede estar VACIO"); 
-		}
-		if (codDonacion == null) {
-			throw new DataNullException("El campo codigo donacion no puede estar VACIO"); 
 		}
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
@@ -47,19 +43,29 @@ public class OrdenPedido extends Orden {
 		return codigo;
 	}
 	
-	public void setCodigo(String codigo) {
+	public void setCodigo(String codigo) throws StateChangeException {
+		validarStringsPedido(codigo,"Codigo de ordene de pedido");
 		this.codigo = codigo;
 	}
 	public boolean isCargaPesada() {
 		return cargaPesada;
 	}
-	public void setCargaPesada(boolean cargaPesada) {
+	public void setCargaPesada(boolean cargaPesada) throws StateChangeException {
+		if (this.cargaPesada==cargaPesada) {
+			if(cargaPesada==true) {
+				throw new StateChangeException("Ya se encuentra como carga pesada");
+			}
+			else {
+				throw new StateChangeException("Ya se encuentra como carga libiana");
+			}
+		}
 		this.cargaPesada = cargaPesada;
 	}
 	public String getObservaciones() {
 		return observaciones;
 	}
-	public void setObservaciones(String observaciones) {
+	public void setObservaciones(String observaciones) throws StateChangeException {
+		validarStringsPedido(observaciones,"Observaciones");
 		this.observaciones = observaciones;
 	}
 
@@ -68,7 +74,8 @@ public class OrdenPedido extends Orden {
 		return codDonante;
 	}
 
-	public void setCodDonante(String codDonante) {
+	public void setCodDonante(String codDonante) throws StateChangeException {
+		validarStringsPedido(codDonante,"Codigo donante");
 		this.codDonante = codDonante;
 	}
 
@@ -76,7 +83,8 @@ public class OrdenPedido extends Orden {
 		return codDonacion;
 	}
 
-	public void setCodDonacion(String codDonacion) {
+	public void setCodDonacion(String codDonacion) throws StateChangeException {
+		validarStringsPedido(codDonacion,"Codigo donacion");
 		this.codDonacion = codDonacion;
 	}
 	
@@ -87,8 +95,14 @@ public class OrdenPedido extends Orden {
 	public static String getTipo() {
 		return tipo;
 	}
-	public static void setTipo(String tipo) {
+	public static void setTipo(String tipo) throws StateChangeException {
+		validarStringsPedido(tipo,"Tipo");
 		OrdenPedido.tipo = tipo;
+	}
+	private static void validarStringsPedido(String campo,String nombreCampo) throws StateChangeException{
+		if (campo == null||campo.isEmpty()) {
+			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
+		}
 	}
 	
 	
