@@ -5,7 +5,7 @@ import ar.edu.unrn.seminario.exception.*;
 public class Rol {
 	private Integer codigo;
 	private String nombre;
-	private boolean activo;
+	private boolean activo = true;
 	private String descripcion;
 
 	public Rol() {
@@ -14,11 +14,13 @@ public class Rol {
 	// podriamos agregar un .isEmpty en la condicion para que codigo no pueda ""
 	public Rol(Integer codigo, String nombre )throws DataNullException {
 		super();
+		try {
+			validarStringsRol(nombre,"Nombre");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
+		}
 		if(codigo==null) {
 			throw new DataNullException("El codigo es invalido");
-		}
-		if(nombre==null) {
-			throw new DataNullException("El nombre es invalido");
 		}
 		this.codigo = codigo;
 		this.nombre = nombre;
@@ -26,14 +28,14 @@ public class Rol {
 	
 	public Rol(Integer codigo, String nombre,  String descripcion )throws DataNullException {
 		super();
+		try {
+			validarStringsRol(nombre,"Nombre");
+			validarStringsRol(descripcion,"Descripcion");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
+		}
 		if(codigo==null) {
 			throw new DataNullException("El codigo es invalido");
-		}
-		if(nombre==null) {
-			throw new DataNullException("El nombre es invalido");
-		}	
-		if(descripcion==null) {
-			throw new DataNullException("Descrpcion incalida");
 		}
 		this.codigo = codigo;
 		this.nombre = nombre;
@@ -42,11 +44,13 @@ public class Rol {
 	
 	public Rol(Integer codigo,  String nombre , boolean estado)throws DataNullException {
 		super();
+		try {
+			validarStringsRol(nombre,"Nombre");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
+		}
 		if(codigo==null) {
 			throw new DataNullException("El codigo es invalido");
-		}
-		if(nombre==null) {
-			throw new DataNullException("El nombre es invalido");
 		}
 		this.codigo = codigo;
 		this.nombre=nombre;
@@ -57,14 +61,14 @@ public class Rol {
 
 	public Rol(Integer codigo, String nombre,  String descripcion ,boolean estado )throws DataNullException {
 		super();
+		try {
+			validarStringsRol(nombre,"Nombre");
+			validarStringsRol(descripcion,"Descripcion");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
+		}
 		if(codigo==null) {
 			throw new DataNullException("El codigo es invalido");
-		}
-		if(nombre==null) {
-			throw new DataNullException("El nombre es invalido");
-		}	
-		if(descripcion==null) {
-			throw new DataNullException("Descrpcion incalida");
 		}
 		this.codigo = codigo;
 		this.nombre = nombre;
@@ -77,7 +81,14 @@ public class Rol {
 		return codigo;
 	}
 
-	public void setCodigo(Integer codigo) {
+	public void setCodigo(Integer codigo) throws StateChangeException {
+	    if (codigo == null) {
+	        throw new StateChangeException("El código no puede ser nulo");
+	    }
+	    // no puede ser el codigo negativo
+	    if (codigo <= 0) {
+	        throw new StateChangeException("El código debe ser mayor que cero");
+	    }
 		this.codigo = codigo;
 	}
 
@@ -85,7 +96,8 @@ public class Rol {
 		return nombre;
 	}
 
-	public void setNombre(String nombre) {
+	public void setNombre(String nombre) throws StateChangeException {
+		validarStringsRol(nombre,"Nombre");
 		this.nombre = nombre;
 	}
 
@@ -93,9 +105,6 @@ public class Rol {
 		return activo;
 	}
 
-	public void setActivo(boolean activo) {
-		this.activo = activo;
-	}
 	
 	public void activar() throws StateChangeException {
 		if (this.activo==true) {
@@ -111,6 +120,15 @@ public class Rol {
 		}
 		this.activo=false;
 	}
+	public void CambiarEstadoADesactivarOActivar(){
+		if (this.activo!=false) {
+			this.activo=false;
+		}
+		else {
+			this.activo=true;
+		}
+	}
+	
 
 	
 	
@@ -119,7 +137,8 @@ public class Rol {
 		return descripcion;
 	}
 
-	public void setDescripcion(String descripcion) {
+	public void setDescripcion(String descripcion) throws StateChangeException {
+		validarStringsRol(descripcion,"Descripcion");
 		this.descripcion = descripcion;
 	}
 
@@ -151,6 +170,11 @@ public class Rol {
 	@Override
 	public String toString() {
 		return "Rol [codigo=" + codigo + ", nombre=" + nombre + ", activo=" + activo + "]";
+	}
+	private void validarStringsRol(String campo,String nombreCampo) throws StateChangeException{
+		if (campo == null||campo.isEmpty()) {
+			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
+		}
 	}
 	
 	
