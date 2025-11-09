@@ -15,23 +15,19 @@ public class Bien {
 	private String descripcion;
 	private int nivelNecesidad;
 	private LocalDateTime fechaVencimiento;
-	private Double talle;
+	private double talle;
 	private String material;
 	
 	
 
 	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) throws DataNullException{ //alimento,medicamento 
 		super();
-		if(nombre==null) {
-			throw new DataNullException("Nombre ingresado es invalido");
-		}
-		//la descripcion no se si es necesaria por si las dudas lo pongo
-		if(descripcion==null) {
-			throw new DataNullException("Descripcion ingresada es invalida");
-		}
-		//este tambien podria no ser nesesario que sea obligatorio
-		if(tipo==null) {
-			throw new DataNullException("Se deve ingresar un tipo valido");
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
 		}
 		if(fechaVencimiento==null) {
 			throw new DataNullException("Fecha de vencimiento invalida");
@@ -50,14 +46,18 @@ public class Bien {
 	
 	public Bien(double peso, String nombre, String descripcion, String material,String tipo)throws DataNullException,DataDoubleException{ //mueble, electrodomestico 
 		super();
-		if(peso <= 0) {
-		    throw new DataDoubleException("Ingrese un peso valido");
+		//no importa que material sea vacios porque puede que no sepa de que material es
+		try {
+			validarDoubleBien(peso,"peso"); 
+		}catch(StateChangeException e){
+			throw new DataDoubleException(e.getMessage());
 		}
-		if(nombre==null) {
-			throw new DataNullException("El nombre es invalido");
-		}
-		if(tipo==null) {
-			throw new DataNullException("Se deve ingresar un tipo valido");
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
 		}
 		this.tipo=tipo;
 		this.peso = peso;
@@ -73,17 +73,13 @@ public class Bien {
 // le cambie el talle lo aviamos puesto como Double que era una objeto enves de doueble
 	public Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataNullException,DataDoubleException { //ropa
 		super();
-		if(nombre==null) {
-			throw new DataNullException("Nombre ingresado es invalido");
-		}
-		if(descripcion==null) {
-			throw new DataNullException("Descripcion ingresada es invalida");
-		}	
-		if(talle <= 0) {
-		    throw new DataDoubleException("Se deve ingresar un talle valido");
-		}
-		if(tipo==null) {
-			throw new DataNullException("Se deve ingresar un tipo valido");
+		//no importa que material sea vacios porque puede que no sepa de que material es el talle puede estar vacio porque puede que no tenga de que talle es la ropa
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
 		}
 		
 		this.tipo=tipo;
@@ -101,14 +97,12 @@ public class Bien {
 	public Bien(double peso, String nombre, String descripcion, LocalDateTime fechaVencimiento, double talle,
 			String material, String tipo) throws DataNullException { //otro
 		super();
-		if(nombre==null) {
-			throw new DataNullException("Nombre ingresado es invalido");
-		}
-		if(descripcion==null) {
-			throw new DataNullException("Descripcion ingresada es invalida");
-		}
-		if(tipo==null) {
-			throw new DataNullException("Se deve ingresar un tipo valido");
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
 		}
 		this.tipo=tipo;
 		this.peso = peso;
@@ -131,43 +125,54 @@ public class Bien {
 	public String getTipo() {
 		return tipo;
 	}
-	public void setTipo(String tipo) {
+	public void setTipo(String tipo) throws StateChangeException {
+		validarStringsBien(tipo,"Tipo");
 		this.tipo = tipo;
 	}
 	public double getPeso() {
 		return peso;
 	}
-	public void setPeso(double peso) {
+	public void setPeso(double peso) throws StateChangeException {
+		validarDoubleBien(peso,"Peso");
 		this.peso = peso;
 	}
 	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre(String nombre) {
+	public void setNombre(String nombre) throws StateChangeException {
+		validarStringsBien(nombre,"Nombre");
 		this.nombre = nombre;
 	}
 	public String getDescripcion() {
 		return descripcion;
 	}
-	public void setDescripcion(String descripcion) {
+	public void setDescripcion(String descripcion) throws StateChangeException {
+		validarStringsBien(descripcion,"Descripcion");
 		this.descripcion = descripcion;
 	}
 	public int getNivelNecesidad() {
 		return nivelNecesidad;
 	}
-	public void setNivelNecesidad(int nivelNecesidad) {
+	public void setNivelNecesidad(int nivelNecesidad)  throws StateChangeException {
+		if(nivelNecesidad<0) {
+			throw new StateChangeException("El nivel de necesidad no puede ser negativo");
+		}
 		this.nivelNecesidad = nivelNecesidad;
 	}
 	public LocalDateTime getFechaVencimiento() {
 		return fechaVencimiento;
 	}
-	public void setFechaVencimiento(LocalDateTime fechaVencimiento) {
+	public void setFechaVencimiento(LocalDateTime fechaVencimiento) throws StateChangeException {
+		if(fechaVencimiento==null) {
+			throw new StateChangeException("La fecha es invalida");
+		}
 		this.fechaVencimiento = fechaVencimiento;
 	}
-	public Double getTalle() {
+	public double getTalle() {
 		return talle;
 	}
-	public void setTalle(Double talle) {
+	public void setTalle(double talle) throws StateChangeException {
+		validarDoubleBien(talle,"Talle");
 		this.talle = talle;
 	}
 
@@ -175,7 +180,8 @@ public class Bien {
 		return material;
 	}
 
-	public void setMaterial(String material) {
+	public void setMaterial(String material) throws StateChangeException {
+		validarStringsBien(material,"Material");
 		this.material = material;
 	}
 	
@@ -184,5 +190,14 @@ public class Bien {
 		  contadorBien++;
 		  this.codigo = "B" + String.format("%05d", contadorBien);
 	}
-	
+	private void validarStringsBien(String campo,String nombreCampo) throws StateChangeException{
+		if (campo == null||campo.isEmpty()) {
+			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
+		}
+	}
+	private void validarDoubleBien(double campo,String nombreCampo) throws StateChangeException{
+		if (campo<=0) {
+			 throw new StateChangeException("El campo "+nombreCampo+" es invalido: no puede ser 0 ni negativo");
+		}
+	}
 }
