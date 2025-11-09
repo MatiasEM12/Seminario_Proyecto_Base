@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public abstract class PersonaDTO {
 
-	protected String codUbicacion;
+
 	protected String nombre;
 	protected String codigo;
 	protected String apellido;
@@ -13,15 +13,14 @@ public abstract class PersonaDTO {
 	protected String  dni;
 	
 	
-	protected PersonaDTO(String nombre, String apellido, String contacto,String dni, LocalDate fecha_nac,String codUbicacion) {
+	protected PersonaDTO(String nombre, String apellido, String contacto,String dni, LocalDate fecha_nac) {
 		
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.contacto = contacto;
 		this.dni=dni;
 		this.fecha_nac=fecha_nac;
-		this.codUbicacion=codUbicacion;
-		
+	
 	}
 
 	public String getNombre() {
