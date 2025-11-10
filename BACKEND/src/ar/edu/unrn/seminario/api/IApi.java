@@ -35,17 +35,17 @@ public interface IApi {
 
 	List<RolDTO> obtenerRolesActivos();
 
-	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado); // crear el objeto de dominio  Rol
+	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado) throws DataNullException; // crear el objeto de dominio  Rol
 
 
 	RolDTO obtenerRolPorCodigo(Integer codigo); // recuperar el rol almacenado
 
-	void activarRol(Integer codigo); // recuperar el objeto Rol, implementar el comportamiento de estado.
+	void activarRol(Integer codigo) throws StateChangeException; // recuperar el objeto Rol, implementar el comportamiento de estado.
 
-	void desactivarRol(Integer codigo); // recuperar el objeto Rol, imp
+	void desactivarRol(Integer codigo) throws StateChangeException; // recuperar el objeto Rol, imp
 
 	
-	void guardarRol(RolDTO rol);
+	void guardarRol(RolDTO rol) throws DataNullException;
 
 	
 	// API
@@ -60,7 +60,7 @@ public interface IApi {
 	
 	//OrdenRetiro
 	
-	public void registrarOrdenRetiro(OrdenRetiro orden);
+	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException;
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden);
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
@@ -92,7 +92,7 @@ public interface IApi {
 	//public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
-	public void inicializarOrdenesRetiro(String codPedido);
+	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
 
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP);
 

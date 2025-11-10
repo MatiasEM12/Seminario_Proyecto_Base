@@ -106,11 +106,11 @@ public class Rol {
 	}
 
 	
-	public void activar() throws StateChangeException {
+	public void activar(boolean a) throws StateChangeException {
 		if (this.activo==true) {
 			throw new StateChangeException("Ya se encuentra activo");
 		}
-		this.activo=true;
+		this.activo=a;
 
 	}
 

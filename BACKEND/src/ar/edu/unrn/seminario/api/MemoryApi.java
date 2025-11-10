@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.api;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class MemoryApi implements IApi {
     private List<Voluntario> voluntarios = new ArrayList<>();
     private List<Visita> visitass = new ArrayList<>();
 
-    public MemoryApi() {
+    public MemoryApi() throws DataNullException {
         // datos iniciales
     	
     	
@@ -78,7 +79,7 @@ public class MemoryApi implements IApi {
     }
 
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException {
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException, DataObjectException, DataNullException, DataDateException {
 
    
         if (!existeUsuario(username)) {
@@ -92,10 +93,10 @@ public class MemoryApi implements IApi {
             String rn = role.getNombre();
             if ("DONANTE".equalsIgnoreCase(rn)) {
                 // atributos por defecto mínimos; se pueden completar luego con editar perfil
-                Donante d = new Donante(nombre, null, null, null,username);
+                Donante d = new Donante(nombre, null, null, null,username, null);
                 donantesByUser.put(username, d);
             } else if ("VOLUNTARIO".equalsIgnoreCase(rn)) {
-            	Voluntario v= new Voluntario(nombre, null, null, username);
+            	Voluntario v= new Voluntario(nombre, null, null, username, null, null);
                 voluntariosByUser.put(username, v);
             } 
         }
@@ -224,13 +225,13 @@ public class MemoryApi implements IApi {
     }
 
     @Override
-    public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) {
+    public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
         Rol rol = new Rol(codigo, nombre, descripcion, estado);
         this.roles.add(rol);
     }
 
     @Override
-    public void guardarRol(RolDTO rol) {
+    public void guardarRol(RolDTO rol) throws DataNullException {
         Rol rolnew = new Rol(rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
         this.roles.add(rolnew);
     }
@@ -246,15 +247,15 @@ public class MemoryApi implements IApi {
     }
 
     @Override
-    public void activarRol(Integer codigo) {
+    public void activarRol(Integer codigo) throws StateChangeException {
         Rol rol = this.buscarRol(codigo);
-        if (rol != null) rol.setActivo(true);
+        if (rol != null) rol.activar(true);
     }
 
     @Override
-    public void desactivarRol(Integer codigo) {
+    public void desactivarRol(Integer codigo) throws StateChangeException {
         Rol rol = this.buscarRol(codigo);
-        if (rol != null) rol.setActivo(false);
+        if (rol != null) rol.activar(false);
     }
 
     private Rol buscarRol(Integer codigo) {
@@ -304,7 +305,7 @@ public class MemoryApi implements IApi {
             Donante donante1 = donantesByUser.get("pedro_don");
             Donacion donacion1 = new Donacion(LocalDateTime.now(), "Entrega en sede central", bienes1, donante1);
             
-            OrdenPedido ordenPedido =  new OrdenPedido(LocalDateTime.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
+            OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
             donacion1.setCod_Pedido(ordenPedido.getCodigo());
             
             registrarDonacion(donacion1);
@@ -316,7 +317,7 @@ public class MemoryApi implements IApi {
     }
 
   //pre-carfa OrdenRetiro
-  	public void inicializarOrdenesRetiro(String codPedido) {
+  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
   		if (codPedido == null || codPedido.trim().isEmpty()) {
   	        return;
   	    }
@@ -330,7 +331,7 @@ public class MemoryApi implements IApi {
   	        // Si no existe, la creamos a partir del OrdenPedido (si existe)
   	        try {
   	            OrdenPedido pedido = this.obtenerOrdenPedidoPorCodigo(codPedido);
-  	            ordenRetiro = new OrdenRetiro(LocalDateTime.now(), pedido); 
+  	            ordenRetiro = new OrdenRetiro(LocalDate.now(), pedido); 
   	            // registrar la nueva orden de retiro en la lista
   	            this.ordenesRetiro.add(ordenRetiro);
   	        } catch (RuntimeException ex2) {
@@ -353,7 +354,7 @@ public class MemoryApi implements IApi {
   	}
   	
   	
-    private void inicializarVisitas(OrdenRetiro retiro) {
+    private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException {
 		  if (retiro == null) return;
 
 		
@@ -370,7 +371,7 @@ public class MemoryApi implements IApi {
 		    bienesRopa.add(b2);
 
 		    // primera visita (fallida, sin bienes)
-		    Visita v1 = new Visita(LocalDateTime.now(), "Primera visita el donante se encontraba ausente", "RETIRO", retiro, new ArrayList<>());
+		    Visita v1 = new Visita(LocalDate.now(), "Primera visita el donante se encontraba ausente", "RETIRO", "23", new ArrayList<>());
 		    v1.setEstado(Orden.EstadoOrden.EN_PROCESO.toString());
 
 		    // segunda visita (completada) con bienes
@@ -379,7 +380,7 @@ public class MemoryApi implements IApi {
 		    bienesSegundaVisita.addAll(bienesRopa);
 		    retiro.agregarBien(b1);
 		    retiro.agregarBien(b2);
-		    Visita v2 = new Visita(LocalDateTime.now(), "Segunda visita retiro realizado correctamente", "RETIRO", retiro, bienesSegundaVisita);
+		    Visita v2 = new Visita(LocalDate.now(), "Segunda visita retiro realizado correctamente", "RETIRO", "we", bienesSegundaVisita);
 		    v2.setEstado(Orden.EstadoOrden.COMPLETADA.toString());//
 
 		    // asociar visitas a la orden (entidad)
@@ -484,7 +485,7 @@ public class MemoryApi implements IApi {
 	
     // OrdenRetiro
 
-	public void registrarOrdenRetiro(OrdenRetiro oR) {
+	public void registrarOrdenRetiro(OrdenRetiro oR) throws DataNullException, DataLengthException {
 	       ordenesRetiro.add(oR);
 	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
 	       inicializarVisitas(oR);
@@ -576,7 +577,7 @@ public class MemoryApi implements IApi {
     // Helpers DTO
     private DonanteDTO toDonanteDTO(Donante donante) {
         return new DonanteDTO(donante.getNombre(), donante.getCodigo(), donante.getApellido(),
-                donante.getPreferenciaContacto(), donante.getUbicacion().getCodigo());
+                donante.getContacto(), null, donante.getUbicacion().getCodigo(), null);
     }
 
 
@@ -849,7 +850,7 @@ public class MemoryApi implements IApi {
         for (int i = 0; i < voluntarios.size(); i++) {
             voluntario = voluntarios.get(i);
             voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),
-            		voluntario.getApellido(),voluntario.getPreferenciaContacto(),
+            		voluntario.getApellido(),voluntario.getContacto(),
             		voluntario.getTarea(),voluntario.isDisponible(),voluntario.getUsername()));
            
         }

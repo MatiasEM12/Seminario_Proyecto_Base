@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
 public interface UsuarioDao {
@@ -15,6 +16,6 @@ public interface UsuarioDao {
 
 	Usuario find(String username);
 
-	List<Usuario> findAll();
+	List<Usuario> findAll() throws DataNullException;
 
 }

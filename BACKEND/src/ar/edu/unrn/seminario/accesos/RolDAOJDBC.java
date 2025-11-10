@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Rol;
 
 public class RolDAOJDBC implements RolDao {
@@ -151,7 +152,7 @@ public class RolDAOJDBC implements RolDao {
 	}
 
 	@Override
-	public List<Rol> findAll() {
+	public List<Rol> findAll() throws StateChangeException {
 		List<Rol> listado = new ArrayList<Rol>();
 		Statement sentencia = null;
 		ResultSet resultado = null;
@@ -163,7 +164,7 @@ public class RolDAOJDBC implements RolDao {
 				Rol rol = new Rol();
 				rol.setNombre(resultado.getString(1));
 				rol.setCodigo(resultado.getInt(2));
-				rol.setActivo(resultado.getBoolean(3));
+				rol.activar(resultado.getBoolean(3));
 
 				listado.add(rol);
 			}

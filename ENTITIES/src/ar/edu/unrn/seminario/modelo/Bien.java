@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.modelo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ar.edu.unrn.seminario.exception.*;
@@ -14,13 +15,13 @@ public class Bien {
 	private String nombre;
 	private String descripcion;
 	private int nivelNecesidad;
-	private LocalDateTime fechaVencimiento;
+	private LocalDate fechaVencimiento;
 	private double talle;
 	private String material;
 	
 	
 
-	public Bien(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) throws DataNullException{ //alimento,medicamento 
+	public Bien(String nombre, String descripcion, LocalDate fechaVencimiento,String tipo) throws DataNullException{ //alimento,medicamento 
 		super();
 		try {
 			validarStringsBien(nombre,"Nombre");
@@ -94,7 +95,7 @@ public class Bien {
 	
 
 
-	public Bien(double peso, String nombre, String descripcion, LocalDateTime fechaVencimiento, double talle,
+	public Bien(double peso, String nombre, String descripcion, LocalDate fechaVencimiento, double talle,
 			String material, String tipo) throws DataNullException { //otro
 		super();
 		try {
@@ -159,10 +160,10 @@ public class Bien {
 		}
 		this.nivelNecesidad = nivelNecesidad;
 	}
-	public LocalDateTime getFechaVencimiento() {
+	public LocalDate getFechaVencimiento() {
 		return fechaVencimiento;
 	}
-	public void setFechaVencimiento(LocalDateTime fechaVencimiento) throws StateChangeException {
+	public void setFechaVencimiento(LocalDate fechaVencimiento) throws StateChangeException {
 		if(fechaVencimiento==null) {
 			throw new StateChangeException("La fecha es invalida");
 		}

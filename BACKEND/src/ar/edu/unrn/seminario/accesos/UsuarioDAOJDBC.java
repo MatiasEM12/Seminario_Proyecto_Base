@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
@@ -155,7 +156,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	}
 
 	@Override
-	public List<Usuario> findAll() {
+	public List<Usuario> findAll() throws DataNullException {
 		List<Usuario> usuarios = new ArrayList<Usuario>();
 		try {
 			Connection conn = ConnectionManager.getConnection();

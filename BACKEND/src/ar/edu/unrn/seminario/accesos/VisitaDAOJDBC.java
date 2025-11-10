@@ -164,12 +164,8 @@ public class VisitaDAOJDBC implements VisitaDao{
 	                            //String codBien = rs2.getString("codigo");
 	                            String nombre = rs2.getString("nombre");
 	                            String descripcion = rs2.getString("descripcion");
-	                            java.sql.Timestamp ts = rs2.getTimestamp("fechaVencimiento");
-	                            LocalDateTime fechaVenc;
-								if (ts != null)
-									fechaVenc = ts.toLocalDateTime();
-								else
-									fechaVenc = null;
+	                            java.sql.Date sqlDateVenc = rs.getDate("fechaVisita");
+	        	                LocalDate fechaVenc = (sqlDateVenc != null) ? sqlDateVenc.toLocalDate() : null;
 	                            String tipoBien = rs2.getString("tipo");
 
 	                            // ✅ Usar un constructor para carga desde BD que NO genere código nuevo
@@ -266,8 +262,8 @@ public class VisitaDAOJDBC implements VisitaDao{
 	               // String codBien = rs2.getString("codigo");
 	                String nombre = rs2.getString("nombre");
 	                String descripcion = rs2.getString("descripcion");
-	                java.sql.Timestamp ts = rs2.getTimestamp("fechaVencimiento");
-	                LocalDateTime fechaVenc = (ts != null) ? ts.toLocalDateTime() : null;
+	                java.sql.Date sqlDate = rs.getDate("fechaVisita");
+	                LocalDate fechaVenc = (sqlDate != null) ? sqlDate.toLocalDate() : null;
 	                String tipoBien = rs2.getString("tipo");
 
 	                // ✔️ Constructor recomendado para carga desde BD (NO genera nuevo código)
