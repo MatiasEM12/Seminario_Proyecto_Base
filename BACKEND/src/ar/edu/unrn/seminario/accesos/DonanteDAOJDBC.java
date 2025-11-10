@@ -23,7 +23,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
 			//statement.setString(3, donante.getApellido());
-			statement.setString(3, donante.getPreferenciaContacto());
+			statement.setString(3, donante.getContacto());
 			statement.setString(4, donante.getUsername());
 			statement.setObject(5, donante.getUbicacion() != null ? donante.getUbicacion().getCodigo() : null);
 			statement.setBoolean(6, false);
@@ -53,7 +53,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
 			//statement.setString(2, donante.getApellido());
-			statement.setString(3, donante.getPreferenciaContacto());
+			statement.setString(3, donante.getContacto());
 			statement.setObject(4, donante.getUbicacion().getCodigo());
 			statement.setString(5, donante.getUsername());
 			
@@ -128,7 +128,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 //Null ya que no tenemos tabla Ubicacion 
-				donante=new Donante(rs.getString("nombre"),null,rs.getString("email"), ubicacion,rs.getString("username"));
+				donante=new Donante(rs.getString("nombre"),null,null, rs.getString("email"), codigo, ubicacion,rs.getString("username"));
 				
 				
 			}
@@ -153,7 +153,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 //Null ya que no tenemos tabla Ubicacion 
-				Donante donante=new Donante(rs.getString("nombre"),null,rs.getString("email"), ubicacion,rs.getString("username"));
+				Donante donante=new Donante(rs.getString("nombre"),null,null, rs.getString("email"), null, ubicacion,rs.getString("username"));
 				
 				donantes.add(donante);
 			}
