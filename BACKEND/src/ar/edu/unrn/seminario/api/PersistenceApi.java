@@ -18,6 +18,8 @@ import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
@@ -61,7 +63,7 @@ public class PersistenceApi implements IApi {
 
 
 	@Override
-	public List<UsuarioDTO> obtenerUsuarios() {
+	public List<UsuarioDTO> obtenerUsuarios() throws DataNullException {
 		List<UsuarioDTO> dtos = new ArrayList<>();
 		List<Usuario> usuarios = usuarioDao.findAll();
 		for (Usuario u : usuarios) {
@@ -85,7 +87,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public List<RolDTO> obtenerRoles() {
+	public List<RolDTO> obtenerRoles() throws StateChangeException {
 		List<Rol> roles = rolDao.findAll();
 		List<RolDTO> rolesDTO = new ArrayList<>(0);
 		for (Rol rol : roles) {
@@ -96,7 +98,7 @@ public class PersistenceApi implements IApi {
 
 	@Override
 
-	public List<RolDTO> obtenerRolesActivos() {
+	public List<RolDTO> obtenerRolesActivos() throws StateChangeException {
 	    List<RolDTO> rolesActivos = new ArrayList<>();
 	    for (Rol rol : rolDao.findAll()) {
 	        if (rol.isActivo()) {
@@ -108,7 +110,7 @@ public class PersistenceApi implements IApi {
 
 
 	@Override
-	public void guardarRol(Integer codigo, String nombre, boolean estado) {
+	public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
 		Rol rol= new Rol(codigo,nombre,estado);
 		this.rolDao.create(rol);
 	}
@@ -153,7 +155,7 @@ public class PersistenceApi implements IApi {
 
 
 	@Override
-	public void guardarRol(RolDTO rol) {
+	public void guardarRol(RolDTO rol) throws DataNullException {
 		Rol rolN = new Rol(rol.getCodigo(),rol.getNombre(),rol.getDescripcion(),rol.isActivo());
 		this.rolDao.create(rolN);
 		
@@ -196,7 +198,6 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
 		return null;
@@ -214,7 +215,6 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
 	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
 		// TODO Auto-generated method stub
 		return null;
@@ -262,7 +262,6 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
 		// TODO Auto-generated method stub
 		return null;
@@ -287,7 +286,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) {
+	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
 		Rol rol= new Rol(codigo,nombre,descripcion,estado);
 		this.rolDao.create(rol);
 		

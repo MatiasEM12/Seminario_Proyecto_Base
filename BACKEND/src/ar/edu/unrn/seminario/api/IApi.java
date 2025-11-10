@@ -21,7 +21,7 @@ public interface IApi {
 
 	void eliminarUsuario(String username);
 	
-	List<UsuarioDTO> obtenerUsuarios(); // recuperar todos los usuarios
+	List<UsuarioDTO> obtenerUsuarios() throws DataNullException; // recuperar todos los usuarios
 
 	void activarUsuario(String username) throws StateChangeException ; // recuperar el objeto Usuario, implementar el comportamiento de estado.
 
@@ -31,9 +31,9 @@ public interface IApi {
 	
 	
 	//Rol
-	List<RolDTO> obtenerRoles();
+	List<RolDTO> obtenerRoles() throws StateChangeException;
 
-	List<RolDTO> obtenerRolesActivos();
+	List<RolDTO> obtenerRolesActivos() throws StateChangeException;
 
 	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado) throws DataNullException; // crear el objeto de dominio  Rol
 
@@ -96,7 +96,7 @@ public interface IApi {
 
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP);
 
-	void guardarRol(Integer codigo, String descripcion, boolean estado);
+	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
 
 	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException;
