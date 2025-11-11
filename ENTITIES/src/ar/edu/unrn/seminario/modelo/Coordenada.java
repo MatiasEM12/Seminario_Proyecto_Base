@@ -43,6 +43,12 @@ public class Coordenada {
 	public double getLatitud() {
 		return latitud;
 	}
+	
+	public String getCodigo() {
+		return codigo;
+	}
+
+
 	public void setLatitud(double latitud) throws DataNullException {
 		this.validarCampoNull(latitud);
 
