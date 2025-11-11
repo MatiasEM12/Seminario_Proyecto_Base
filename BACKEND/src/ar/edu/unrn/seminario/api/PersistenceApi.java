@@ -1,8 +1,10 @@
 package ar.edu.unrn.seminario.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import ar.edu.unrn.seminario.accesos.OrdenRetiroDao;
 import ar.edu.unrn.seminario.accesos.RolDAOJDBC;
 import ar.edu.unrn.seminario.accesos.RolDao;
 import ar.edu.unrn.seminario.accesos.UsuarioDAOJDBC;
@@ -33,7 +35,7 @@ public class PersistenceApi implements IApi {
 
 	private RolDao rolDao;
 	private UsuarioDao usuarioDao;
-
+	private OrdenRetiroDao ordenRetiroDao;
 	public PersistenceApi() {
 		rolDao = new RolDAOJDBC();
 		usuarioDao = new UsuarioDAOJDBC();
@@ -192,10 +194,14 @@ public class PersistenceApi implements IApi {
 		
 	}
 
-	@Override
 	public ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() {
-		// TODO Auto-generated method stub
-		return null;
+		List<OrdenRetiro> ordenesRetiro = ordenRetiroDao.findAll();
+		ArrayList<OrdenRetiroDTO> ordenesRetiroDTO = new ArrayList<>(0);
+		for (OrdenRetiro ordenRetiro : ordenesRetiro) {
+			ordenesRetiroDTO.add(new OrdenRetiroDTO(ordenRetiro.getFechaEmision(), ordenRetiro.getEstado(),
+			null,ordenRetiro.getCodigo(),ordenRetiro.getPedido().getCodigo(),ordenRetiro.getVoluntario().getCodigo(), ordenRetiro.getCodVisitas()));
+		}
+		return  ordenesRetiroDTO;
 	}
 
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {

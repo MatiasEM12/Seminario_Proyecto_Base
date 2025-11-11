@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
@@ -7,31 +8,31 @@ import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 public abstract class OrdenDTO {
 
 	
-	private LocalDateTime fechaEmision;
-	private String estado;
+	private LocalDate fechaEmision;
+	private EstadoOrden estado;
 	private String tipo;
 	
 	
-	protected OrdenDTO(LocalDateTime fechaEmision, String estado,String tipo) {
+	protected OrdenDTO(LocalDate fechaEmision, EstadoOrden estado,String tipo) {
 		this.fechaEmision = fechaEmision;
 		this.estado = estado;
 		this.tipo=tipo;
 	}
 
 
-	public LocalDateTime getFechaEmision() {
-		return fechaEmision;
+	public LocalDate getFechaEmision() {
+		return this.fechaEmision;
 	}
 
 
 
-	public String getEstado() {
-		return estado;
+	public EstadoOrden getEstado() {
+		return this.estado;
 	}
 
 
 	public String getTipo() {
-		return tipo;
+		return this.tipo;
 	}
 
 	

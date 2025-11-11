@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
@@ -15,7 +16,7 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 	
 	
 
-	public OrdenPedidoDTO(LocalDateTime fechaEmision, String estado, String tipo, String codigo, boolean cargaPesada,
+	public OrdenPedidoDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, boolean cargaPesada,
 			String observaciones, String codDonante, String codDonacion) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
