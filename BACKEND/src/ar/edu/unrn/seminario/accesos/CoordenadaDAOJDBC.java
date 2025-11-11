@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Coordenada;
-import ar.edu.unrn.seminario.modelo.Donante;
-import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class CoordenadaDAOJDBC implements CoordenadaDAO{
 
