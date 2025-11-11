@@ -37,7 +37,7 @@ public class Ubicacion {
 	
 	
 
-	public Ubicacion(String codigo, String zona, String barrio, String direccion,Coordenada coordenada,String Codigo) throws DataNullException, DataEmptyException, DataObjectException {
+	public Ubicacion(String codigo, String zona, String barrio, String direccion,Coordenada coordenada) throws DataNullException, DataEmptyException, DataObjectException {
 		super();
 		
 		

@@ -56,7 +56,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
-				 System.out.println("El Donante se ha actualizado correctamente");
+				 System.out.println("La coordenada se ha actualizado correctamente");
 			} else {
 				System.out.println("Error al actualizar");
 				// TODO: disparar Exception propia
