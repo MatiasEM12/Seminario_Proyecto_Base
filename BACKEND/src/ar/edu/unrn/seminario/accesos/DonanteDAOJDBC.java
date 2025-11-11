@@ -172,13 +172,12 @@ public class DonanteDAOJDBC implements DonanteDao{
 		List<Donante> donantes = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.email, D.codUbicacion,D.username "+ "FROM donante D ");
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo"+ "FROM donante ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
-				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 
-				Donante donante=new Donante(rs.getString("nombre"),null,null, rs.getString("email"), null, ubicacion,rs.getString("username"));
 				
-				donantes.add(donante);
+				
+				donantes.add(this.find(rs.getString("codigo")));
 			}
 		}
 		catch(SQLException e){
