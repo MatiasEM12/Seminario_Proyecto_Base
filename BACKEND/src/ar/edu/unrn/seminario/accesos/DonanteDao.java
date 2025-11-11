@@ -13,7 +13,8 @@ public interface DonanteDao {
 
 	void remove(Donante Usuario);
 
-	Donante find(String username);
+	Donante find(String codigo);
+
 
 	List<Donante> findAll();
 

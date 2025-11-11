@@ -14,7 +14,7 @@ import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class DonanteDAOJDBC implements DonanteDao{
-
+	UbicacionDAO u;
 	public void create(Donante donante) {
 		try {
 
@@ -92,15 +92,22 @@ public class DonanteDAOJDBC implements DonanteDao{
 		
 	}
 
-	public void remove(String username) {
+	public void remove(String codigo) {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
+			  PreparedStatement statement1 = conn.prepareStatement(
+			            "SELECT codUbicacion FROM donante WHERE codigo = ?"
+			        );
+			 
+			  statement1.setString(1, codigo);
+			  ResultSet rs = statement1.executeQuery();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM donante WHERE username = ?"
+		            "DELETE FROM donante WHERE codigo = ?"
 		        );
 
-		        statement.setString(1, username);
-
+		        statement.setString(1, codigo);
+		        
+		        u.remove(rs.getString("codUbicacion"));
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("Donante eliminado correctamente.");
@@ -116,14 +123,22 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 	public void remove(Donante donante) {
 		try {
+			
 			 Connection conn = ConnectionManager.getConnection();
-		        PreparedStatement statement = conn.prepareStatement(
+			  PreparedStatement statement1 = conn.prepareStatement(
+			            "SELECT codUbicacion FROM donante WHERE username = ?"
+			        );
+			  statement1.setString(1, donante.getUsername());
+			  ResultSet rs = statement1.executeQuery();
+			  
+			 Connection conn2 = ConnectionManager.getConnection();
+		        PreparedStatement statement = conn2.prepareStatement(
 		            "DELETE FROM donante WHERE codigo = ? "
 		        );
 
 		        ;
 		        statement.setString( 1,donante.getCodigo());
-
+		        u.remove(rs.getString("codUbicacion"));
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("donante eliminado correctamente.");
