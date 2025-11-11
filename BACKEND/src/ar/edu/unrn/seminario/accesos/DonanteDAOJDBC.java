@@ -123,14 +123,16 @@ public class DonanteDAOJDBC implements DonanteDao{
 		Donante donante= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.email, D.codUbicacion,D.username "+ "FROM donante D "+ "WHERE D.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"
+			+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
+		
 			if (rs.next()) {
-				Ubicacion ubicacion = new Ubicacion(rs.getString("codUbicacion"),null,null,null);	 //Null ya que no tenemos tabla Ubicacion 
-				donante=new Donante(rs.getString("nombre"),null,null, rs.getString("email"), codigo, ubicacion,rs.getString("username"));
+				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
+				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
 				
-				
+				donante.setUbicacion(ubicacion);
 			}
 		}
 		catch(SQLException e){
