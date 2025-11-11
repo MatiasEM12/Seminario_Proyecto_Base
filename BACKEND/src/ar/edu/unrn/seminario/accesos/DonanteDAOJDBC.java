@@ -1,12 +1,15 @@
 package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
@@ -17,16 +20,22 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO donante(codigo, nombre, email, username, codUbicacion, activo)"
-							+ " VALUES (?, ?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO donante(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username, codUbicacion)"
+							+ " VALUES (?, ?, ?, ?, ?, ?,?,?)");
+			
+			java.sql.Date fechaSQL = java.sql.Date.valueOf(donante.getFecha_nac());
+			
+			statement.setDate(1, fechaSQL);
 			
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
-			//statement.setString(3, donante.getApellido());
-			statement.setString(3, donante.getContacto());
-			statement.setString(4, donante.getUsername());
-			statement.setObject(5, donante.getUbicacion() != null ? donante.getUbicacion().getCodigo() : null);
-			statement.setBoolean(6, false);
+			statement.setString(3, donante.getApellido());
+			statement.setString(4, donante.getDni());
+			statement.setString(5, donante.getContacto());
+			statement.setDate(6,fechaSQL);
+			statement.setString(7, donante.getUsername());
+			statement.setObject(8, donante.getUbicacion().getCodigo());
+		
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -49,13 +58,21 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE donante SET codigo ?, nombre = ?, email = ?, codUbicacion = ? WHERE username = ?");
+					.prepareStatement("UPDATE donante SET codigo ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? codUbicacion = ? "
+							+ "WHERE codigo = ?");
+			java.sql.Date fechaSQL = java.sql.Date.valueOf(donante.getFecha_nac());
+			
+			statement.setDate(1, fechaSQL);
+			
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
-			//statement.setString(2, donante.getApellido());
-			statement.setString(3, donante.getContacto());
-			statement.setObject(4, donante.getUbicacion().getCodigo());
-			statement.setString(5, donante.getUsername());
+			statement.setString(3, donante.getApellido());
+			statement.setString(4, donante.getDni());
+			statement.setString(5, donante.getContacto());
+			statement.setDate(6,fechaSQL);
+			statement.setString(7, donante.getUsername());
+			statement.setObject(8, donante.getUbicacion().getCodigo());
+			statement.setString(9, donante.getCodigo());
 			
 			
 			int cantidad = statement.executeUpdate();
@@ -79,7 +96,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM rol WHERE username = ?"
+		            "DELETE FROM donante WHERE username = ?"
 		        );
 
 		        statement.setString(1, username);
@@ -101,11 +118,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM donante WHERE username = ? AND codigo=?"
+		            "DELETE FROM donante WHERE codigo = ? "
 		        );
 
-		        statement.setString(1, donante.getUsername());
-		        statement.setString(2, donante.getCodigo());
+		        ;
+		        statement.setString( 1,donante.getCodigo());
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
@@ -123,15 +140,19 @@ public class DonanteDAOJDBC implements DonanteDao{
 		Donante donante= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido, D.preferenciaContacto, D.ubicacion,"+"U.zona, U.Barrio, U.direccion"
-			+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido,D.dni,D.Fecha_Nacimiento,D.username D.contacto, D.ubicacion,"+
+			"U.codigo, U.zona, U.barrio, U.direccion, C.codigo,C.Latitud,C.Longitud"
+			+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ? AND U.codCoordenada=C.codigo");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 		
 			if (rs.next()) {
-				Ubicacion ubicacion = new Ubicacion(rs.getString("zona"),rs.getString("Barrio"),rs.getString("direccion"));		
-				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),rs.getString("preferenciaContacto"));
+				Coordenada coordenada= new Coordenada(rs.getDouble("Latitud"),rs.getDouble("Longitud"),rs.getString("codigo"));
+				Ubicacion ubicacion = new Ubicacion(rs.getString("U.codigo"),rs.getString("U.zona"),rs.getString("U.barrio"),rs.getString("U.direccion"),coordenada);
 				
+			Date sqlDate = rs.getDate("D.Fecha_Nacimiento");
+			LocalDate fecha = sqlDate.toLocalDate();
+				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),  fecha  , rs.getString("D.dni"),rs.getString("D.contacto"),ubicacion,rs.getString("D.codigo"));
 				donante.setUbicacion(ubicacion);
 			}
 		}
