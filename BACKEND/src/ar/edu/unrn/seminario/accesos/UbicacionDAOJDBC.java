@@ -294,6 +294,5 @@ public void create(Ubicacion ubicacion) {
 		}	 
 		return ubicaciones;
 	}
-	}
-
 }
+
