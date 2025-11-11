@@ -167,7 +167,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 				
 			Date sqlDate = rs.getDate("D.Fecha_Nacimiento");
 			LocalDate fecha = sqlDate.toLocalDate();
-				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),  fecha  , rs.getString("D.dni"),rs.getString("D.contacto"),ubicacion,rs.getString("D.codigo"));
+				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),  fecha  , rs.getString("D.dni"),rs.getString("D.contacto"),ubicacion,rs.getString("D.username"),rs.getString("D.codigo"));
 				donante.setUbicacion(ubicacion);
 			}
 		}
