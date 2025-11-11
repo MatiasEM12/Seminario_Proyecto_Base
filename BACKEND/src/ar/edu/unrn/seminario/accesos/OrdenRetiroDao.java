@@ -8,7 +8,7 @@ public interface OrdenRetiroDao {
 
 	void update(OrdenRetiro orden);
 
-	void remove(String id);
+	void remove(String codigo);
 
 	void remove(OrdenRetiro orden);
 

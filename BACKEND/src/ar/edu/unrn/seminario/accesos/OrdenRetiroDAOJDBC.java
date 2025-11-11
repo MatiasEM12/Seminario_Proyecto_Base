@@ -25,12 +25,18 @@ public class OrdenRetiroDAOJDBC implements OrdenRetiroDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenRetiro (fechaemision, ordenPedido, visitas)"
-							+ " VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO ordenRetiro (codigo, Fecha_Emision, codVoluntario,codOrdenPedido)"
+							+ " VALUES (?, ?, ?,?)");
 			
-			statement.setObject(1, orden.getFechaEmision());
-			statement.setObject(2, orden.getPedido());
-			statement.setObject(3, orden.getVisitas());
+			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
+			
+			statement.setDate(1, fechaSQL);
+			
+			
+			statement.setObject(1,orden.getCodigo());
+			statement.setDate(2, fechaSQL);
+			statement.setString(3, orden.getVoluntario().getCodigo());
+			statement.setString(4, orden.getPedido().getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -67,9 +73,9 @@ public class OrdenRetiroDAOJDBC implements OrdenRetiroDao{
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("Rol eliminado correctamente.");
+		            System.out.println("Orden Retiro eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró la Orden Retiro con ese código.");
 		        }
 			
 		}catch(SQLException e) {
@@ -79,20 +85,20 @@ public class OrdenRetiroDAOJDBC implements OrdenRetiroDao{
 	}
 
 	@Override
-	public void remove(String id) {
+	public void remove(String codigo) {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
 		            "DELETE FROM OrdenRetiro WHERE codigo = ?"
 		        );
 
-		        statement.setString(1, id);
+		        statement.setString(1,codigo);
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("Rol eliminado correctamente.");
+		            System.out.println("Orden Retiro eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró la Orden Retiro con ese código.");
 		        }
 			
 		}catch(SQLException e) {
