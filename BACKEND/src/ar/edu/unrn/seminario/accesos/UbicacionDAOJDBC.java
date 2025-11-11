@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Coordenada;
@@ -269,8 +270,30 @@ public void create(Ubicacion ubicacion) {
 
 	@Override
 	public List<Ubicacion> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Ubicacion> ubicaciones = new ArrayList<>();
+		
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo"
+					+ "FROM ubicacion ");
+			ResultSet rs = sent.executeQuery();
+			while (rs.next()) {
+				
+				ubicaciones.add(this.find(rs.getString("codigo")));
+			
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return ubicaciones;
+	}
 	}
 
 }

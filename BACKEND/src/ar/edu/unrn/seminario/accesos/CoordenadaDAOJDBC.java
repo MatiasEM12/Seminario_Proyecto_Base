@@ -158,16 +158,15 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	@Override
 	public List<Coordenada> findAll() {
 		List<Coordenada> coordenadas = new ArrayList<>();
+		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo,Latitud,Longitud "
-					+ "FROM coordenada "+ "WHERE D.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo  "
+					+ "FROM coordenada ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				Coordenada 	coordenada=new Coordenada(rs.getDouble("Latitud"),rs.getDouble("Longitud"),rs.getString("codigo"));
-				
-				coordenadas.add(coordenada);
+				coordenadas.add(this.find(rs.getString("codigo")));
 			}
 		}
 		catch(SQLException e){
