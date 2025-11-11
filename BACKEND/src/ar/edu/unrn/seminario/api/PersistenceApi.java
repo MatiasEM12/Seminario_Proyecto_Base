@@ -1,14 +1,17 @@
 package ar.edu.unrn.seminario.api;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ar.edu.unrn.seminario.accesos.OrdenPedidoDao;
 import ar.edu.unrn.seminario.accesos.OrdenRetiroDao;
 import ar.edu.unrn.seminario.accesos.RolDAOJDBC;
 import ar.edu.unrn.seminario.accesos.RolDao;
 import ar.edu.unrn.seminario.accesos.UsuarioDAOJDBC;
 import ar.edu.unrn.seminario.accesos.UsuarioDao;
+import ar.edu.unrn.seminario.accesos.VisitaDao;
 import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
 import ar.edu.unrn.seminario.dto.DonanteDTO;
@@ -36,6 +39,9 @@ public class PersistenceApi implements IApi {
 	private RolDao rolDao;
 	private UsuarioDao usuarioDao;
 	private OrdenRetiroDao ordenRetiroDao;
+	private OrdenPedidoDao ordenPedidoDao;
+	private VisitaDao visitaDao;
+	private ArrayList<VisitaDao> visitasDao;
 	public PersistenceApi() {
 		rolDao = new RolDAOJDBC();
 		usuarioDao = new UsuarioDAOJDBC();
@@ -182,14 +188,13 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
-	public void registrarOrdenRetiro(OrdenRetiro orden) {
-		// TODO Auto-generated method stub
+	public void registrarOrdenRetiro(LocalDate fechaEmision, OrdenPedido pedido,
+			ArrayList<Visita> visitas) {
+		
 		
 	}
 
-	@Override
-	public void registrarOrdenRetiro(OrdenRetiroDTO orden) {
+	public void registrarOrdenRetiro() {
 		// TODO Auto-generated method stub
 		
 	}
