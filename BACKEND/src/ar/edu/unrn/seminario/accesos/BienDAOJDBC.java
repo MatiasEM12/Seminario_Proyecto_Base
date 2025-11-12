@@ -155,16 +155,23 @@ public class BienDAOJDBC  implements BienDAO{
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				
-				if() {//String nombre, String descripcion, LocalDate fechaVencimiento,String tipo) throws DataNullException{ //alimento,medicamento 
+				if(rs.getString("tipo").equalsIgnoreCase("Alimento") ||rs.getString("tipo").equalsIgnoreCase("Medicamento")) {
+					
+					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+					   java.time.LocalDate fecha = sqlDate.toLocalDate();
+					bien=new Bien(rs.getString("nombre"), rs.getString("descripcion"), fecha ,rs.getString("tipo"),rs.getString("codigo"));
+					
+				}else if(rs.getString("tipo").equalsIgnoreCase("Mueble") ||rs.getString("tipo").equalsIgnoreCase("Electrodomestico")) { 
+					
+					bien=new Bien(rs.getDouble("peso"), rs.getString("nombre"), rs.getString("descripcion"), rs.getString("material"),rs.getString("tipo"));
 					
 					
-					
-				}else if() {//double peso, String nombre, String descripcion, String material,String tipo)throws DataNullException,DataDoubleException{ //mueble, electrodomestico 
-					
-				}else if() {//Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataNullException,DataDoubleException { //ropa
-					
-				}else { //Bien(double peso, String nombre, String descripcion, LocalDate fechaVencimiento, double talle,String material, String tipo) throws DataNullException { //otro
-					
+				}else if(rs.getString("tipo").equalsIgnoreCase("Ropa") ) {
+					bien=new Bien(rs.getString("nombre"), rs.getString ("descripcion"), rs.getDouble("talle"), rs.getString ("material"),rs.getString("tipo"));
+				}else { 
+					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+					   java.time.LocalDate fecha = sqlDate.toLocalDate();
+					bien=new Bien(rs.getDouble("peso"), rs.getString("nombre"), rs.getString ("descripcion"), fecha, rs.getDouble("talle"),rs.getString("material"), rs.getString("tipo"));
 				}
 				
 			}
@@ -178,21 +185,21 @@ public class BienDAOJDBC  implements BienDAO{
 		finally {
 			ConnectionManager.disconnect();
 		}	 
-		return coordenada;
+		return bien;
 	}
 
 	@Override
 	public List<Bien> findAll() {
-List<Coordenada> coordenadas = new ArrayList<>();
+List<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigo  "
-					+ "FROM coordenada ");
+					+ "FROM bien ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				coordenadas.add(this.find(rs.getString("codigo")));
+				bienes.add(this.find(rs.getString("codigo")));
 			}
 		}
 		catch(SQLException e){
@@ -204,9 +211,25 @@ List<Coordenada> coordenadas = new ArrayList<>();
 		finally {
 			ConnectionManager.disconnect();
 		}	 
-		return coordenadas;
+		return bienes;
 	}
+	
+	@Override
+	public List<Bien> findBienVisita(String codVisita) {
+
+		
+	//hacer;
+	}
+	
+	@Override
+	public List<Bien> findBienDonacion(String codDonacion) {
+
+		
+//hacer
+		 
 
 	}
 
 }
+
+

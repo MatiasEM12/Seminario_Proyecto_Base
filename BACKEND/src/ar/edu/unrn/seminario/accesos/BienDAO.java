@@ -19,4 +19,8 @@ public interface BienDAO {
 	Bien find(String codigo);
 
 	List<Bien> findAll();
+
+	List<Bien> findBienDonacion(String codDonacion);
+
+	List<Bien> findBienVisita(String codVisita);
 }
