@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Bien;
@@ -20,7 +21,7 @@ public interface BienDAO {
 
 	List<Bien> findAll();
 
-	List<Bien> findBienDonacion(String codDonacion);
+	ArrayList<Bien> findBienDonacion(String codDonacion);
 
-	List<Bien> findBienVisita(String codVisita);
+	ArrayList<Bien> findBienVisita(String codVisita);
 }

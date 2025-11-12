@@ -1,4 +1,4 @@
-package ar.edu.unrn.seminario.accesos;
+     package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,6 +20,7 @@ public class DonacionDAOJDBC implements DonacionDAO{
 
 DonanteDao d;
 OrdenPedidoDao op;
+BienDAO  b;
 	
 	@Override
 	public void create(Donacion donacion) {
@@ -155,15 +156,17 @@ OrdenPedidoDao op;
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido "
-			+ "FROM donacion "+ "WHERE D.codigo = ?");
+			+ "FROM donacion "+ "WHERE codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
 				   java.time.LocalDate localDate = sqlDate.toLocalDate();
-				donacion =new Donacion (localDate,rs.getString("observacion"),/*ArrayList<Bien> */,d.find(rs.getString("codigoDonante")) , 
+				   java.time.LocalDateTime localDateTime = localDate.atStartOfDay();
+				   
+				donacion =new Donacion (localDateTime,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
 						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
-				//LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo
+				
 			}
 		}
 		catch(SQLException e){

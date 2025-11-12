@@ -215,8 +215,8 @@ List<Bien> bienes = new ArrayList<>();
 	}
 	
 	@Override
-	public List<Bien> findBienVisita(String codVisita) {
-List<Bien> bienes = new ArrayList<>();
+	public ArrayList<Bien> findBienVisita(String codVisita) {
+ArrayList<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -244,8 +244,8 @@ List<Bien> bienes = new ArrayList<>();
 	}
 	
 	@Override
-	public List<Bien> findBienDonacion(String codDonacion) {
-List<Bien> bienes = new ArrayList<>();
+	public ArrayList<Bien> findBienDonacion(String codDonacion) {
+		ArrayList<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
