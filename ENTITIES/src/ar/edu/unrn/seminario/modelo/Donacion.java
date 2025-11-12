@@ -10,31 +10,32 @@ public class Donacion {
 	private LocalDateTime fechaDonacion;
 	private String observacion;
 	private ArrayList<Bien> bienes;
-	private Donante donacion;
-	private String cod_Donante;
-	private String cod_Pedido;
-	private String cod_Retiro;
+
+	private Donante donante;
+	private OrdenPedido pedido;
 	
-	public Donacion( LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donacion) {
+	
+	public Donacion( LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,OrdenPedido pedido) {
 		super();
-	
+		this.pedido=pedido;
 		this.fechaDonacion = fechaDonacion;
 		this.observacion = observacion;
 		this.bienes = bienes;
-		this.donacion = donacion;
+		this.donante = donante;
 		crearCodigo();
 	}
-	public Donacion(LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, String cod_Donante) {
+	public Donacion(LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo) {
 		super();
 
+		this.pedido=pedido;
 		this.fechaDonacion = fechaDonacion;
 		this.observacion = observacion;
 		this.bienes = bienes;
-		this.cod_Donante = cod_Donante;
-		crearCodigo();
+		this.donante = donante;
+		this.codigo=codigo;
 	}
 
-	
+
 	
 	public String getCodigo() {
 		return this.codigo;
@@ -64,36 +65,23 @@ public class Donacion {
 		this.bienes = bienes;
 	}
 
-	public String getCod_Donante() {
-		return cod_Donante;
-	}
 
-	public void setCod_Donante(String cod_Donante) {
-		this.cod_Donante = cod_Donante;
-	}
-
-	public Donante getDonacion() {
-		return this.donacion;
-	}
-	public void setDonacion(Donante donacion) {
-		this.donacion = donacion;
-	}
 	
+	public Donante getDonante() {
+		return donante;
+	}
+	public void setDonante(Donante donante) {
+		this.donante = donante;
+	}
+	public OrdenPedido getPedido() {
+		return pedido;
+	}
+	public void setPedido(OrdenPedido pedido) {
+		this.pedido = pedido;
+	}
 	private void crearCodigo() {
 		  contadorDonacion++;
 		  this.codigo = "DN" + String.format("%05d", contadorDonacion);
-	}
-	public String getCod_Pedido() {
-		return cod_Pedido;
-	}
-	public void setCod_Pedido(String cod_Pedido) {
-		this.cod_Pedido = cod_Pedido;
-	}
-	public String getCod_Retiro() {
-		return cod_Retiro;
-	}
-	public void setCod_Retiro(String cod_Retiro) {
-		this.cod_Retiro = cod_Retiro;
 	}
 
 }
