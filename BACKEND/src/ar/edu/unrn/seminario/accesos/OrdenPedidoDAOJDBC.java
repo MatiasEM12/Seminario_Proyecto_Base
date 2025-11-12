@@ -19,8 +19,8 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenPedido (fechaemision, cargaPesada, observaciones, codDonante, codDonacion)"
-							+ " VALUES (?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO ordenPedido (fechaemision, cargaPesada, observaciones, codDonante, codDonacion,codigo)"
+							+ " VALUES (?, ?, ?, ?, ?,?)");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 			
 			statement.setDate(1, fechaSQL);
@@ -28,6 +28,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			statement.setString(3, orden.getObservaciones());
 			statement.setString(4, orden.getCodDonante());
 			statement.setString(5, orden.getCodDonacion());
+			statement.setString(6, orden.getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
