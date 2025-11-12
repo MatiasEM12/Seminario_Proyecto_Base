@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import ar.edu.unrn.seminario.modelo.Donacion;
 
@@ -23,9 +24,8 @@ public class DonacionDAOJDBC implements DonacionDAO{
 							+ " VALUES (?, ?, ?,?,?)");
 			
 		
-			
-
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(donacion.getFechaDonacion());
+			LocalDate fecha = donacion.getFechaDonacion().toLocalDate();
+			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 			
 			statement.setString(1, donacion.getCodigo());
 			statement.setString(2, donacion.getObservacion());
