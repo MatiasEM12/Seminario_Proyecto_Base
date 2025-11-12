@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DataLengthException;
@@ -18,4 +19,6 @@ public interface VisitaDao {
 	Visita find(String username) throws DataNullException, DataLengthException;
 
 	List<Visita> findAll() throws DataNullException, DataLengthException;
+
+	ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException;
 }

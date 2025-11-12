@@ -3,6 +3,8 @@ package ar.edu.unrn.seminario.modelo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+
 import ar.edu.unrn.seminario.exception.*;
 
 
@@ -34,16 +36,6 @@ public class OrdenRetiro extends Orden{
 	}
 	
 
-	public OrdenRetiro(LocalDate fechaEmision, OrdenPedido pedido) throws DataNullException{
-		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
-		if(pedido==null) {
-			throw new DataNullException("La orden de pedido no puede ser null");
-		}
-		this.pedido = pedido;
-		crearCodigo();
-		this.visitas= new ArrayList<>();
-		this.recolectados = new ArrayList<>();
-	}
 
 
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
@@ -60,9 +52,21 @@ public class OrdenRetiro extends Orden{
 		this.recolectados = new ArrayList<>();
 		crearCodigo();
 		this.voluntario=voluntario;
+		}
+		
+
+		public OrdenRetiro( String codigo ,String estado,LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido,ArrayList <Visita> visitas){
+			
+		
+			super(fechaEmision,estado,tipo);
+	
+	
+			this.pedido = ordenPedido;
+			this.visitas = visitas;
+			this.recolectados = new ArrayList<>();
+			this.voluntario=voluntario;
 	}
 	
-
 
 
 	public String getEstadoRetiro() {
