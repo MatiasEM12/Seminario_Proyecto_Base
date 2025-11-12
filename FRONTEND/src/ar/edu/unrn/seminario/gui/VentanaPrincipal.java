@@ -61,14 +61,9 @@ public class VentanaPrincipal extends JFrame {
 			
 			public void actionPerformed(ActionEvent arg0) {
 				ListadoUsuario listado;
-				try {
-					listado = new ListadoUsuario(api);
-					listado.setLocationRelativeTo(null);
-					listado.setVisible(true);
-				} catch (DataNullException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				listado = new ListadoUsuario(api);
+				listado.setLocationRelativeTo(null);
+				listado.setVisible(true);
 				
 			}
 			

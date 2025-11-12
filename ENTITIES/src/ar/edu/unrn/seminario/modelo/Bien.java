@@ -257,7 +257,7 @@ public class Bien {
 		}
 		this.nivelNecesidad = nivelNecesidad;
 	}
-	public LocalDateTime getFechaVencimiento() {
+	public LocalDate getFechaVencimiento() {
 		return fechaVencimiento;
 	}
 	public void setFechaVencimiento(LocalDate fechaVencimiento) throws StateChangeException {

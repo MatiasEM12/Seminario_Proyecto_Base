@@ -141,7 +141,7 @@ public class BienDTO {
 
 
 
-	public LocalDateTime getFechaVencimiento() {
+	public LocalDate getFechaVencimiento() {
 		return fechaVencimiento;
 	}
 
@@ -149,7 +149,7 @@ public class BienDTO {
 
 
 
-	public void setFechaVencimiento(LocalDateTime fechaVencimiento) {
+	public void setFechaVencimiento(LocalDate	 fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
 	}
 

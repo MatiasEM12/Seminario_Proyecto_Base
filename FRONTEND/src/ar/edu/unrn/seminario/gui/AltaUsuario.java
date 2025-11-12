@@ -16,7 +16,11 @@ import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class AltaUsuario extends JFrame {
 
@@ -31,8 +35,9 @@ public class AltaUsuario extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws StateChangeException 
 	 */
-	public AltaUsuario(IApi api) {
+	public AltaUsuario(IApi api) throws StateChangeException {
 
 		// Obtengo los roles
 		this.roles = api.obtenerRolesActivos();
@@ -81,6 +86,15 @@ public class AltaUsuario extends JFrame {
 					dispose();
 				} catch (DataEmptyException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				} catch (DataObjectException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DataNullException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DataDateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 			}

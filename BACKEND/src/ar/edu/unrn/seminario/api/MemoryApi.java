@@ -32,7 +32,7 @@ public class MemoryApi implements IApi {
     private List<Voluntario> voluntarios = new ArrayList<>();
     private List<Visita> visitass = new ArrayList<>();
 
-    public MemoryApi() throws DataNullException, StateChangeException {
+    public MemoryApi() throws DataNullException, StateChangeException, DataEmptyException, DataObjectException, DataDateException {
         // datos iniciales
     	
     	
