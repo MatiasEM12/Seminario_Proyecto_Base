@@ -14,7 +14,7 @@ public interface IApi {
 	
 	//Usuario
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException ;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException ;
 	
 	 
 	UsuarioDTO obtenerUsuario(String username);
@@ -60,8 +60,8 @@ public interface IApi {
 	
 	//OrdenRetiro
 	
-	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException;
-	public void registrarOrdenRetiro(OrdenRetiroDTO orden);
+	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
 	

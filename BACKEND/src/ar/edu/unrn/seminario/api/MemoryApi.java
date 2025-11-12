@@ -526,7 +526,7 @@ public class MemoryApi implements IApi {
         for (int i = 0; i < donaciones.size(); i++) {
             donacion = donaciones.get(i);
             donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), donacion.getObservacion(),
-                    donacion.getBienes(),donacion.getCod_Donante()));
+                    donacion.getBienes(),donacion.getDonante().getCodigo(),null));
         }
         return donacionesDTO;
     }
@@ -728,9 +728,9 @@ public class MemoryApi implements IApi {
 	}
 
 
-	public void registrarOrdenRetiro(OrdenRetiroDTO orden) {
+	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
 		
-		OrdenRetiro oR= new OrdenRetiro(orden.getFechaEmision(),this.obtenerOrdenPedidoPorCodigo(orden.getPedido()));
+		OrdenRetiro oR= new OrdenRetiro(orden.getFechaEmision(),this.obtenerOrdenPedidoPorCodigo(orden.getPedido()),null);
 		  ordenesRetiro.add(oR);
 		  inicializarVisitas(oR);
 		
@@ -761,7 +761,7 @@ public class MemoryApi implements IApi {
 
 		    for (Donacion donacion : donaciones) {
 		        if (donacion != null) {
-		            String codPedidoDonacion = donacion.getCod_Pedido();
+		            String codPedidoDonacion = donacion.getCodigo();
 
 		            if (codPedidoDonacion != null && codOP.equalsIgnoreCase(codPedidoDonacion)) {
 		                ArrayList<Bien> bienesDonacion = donacion.getBienes();
@@ -824,7 +824,7 @@ public class MemoryApi implements IApi {
 	}
 
 	@Override
-	public void guardarRol(Integer codigo, String nombre, boolean estado) {
+	public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
 		  Rol rol = new Rol(codigo, nombre, estado);
 	        this.roles.add(rol);
 		
@@ -849,9 +849,9 @@ public class MemoryApi implements IApi {
         Voluntario voluntario;
         for (int i = 0; i < voluntarios.size(); i++) {
             voluntario = voluntarios.get(i);
-            voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),
-            		voluntario.getApellido(),voluntario.getContacto(),
-            		voluntario.getTarea(),voluntario.isDisponible(),voluntario.getUsername()));
+            voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),null,
+            		voluntario.getApellido(),null,voluntario.getContacto(),
+            		voluntario.getTarea(),null,null,null,voluntario.isDisponible(),voluntario.getUsername(),null));
            
         }
         return voluntariosDTO;
@@ -864,12 +864,12 @@ public class MemoryApi implements IApi {
 		visitass.add(visita);
 	}
 	
-	public void inicializarVoluntarios() {
+	public void inicializarVoluntarios() throws DataEmptyException, DataObjectException, DataNullException, DataDateException {
 		Voluntario v1=new Voluntario(
 		        "Matias",               // nombre
-		        "Mellado",           // apellido
+		        "Mellado", null,          // apellido
 		        "WhatsApp",            // preferencia de contacto
-		        "matiM"               // username);
+		        "matiM" ,null              // username);
 		        );
 		
 		registrarVoluntario(v1);

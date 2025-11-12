@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class BienDTO {
@@ -11,7 +12,7 @@ public class BienDTO {
 	private String nombre;
 	private String descripcion;
 	private int nivelNecesidad;
-	private LocalDateTime fechaVencimiento;
+	private LocalDate fechaVencimiento;
 	private Double talle;
 	private String material;
 	
@@ -20,7 +21,7 @@ public class BienDTO {
 	
 	
 	public BienDTO(String codigo, String tipo, double peso, String nombre, String descripcion, int nivelNecesidad,
-			LocalDateTime fechaVencimiento, Double talle, String material) {//otro
+			LocalDate fechaVencimiento, Double talle, String material) {//otro
 		super();
 		this.codigo = codigo;
 		this.tipo = tipo;
@@ -37,7 +38,7 @@ public class BienDTO {
 
 
 
-	public BienDTO(String nombre, String descripcion, LocalDateTime fechaVencimiento,String tipo) { //alimento,medicamento 
+	public BienDTO(String nombre, String descripcion, LocalDate fechaVencimiento,String tipo) { //alimento,medicamento 
 		super();
 		this.tipo=tipo;
 		this.nombre = nombre;

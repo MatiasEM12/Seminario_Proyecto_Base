@@ -20,14 +20,14 @@ public abstract class OrdenDTO {
 	}
 	  protected OrdenDTO(LocalDate fechaEmision, String estado,String tipo) {
 	    	
-		    
-	    	
+		
 	        this.fechaEmision = fechaEmision;
 	        this.estado =	recuperarEstado(estado);
 	        this.tipo=tipo;
 	    }
 
-	    private EstadoOrden recuperarEstado(String estado) {
+
+		private EstadoOrden recuperarEstado(String estado) {
 	    	
 	    	if(estado.equalsIgnoreCase(EstadoOrden.CANCELADA.toString())) {
 	    		return EstadoOrden.CANCELADA;

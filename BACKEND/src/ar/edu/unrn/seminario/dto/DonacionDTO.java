@@ -15,14 +15,7 @@ public class DonacionDTO {
 	private String codPedido;
 	private String codRetiro;
 
-	public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, String codDonante) {
-		super();
-		this.codigo = codigo;
-		this.fechaDonacion = fechaDonacion;
-		this.observacion = observacion;
-		this.bienes = bienes;
-		this.codDonante = codDonante;
-	}
+
 	
 	
 
@@ -42,7 +35,7 @@ public class DonacionDTO {
 
 
 	public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,
-			String codDonacion, String codPedido) {
+			String codDonante, String codPedido) {
 		super();
 		this.codigo = codigo;
 		this.fechaDonacion = fechaDonacion;
