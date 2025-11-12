@@ -354,7 +354,7 @@ public class MemoryApi implements IApi {
   	}
   	
   	
-    private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException {
+    private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
 		  if (retiro == null) return;
 
 		
@@ -485,7 +485,7 @@ public class MemoryApi implements IApi {
 	
     // OrdenRetiro
 
-	public void registrarOrdenRetiro(OrdenRetiro oR) throws DataNullException, DataLengthException {
+	public void registrarOrdenRetiro(OrdenRetiro oR) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
 	       ordenesRetiro.add(oR);
 	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
 	       inicializarVisitas(oR);

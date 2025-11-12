@@ -13,7 +13,7 @@ public class OrdenRetiroDTO extends OrdenDTO{
 	private String codVoluntario;
 	private String[] codVisitas;
 	
-	public OrdenRetiroDTO(LocalDate fechaEmision, EstadoOrden estado, String tipo, String codigo, String codPedido,
+	public OrdenRetiroDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, String codPedido,
 			String codVoluntario, String[] codVisitas) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
@@ -24,7 +24,7 @@ public class OrdenRetiroDTO extends OrdenDTO{
 	
 	
 
-	public OrdenRetiroDTO(LocalDate fechaEmision, EstadoOrden estado, String tipo, String codigo, String codPedido,
+	public OrdenRetiroDTO(LocalDate fechaEmision,String estado, String tipo, String codigo, String codPedido,
 			String codVoluntario) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
