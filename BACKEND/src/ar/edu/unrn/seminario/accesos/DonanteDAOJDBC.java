@@ -25,7 +25,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(donante.getFecha_nac());
 			
-			statement.setDate(1, fechaSQL);
+			
 			
 			statement.setString(1, donante.getCodigo());
 			statement.setString(2, donante.getNombre());
