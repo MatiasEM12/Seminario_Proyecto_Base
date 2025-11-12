@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class Visita {
 	
@@ -18,6 +19,7 @@ public class Visita {
 	private String codOrdenRetiro;
 	private ArrayList<Bien> bienesRecolectados;
 	private String estado;
+	//posibles estados realizada o fallida;
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
 			ArrayList<Bien> bienesRecolectados) throws DataNullException, DataLengthException{
@@ -138,8 +140,15 @@ public class Visita {
 	}
 
 
-	public void setEstado(String estado) {
-		this.estado = estado;
+	public void setEstado(String estado) throws StateChangeException,DataNullException{
+	    if (estado == null || estado.isEmpty()) {
+	        throw new DataNullException("El campo 'estado' no puede estar vacío");
+	    }
+	    //si las dos son verdaderas entraria en el if
+	    if (!estado.equals("realizada") && !estado.equals("fallida")) {
+	        throw new StateChangeException("El estado ingresado es invalido. Debe ser 'realizada' o 'fallida'.");
+	    }
+	    this.estado=estado;
 	}
 
 
