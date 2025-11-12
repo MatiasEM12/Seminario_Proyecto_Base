@@ -37,8 +37,8 @@ OrdenPedidoDao op;
 			statement.setString(1, donacion.getCodigo());
 			statement.setString(2, donacion.getObservacion());
 			statement.setDate(3, fechaSQL);
-			statement.setString(4, donacion.getCod_Donante());
-			statement.setString(5, donacion.getCod_Pedido());
+			statement.setString(4, donacion.getDonante().getCodigo());
+			statement.setString(5, donacion.getPedido().getCodigo());
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
@@ -162,7 +162,7 @@ OrdenPedidoDao op;
 				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
 				   java.time.LocalDate localDate = sqlDate.toLocalDate();
 				donacion =new Donacion (localDate,rs.getString("observacion"),/*ArrayList<Bien> */,d.find(rs.getString("codigoDonante")) , 
-						op.find(rs.getString("codigoPedido")),rs.getString("codigo"));
+						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
 				//LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo
 			}
 		}

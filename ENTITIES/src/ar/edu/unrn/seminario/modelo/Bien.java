@@ -71,10 +71,10 @@ public class Bien {
 	
 
 
-// le cambie el talle lo aviamos puesto como Double que era una objeto enves de doueble
+
 	public Bien(String nombre, String descripcion, double talle, String material,String tipo)throws DataNullException,DataDoubleException { //ropa
 		super();
-		//no importa que material sea vacios porque puede que no sepa de que material es el talle puede estar vacio porque puede que no tenga de que talle es la ropa
+		
 		try {
 			validarStringsBien(nombre,"Nombre");
 			validarStringsBien(descripcion,"Descripcion");
@@ -117,6 +117,103 @@ public class Bien {
 
 
 
+
+//------------
+	
+	
+	public Bien(String nombre, String descripcion, LocalDate fechaVencimiento,String tipo,String codigo) throws DataNullException{ //alimento,medicamento 
+		super();
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
+		}
+		if(fechaVencimiento==null) {
+			throw new DataNullException("Fecha de vencimiento invalida");
+		}
+		
+		this.tipo=tipo;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.fechaVencimiento = fechaVencimiento;
+		this.codigo=codigo;
+	}
+	
+	
+	
+	
+	
+	public Bien(double peso, String nombre, String descripcion, String material,String tipo,String codigo)throws DataNullException,DataDoubleException{ //mueble, electrodomestico 
+		super();
+		//no importa que material sea vacios porque puede que no sepa de que material es
+		try {
+			validarDoubleBien(peso,"peso"); 
+		}catch(StateChangeException e){
+			throw new DataDoubleException(e.getMessage());
+		}
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
+		}
+		this.tipo=tipo;
+		this.peso = peso;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.material = material;
+		this.codigo=codigo;
+	}
+
+	
+
+
+
+	public Bien(String nombre, String descripcion, double talle, String material,String tipo,String codigo)throws DataNullException,DataDoubleException { //ropa
+		super();
+		
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
+		}
+		
+		this.tipo=tipo;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.talle = talle;
+		this.material = material;
+		this.codigo=codigo;
+	}
+
+	
+	
+
+
+	public Bien(double peso, String nombre, String descripcion, LocalDate fechaVencimiento, double talle,
+			String material, String tipo,String codigo) throws DataNullException { //otro
+		super();
+		try {
+			validarStringsBien(nombre,"Nombre");
+			validarStringsBien(descripcion,"Descripcion");
+			validarStringsBien(tipo,"Tipo");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());
+		}
+		this.tipo=tipo;
+		this.peso = peso;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.fechaVencimiento = fechaVencimiento;
+		this.talle = talle;
+		this.material = material;
+		this.codigo=codigo;
+	}
 
 
 	public String getCodigo() {
