@@ -39,7 +39,7 @@ OrdenPedidoDao op;
 			
 			statement.setString(1,orden.getCodigo());
 			statement.setDate(2, fechaSQL);
-			statement.setString(1,orden.getEstadoString());
+			statement.setString(3,orden.getEstadoString());
 			statement.setString(4, orden.getVoluntario().getCodigo());
 			statement.setString(5, orden.getPedido().getCodigo());
 			int cantidad = statement.executeUpdate();

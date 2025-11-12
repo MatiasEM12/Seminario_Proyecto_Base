@@ -34,6 +34,7 @@ public class OrdenRetiroDTO extends OrdenDTO{
 
 
 
+
 	public String getPedido() {
 		return codPedido;
 	}

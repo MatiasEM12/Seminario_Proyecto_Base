@@ -32,7 +32,7 @@ public class MemoryApi implements IApi {
     private List<Voluntario> voluntarios = new ArrayList<>();
     private List<Visita> visitass = new ArrayList<>();
 
-    public MemoryApi() throws DataNullException {
+    public MemoryApi() throws DataNullException, StateChangeException {
         // datos iniciales
     	
     	
@@ -249,13 +249,13 @@ public class MemoryApi implements IApi {
     @Override
     public void activarRol(Integer codigo) throws StateChangeException {
         Rol rol = this.buscarRol(codigo);
-        if (rol != null) rol.activar(true);
+        if (rol != null) rol.activar();
     }
 
     @Override
     public void desactivarRol(Integer codigo) throws StateChangeException {
         Rol rol = this.buscarRol(codigo);
-        if (rol != null) rol.activar(false);
+        if (rol != null) rol.desactivar();
     }
 
     private Rol buscarRol(Integer codigo) {
@@ -297,16 +297,16 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	bienes1.add(new Bien("Manteca", "Manteca sin sal", LocalDateTime.now(), "Alimento"));
+        	bienes1.add(new Bien("Manteca", "Manteca sin sal", LocalDate.now(), "Alimento"));
         	Bien b2 = new Bien("Camisa", "Camisa de ToyStory 23", 5.0, "algodon", "Ropa");
      
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
             Donante donante1 = donantesByUser.get("pedro_don");
-            Donacion donacion1 = new Donacion(LocalDateTime.now(), "Entrega en sede central", bienes1, donante1);
+            Donacion donacion1 = new Donacion(LocalDateTime.now(), "Entrega en sede central", bienes1, donante1,null);
             
             OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
-            donacion1.setCod_Pedido(ordenPedido.getCodigo());
+            donacion1.setCodigo(ordenPedido.getCodigo());
             
             registrarDonacion(donacion1);
             registrarOrdenPedido(ordenPedido);
@@ -331,7 +331,7 @@ public class MemoryApi implements IApi {
   	        // Si no existe, la creamos a partir del OrdenPedido (si existe)
   	        try {
   	            OrdenPedido pedido = this.obtenerOrdenPedidoPorCodigo(codPedido);
-  	            ordenRetiro = new OrdenRetiro(LocalDate.now(), pedido); 
+  	            ordenRetiro = new OrdenRetiro(LocalDate.now(), pedido, null); 
   	            // registrar la nueva orden de retiro en la lista
   	            this.ordenesRetiro.add(ordenRetiro);
   	        } catch (RuntimeException ex2) {
@@ -361,7 +361,7 @@ public class MemoryApi implements IApi {
 	
 		    // crear bienes ejemplo
 		    ArrayList<Bien> bienesComida = new ArrayList<>();
-		    Bien b1 = new Bien("Manteca", "Manteca sin sal", LocalDateTime.now(), "Alimento");
+		    Bien b1 = new Bien("Manteca", "Manteca sin sal", LocalDate.now(), "Alimento");
 		    Bien b2 = new Bien("Camisa", "Camisa de ToyStory 23", 5.0, "algodon", "Ropa");
 	
 		  
