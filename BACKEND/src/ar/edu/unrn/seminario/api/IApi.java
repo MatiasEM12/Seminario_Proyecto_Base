@@ -62,8 +62,11 @@ public interface IApi {
 	
 	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 =======
+=======
+>>>>>>> Stashed changes
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden);
 >>>>>>> Stashed changes
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
