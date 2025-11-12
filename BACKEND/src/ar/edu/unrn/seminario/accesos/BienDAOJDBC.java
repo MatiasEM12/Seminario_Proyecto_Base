@@ -216,17 +216,60 @@ List<Bien> bienes = new ArrayList<>();
 	
 	@Override
 	public List<Bien> findBienVisita(String codVisita) {
-
+List<Bien> bienes = new ArrayList<>();
 		
-	//hacer;
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
+					+ "FROM bien b , Bien_Visita WHERE Bien_Visita.codVisita=?");
+		
+			sent.setString(1, codVisita);
+			ResultSet rs = sent.executeQuery();
+			
+			while (rs.next()) {
+				
+				bienes.add(this.find(rs.getString("b.codigo")));
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return bienes;
 	}
 	
 	@Override
 	public List<Bien> findBienDonacion(String codDonacion) {
-
+List<Bien> bienes = new ArrayList<>();
 		
-//hacer
-		 
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
+					+ "FROM bien b , Bien_Visita WHERE Bien_Donacion.codDonacion=?");
+		
+			sent.setString(1, codDonacion);
+			ResultSet rs = sent.executeQuery();
+			
+			while (rs.next()) {
+				
+				bienes.add(this.find(rs.getString("b.codigo")));
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return bienes;
 
 	}
 
