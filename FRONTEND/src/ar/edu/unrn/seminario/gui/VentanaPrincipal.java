@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -58,9 +60,16 @@ public class VentanaPrincipal extends JFrame {
 		listadoUsuarioMenuItem.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				ListadoUsuario listado= new ListadoUsuario(api);
-				listado.setLocationRelativeTo(null);
-				listado.setVisible(true);
+				ListadoUsuario listado;
+				try {
+					listado = new ListadoUsuario(api);
+					listado.setLocationRelativeTo(null);
+					listado.setVisible(true);
+				} catch (DataNullException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 			
 		});
@@ -92,9 +101,16 @@ public class VentanaPrincipal extends JFrame {
 		listadoRolMenuItem.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				ListadoRol listado= new ListadoRol(api);
-				listado.setLocationRelativeTo(null);
-				listado.setVisible(true);
+				ListadoRol listado;
+				try {
+					listado = new ListadoRol(api);
+					listado.setLocationRelativeTo(null);
+					listado.setVisible(true);
+				} catch (StateChangeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 			
 		});

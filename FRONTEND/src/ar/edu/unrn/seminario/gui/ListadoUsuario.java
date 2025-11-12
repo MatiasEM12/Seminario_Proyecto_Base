@@ -15,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 
 import javax.swing.JTable;
@@ -198,7 +199,7 @@ public class ListadoUsuario extends JFrame {
 
 	}
 
-	private void filtrar(JComboBox<String> combo, JTextField texto) {
+	private void filtrar(JComboBox<String> combo, JTextField texto) throws DataNullException {
 		 modelo.setRowCount(0); 
 		String filtro =combo.getSelectedItem().toString();
 		List<UsuarioDTO> usuarios;

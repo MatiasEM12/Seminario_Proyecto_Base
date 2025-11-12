@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class ListadoRol extends JFrame {
 
@@ -26,8 +27,9 @@ public class ListadoRol extends JFrame {
 	private JTable table;
 	/**
 	 * Create the frame.
+	 * @throws StateChangeException 
 	 */
-	public ListadoRol(IApi api) {
+	public ListadoRol(IApi api) throws StateChangeException {
 		
 		this.roles= api.obtenerRoles();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,11 +96,28 @@ public class ListadoRol extends JFrame {
 	    	        Integer codigo = (Integer) table.getValueAt(filaSeleccionada, 1);
 	    	        Boolean activo = (Boolean) table.getValueAt(filaSeleccionada, 2);
 
-	    	        if (activo) api.activarRol(codigo);
-	    	        else api.desactivarRol(codigo);
+	    	        if (activo)
+						try {
+							api.activarRol(codigo);
+						} catch (StateChangeException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					else
+						try {
+							api.desactivarRol(codigo);
+						} catch (StateChangeException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 
 	    	        // refrescar tabla
-	    	        roles = api.obtenerRoles();
+	    	        try {
+						roles = api.obtenerRoles();
+					} catch (StateChangeException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 	    	        for (int i = 0; i < roles.size(); i++) {
 	    	            table.setValueAt(roles.get(i).isActivo(), i, 2);
 	    	        }

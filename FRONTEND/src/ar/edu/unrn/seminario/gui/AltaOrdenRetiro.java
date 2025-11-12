@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.swing.JLabel;
@@ -103,7 +104,7 @@ public class AltaOrdenRetiro extends JFrame {
 
 		    	try {
 		    	    // Convertir texto a LocalDateTime
-		    	    LocalDateTime fecha = LocalDateTime.parse(fechaTexto);
+		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
 
 		    	    // Crear DTO (no entidad)
 		    	    OrdenRetiroDTO retiro = new OrdenRetiroDTO(
@@ -148,7 +149,7 @@ public class AltaOrdenRetiro extends JFrame {
 	    this.ordenSeleccionada = orden;
 	 
 	    txtCodigo.setText(orden.getCodigo()); 
-	    txtEstado.setText(orden.getEstado());
+	    txtEstado.setFont(orden.getEstado());
 	    txtFecha.setText(orden.getFechaEmision().toString());
 	}
 }
