@@ -526,7 +526,11 @@ public class MemoryApi implements IApi {
         for (int i = 0; i < donaciones.size(); i++) {
             donacion = donaciones.get(i);
             donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), donacion.getObservacion(),
+<<<<<<< Updated upstream
                     donacion.getBienes(),donacion.getDonante().getCodigo(),null));
+=======
+                    donacion.getBienes(),donacion.getDonante().getCodigo()));
+>>>>>>> Stashed changes
         }
         return donacionesDTO;
     }

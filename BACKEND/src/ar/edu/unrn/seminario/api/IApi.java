@@ -61,14 +61,18 @@ public interface IApi {
 	//OrdenRetiro
 	
 	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+<<<<<<< Updated upstream
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+=======
+	public void registrarOrdenRetiro(OrdenRetiroDTO orden);
+>>>>>>> Stashed changes
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
 	
 	//public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
-	public void registrarOrdenPedido(OrdenPedido orden);
+	public void registrarOrdenPedido(OrdenPedidoDTO ordenPedido);
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
 
 	//ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
@@ -104,5 +108,8 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void registrarVisita(VisitaDTO visita);
+
+
+	
 	
 }
