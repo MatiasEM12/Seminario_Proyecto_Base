@@ -66,8 +66,13 @@ public class VentanaPrincipal extends JFrame {
 		listadoUsuarioMenuItem.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				ListadoUsuario listado;
-				listado = new ListadoUsuario(api);
+				ListadoUsuario listado = null;
+				try {
+					listado = new ListadoUsuario(api);
+				} catch (DataNullException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				listado.setLocationRelativeTo(null);
 				listado.setVisible(true);
 				

@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.modelo.Voluntario;
 
@@ -14,15 +15,15 @@ public class VisitaDTO {
 	private String tipo;
 	private String codVoluntario;
 	public String codOrdenRetiro;
-	public String codBienesRecolectados;
-	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrdenRetiro,String codBienesRecolectados, String observaciones, String tipo) {
+	public ArrayList <BienDTO> bienesRecolectados = new ArrayList<>();
+	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrdenRetiro,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
 		this.codVoluntario=codVoluntario;
-		this.codBienesRecolectados=codBienesRecolectados;
+		this.bienesRecolectados=bienesRecolectados;
 		this.codOrdenRetiro=codOrdenRetiro;
 	}
 	
@@ -33,9 +34,42 @@ public class VisitaDTO {
 	public String getCodOrdenRetiro() {
 		return this.codOrdenRetiro;
 	}
-	public String getCodBienesRecolectados() {
-		return this.codBienesRecolectados;
+
+	public void setBienesRecolectados(ArrayList<BienDTO> bienesRecolectados) {
+		this.bienesRecolectados = bienesRecolectados;
 	}
+
+
+	public void setFechaVisita(LocalDate fechaVisita) {
+		this.fechaVisita = fechaVisita;
+	}
+
+
+	public void setObservaciones(String observaciones) {
+		this.observaciones = observaciones;
+	}
+
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+
+	public ArrayList<BienDTO> getBienesRecolectados() {
+		return bienesRecolectados;
+	}
+
+
+	public void setCodVoluntario(String codVoluntario) {
+		this.codVoluntario = codVoluntario;
+	}
+
+
+	public void setCodOrdenRetiro(String codOrdenRetiro) {
+		this.codOrdenRetiro = codOrdenRetiro;
+	}
+
+
 	public LocalDate getFechaVisita() {
 		return fechaVisita;
 	}
@@ -51,6 +85,5 @@ public class VisitaDTO {
 	public String getCodVoluntario() {
 		return this.codVoluntario;
 	}
-	
-	
 }
+

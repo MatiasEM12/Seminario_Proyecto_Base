@@ -5,7 +5,7 @@ import ar.edu.unrn.seminario.exception.*;
 public class Rol {
 	private Integer codigo;
 	private String nombre;
-	private boolean activo = true;
+	private boolean activo;
 	private String descripcion;
 
 	public Rol() {
@@ -106,7 +106,7 @@ public class Rol {
 	}
 
 	
-	public void activar(boolean b) throws StateChangeException {
+	public void activar() throws StateChangeException {
 		if (this.activo==true) {
 			throw new StateChangeException("Ya se encuentra activo");
 		}

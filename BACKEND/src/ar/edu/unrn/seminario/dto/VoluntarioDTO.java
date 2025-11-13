@@ -18,13 +18,9 @@ public class VoluntarioDTO extends PersonaDTO{
  
 
     public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
-			 String codigo, String nombre2, String apellido2, String contacto2, String tarea,
-			boolean disponible, String username, ArrayList<OrdenRetiroDTO> ordenesRetiro) {
+			 String codigo, String tarea,boolean disponible, String username, ArrayList<OrdenRetiroDTO> ordenesRetiro) {
 		super(nombre, apellido, contacto, dni, fecha_nac);
 		this.codigo = codigo;
-		nombre = nombre2;
-		apellido = apellido2;
-		contacto = contacto2;
 		this.tarea = tarea;
 		this.disponible = disponible;
 		this.username = username;
@@ -35,8 +31,7 @@ public class VoluntarioDTO extends PersonaDTO{
 
 
 
-	public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
-			String codUbicacion, String codigo, boolean disponible) {
+	public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac, String codigo, boolean disponible) {
 		super(nombre, apellido, contacto, dni, fecha_nac);
 		this.codigo = codigo;
 		this.disponible = disponible;

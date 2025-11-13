@@ -92,13 +92,17 @@ public class MemoryApi implements IApi {
             // crear perfil básico según rol
             String rn = role.getNombre();
             if ("DONANTE".equalsIgnoreCase(rn)) {
+            	Coordenada cor=new Coordenada(11111,11111);
+            	Ubicacion ubicacion= new Ubicacion("lugar", "de", "prueba", cor);
                 // atributos por defecto mínimos; se pueden completar luego con editar perfil
-                Donante d = new Donante(nombre, null, null, null,username, null);
+                Donante d = new Donante(nombre, "jose", LocalDate.now(), "34453544",username,ubicacion);
                 donantesByUser.put(username, d);
             } else if ("VOLUNTARIO".equalsIgnoreCase(rn)) {
-            	Voluntario v= new Voluntario(nombre, null, null, username, null, null);
+            	Voluntario v= new Voluntario(nombre, "pepe", LocalDate.now(),email,"34453544",username);
                 voluntariosByUser.put(username, v);
-            } 
+            }
+            
+            
         }
     }
 
@@ -667,23 +671,12 @@ public class MemoryApi implements IApi {
 	        .findFirst()
 	        .orElse(null);
 
-	    if (visitaEncontrada == null || visitaEncontrada.getCodBienesRecolectados() == null) {
+	    if (visitaEncontrada == null || visitaEncontrada.getBienesRecolectados() == null) {
 	        return new ArrayList<>();
 	    }
-	    return visitaEncontrada.getCodBienesRecolectados();
-	    // Mapear códigos de la visita a los BienDTO (buscando el primero que coincide)
-	    /*return Arrays.stream(visitaEncontrada.getCodBienesRecolectados())
-	        .filter(Objects::nonNull)
-	        .flatMap(cod -> bienes.stream()
-	            .filter(Objects::nonNull)
-	            .filter(b -> b.getCodigo().equalsIgnoreCase(cod))
-	            .findFirst()
-	            .map(Stream::of)
-	            .orElseGet(Stream::empty)
-	        )
+	 
+	   return visitaEncontrada.getBienesRecolectados();
 	        
-	        .collect(Collectors.toCollection(ArrayList::new));
-	        */
 	}
 	
 	public String[] obtenerCodigosDeBien(BienDTO bien) {
@@ -851,13 +844,12 @@ public class MemoryApi implements IApi {
         Voluntario voluntario;
         for (int i = 0; i < voluntarios.size(); i++) {
             voluntario = voluntarios.get(i);
-            voluntariosDTO.add( new VoluntarioDTO(voluntario.getCodigo(),voluntario.getNombre(),null,
-            		voluntario.getApellido(),null,voluntario.getContacto(),
-            		voluntario.getTarea(),null,null,null,voluntario.isDisponible(),voluntario.getUsername(),null));
+            voluntariosDTO.add( new VoluntarioDTO(voluntario.getNombre(),voluntario.getApellido(),voluntario.getContacto()
+            		,voluntario.getDni(),voluntario.getFecha_nac(),voluntario.getCodigo(),voluntario.isDisponible()));
            
         }
         return voluntariosDTO;
-        
+       
 	}
 	public void registrarVisita(VisitaDTO visita) {
 		visitas.add(visita);
@@ -869,19 +861,15 @@ public class MemoryApi implements IApi {
 	public void inicializarVoluntarios() throws DataEmptyException, DataObjectException, DataNullException, DataDateException {
 		Voluntario v1=new Voluntario(
 		        "Matias",               // nombre
-		        "Mellado", null,          // apellido
-		        "WhatsApp",            // preferencia de contacto
-		        "matiM" ,null              // username);
+		        "Mellado", LocalDate.now(),          // apellido
+		        "WhatsApp","123456",            // preferencia de contacto
+		        "matiM"            // username);
 		        );
 		
 		registrarVoluntario(v1);
 	}
 
-	@Override
-	public void registrarOrdenPedido(OrdenPedidoDTO ordenPedido) {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 }
 

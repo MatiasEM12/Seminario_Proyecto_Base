@@ -1,17 +1,15 @@
 package ar.edu.unrn.seminario.gui;
 
-
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-
 import ar.edu.unrn.seminario.api.IApi;
-
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class VentanaOrdenPedido extends JFrame {
 
@@ -19,18 +17,17 @@ public class VentanaOrdenPedido extends JFrame {
     private JPanel contentPane;
     private JTable tabla;
     private DefaultTableModel modelo;
-    private java.util.List<OrdenPedidoDTO> ordenes;
+    private List<OrdenPedidoDTO> ordenes;
     private AltaOrdenRetiro ventanaRetiro;
     IApi api;
 
     private JButton btnCancelar;
 
+    public VentanaOrdenPedido(AltaOrdenRetiro ventanaRetiro, IApi api) {
+        this.api = api;
+        this.ventanaRetiro = ventanaRetiro;
 
-
-    public VentanaOrdenPedido(AltaOrdenRetiro ventanaRetiro,IApi api) {
-        this.api = api; // guardar la instancia
-        this.ventanaRetiro=ventanaRetiro;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // no cerrar toda la app
         setBounds(100, 100, 800, 340);
 
         contentPane = new JPanel();
@@ -41,44 +38,40 @@ public class VentanaOrdenPedido extends JFrame {
         JLabel lblNewLabel = new JLabel("Órdenes de Pedido Pendientes");
         lblNewLabel.setBounds(280, 10, 250, 16);
         contentPane.add(lblNewLabel);
-       
-        // Títulos que COINCIDEN con los datos que vas a agregar
+
+        // Títulos que coinciden con los datos que vamos a agregar (7 columnas)
         String[] titulos = {
             "CÓDIGO", "CARGA PESADA", "OBSERVACIONES",
             "FECHA EMISIÓN", "ESTADO", "DONANTE", "DONACIÓN"
         };
 
         modelo = new DefaultTableModel(new Object[][] {}, titulos) {
-            // Para que las celdas no sean editables:
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
-
-        // Cargar datos desde la API (INSTANCIA, no estático)
-       cargarOrdenes();
 
         tabla = new JTable(modelo);
         JScrollPane scroll = new JScrollPane(tabla);
         scroll.setBounds(10, 28, 764, 128);
         contentPane.add(scroll);
-        
+
+        // Cargar datos desde la API
+        cargarOrdenes();
+
         JButton btnSeleccionar = new JButton("Seleccionar");
         btnSeleccionar.setBounds(167, 269, 136, 21);
         contentPane.add(btnSeleccionar);
-        
+
         btnCancelar = new JButton("Cancelar");
         btnCancelar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-        		
-        		setVisible(false);
-				dispose();
-        	}
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                dispose();
+            }
         });
         btnCancelar.setBounds(464, 269, 85, 21);
         contentPane.add(btnCancelar);
-        cargarOrdenes();
 
-        // 🖱 MouseListener: doble clic selecciona
+        // MouseListener: doble clic selecciona
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -88,21 +81,39 @@ public class VentanaOrdenPedido extends JFrame {
             }
         });
 
-        // O el botón “Seleccionar”
+        // Botón “Seleccionar”
         btnSeleccionar.addActionListener(e -> seleccionarOrden());
     }
 
     private void cargarOrdenes() {
+        // traer todas las ordenes desde la API
         ordenes = api.obtenerOrdenesPedido();
-        ordenes= ordenes.stream().filter(o->o.getEstado().equals("Pendiente")).collect(Collectors.toList());
+
+        if (ordenes == null) {
+            ordenes = java.util.Collections.emptyList();
+        }
+
+        // Filtrar pendientes: si getEstado() es String
+        try {
+            ordenes = ordenes.stream()
+                    .filter(Objects::nonNull)
+                    .filter(o -> o.getEstado() != null && o.getEstado().toString().equalsIgnoreCase("Pendiente"))
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            
+        }
+
         modelo.setRowCount(0);
         for (OrdenPedidoDTO o : ordenes) {
+            
             modelo.addRow(new Object[]{
-                o.getCodigo(),
-                o.getEstado(),
-                o.getObservaciones(),
-                o.getFechaEmision(),
-                o.getCodDonante()
+                o.getCodigo(),                   // CÓDIGO
+                o.isCargaPesada(),               // CARGA PESADA (boolean)
+                o.getObservaciones(),            // OBSERVACIONES
+                o.getFechaEmision(),             // FECHA EMISIÓN
+                o.getEstado(),                   // ESTADO
+                o.getCodDonante(),               // DONANTE
+                o.getCodDonacion()               // DONACIÓN
             });
         }
     }
@@ -110,14 +121,15 @@ public class VentanaOrdenPedido extends JFrame {
     private void seleccionarOrden() {
         int fila = tabla.getSelectedRow();
         if (fila < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Seleccioná una orden");
+            JOptionPane.showMessageDialog(this, "Seleccioná una orden");
             return;
         }
         OrdenPedidoDTO seleccionada = ordenes.get(fila);
 
-        // 🔁 Pasa los datos a la ventana de Retiro
+        // Pasa los datos a la ventana de Retiro
         ventanaRetiro.recibirOrdenPedido(seleccionada);
 
         dispose(); // cerrar esta ventana
     }
 }
+
