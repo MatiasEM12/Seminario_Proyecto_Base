@@ -21,6 +21,7 @@ public class ConnectionManager {
 			System.out.println("Error al cargar el driver");
 		}
 	}
+	
 
 	public static void disconnect() {
 		if (conn != null) {
@@ -38,11 +39,8 @@ public class ConnectionManager {
 		connect();
 	}
 
-	public static Connection getConnection() {
-		if (conn == null) {
-			connect();
-		}
-		return conn;
+	public static Connection getConnection() throws SQLException {
+	    return DriverManager.getConnection(URL_DB + DB, user, pass);
 	}
 
 }
