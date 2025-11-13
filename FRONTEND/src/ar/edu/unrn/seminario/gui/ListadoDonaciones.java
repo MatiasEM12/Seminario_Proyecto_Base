@@ -1,13 +1,14 @@
 package ar.edu.unrn.seminario.gui;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -15,134 +16,122 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
-import ar.edu.unrn.seminario.api.MemoryApi;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
-import ar.edu.unrn.seminario.dto.DonanteDTO;
-import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
+
 
 public class ListadoDonaciones extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTable tabla;
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTable tabla;
     private DefaultTableModel modelo;
-    private JButton btnCancelar;
     private java.util.List<DonacionDTO> donaciones;
-	IApi api;
-	AltaOrdenPedido ventanaPedido;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					IApi api=new MemoryApi();
-					AltaOrdenPedido ventanaPedido=new AltaOrdenPedido(api);
-					ListadoDonaciones frame = new ListadoDonaciones(api,ventanaPedido);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    private IApi api;
 
-	/**
-	 * Create the frame.
-	 */
-	public ListadoDonaciones(IApi api, AltaOrdenPedido ventanaPedido) {
-		this.api = api; // guardar la instancia
-        this.ventanaPedido=ventanaPedido;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 800, 340);
+    public ListadoDonaciones(IApi api) {
+        this.api = api;
 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 800, 380);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        JLabel lblNewLabel = new JLabel("Órdenes de Pedido Pendientes");
-        lblNewLabel.setBounds(280, 10, 250, 16);
-        contentPane.add(lblNewLabel);
-       
-        // Títulos que COINCIDEN con los datos que vas a agregar
-        String[] titulos = {
-            "CÓDIGO", "CARGA PESADA", "OBSERVACIONES",
-            "FECHA EMISIÓN", "ESTADO", "DONANTE", "DONACIÓN"
-        };
-
+        // Títulos de la tabla (asegurate que coincidan con los campos que vas a añadir)
+        String[] titulos = { "CÓDIGO", "CARGA PESADA", "OBSERVACIONES", "FECHA DONACIÓN", "ESTADO", "DONANTE", "COD DONACIÓN" };
         modelo = new DefaultTableModel(new Object[][] {}, titulos) {
-            // Para que las celdas no sean editables:
+            private static final long serialVersionUID = 1L;
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
 
-        // Cargar datos desde la API (INSTANCIA, no estático)
-       cargarOrdenes();
-
         tabla = new JTable(modelo);
         JScrollPane scroll = new JScrollPane(tabla);
-        scroll.setBounds(10, 28, 764, 128);
+        scroll.setBounds(10, 10, 764, 280);
         contentPane.add(scroll);
-        
-        JButton btnSeleccionar = new JButton("Seleccionar");
-        btnSeleccionar.setBounds(167, 269, 136, 21);
-        contentPane.add(btnSeleccionar);
-        
-        btnCancelar = new JButton("Cancelar");
-        btnCancelar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		
-        		
-        		setVisible(false);
-				dispose();
-        	}
-        });
-        btnCancelar.setBounds(464, 269, 85, 21);
-        contentPane.add(btnCancelar);
+
+        JButton btnRefrescar = new JButton("Refrescar");
+        btnRefrescar.setBounds(10, 305, 120, 25);
+        contentPane.add(btnRefrescar);
+
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setBounds(654, 305, 120, 25);
+        contentPane.add(btnCerrar);
+
+        // Cargar datos por primera vez
         cargarOrdenes();
 
-        // 🖱 MouseListener: doble clic selecciona
-        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+        // Listeners
+        btnRefrescar.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    seleccionarOrden();
-                }
+            public void actionPerformed(ActionEvent e) {
+                cargarOrdenes();
             }
         });
 
-        // O el botón “Seleccionar”
-        btnSeleccionar.addActionListener(e -> seleccionarOrden());
+        btnCerrar.addActionListener(e -> {
+            setVisible(false);
+            dispose();
+        });
     }
 
+ 
     private void cargarOrdenes() {
         donaciones = api.obtenerDonaciones();
-        donaciones= donaciones.stream().filter(o->o.getEstado().equals("Pendiente")).collect(Collectors.toList());
+        if (donaciones == null) {
+            donaciones = java.util.Collections.emptyList();
+        }
+
+       
+         donaciones = donaciones.stream()
+                .filter(Objects::nonNull)
+                .filter(d -> "Pendiente".equalsIgnoreCase(String.valueOf(api.obtenerEstadoOrdenPedido(d.getCodPedido()))))
+                .collect(Collectors.toList());
+
+        // Asegurar lista limpia
         modelo.setRowCount(0);
-        for (DonacionDTO D :donaciones) {
-            modelo.addRow(new Object[]{
-                o.getCodigo(),
-                o.getEstado(),
-                o.getObservaciones(),
-                o.getFechaEmision(),
-                o.getCodDonante()
+
+        for (DonacionDTO D : donaciones) {
+            if (D == null) continue;
+
+            // Obtenemos valores de forma segura (si faltan getters adapta aquí)
+            Object cargaPesada = null;
+            try {
+                // Intentar usar isCargaPesada() si existe en DonacionDTO
+                cargaPesada = D.getClass().getMethod("isCargaPesada").invoke(D);
+            } catch (Exception ex) {
+                // método no disponible o error -> dejar false por defecto
+                cargaPesada = Boolean.FALSE;
+            }
+
+            Object estado = null;
+            try {
+                Object st = api.obtenerEstadoOrdenPedido(D.getCodPedido());
+                estado = (st == null) ? "" : st.toString();
+            } catch (Exception ex) {
+                estado = "";
+            }
+
+            Object fecha = null;
+            try {
+                fecha = D.getFechaDonacion(); // LocalDate esperado
+            } catch (Exception ex) {
+                fecha = null;
+            }
+
+            modelo.addRow(new Object[] {
+                    safeString(D.getCodigo()),
+                    cargaPesada,
+                    safeString(D.getObservacion() != null ? D.getObservacion() : D.getObservacion()), // distintos DTOs usan 'observacion' o 'observaciones'
+                    fecha,
+                    estado,
+                    safeString(D.getCodDonante()),
+                    safeString(api.obtenerEstadoOrdenPedido(D.getCodPedido()))
             });
         }
     }
 
-    private void seleccionarOrden() {
-        int fila = tabla.getSelectedRow();
-        if (fila < 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Seleccioná una orden");
-            return;
-        }
-        DonacionDTO seleccionada = donaciones.get(fila);
-
-        // 🔁 Pasa los datos a la ventana de Retiro
-        ventanaPedido.recibirDonaciones(seleccionada);
-
-        dispose(); // cerrar esta ventana
+    private String safeString(Object o) {
+        return o == null ? "" : String.valueOf(o);
     }
-
-	}
+}

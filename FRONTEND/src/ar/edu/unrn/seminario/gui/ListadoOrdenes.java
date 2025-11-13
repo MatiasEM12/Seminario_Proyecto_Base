@@ -81,6 +81,27 @@ public class ListadoOrdenes extends JFrame {
         		
         	}
         });
+        
+        JButton btAgregarVisita = new JButton("AgregarVisita");
+        btAgregarVisita.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		int filaSeleccionada = tabla.getSelectedRow();
+				if (filaSeleccionada >= 0) {
+                    String tipo =(String) tabla.getValueAt(filaSeleccionada,0);
+					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
+						
+					//llama a  altaVisita
+						
+					}else {
+					
+					}
+                }
+        		
+        		
+        	}
+        });
+        panelButtom.add(btAgregarVisita);
         panelButtom.add(btnConsultarVisitas);
 
         JButton btnVerBienes = new JButton("Ver bienes");

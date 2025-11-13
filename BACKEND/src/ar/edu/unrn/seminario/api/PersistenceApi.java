@@ -253,13 +253,14 @@ public class PersistenceApi implements IApi {
     }
     
     @Override
-    public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
+    public void registrarOrdenRetiro(OrdenRetiro retiroO)
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+    	
         // validaciones básicas
-        if (retiro == null) {
+        if (retiroO == null) {
             throw new DataNullException("OrdenRetiro DTO es nula");
         }
-
+        OrdenRetiroDTO retiro= this.toOrdenRetiroDTO(retiroO);
         // Buscar voluntario (puede ser null si no se asignó)
         Voluntario v = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
@@ -312,7 +313,29 @@ public class PersistenceApi implements IApi {
         ordenRetiroDao.create(orden);
     }
 
+    private OrdenRetiroDTO toOrdenRetiroDTO(OrdenRetiro ordenRetiro) {
+        if (ordenRetiro == null) {
+            return null;
+        }
 
+        String[] codVisitas = ordenRetiro.getCodVisitas(); // ya devuelve String[]
+        String codVoluntario = (ordenRetiro.getVoluntario() != null)
+                ? ordenRetiro.getVoluntario().getCodigo()
+                : null;
+        String codPedido = (ordenRetiro.getPedido() != null)
+                ? ordenRetiro.getPedido().getCodigo()
+                : null;
+
+        return new OrdenRetiroDTO(
+                ordenRetiro.getFechaEmision(),
+                ordenRetiro.getEstado() == null ? "Pendiente" : ordenRetiro.getEstado().toString(),
+                OrdenRetiro.getTipo(),
+                ordenRetiro.getCodigo(),
+                codPedido,
+                codVoluntario,
+                codVisitas
+        );
+    }
     @Override
     public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
         if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
@@ -433,7 +456,34 @@ public class PersistenceApi implements IApi {
             bien.getMaterial()              // String material
         );
     }
+    
+    
+    public String obtenerEstadoOrdenPedido(String codOrdenPedido) {
+        if (codOrdenPedido == null || codOrdenPedido.trim().isEmpty()) {
+            return null;
+        }
 
+        OrdenPedido orden = null;
+        try {
+            orden = ordenPedidoDao.find(codOrdenPedido);
+        } catch (Exception e) {
+            // Si el DAO lanza error (por ejemplo no existe el código)
+            return null;
+        }
+
+        if (orden == null) {
+            return null;
+        }
+
+        // Devuelve el estado como texto, consistente con los DTO
+        if (orden.getEstado() != null) {
+            return orden.getEstado().toString();
+        }
+
+        // Si no tiene estado asignado, devolvemos "Pendiente" como valor por defecto
+        return "Pendiente";
+
+    }
     private DonanteDTO toDonanteDTO(Donante donante) {
         if (donante == null) return null;
         return new DonanteDTO(donante.getNombre(), donante.getCodigo(), donante.getApellido(), donante.getContacto(),

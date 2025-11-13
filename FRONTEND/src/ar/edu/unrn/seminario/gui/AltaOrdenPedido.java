@@ -105,7 +105,7 @@ public class AltaOrdenPedido extends JFrame {
 	        btnDonaciones.setBounds(140, 6, 151, 21);
 	        contentPane.add(btnDonaciones);
 	        btnDonaciones.addActionListener(e -> {
-				ListadoDonaciones listadoDonaciones = new ListadoDonaciones(api,this);
+				ListadoDonaciones listadoDonaciones = new ListadoDonaciones(api);
 				listadoDonaciones.setLocationRelativeTo(this);
 				listadoDonaciones.setVisible(true);
 		});
