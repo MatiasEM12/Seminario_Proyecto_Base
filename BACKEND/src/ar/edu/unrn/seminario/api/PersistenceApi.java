@@ -208,8 +208,9 @@ public class PersistenceApi implements IApi {
 
     @Override
     public Boolean autenticar(String username, String password) {
-        // pendiente: delegar a usuarioDao.autenticar si existe
-        return null;
+    	  Usuario u = usuarioDao.find(username);
+    	    if (u == null) return false;
+    	    return Objects.equals(u.getContrasena(), password);
     }
 
     // --- Órdenes ---
@@ -562,7 +563,52 @@ public class PersistenceApi implements IApi {
 
     @Override
     public void registrarVisita(VisitaDTO visita) {
-        // pendiente: adaptar DTO->modelo y delegar a visitaDao
+    	 if (visita == null) return;
+
+    	    try {
+    	        // Convertir bienes DTO a modelo
+    	        ArrayList<Bien> bienes = new ArrayList<>();
+    	        if (visita.getBienesRecolectados() != null) {
+    	            for (BienDTO b : visita.getBienesRecolectados()) {
+    	                bienes.add(new Bien(
+    	                        b.getCodigo(),
+    	                        b.getTipo(),
+    	                        b.getPeso(),
+    	                        b.getNombre(),
+    	                        b.getDescripcion(),
+    	                        b.getNivelNecesidad(),
+    	                        b.getFechaVencimiento(),
+    	                        b.getTalle(),
+    	                        b.getMaterial()
+    	                ));
+    	            }
+    	        }
+
+    	        // Crear visita (el constructor genera el código automáticamente)
+    	        Visita visita2 = new Visita(
+    	                visita.getFechaVisita(),
+    	                visita.getObservaciones(),
+    	                visita.getTipo(),
+    	                visita.getCodOrdenRetiro(),
+    	                bienes
+    	        );
+
+    	        // Persistir
+    	        visitaDao.create(visita2);
+
+    	        // Si es una "Visita Final", marcar la OrdenRetiro como Completada
+    	        if ("Visita Final".equalsIgnoreCase(visita.getTipo())) {
+    	            OrdenRetiro orden = ordenRetiroDao.find(visita.getCodOrdenRetiro());
+    	            if (orden != null) {
+    	                orden.setEstadoRetiro("Completada");
+    	                ordenRetiroDao.update(orden);
+    	            }
+    	        }
+
+    	    } catch (Exception e) {
+    	        e.printStackTrace();
+    	        throw new RuntimeException("Error al registrar la visita: " + e.getMessage());
+    	    }
     }
 
 	@Override
@@ -575,7 +621,24 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
-		// TODO Auto-generated method stub
+		ArrayList<VisitaDTO> resultado = new ArrayList<>();
+	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
+
+	    List<Visita> visitas = visitaDao.findAll(codOrdenRetiro);
+	    if (visitas == null) return resultado;
+
+	    for (Visita v : visitas) {
+	        resultado.add(new VisitaDTO(
+	                v.getCodigo(),
+	                v.getFechaVisita(),
+	                v.getTipo(),
+	                v.getRetiro(),
+	                new ArrayList<>(),
+	                v.getObservaciones(),
+	                v.getTipo()
+	        ));
+	    }
+	    return resultado;
 		return null;
 	}
 
