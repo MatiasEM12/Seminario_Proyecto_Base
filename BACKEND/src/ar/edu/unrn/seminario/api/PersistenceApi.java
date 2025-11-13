@@ -371,12 +371,7 @@ public class PersistenceApi implements IApi {
     }
     @Override
     public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
-        try {
-			if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
         OrdenPedido pedido = ordenPedidoDao.find(codPedido);
         if (pedido == null) throw new DataNullException("No existe OrdenPedido con código: " + codPedido);
    
@@ -650,16 +645,9 @@ public class PersistenceApi implements IApi {
 	        if (dto.getCodDonante() != null && !dto.getCodDonante().trim().isEmpty()) {
 	            donante = donanteDao.find(dto.getCodDonante());
 	        }
-
+//LocalDate fechaEmision, boolean cargaPesada,String observaciones, String codDonante, String codDonacion
 	        // Crear el objeto del modelo
-	        OrdenPedido pedido = new OrdenPedido(
-	                dto.getCodigo(),
-	                LocalDate.now(),
-	                dto.getObservaciones(),
-	                dto.isCargaPesada(),
-	                donante.getCodigo()
-	                
-	        );
+	        OrdenPedido pedido = new OrdenPedido(dto.getFechaEmision(),dto.isCargaPesada(),dto.getObservaciones(),dto.getCodDonante(),dto.getCodDonacion() );
 
 	        return pedido;
 	    } catch (Exception e) {
