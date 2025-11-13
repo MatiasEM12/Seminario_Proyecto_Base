@@ -48,7 +48,13 @@ public class VentanaPrincipal extends JFrame {
 		altaUsuarioMenuItem.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				AltaUsuario alta = new AltaUsuario(api);
+				AltaUsuario alta = null;
+				try {
+					alta = new AltaUsuario(api);
+				} catch (StateChangeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				alta.setLocationRelativeTo(null);
 				alta.setVisible(true);
 			}
