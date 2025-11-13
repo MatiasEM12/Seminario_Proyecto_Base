@@ -51,7 +51,7 @@ public interface IApi {
 	// API
 	void modificarContraseña(String usuario, String passWord) throws DataNullException;
 	
-	public Boolean autenticar(String username, String password);
+	public Boolean autenticar(String username, String password) throws DataNullException;
 	
 
 	
