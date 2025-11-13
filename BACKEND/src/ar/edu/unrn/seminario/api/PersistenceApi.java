@@ -208,10 +208,10 @@ public class PersistenceApi implements IApi {
     @Override
     public void modificarContraseña(String usuario, String passWord) throws DataNullException {
         if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
-        Usuario us_contraseña = usuarioDao.find(usuario);
         if (passWord == null || passWord.trim().isEmpty()) {
             throw new DataNullException("La contraseña no puede estar vacía.");
         }
+        Usuario us_contraseña = usuarioDao.find(usuario);
         if (us_contraseña == null) throw new DataNullException("No existe un usuario con el nombre: " + usuario);
         us_contraseña.setContrasena(passWord);
         usuarioDao.update(us_contraseña);
@@ -219,10 +219,15 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public Boolean autenticar(String username, String password) {
-        // pendiente: delegar a usuarioDao.autenticar si existe
-        return null;
-    }
+    public Boolean autenticar(String username, String password) throws DataNullException{
+        if (username == null || username.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
+        if (password == null || password.trim().isEmpty()) {
+            throw new DataNullException("La contraseña no puede estar vacía.");
+        }
+        Usuario us_autentificado = usuarioDao.find(username);
+        if (us_autentificado == null) throw new DataNullException("No existe un usuario con el username: " + username);
+        return us_autentificado.getContrasena().equals(password);
+    }        // pendiente: delegar a usuarioDao.autenticar si existe
 
     // --- Órdenes ---
     @Override
