@@ -365,8 +365,20 @@ public class PersistenceApi implements IApi {
 
     @Override
     public List<UsuarioDTO> obtenerUserDonantes() {
-        // Se pueden filtrar usuarios por rol DONANTE
-        return new ArrayList<>();
+    	List<Usuario> user= this.usuarioDao.findAll();
+    
+         for (Usuario u : this.usuariosByUsername.values()) {
+         	Rol r=u.getRol();
+         	if("DONANTE".equalsIgnoreCase(r.getNombre())){
+         		
+         		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+                           u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
+         	}
+             
+         }
+         return dtos;
+ 	}
+
     }
 
     @Override
@@ -511,7 +523,7 @@ public class PersistenceApi implements IApi {
     public void registrarOrdenPedido(OrdenPedidoDTO orden) {
     	
     	
-    	ordenPedidoDao.create(ordeR);
+
     }
     // --- Métodos no implementados / auxiliares del IApi  ---
    
@@ -524,7 +536,9 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
-		// TODO Auto-generated method stub
+		Rol rol=new Rol(codigo,nombre,descripcion,estado);
+		
+		rolDao.create(rol);
 		
 	}
 
@@ -583,33 +597,7 @@ public class PersistenceApi implements IApi {
 		// TODO Auto-generated method stub
 		
 	}
-	private OrdenPedido toOrdenPedido(OrdenPedidoDTO dto) {
-	    if (dto == null) return null;
-
-	    try {
-	        // Buscar el donante por código si existe
-	        Donante donante = null;
-	        if (dto.getCodDonante() != null && !dto.getCodDonante().trim().isEmpty()) {
-	            donante = donanteDao.find(dto.getCodDonante());
-	        }
-
-	        // Crear el objeto del modelo
-	        OrdenPedido pedido = new OrdenPedido(
-	                dto.getCodigo(),
-	                dto.getFechaCreacion(),
-	                dto.getEstado(),
-	                dto.getObservaciones(),
-	                dto.isCargaPesada(),
-	                donante
-	        );
-
-	        return pedido;
-	    } catch (Exception e) {
-	        System.err.println("Error convirtiendo OrdenPedidoDTO a modelo: " + e.getMessage());
-	        return null;
-	    }
-	}
-
+	
 }
 
 

@@ -2,10 +2,13 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Bien;
+import ar.edu.unrn.seminario.modelo.Coordenada;
 
 public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
@@ -93,8 +96,6 @@ try {
 
 	@Override
 	public List<Bien> findVisita(String codDonacion) {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

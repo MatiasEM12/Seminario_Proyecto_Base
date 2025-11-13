@@ -888,6 +888,12 @@ public class MemoryApi implements IApi {
 		
 	}
 
+	@Override
+	public void registrarOrdenPedido(OrdenPedidoDTO orden) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }
