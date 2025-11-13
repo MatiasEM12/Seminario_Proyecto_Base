@@ -9,6 +9,8 @@ import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Donacion;
@@ -41,7 +43,7 @@ import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 public class TestAcceso {
-	public static void main(String[] args) throws StateChangeException {
+	public static void main(String[] args) throws StateChangeException, DataEmptyException, DataNullException {
 		RolDao rolDao = new RolDAOJDBC();
 		List<Rol> roles = rolDao.findAll();
 
@@ -50,15 +52,16 @@ public class TestAcceso {
 		}
 
 		UsuarioDao usuarioDao = new UsuarioDAOJDBC();
-//		Usuario usuario = new Usuario("ldifabio", "1234", "Lucas", "ldifabio@unrn.edu.ar", new Rol(1, ""));
-//		usuarioDao.create(usuario);
+		// cambiarlo para que recupere uno de los roles que estan en la base de datos
+		Usuario usuario = new Usuario("ldifabio", "1234", "Lucas", "ldifabio@unrn.edu.ar", new Rol(1, "administrador"));
+		usuarioDao.create(usuario);
 
-//		List<Usuario> usuarios = usuarioDao.findAll();
-//			for (Usuario u: usuarios) {
-//			System.out.println(u);
-//		}
+		List<Usuario> usuarios = usuarioDao.findAll();
+			for (Usuario u: usuarios) {
+			System.out.println(u);
+		}
 
-//		System.out.println(usuarioDao.find("ldifabio"));
+		System.out.println(usuarioDao.find("ldifabio"));
 	}
 
 }
