@@ -525,24 +525,9 @@ public class MemoryApi implements IApi {
         Donacion donacion;
         for (int i = 0; i < donaciones.size(); i++) {
             donacion = donaciones.get(i);
-            donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), donacion.getObservacion(),
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                    donacion.getBienes(),donacion.getDonante().getCodigo(),null));
-=======
-                    donacion.getBienes(),donacion.getDonante().getCodigo()));
->>>>>>> Stashed changes
-=======
-                    donacion.getBienes(),donacion.getDonante().getCodigo()));
->>>>>>> Stashed changes
-=======
-                    donacion.getBienes(),donacion.getDonante().getCodigo()));
->>>>>>> Stashed changes
-=======
-                    donacion.getBienes(),donacion.getDonante().getCodigo()));
->>>>>>> Stashed changes
+            donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), 
+            		donacion.getObservacion(),donacion.getBienes(),donacion.getDonante().getCodigo(),null));
+
         }
         return donacionesDTO;
     }
@@ -889,6 +874,12 @@ public class MemoryApi implements IApi {
 		        );
 		
 		registrarVoluntario(v1);
+	}
+
+	@Override
+	public void registrarOrdenPedido(OrdenPedidoDTO ordenPedido) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
