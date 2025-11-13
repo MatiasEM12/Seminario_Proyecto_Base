@@ -39,8 +39,10 @@ public class ListadoUsuario extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws DataNullException 
 	 */
-	public ListadoUsuario(	IApi api) {
+	@SuppressWarnings("unchecked")
+	public ListadoUsuario(	IApi api) throws DataNullException {
 		  this.api = api;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 623, 468);
@@ -134,7 +136,8 @@ public class ListadoUsuario extends JFrame {
 	    btnActivar.setBounds(284, 7, 92, 31);
 	    panelButtom.add(btnActivar);
 	    btnActivar.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
+	       
+			public void actionPerformed(ActionEvent e) {
 	            int opcionSeleccionada = JOptionPane.showConfirmDialog(null,
 	                    "Estas seguro que queres cambiar el estado del Usuario?", "Confirmar cambio de estado.",
 	                    JOptionPane.YES_NO_OPTION);
@@ -143,7 +146,7 @@ public class ListadoUsuario extends JFrame {
 	                try {
 	                    api.activarUsuario(username);
 	                    filtrar(lUsuarioBox, textField);
-	                } catch (StateChangeException eS) {
+	                } catch (StateChangeException | DataNullException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
 	            }
@@ -155,7 +158,8 @@ public class ListadoUsuario extends JFrame {
 	    btnDesactivar.setBounds(158, 7, 92, 31);
 	    panelButtom.add(btnDesactivar);
 	    btnDesactivar.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
+	       
+			public void actionPerformed(ActionEvent e) {
 	            int reply = JOptionPane.showConfirmDialog(null, "Estas seguro que queres cambiar el estado del Usuario?",
 	                    "Confirmar cambio de estado.", JOptionPane.YES_NO_OPTION);
 	            if (reply == JOptionPane.YES_OPTION) {
@@ -163,7 +167,7 @@ public class ListadoUsuario extends JFrame {
 	                try {
 	                    api.desactivarUsuario(username);
 	                    filtrar(lUsuarioBox, textField);
-	                } catch (StateChangeException eS) {
+	                } catch (StateChangeException | DataNullException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
 	            }
@@ -184,7 +188,12 @@ public class ListadoUsuario extends JFrame {
 		// cuando cambie el combo: limpiar modelo y aplicar filtro
 		lUsuarioBox.addActionListener(e -> {
 		    modelo.setRowCount(0);              // limpiar filas actuales
-		    filtrar(lUsuarioBox, textField);   
+		    try {
+				filtrar(lUsuarioBox, textField);
+			} catch (DataNullException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}   
 		});
 
 

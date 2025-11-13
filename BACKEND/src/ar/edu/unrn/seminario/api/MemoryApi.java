@@ -646,17 +646,16 @@ public class MemoryApi implements IApi {
 	            if (v == null) {
 	                throw new RuntimeException("La orden de retiro existe pero no tiene voluntario asignado: " + codOrdenRetiro);
 	            }
-	            // Asumimos que Voluntario tiene el método getUsername().
+	            
 	            return v.getUsername();
-	            // Si en tu clase Voluntario el getter se llama getCodigo(), reemplazar la línea anterior por:
-	            // return v.getCodigo();
+	            
 	        }
 	    }
 
 	    throw new RuntimeException("No se encontró OrdenRetiro con código: " + codOrdenRetiro);
 	}
 	
-	/*public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
+	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
 	    if (codVisita == null || codVisita.trim().isEmpty()) {
 	        return new ArrayList<>();
 	    }
@@ -671,9 +670,9 @@ public class MemoryApi implements IApi {
 	    if (visitaEncontrada == null || visitaEncontrada.getCodBienesRecolectados() == null) {
 	        return new ArrayList<>();
 	    }
-
+	    return visitaEncontrada.getCodBienesRecolectados();
 	    // Mapear códigos de la visita a los BienDTO (buscando el primero que coincide)
-	    return Arrays.stream(visitaEncontrada.getCodBienesRecolectados())
+	    /*return Arrays.stream(visitaEncontrada.getCodBienesRecolectados())
 	        .filter(Objects::nonNull)
 	        .flatMap(cod -> bienes.stream()
 	            .filter(Objects::nonNull)
@@ -682,8 +681,10 @@ public class MemoryApi implements IApi {
 	            .map(Stream::of)
 	            .orElseGet(Stream::empty)
 	        )
+	        
 	        .collect(Collectors.toCollection(ArrayList::new));
-	}*/
+	        */
+	}
 	
 	public String[] obtenerCodigosDeBien(BienDTO bien) {
 	    if (bien == null || bien.getCodigo() == null) {
@@ -693,7 +694,7 @@ public class MemoryApi implements IApi {
 	    String[] cod = { bien.getCodigo() };
 	    return cod;
 	}
-	/*public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro){
+	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro){
 	    ArrayList<VisitaDTO> resultado = new ArrayList<>();
 
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
@@ -710,7 +711,7 @@ public class MemoryApi implements IApi {
 
 	    return resultado;
 	}
-*/
+
 	public ArrayList<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
 	        return new ArrayList<>();

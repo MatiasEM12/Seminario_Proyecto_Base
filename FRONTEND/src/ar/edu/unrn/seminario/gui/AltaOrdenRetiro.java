@@ -109,47 +109,43 @@ public class AltaOrdenRetiro extends JFrame {
 		    	    // Crear DTO (no entidad)
 		    	    OrdenRetiroDTO retiro = new OrdenRetiroDTO(
 		    	    	    fecha,                                  // fecha de emisión
-		    	    	    ordenSeleccionada.getEstado(),                    // estado
+		    	    	    ordenSeleccionada.getEstado().toString(),
 		    	    	    ordenSeleccionada.getTipo(),            // tipo de la orden
 		    	    	    txtCodigo.getText(),                     // código de la orden de retiro
 		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido
-		    	    	    null,                                   // código del voluntario (lo asignarás después)
-		    	    	    null                                    // visitas aún no asignadas
+		    	    	    null, null
 		    	    	);
-
-		    	    // Registrar la orden de retiro en memoria
-		    	    // en AltaOrdenRetiro, después de registrar el DTO
 		    	    api.registrarOrdenRetiro(retiro);
 
-		    	   
-		    	    if (ordenSeleccionada != null && ordenSeleccionada.getCodigo() != null) {
-		    	        api.inicializarOrdenesRetiro(ordenSeleccionada.getCodigo());
-		    	    } else {
-		    	      
-		    	        api.inicializarOrdenesRetiro(retiro.getPedido());
-		    	    }
-		    	    // Limpieza de campos
-		    	    ordenSeleccionada = null;
-		    	    txtCodigo.setText("");
-		    	    txtEstado.setText("");
-		    	    txtFecha.setText("");
-		    	    btnGuardar.addActionListener(e1 -> dispose());
-		    	} catch (Exception ex) {
-		    	    JOptionPane.showMessageDialog(null, 
-		    	        "Error al crear la orden de retiro. Verificá el formato de la fecha (ejemplo: 2025-10-26T15:00)",
-		    	        "Error",
-		    	        JOptionPane.ERROR_MESSAGE);
-		    	}
-		    }
-		});
+                    
+                    api.inicializarOrdenesRetiro(ordenSeleccionada.getCodigo());
 
-		
-	}
-	public void recibirOrdenPedido(OrdenPedidoDTO orden) {
-	    this.ordenSeleccionada = orden;
-	 
-	    txtCodigo.setText(orden.getCodigo()); 
-	    txtEstado.setFont(orden.getEstado());
-	    txtFecha.setText(orden.getFechaEmision().toString());
-	}
+                    // Limpieza
+                    ordenSeleccionada = null;
+                    txtCodigo.setText("");
+                    txtEstado.setText("");
+                    txtFecha.setText("");
+
+                    JOptionPane.showMessageDialog(null, 
+                        "Orden de Retiro registrada correctamente.",
+                        "OK",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, 
+                        "Error al crear la orden de retiro.\nFormato de fecha válido: 2025-10-26",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
+
+    public void recibirOrdenPedido(OrdenPedidoDTO orden) {
+        this.ordenSeleccionada = orden;
+
+        txtCodigo.setText(orden.getCodigo());
+        txtEstado.setText(orden.getEstado().toString());             
+        txtFecha.setText(orden.getFechaEmision().toString());
+    }
 }

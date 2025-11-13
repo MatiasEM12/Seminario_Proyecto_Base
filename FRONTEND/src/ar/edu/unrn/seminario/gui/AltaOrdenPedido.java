@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.api.MemoryApi;
+import ar.edu.unrn.seminario.dto.DonacionDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ public class AltaOrdenPedido extends JFrame {
     private JTextField txtFecha;
     private JTextField txtEstado;
     private JTextField txtCodigo;
+    private DonacionDTO donacionSeleccionada;
     IApi api;
 	/**
 	 * Launch the application.
@@ -102,7 +104,11 @@ public class AltaOrdenPedido extends JFrame {
 	        });
 	        btnDonaciones.setBounds(140, 6, 151, 21);
 	        contentPane.add(btnDonaciones);
-
+	        btnDonaciones.addActionListener(e -> {
+				ListadoDonaciones listadoDonaciones = new ListadoDonaciones(api,this);
+				listadoDonaciones.setLocationRelativeTo(this);
+				listadoDonaciones.setVisible(true);
+		});
 	        btnGuardar.addActionListener(e -> {
 	            String fechaTexto = txtFecha.getText();
 	            try {
@@ -150,5 +156,13 @@ public class AltaOrdenPedido extends JFrame {
 	                );
 	            }
 	        });
+	    }
+	    
+	    public void recibirDonaciones(DonacionDTO donacion) {
+	        this.donacionSeleccionada = donacion;
+
+	      //  txtCodigo.setText(donacion.getCodigo());
+	        //txtEstado.setText(donacion.getEstado().toString());             
+	        //txtFecha.setText(donacion.getFechaEmision().toString());
 	    }
 	}

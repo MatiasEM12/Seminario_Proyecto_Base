@@ -60,7 +60,7 @@ public interface IApi {
 	
 	//OrdenRetiro
 	
-	public void registrarOrdenRetiro(OrdenRetiro orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+	public void registrarOrdenRetiro(OrdenRetiroDTO retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
@@ -68,10 +68,10 @@ public interface IApi {
 	//public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
-	public void registrarOrdenPedido(OrdenPedidoDTO ordenPedido);
+
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
 
-	//ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
+	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
 	
 	//Donante
 	public void registrarDonante(Donante donante);
@@ -82,6 +82,7 @@ public interface IApi {
 	public void registrarVoluntario(Voluntario voluntario);
 	List<VoluntarioDTO> obtenerVoluntarios();
 	List<UsuarioDTO> obtenerUserVoluntarios();
+	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro);
 	//Administrador 
 	List<UsuarioDTO> obtenerUserAdministrador();
 	
@@ -89,7 +90,7 @@ public interface IApi {
 	public void registrarDonacion(Donacion donacion);
 	ArrayList<DonacionDTO> obtenerDonaciones();
 	
-	//public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
+	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
@@ -104,6 +105,8 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void registrarVisita(VisitaDTO visita);
+
+
 
 
 	
