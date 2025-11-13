@@ -253,14 +253,14 @@ public class PersistenceApi implements IApi {
     }
     
     @Override
-    public void registrarOrdenRetiro(OrdenRetiro retiroO)
+    public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
     	
         // validaciones básicas
-        if (retiroO == null) {
+        if (retiro == null) {
             throw new DataNullException("OrdenRetiro DTO es nula");
         }
-        OrdenRetiroDTO retiro= this.toOrdenRetiroDTO(retiroO);
+
         // Buscar voluntario (puede ser null si no se asignó)
         Voluntario v = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
@@ -439,6 +439,9 @@ public class PersistenceApi implements IApi {
         }
         return retirar;
     }
+    
+    
+    
 
     // --- helpers DTO ---
     private BienDTO toBienDTO(Bien bien) {
@@ -502,7 +505,14 @@ public class PersistenceApi implements IApi {
     public void registrarVisita(Visita visita) {
         visitaDao.create(visita);
     }
-
+    public void registrarOrdenPedido(OrdenPedido orden) {
+    	ordenPedidoDao.create(orden);
+    }
+    public void registrarOrdenPedido(OrdenPedidoDTO orden) {
+    	
+    	
+    	ordenPedidoDao.create(ordeR);
+    }
     // --- Métodos no implementados / auxiliares del IApi  ---
    
 
@@ -530,4 +540,76 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
+	@Override
+	public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+		public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
+		    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
+		        throw new IllegalArgumentException("Código de OrdenRetiro inválido");
+		    }
+
+		    // buscar la orden
+		    OrdenRetiro orden = ordenRetiroDao.find(codOrdenRetiro);
+		    if (orden == null) {
+		        throw new IllegalArgumentException("No existe OrdenRetiro con código: " + codOrdenRetiro);
+		    }
+
+		    try {
+		        // cambiar estado en modelo (tu setEstadoRetiro valida y sincroniza pedido)
+		        orden.setEstadoRetiro("Completada");
+
+		        // persistir cambios en OrdenRetiro
+		        ordenRetiroDao.update(orden);
+
+		        // opcional: también actualizar ordenPedido si tu DAO lo requiere
+		        if (orden.getPedido() != null) {
+		            ordenPedidoDao.update(orden.getPedido());
+		        }
+		    } catch (DataNullException | StateChangeException ex) {
+		        throw new Exception("No se pudo completar la OrdenRetiro: " + ex.getMessage(), ex);
+		    } catch (Exception ex) {
+		        throw new Exception("Error al persistir la OrdenRetiro completada: " + ex.getMessage(), ex);
+		    }
+		}
+
+	@Override
+	public void registrarOrdenRetiro(OrdenRetiro retiroO)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+		// TODO Auto-generated method stub
+		
+	}
+	private OrdenPedido toOrdenPedido(OrdenPedidoDTO dto) {
+	    if (dto == null) return null;
+
+	    try {
+	        // Buscar el donante por código si existe
+	        Donante donante = null;
+	        if (dto.getCodDonante() != null && !dto.getCodDonante().trim().isEmpty()) {
+	            donante = donanteDao.find(dto.getCodDonante());
+	        }
+
+	        // Crear el objeto del modelo
+	        OrdenPedido pedido = new OrdenPedido(
+	                dto.getCodigo(),
+	                dto.getFechaCreacion(),
+	                dto.getEstado(),
+	                dto.getObservaciones(),
+	                dto.isCargaPesada(),
+	                donante
+	        );
+
+	        return pedido;
+	    } catch (Exception e) {
+	        System.err.println("Error convirtiendo OrdenPedidoDTO a modelo: " + e.getMessage());
+	        return null;
+	    }
+	}
+
 }
+
+

@@ -110,6 +110,10 @@ public class DonacionDTO {
 	public void setCodRetiro(String codRetiro) {
 		this.codRetiro = codRetiro;
 	}
+
+
+
+
 			
 
 	

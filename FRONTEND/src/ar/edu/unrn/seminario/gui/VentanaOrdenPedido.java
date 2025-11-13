@@ -95,10 +95,10 @@ public class VentanaOrdenPedido extends JFrame {
 
         // Filtrar pendientes: si getEstado() es String
         try {
-            ordenes = ordenes.stream()
-                    .filter(Objects::nonNull)
-                    .filter(o -> o.getEstado() != null && o.getEstado().toString().equalsIgnoreCase("Pendiente"))
-                    .collect(Collectors.toList());
+        	ordenes = ordenes.stream()
+        		    .filter(o -> o.getEstado() != null && o.getEstado().toString().equalsIgnoreCase("Pendiente"))
+        		    .collect(Collectors.toList());
+
         } catch (Exception ex) {
             
         }

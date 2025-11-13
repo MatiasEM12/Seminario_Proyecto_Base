@@ -105,7 +105,8 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void registrarVisita(VisitaDTO visita);
-
+	 public void registrarOrdenPedido(OrdenPedido orden) ;
+	 public void registrarOrdenPedido(OrdenPedidoDTO orden) ;
 
 	public String obtenerEstadoOrdenPedido(String codOrdenPedido) ;
 
@@ -114,5 +115,9 @@ public interface IApi {
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 
 	
-	
+	void completarOrdenRetiro(String codOrdenRetiro) throws Exception;
+
+
+	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 }

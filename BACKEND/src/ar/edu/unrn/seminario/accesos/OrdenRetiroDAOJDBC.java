@@ -62,7 +62,42 @@ OrdenPedidoDao op;
 
 	@Override
 	public void update(OrdenRetiro orden) {
-		// TODO Auto-generated method stub
+		try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement statement = conn.prepareStatement(
+	            "UPDATE OrdenRetiro SET estado = ?, Fecha_Emision = ?, codVoluntario = ?, codOrdenPedido = ? WHERE codigo = ?"
+	        );
+
+	        // Fecha
+	        java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
+	        statement.setString(1, orden.getEstadoRetiro() != null ? orden.getEstadoRetiro() : orden.getEstadoString());
+	        statement.setDate(2, fechaSQL);
+
+	        // voluntario puede ser null
+	        if (orden.getVoluntario() != null) {
+	            statement.setString(3, orden.getVoluntario().getCodigo());
+	        } else {
+	            statement.setNull(3, java.sql.Types.VARCHAR);
+	        }
+
+	        // pedido (puede no cambiar)
+	        if (orden.getPedido() != null) {
+	            statement.setString(4, orden.getPedido().getCodigo());
+	        } else {
+	            statement.setNull(4, java.sql.Types.VARCHAR);
+	        }
+
+	        statement.setString(5, orden.getCodigo());
+
+	        int cantidad = statement.executeUpdate();
+	        if (cantidad <= 0) {
+	            System.out.println("OrdenRetiro.update: no se actualizó ningún registro para codigo=" + orden.getCodigo());
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al actualizar OrdenRetiro: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 

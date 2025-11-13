@@ -869,6 +869,25 @@ public class MemoryApi implements IApi {
 		registrarVoluntario(v1);
 	}
 
+	@Override
+	public String obtenerEstadoOrdenPedido(String codOrdenPedido) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }
