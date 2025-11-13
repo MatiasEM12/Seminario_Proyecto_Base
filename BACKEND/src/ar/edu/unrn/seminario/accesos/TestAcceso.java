@@ -2,7 +2,7 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
-
+import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
@@ -42,8 +42,8 @@ public class TestAcceso {
 
         // 2.b) agregar un Donante genérico de prueba
         System.out.println("Insertando donante de prueba...");
-       
-        Ubicacion ubicacionPrueba = new Ubicacion("UB007","ZONA-TEST", "BarrioTest", "Calle Falsa 123");
+       Coordenada cor = new Coordenada(111.1,1232.1);
+        Ubicacion ubicacionPrueba = new Ubicacion("ZONA-TEST", "BarrioTest", "Calle Falsa 123",cor);
         Donante donantePrueba = new Donante("NombreTest", "ApellidoTest", "test@x.com", ubicacionPrueba, "usertest"); 
        
      

@@ -89,7 +89,7 @@ public interface IApi {
 	public void registrarDonacion(Donacion donacion);
 	ArrayList<DonacionDTO> obtenerDonaciones();
 	
-	//public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
+	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
@@ -104,6 +104,8 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void registrarVisita(VisitaDTO visita);
+
+
 
 
 	
