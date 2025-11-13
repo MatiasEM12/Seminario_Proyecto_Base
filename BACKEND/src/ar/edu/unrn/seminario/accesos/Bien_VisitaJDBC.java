@@ -2,13 +2,15 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Bien;
 
 public class Bien_VisitaJDBC implements Bien_VisitaDAO{
-
+	BienDAO bien;
 	@Override
 	public void create(String codBien, String codVisita) {
 
@@ -90,8 +92,32 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 
 	@Override
 	public List<Bien> findVisita(String codVisita) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Bien> bienes = new ArrayList<>();
+		
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT bv.codBien  "
+					+ "FROM Bien_Visita bv, donacion d WHERE bv.codDonacion=? AND d.codigo=? AND  bv.codDonacion=d.codigo");
+			
+			sent.setString(1, codVisita);
+			sent.setString(2, codVisita);
+			ResultSet rs = sent.executeQuery();
+			while (rs.next()) {
+				
+				bienes.add(bien.find(rs.getString("bv.codBien")));
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return bienes;
+	
 	}
 
 }

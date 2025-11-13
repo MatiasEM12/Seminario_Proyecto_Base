@@ -95,7 +95,32 @@ try {
 	}
 
 	@Override
-	public List<Bien> findVisita(String codDonacion) {
-		return null;
+	public List<Bien> findDonacion(String codDonacion) {
+		List<Bien> bienes = new ArrayList<>();
+		
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT bd.codBien  "
+					+ "FROM Bien_Donacion bd, donacion d WHERE bd.codDonacion=? AND d.codigo=? AND  bd.codDonacion=d.codigo");
+			
+			sent.setString(1, codDonacion);
+			sent.setString(2, codDonacion);
+			ResultSet rs = sent.executeQuery();
+			while (rs.next()) {
+				
+				bienes.add(bien.find(rs.getString("bd.codBien")));
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return bienes;
+	
 	}
 }
