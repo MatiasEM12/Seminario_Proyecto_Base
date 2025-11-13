@@ -64,8 +64,11 @@ public interface IApi {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
