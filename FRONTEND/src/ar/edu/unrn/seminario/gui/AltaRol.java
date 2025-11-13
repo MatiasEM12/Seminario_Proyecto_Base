@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 public class AltaRol extends JFrame {
 
@@ -128,7 +129,12 @@ public class AltaRol extends JFrame {
             estado= rdbtnActivado.isSelected();
             
             int cod = Integer.parseInt(textCodigo.getText());
-            api.guardarRol(cod,textNombre.getText(),textDescripcion.getText(),estado);
+            try {
+				api.guardarRol(cod,textNombre.getText(),textDescripcion.getText(),estado);
+			} catch (DataNullException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
             
             
             AltaRol.this.setVisible(false);

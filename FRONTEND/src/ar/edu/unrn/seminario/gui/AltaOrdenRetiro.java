@@ -149,7 +149,7 @@ public class AltaOrdenRetiro extends JFrame {
 	    this.ordenSeleccionada = orden;
 	 
 	    txtCodigo.setText(orden.getCodigo()); 
-	    txtEstado.setFont(orden.getEstado());
+	    txtEstado.setCaretColor(orden.getEstado());
 	    txtFecha.setText(orden.getFechaEmision().toString());
 	}
 }

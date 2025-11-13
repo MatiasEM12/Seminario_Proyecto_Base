@@ -43,7 +43,7 @@ public class TestAcceso {
         // 2.b) agregar un Donante genérico de prueba
         System.out.println("Insertando donante de prueba...");
        Coordenada cor = new Coordenada(111.1,1232.1);
-        Ubicacion ubicacionPrueba = new Ubicacion("ZONA-TEST", "BarrioTest", "Calle Falsa 123",cor);
+        Ubicacion ubicacionPrueba = new Ubicacion("ZONA-TEST", "BarrioTest", "Calle Falsa 123",null, cor);
         Donante donantePrueba = new Donante("NombreTest", "ApellidoTest", "test@x.com", ubicacionPrueba, "usertest"); 
        
      
