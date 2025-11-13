@@ -108,8 +108,11 @@ public class AltaOrdenRetiro extends JFrame {
 
 		    	    // Crear DTO (no entidad)
 		    	    OrdenRetiroDTO retiro = new OrdenRetiroDTO(
-		    	    	    fecha,                                  // fecha de emisión
-		    	    	    ordenSeleccionada.getEstado().toString(),
+
+		    	    	    fecha,
+
+		    	    	    ordenSeleccionada.getEstado().toString(),                    // estado
+
 		    	    	    ordenSeleccionada.getTipo(),            // tipo de la orden
 		    	    	    txtCodigo.getText(),                     // código de la orden de retiro
 		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido
