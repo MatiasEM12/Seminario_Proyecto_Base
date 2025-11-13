@@ -71,12 +71,12 @@ public interface IApi {
 
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
 
-	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
+	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException;
 	
 	//Donante
 	public void registrarDonante(Donante donante);
 	List<DonanteDTO> obtenerDonantes(String userSolicitante);
-	List<UsuarioDTO> obtenerUserDonantes();
+	List<UsuarioDTO> obtenerUserDonantes() throws DataNullException;
 
 	//Voluntario 
 	public void registrarVoluntario(Voluntario voluntario);
@@ -105,8 +105,8 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void registrarVisita(VisitaDTO visita);
-	 public void registrarOrdenPedido(OrdenPedido orden) ;
-	 public void registrarOrdenPedido(OrdenPedidoDTO orden) ;
+	 public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException ;
+	 public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 
 	public String obtenerEstadoOrdenPedido(String codOrdenPedido) ;
 
