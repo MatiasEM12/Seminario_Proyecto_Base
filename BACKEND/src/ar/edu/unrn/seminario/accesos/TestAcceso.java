@@ -71,11 +71,12 @@ public class TestAcceso {
         // 3) GENERAR ORDEN DE PEDIDO
         // =====================================================
         OrdenPedido pedidoModelo = new OrdenPedido(
-                null,                             // generar código en DB
+                                             // generar código en DB
                 LocalDate.now(),
+                true,
                 "Pedido generado automáticamente",
-                false,
-                donante.getCodigo()
+                donante.getCodigo(),
+                donacion.getCodigo()
         );
 
         api.registrarOrdenPedido(pedidoModelo);
