@@ -365,22 +365,26 @@ public class PersistenceApi implements IApi {
 
     @Override
     public List<UsuarioDTO> obtenerUserDonantes() {
-    	List<Usuario> user= this.usuarioDao.findAll();
-    
-         for (Usuario u : this.usuariosByUsername.values()) {
-         	Rol r=u.getRol();
-         	if("DONANTE".equalsIgnoreCase(r.getNombre())){
-         		
-         		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
-                           u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-         	}
-             
-         }
-         return dtos;
- 	}
-
+    	ArrayList<Usuario> user= (ArrayList<Usuario>) this.usuarioDao.findAll();
+    	
+        return  user;
     }
-
+    public UsuarioDTO usuarioToDTO(Usuario usuario) {
+        if (usuario == null) {
+            return null;
+        }
+//String username, String password, String nombre, String email, String rol, boolean activo,
+		//String estado, String codigo
+        return new UsuarioDTO(
+            usuario.getUsuario(),          // username
+            usuario.getContrasena(),
+            usuario.getNombre(),           // nombre
+            usuario.getEmail(),         // contacto
+            usuario.getRol().getNombre(),  // nombre del rol (por ejemplo "ADMIN")
+            usuario.isActivo(),            // booleano
+            usuario.obtenerEstado()
+        );
+    }
     @Override
     public List<UsuarioDTO> obtenerUserVoluntarios() {
         return new ArrayList<>();
