@@ -103,7 +103,7 @@ public class AltaOrdenRetiro extends JFrame {
 		    	String fechaTexto = txtFecha.getText();
 
 		    	try {
-		    	    // Convertir texto a LocalDateTime
+		    	    // Convertir texto a LocalDate
 		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
 
 		    	    // Crear DTO (no entidad)
