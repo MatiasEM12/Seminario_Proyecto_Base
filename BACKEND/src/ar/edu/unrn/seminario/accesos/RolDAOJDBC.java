@@ -164,7 +164,7 @@ public class RolDAOJDBC implements RolDao {
 				Rol rol = new Rol();
 				rol.setNombre(resultado.getString(1));
 				rol.setCodigo(resultado.getInt(2));
-				rol.activar(resultado.getBoolean(3));
+				rol.activar();
 
 				listado.add(rol);
 			}
