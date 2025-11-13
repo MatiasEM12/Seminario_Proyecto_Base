@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class ListadoVisitas extends JFrame {
     private IApi api;
     private java.util.List<VisitaDTO> visitas;
 
-    public ListadoVisitas(IApi api, String codOrdenRetiro) {
+    public ListadoVisitas(IApi api, String codOrdenRetiro) throws DataNullException, DataLengthException {
         this.api = api;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 700, 320);
@@ -47,7 +49,7 @@ public class ListadoVisitas extends JFrame {
         cargarVisitas(codOrdenRetiro);
     }
 
-    private void cargarVisitas(String codOrdenRetiro) {
+    private void cargarVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException {
         visitas = api.obtenerVisitas(codOrdenRetiro);
         if (visitas == null) visitas = new ArrayList<>();
 

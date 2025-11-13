@@ -11,7 +11,7 @@ import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 
 public class Bien_DonacionJDBC implements Bien_DonacionDAO {
-
+BienDAO bien;
 	@Override
 	public void create(String codBien, String codDonacion) {
 		try {
