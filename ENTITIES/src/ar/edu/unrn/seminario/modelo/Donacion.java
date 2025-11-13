@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.modelo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -7,7 +8,7 @@ public class Donacion {
 	private static int contadorDonacion = 0;
 	
 	private String codigo;
-	private LocalDateTime fechaDonacion;
+	private LocalDate fechaDonacion;
 	private String observacion;
 	private ArrayList<Bien> bienes;
 
@@ -15,7 +16,7 @@ public class Donacion {
 	private OrdenPedido pedido;
 	
 	
-	public Donacion( LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,OrdenPedido pedido) {
+	public Donacion( LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,OrdenPedido pedido) {
 		super();
 		this.pedido=pedido;
 		this.fechaDonacion = fechaDonacion;
@@ -24,7 +25,7 @@ public class Donacion {
 		this.donante = donante;
 		crearCodigo();
 	}
-	public Donacion(LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo) {
+	public Donacion(LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo) {
 		super();
 
 		this.pedido=pedido;
@@ -43,10 +44,10 @@ public class Donacion {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
-	public LocalDateTime getFechaDonacion() {
+	public LocalDate getFechaDonacion() {
 		return this.fechaDonacion;
 	}
-	public void setFechaDonacion(LocalDateTime fechaDonacion) {
+	public void setFechaDonacion(LocalDate fechaDonacion) {
 		this.fechaDonacion = fechaDonacion;
 	}
 	public String getObservacion() {

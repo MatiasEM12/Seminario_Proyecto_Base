@@ -32,7 +32,7 @@ BienDAO  b;
 							+ " VALUES (?, ?, ?,?,?)");
 			
 		
-			LocalDate fecha = donacion.getFechaDonacion().toLocalDate();
+			LocalDate fecha = donacion.getFechaDonacion();
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 			
 			statement.setString(1, donacion.getCodigo());
