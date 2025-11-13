@@ -17,13 +17,13 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 	@Override
 	public void create(Usuario usuario) {
-		try {
 
+		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, contacto, activo,codigoRol) "
-							+ "VALUES (?, ?, ?, ?, ?, ?)");
-	
+			
+			PreparedStatement statement = conn.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, contacto, activo,codigoRol) "+ "VALUES (?, ?, ?, ?, ?, ?)");
+			System.out.println("aqui");
+
 			statement.setString(1, usuario.getUsuario());
 			statement.setString(2, usuario.getContrasena());
 			statement.setString(3, usuario.getNombre());
