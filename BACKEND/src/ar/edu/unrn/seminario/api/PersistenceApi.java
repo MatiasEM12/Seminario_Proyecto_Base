@@ -155,39 +155,43 @@ public class PersistenceApi implements IApi {
 
     // métodos no implementados 
     @Override
-    public void activarRol(Integer codigo) throws StateChangeException {
-    	Rol rol = rolDao.find(codigo);
-        if (rol != null && !rol.isActivo()) {
-            rol.activar();
-            rolDao.update(rol);
+    public void activarRol(Integer codigo) throws StateChangeException{
+    	Rol rol=rolDao.find(codigo);
+        if(rol== null) {
+        	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
         }
+        rol.activar();
+        rolDao.update(rol);
     }
 
     @Override
-    public void desactivarRol(Integer codigo) throws StateChangeException {
-    	 Rol rol = rolDao.find(codigo);
-    	    if (rol != null && rol.isActivo()) {
-    	        rol.desactivar();
-    	        rolDao.update(rol);
-    	    }
-    }
-
-    @Override
-    public void activarUsuario(String username) {
-    	Usuario u = usuarioDao.find(username);
-        if (u != null && !u.isActivo()) {
-            u.setActivo(true);
-            usuarioDao.update(u);
+    public void desactivarRol(Integer codigo) throws StateChangeException{
+    	Rol rol=rolDao.find(codigo);
+        if(rol== null) {
+        	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
         }
+        rol.desactivar();
+        rolDao.update(rol);
     }
 
     @Override
-    public void desactivarUsuario(String username) {
-    	 Usuario u = usuarioDao.find(username);
-    	    if (u != null && u.isActivo()) {
-    	        u.setActivo(false);
-    	        usuarioDao.update(u);
-    	    }
+    public void activarUsuario(String username) throws StateChangeException{
+    	Usuario usuario=usuarioDao.find(username);
+        if(usuario== null) {
+        	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
+        }
+        usuario.activar();
+        usuarioDao.update(usuario);
+    }
+
+    @Override
+    public void desactivarUsuario(String username) throws StateChangeException{
+    	Usuario usuario=usuarioDao.find(username);
+        if(usuario== null) {
+        	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
+        }
+        usuario.desactivar();
+        usuarioDao.update(usuario);
     }
 
     @Override
@@ -208,9 +212,8 @@ public class PersistenceApi implements IApi {
 
     @Override
     public Boolean autenticar(String username, String password) {
-    	  Usuario u = usuarioDao.find(username);
-    	    if (u == null) return false;
-    	    return Objects.equals(u.getContrasena(), password);
+        // pendiente: delegar a usuarioDao.autenticar si existe
+        return null;
     }
 
     // --- Órdenes ---
@@ -382,37 +385,10 @@ public class PersistenceApi implements IApi {
 
     @Override
     public List<UsuarioDTO> obtenerUserDonantes() {
-    	ArrayList<Usuario> user= (ArrayList<Usuario>) this.usuarioDao.findAll();
-    	
-    	 List<UsuarioDTO> dtos = new ArrayList<>();
-         for (Usuario u : user) {
-         	Rol r=u.getRol();
-         	if("DONANTE".equalsIgnoreCase(r.getNombre())){
-         		
-         		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
-                           u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-         	}
-             
-         }
-         return dtos;
-    	
-
+        // Se pueden filtrar usuarios por rol DONANTE
+        return new ArrayList<>();
     }
-    public UsuarioDTO usuarioToDTO(Usuario usuario) {
-        if (usuario == null) {
-            return null;
-        }
 
-        return new UsuarioDTO(
-            usuario.getUsuario(),          // username
-            usuario.getContrasena(),
-            usuario.getNombre(),           // nombre
-            usuario.getEmail(),         // contacto
-            usuario.getRol().getNombre(),  // nombre del rol (por ejemplo "ADMIN")
-            usuario.isActivo(),            // booleano
-            usuario.obtenerEstado()
-        );
-    }
     @Override
     public List<UsuarioDTO> obtenerUserVoluntarios() {
         return new ArrayList<>();
@@ -555,7 +531,7 @@ public class PersistenceApi implements IApi {
     public void registrarOrdenPedido(OrdenPedidoDTO orden) {
     	
     	
-
+    	ordenPedidoDao.create(ordeR);
     }
     // --- Métodos no implementados / auxiliares del IApi  ---
    
@@ -563,82 +539,18 @@ public class PersistenceApi implements IApi {
 
     @Override
     public void registrarVisita(VisitaDTO visita) {
-    	 if (visita == null) return;
-
-    	    try {
-    	        // Convertir bienes DTO a modelo
-    	        ArrayList<Bien> bienes = new ArrayList<>();
-    	        if (visita.getBienesRecolectados() != null) {
-    	            for (BienDTO b : visita.getBienesRecolectados()) {
-    	                bienes.add(new Bien(
-    	                        b.getCodigo(),
-    	                        b.getTipo(),
-    	                        b.getPeso(),
-    	                        b.getNombre(),
-    	                        b.getDescripcion(),
-    	                        b.getNivelNecesidad(),
-    	                        b.getFechaVencimiento(),
-    	                        b.getTalle(),
-    	                        b.getMaterial()
-    	                ));
-    	            }
-    	        }
-
-    	        // Crear visita (el constructor genera el código automáticamente)
-    	        Visita visita2 = new Visita(
-    	                visita.getFechaVisita(),
-    	                visita.getObservaciones(),
-    	                visita.getTipo(),
-    	                visita.getCodOrdenRetiro(),
-    	                bienes
-    	        );
-
-    	        // Persistir
-    	        visitaDao.create(visita2);
-
-    	        // Si es una "Visita Final", marcar la OrdenRetiro como Completada
-    	        if ("Visita Final".equalsIgnoreCase(visita.getTipo())) {
-    	            OrdenRetiro orden = ordenRetiroDao.find(visita.getCodOrdenRetiro());
-    	            if (orden != null) {
-    	                orden.setEstadoRetiro("Completada");
-    	                ordenRetiroDao.update(orden);
-    	            }
-    	        }
-
-    	    } catch (Exception e) {
-    	        e.printStackTrace();
-    	        throw new RuntimeException("Error al registrar la visita: " + e.getMessage());
-    	    }
+        // pendiente: adaptar DTO->modelo y delegar a visitaDao
     }
 
 	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
-		Rol rol=new Rol(codigo,nombre,descripcion,estado);
-		
-		rolDao.create(rol);
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
-		ArrayList<VisitaDTO> resultado = new ArrayList<>();
-	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
-
-	    List<Visita> visitas = visitaDao.findAll(codOrdenRetiro);
-	    if (visitas == null) return resultado;
-
-	    for (Visita v : visitas) {
-	        resultado.add(new VisitaDTO(
-	                v.getCodigo(),
-	                v.getFechaVisita(),
-	                v.getTipo(),
-	                v.getRetiro(),
-	                new ArrayList<>(),
-	                v.getObservaciones(),
-	                v.getTipo()
-	        ));
-	    }
-	    return resultado;
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -691,7 +603,33 @@ public class PersistenceApi implements IApi {
 		// TODO Auto-generated method stub
 		
 	}
-	
+	private OrdenPedido toOrdenPedido(OrdenPedidoDTO dto) {
+	    if (dto == null) return null;
+
+	    try {
+	        // Buscar el donante por código si existe
+	        Donante donante = null;
+	        if (dto.getCodDonante() != null && !dto.getCodDonante().trim().isEmpty()) {
+	            donante = donanteDao.find(dto.getCodDonante());
+	        }
+
+	        // Crear el objeto del modelo
+	        OrdenPedido pedido = new OrdenPedido(
+	                dto.getCodigo(),
+	                LocalDate.now(),
+	                dto.getObservaciones(),
+	                dto.isCargaPesada(),
+	                donante.getCodigo()
+	                
+	        );
+
+	        return pedido;
+	    } catch (Exception e) {
+	        System.err.println("Error convirtiendo OrdenPedidoDTO a modelo: " + e.getMessage());
+	        return null;
+	    }
+	}
+
 }
 
 
