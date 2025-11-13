@@ -20,10 +20,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			
 			PreparedStatement statement = conn.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, contacto, activo,codigoRol) "+ "VALUES (?, ?, ?, ?, ?, ?)");
-			System.out.println("aqui");
-
 			statement.setString(1, usuario.getUsuario());
 			statement.setString(2, usuario.getContrasena());
 			statement.setString(3, usuario.getNombre());
@@ -40,6 +37,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 		} catch (SQLException e) {
 			System.out.println("Error al procesar consulta");
+			e.printStackTrace();
 			// TODO: disparar Exception propia
 		} catch (Exception e) {
 			System.out.println("Error al insertar un usuario");
