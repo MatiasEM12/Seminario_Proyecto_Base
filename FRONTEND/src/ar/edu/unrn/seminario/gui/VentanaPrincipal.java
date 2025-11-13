@@ -150,7 +150,15 @@ public class VentanaPrincipal extends JFrame {
 		//Menu Ordenes
 		JMenu menuOrdenes=new JMenu("Ordenes");
 		JMenuItem itemOrdenesPedidoAM=new JMenuItem("Alta/Modificacion Ordenes de Pedido");
-		
+		 itemOrdenesPedidoAM.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				AltaOrdenPedido altaOp=new AltaOrdenPedido(api);
+				altaOp.setLocationRelativeTo(null);
+				altaOp.setVisible(true);
+				
+				
+			}
+		});		
 				
 		
 		JMenuItem itemOrdenesRetiroAM=new JMenuItem("Alta/Modificacion Ordenes de Retiro");

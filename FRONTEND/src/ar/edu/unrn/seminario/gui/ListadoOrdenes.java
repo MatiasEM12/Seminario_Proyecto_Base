@@ -6,6 +6,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.*;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.ArrayList;
@@ -70,7 +73,16 @@ public class ListadoOrdenes extends JFrame {
                   
                   if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
 
-                      	ListadoVisitas  visitas = new ListadoVisitas(api,(String) tabla.getValueAt(filaSeleccionada, 0) );
+                      	ListadoVisitas visitas = null;
+						try {
+							visitas = new ListadoVisitas(api,(String) tabla.getValueAt(filaSeleccionada, 0) );
+						} catch (DataNullException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (DataLengthException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
       	        		visitas.setLocationRelativeTo(null);
       	        		visitas.setVisible(true);
                 	  
