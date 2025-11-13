@@ -114,69 +114,65 @@ public class RolDAOJDBC implements RolDao {
 		}
 	}
 
-	@Override
 	public Rol find(Integer codigo) {
-		Rol rol = null;
-		try {
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("SELECT r.codigo, r.nombre ,r.activo" + " FROM roles r " + " WHERE r.codigo = ?");
+	    Rol rol = null;
 
-			statement.setInt(1, codigo);
-			ResultSet rs = statement.executeQuery();
-		
-			
-			if (rs.next()) {
-				
-				boolean activo;
-				if(rs.getInt("activo")==1){
-					activo=true;
-				}else {
-					activo=false;
-				}
-				rol = new Rol(rs.getInt("codigo"), rs.getString("nombre"),activo);
-			}
+	    String sql = "SELECT r.codigo, r.nombre, r.activo FROM roles r WHERE r.codigo = ?";
 
-		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getSQLState(), e.getMessage());
-		} catch (Exception e) {
-			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement statement = conn.prepareStatement(sql)) {
 
-		return rol;
+	        statement.setInt(1, codigo);
+
+	        try (ResultSet rs = statement.executeQuery()) {
+	            if (rs.next()) {
+	                boolean activo = rs.getInt("activo") == 1;
+	                rol = new Rol(
+	                    rs.getInt("codigo"),
+	                    rs.getString("nombre"),
+	                    activo
+	                );
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
+	        System.out.println("Error de datos al crear Rol: " + e.getMessage());
+	    }
+
+	    return rol;
 	}
 
 	@Override
 	public List<Rol> findAll() throws StateChangeException {
-		List<Rol> listado = new ArrayList<Rol>();
-		Statement sentencia = null;
-		ResultSet resultado = null;
-		try {
-			sentencia = ConnectionManager.getConnection().createStatement();
-			resultado = sentencia.executeQuery("select r.nombre, r.codigo, r.activo from roles r ");
+	    List<Rol> listado = new ArrayList<>();
 
-			while (resultado.next()) {
-				Rol rol = new Rol();
-				rol.setNombre(resultado.getString(1));
-				rol.setCodigo(resultado.getInt(2));
-				rol.activar();
+	    String sql = "SELECT r.codigo, r.nombre, r.activo FROM roles r";
 
-				listado.add(rol);
-			}
-		} catch (SQLException e) {
-			System.out.println("Error de mySql\n" + e.toString());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	    try (Connection conn = ConnectionManager.getConnection();
+	         Statement sentencia = conn.createStatement();
+	         ResultSet resultado = sentencia.executeQuery(sql)) {
 
-		return listado;
+	        while (resultado.next()) {
+	            int codigo = resultado.getInt("codigo");
+	            String nombre = resultado.getString("nombre");
+	            int activoBD = resultado.getInt("activo"); // 0 o 1
+	            boolean activo = (activoBD == 1);
+
+	            // Usamos el constructor que ya tenés:
+	            Rol rol = new Rol(codigo, nombre, activo);
+
+	            listado.add(rol);
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error de MySQL\n" + e);
+	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
+	        // si el constructor de Rol tira DataNullException
+	        System.out.println("Error de datos al crear Rol: " + e.getMessage());
+	    }
+
+	    return listado;
 	}
+
 
 }
