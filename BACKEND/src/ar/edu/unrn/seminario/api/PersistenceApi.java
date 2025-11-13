@@ -528,12 +528,32 @@ public class PersistenceApi implements IApi {
     public void registrarOrdenPedido(OrdenPedido orden) {
     	ordenPedidoDao.create(orden);
     }
-    public void registrarOrdenPedido(OrdenPedidoDTO orden) {
-    	
-    	
-    	ordenPedidoDao.create(ordeR);
+    public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException{
+    	if (orden==null) {
+    		throw new DataNullException("la orden de pedido invalida");
+    	}
+    	try {
+    		Donante donante=null;
+	        if (orden.getCodDonante() != null && !orden.getCodDonante().trim().isEmpty()) {
+	            donante = donanteDao.find(orden.getCodDonante());
+	        }
+	        if (donante == null) {
+                throw new DataNullException("No existe un donante con el codigo: "+orden.getCodDonante());
+            }
+    		OrdenPedido pedido= new OrdenPedido(
+	                orden.getCodigo(),
+	                LocalDate.now(),
+	                orden.getObservaciones(),
+	                orden.isCargaPesada(),
+	                donante.getCodigo()
+    				);
+            ordenPedidoDao.create(pedido);
+    	}catch(Exception e) {
+    		System.err.println("Error al registrar la orden de pedido: " + e.getMessage());
+            e.printStackTrace();
+    	}
     }
-    // --- Métodos no implementados / auxiliares del IApi  ---
+
    
 
 
