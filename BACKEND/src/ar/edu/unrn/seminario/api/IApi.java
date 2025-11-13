@@ -49,7 +49,7 @@ public interface IApi {
 
 	
 	// API
-	void modificarContraseña(String usuario, String passWord);
+	void modificarContraseña(String usuario, String passWord) throws DataNullException;
 	
 	public Boolean autenticar(String username, String password);
 	
