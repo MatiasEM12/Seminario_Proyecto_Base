@@ -21,7 +21,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, email, activo,rol) "
+					.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, contacto, activo,rol) "
 							+ "VALUES (?, ?, ?, ?, ?, ?)");
 	
 			statement.setString(1, usuario.getUsuario());
@@ -123,7 +123,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn.prepareStatement(
-					"SELECT u.usuario,  u.contrasena, u.nombre, u.email,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol "
+					"SELECT u.usuario,  u.contrasena, u.nombre, u.contacto,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol "
 							+ " FROM usuarios u JOIN roles r ON (u.rol = r.codigo) " + " WHERE u.usuario = ?");
 
 			statement.setString(1, username);
