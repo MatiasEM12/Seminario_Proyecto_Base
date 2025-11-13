@@ -140,7 +140,7 @@ public class ListadoDonaciones extends JFrame {
         DonacionDTO seleccionada = donaciones.get(fila);
 
         // 🔁 Pasa los datos a la ventana de Retiro
-        ventanaPedido.recibirOrdenPedido(seleccionada);
+        ventanaPedido.recibirDonaciones(seleccionada);
 
         dispose(); // cerrar esta ventana
     }
