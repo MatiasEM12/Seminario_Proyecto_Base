@@ -50,10 +50,11 @@ public class TestAcceso {
 		for (Rol rol : roles) {
 			System.out.println(rol);
 		}
+		
 
 		UsuarioDao usuarioDao = new UsuarioDAOJDBC();
 		// cambiarlo para que recupere uno de los roles que estan en la base de datos
-		Usuario usuario = new Usuario("ldifabio", "1234", "Lucas", "ldifabio@unrn.edu.ar", new Rol(1, "administrador"));
+		Usuario usuario = new Usuario("ldifabio", "1234", "Lucas", "ldifabio@unrn.edu.ar", new Rol(1, "Admin"));
 		usuarioDao.create(usuario);
 
 		List<Usuario> usuarios = usuarioDao.findAll();
