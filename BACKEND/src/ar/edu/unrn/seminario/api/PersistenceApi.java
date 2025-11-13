@@ -371,7 +371,12 @@ public class PersistenceApi implements IApi {
     }
     @Override
     public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
-        if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
+        try {
+			if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
+		} catch (DataNullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         OrdenPedido pedido = ordenPedidoDao.find(codPedido);
         if (pedido == null) throw new DataNullException("No existe OrdenPedido con código: " + codPedido);
    
