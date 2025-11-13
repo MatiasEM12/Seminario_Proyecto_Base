@@ -102,9 +102,10 @@ public class ListadoOrdenes extends JFrame {
 				if (filaSeleccionada >= 0) {
                     String tipo =(String) tabla.getValueAt(filaSeleccionada,0);
 					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
-						
-					//llama a  altaVisita
-						
+							
+						AltaVisita av= new AltaVisita(api);
+						av.setLocationRelativeTo(null);
+						av.setVisible(true);
 					}else {
 					
 					}
