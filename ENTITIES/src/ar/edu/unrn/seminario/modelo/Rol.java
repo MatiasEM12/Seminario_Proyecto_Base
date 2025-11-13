@@ -176,6 +176,8 @@ public class Rol {
 			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
 		}
 	}
+
+	
 	
 	
 

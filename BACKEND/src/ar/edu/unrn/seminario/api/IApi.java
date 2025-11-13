@@ -71,7 +71,7 @@ public interface IApi {
 
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido();
 
-	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro);
+	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException;
 	
 	//Donante
 	public void registrarDonante(Donante donante);

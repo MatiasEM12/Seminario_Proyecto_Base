@@ -620,7 +620,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
+	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException {
 		ArrayList<VisitaDTO> resultado = new ArrayList<>();
 	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
 
