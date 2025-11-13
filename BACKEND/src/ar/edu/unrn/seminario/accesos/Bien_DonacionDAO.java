@@ -16,7 +16,7 @@ public interface Bien_DonacionDAO {
 
 	List<Bien> findAll();
 
-	List<Bien> findVisita(String codDonacion);
+	List<Bien> findDonacion(String codDonacion);
 
 	void update(String codBienNuevo, String codBienViejo, String codDonacion);
 
