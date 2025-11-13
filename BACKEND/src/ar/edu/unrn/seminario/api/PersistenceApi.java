@@ -155,23 +155,39 @@ public class PersistenceApi implements IApi {
 
     // métodos no implementados 
     @Override
-    public void activarRol(Integer codigo) {
-        // pendiente según reglas de negocio
+    public void activarRol(Integer codigo) throws StateChangeException {
+    	Rol rol = rolDao.find(codigo);
+        if (rol != null && !rol.isActivo()) {
+            rol.activar();
+            rolDao.update(rol);
+        }
     }
 
     @Override
-    public void desactivarRol(Integer codigo) {
-        // pendiente
+    public void desactivarRol(Integer codigo) throws StateChangeException {
+    	 Rol rol = rolDao.find(codigo);
+    	    if (rol != null && rol.isActivo()) {
+    	        rol.desactivar();
+    	        rolDao.update(rol);
+    	    }
     }
 
     @Override
     public void activarUsuario(String username) {
-        // pendiente
+    	Usuario u = usuarioDao.find(username);
+        if (u != null && !u.isActivo()) {
+            u.setActivo(true);
+            usuarioDao.update(u);
+        }
     }
 
     @Override
     public void desactivarUsuario(String username) {
-        // pendiente
+    	 Usuario u = usuarioDao.find(username);
+    	    if (u != null && u.isActivo()) {
+    	        u.setActivo(false);
+    	        usuarioDao.update(u);
+    	    }
     }
 
     @Override
@@ -367,14 +383,25 @@ public class PersistenceApi implements IApi {
     public List<UsuarioDTO> obtenerUserDonantes() {
     	ArrayList<Usuario> user= (ArrayList<Usuario>) this.usuarioDao.findAll();
     	
-        return  user;
+    	 List<UsuarioDTO> dtos = new ArrayList<>();
+         for (Usuario u : user) {
+         	Rol r=u.getRol();
+         	if("DONANTE".equalsIgnoreCase(r.getNombre())){
+         		
+         		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+                           u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
+         	}
+             
+         }
+         return dtos;
+    	
+
     }
     public UsuarioDTO usuarioToDTO(Usuario usuario) {
         if (usuario == null) {
             return null;
         }
-//String username, String password, String nombre, String email, String rol, boolean activo,
-		//String estado, String codigo
+
         return new UsuarioDTO(
             usuario.getUsuario(),          // username
             usuario.getContrasena(),
