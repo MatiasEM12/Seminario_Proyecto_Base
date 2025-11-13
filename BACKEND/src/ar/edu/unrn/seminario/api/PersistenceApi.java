@@ -22,7 +22,9 @@ import ar.edu.unrn.seminario.dto.RolDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Donacion;
@@ -203,7 +205,7 @@ public class PersistenceApi implements IApi {
 		List<OrdenRetiro> ordenesRetiro = ordenRetiroDao.findAll();
 		ArrayList<OrdenRetiroDTO> ordenesRetiroDTO = new ArrayList<>(0);
 		for (OrdenRetiro ordenRetiro : ordenesRetiro) {
-			ordenesRetiroDTO.add(new OrdenRetiroDTO(ordenRetiro.getFechaEmision(), ordenRetiro.getEstado(),
+			ordenesRetiroDTO.add(new OrdenRetiroDTO(ordenRetiro.getFechaEmision(), ordenRetiro.getEstado().toString(),
 			null,ordenRetiro.getCodigo(),ordenRetiro.getPedido().getCodigo(),ordenRetiro.getVoluntario().getCodigo(), ordenRetiro.getCodVisitas()));
 		}
 		return  ordenesRetiroDTO;
@@ -214,7 +216,6 @@ public class PersistenceApi implements IApi {
 		return null;
 	}
 
-	@Override
 	public void registrarOrdenPedido(OrdenPedido orden) {
 		// TODO Auto-generated method stub
 		
@@ -331,6 +332,23 @@ public class PersistenceApi implements IApi {
 
 	@Override
 	public void registrarVisita(VisitaDTO visita) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void registrarOrdenRetiro(OrdenRetiro orden)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void registrarOrdenPedido(OrdenPedidoDTO ordenPedido) {
 		// TODO Auto-generated method stub
 		
 	}
