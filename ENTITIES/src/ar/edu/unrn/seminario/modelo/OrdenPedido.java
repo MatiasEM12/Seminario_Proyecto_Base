@@ -39,6 +39,25 @@ public class OrdenPedido extends Orden {
 		this.codDonacion = codDonacion;
 		crearCodigo();
 	}
+	public OrdenPedido(String codigo,LocalDate fechaEmision,
+			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException{
+		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
+		try {
+			validarStringsPedido(observaciones,"Observaciones");
+			validarStringsPedido(codDonante,"Codigo de donante");
+			validarStringsPedido(codDonacion,"Codigo de donacion");
+		}catch(StateChangeException e) {
+			throw new DataNullException(e.getMessage());			
+		}
+		if (observaciones.length()>300) {
+			throw new DataLengthException("El campo observaciones no puede exceder los 300 caracteres"); 
+		}
+		this.codigo=codigo;
+		this.cargaPesada = cargaPesada;
+		this.observaciones = observaciones;
+		this.codDonante = codDonante;
+	}
+	
 	public String getCodigo() {
 		return codigo;
 	}
