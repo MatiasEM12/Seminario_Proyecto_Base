@@ -153,7 +153,7 @@ public class PersistenceApi implements IApi {
         return new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo());
     }
 
-    // métodos no implementados 
+
     @Override
     public void activarRol(Integer codigo) throws StateChangeException{
     	Rol rol=rolDao.find(codigo);
@@ -206,9 +206,17 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void modificarContraseña(String usuario, String passWord) {
-        // pendiente: usuarioDao.updatePassword(usuario, passWord) si existe
+    public void modificarContraseña(String usuario, String passWord) throws DataNullException {
+        if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
+        Usuario us_contraseña = usuarioDao.find(usuario);
+        if (passWord == null || passWord.trim().isEmpty()) {
+            throw new DataNullException("La contraseña no puede estar vacía.");
+        }
+        if (us_contraseña == null) throw new DataNullException("No existe un usuario con el nombre: " + usuario);
+        us_contraseña.setContrasena(passWord);
+        usuarioDao.update(us_contraseña);
     }
+
 
     @Override
     public Boolean autenticar(String username, String password) {
