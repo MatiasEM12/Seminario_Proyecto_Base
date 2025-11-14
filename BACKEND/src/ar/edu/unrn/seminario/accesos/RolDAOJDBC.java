@@ -44,17 +44,16 @@ public class RolDAOJDBC implements RolDao {
 	}
 
 	@Override
+	//funciona
 	public void update(Rol rol) {
 		try {
-
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE roles SET nombre = ?, activo = ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
-
+					.prepareStatement("UPDATE roles SET nombre = ?, descripcion = ?, activo = ? WHERE codigo = ?");
 			statement.setString(1, rol.getNombre());
 			statement.setString(2, rol.getDescripcion());
-			//statement.setBoolean(3, rol.isActivo());
-			statement.setInt(3, rol.getCodigo());
+			statement.setBoolean(3, rol.isActivo());
+			statement.setInt(4, rol.getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("El Rol se ha actualizado correctamente");
