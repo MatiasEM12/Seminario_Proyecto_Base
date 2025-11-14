@@ -430,8 +430,7 @@ public class PersistenceApi implements IApi {
         ArrayList<DonacionDTO> res = new ArrayList<>();
         if (list == null) return res;
         for (Donacion d : list) {
-            res.add(new DonacionDTO(d.getCodigo(), d.getFechaDonacion(), d.getObservacion(), d.getBienes(),
-                    d.getDonante() != null ? d.getDonante().getCodigo() : null, null));
+            res.add(toDonacionDTO (d));
         }
         return res;
     }
@@ -683,9 +682,24 @@ public class PersistenceApi implements IApi {
 	
 	private DonacionDTO toDonacionDTO ( Donacion donacion) {
 		
-		DonacionDTO dto= new DonacionDTO( );
+		DonacionDTO dto= new DonacionDTO( donacion.getCodigo(),donacion.getFechaDonacion(),donacion.getObservacion(),
+				listBienDTO(donacion.getBienes()), donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo());
 		
 		return dto;
+	}
+	
+	private ArrayList<BienDTO> listBienDTO(ArrayList<Bien> bienes){
+		
+		ArrayList<BienDTO> dtos= new ArrayList<>();
+		
+		for(Bien b : bienes) {
+			
+			BienDTO dt = toBienDTO(b);
+			dtos.add(dt);
+		}
+		
+		return dtos;
+		
 	}
 
 }
