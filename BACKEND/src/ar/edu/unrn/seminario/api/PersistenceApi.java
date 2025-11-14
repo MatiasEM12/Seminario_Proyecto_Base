@@ -165,6 +165,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
+    //funciona
     public void desactivarRol(Integer codigo) throws StateChangeException{
     	Rol rol=rolDao.find(codigo);
         if(rol== null) {
