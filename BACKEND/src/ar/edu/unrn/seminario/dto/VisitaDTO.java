@@ -43,7 +43,17 @@ public class VisitaDTO {
 	}
 	
 	
-	
+	public VisitaDTO( LocalDate fechaVisita,String codVoluntario  ,String codOrdenRetiro,ArrayList <BienDTO> bienesRecolectados,String observaciones,String tipo, boolean esFinal) {
+		super();
+
+		this.fechaVisita = fechaVisita;
+		this.observaciones = observaciones;
+		this.tipo = tipo;
+		this.codVoluntario=codVoluntario;
+		this.bienesRecolectados=bienesRecolectados;
+		this.codOrdenRetiro=codOrdenRetiro;
+		this.esFinal=esFinal;
+	}
 	
 	public boolean isEsFinal() {
 		return esFinal;

@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.awt.event.ActionEvent;
 
 public class ListadoBienes extends JFrame {
@@ -25,15 +26,20 @@ public class ListadoBienes extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private DefaultTableModel modelo;
-	
+    private Consumer<ArrayList<BienDTO>> onSeleccion; // callback
 	IApi api;
 	private ArrayList<BienDTO> bienes; //para la seleccion 
-	public ListadoBienes(IApi api,ArrayList<BienDTO> bienesDTO) {
+	
+	
+	
+	public ListadoBienes(IApi api,ArrayList<BienDTO> bienesDTO,Consumer<ArrayList<BienDTO>> onSeleccion) {
+	
 		
 		   // Permitir selección de múltiples filas (CTRL/SHIFT)
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         
 		this.api=api;
+		  this.onSeleccion = onSeleccion;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 609, 300);
 		contentPane = new JPanel();

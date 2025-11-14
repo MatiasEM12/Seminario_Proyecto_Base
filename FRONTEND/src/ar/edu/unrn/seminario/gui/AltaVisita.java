@@ -19,6 +19,9 @@ import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JCalendar;
 
@@ -33,7 +36,7 @@ public class AltaVisita extends JFrame {
     private JTextArea txtObservaciones;
     private JTextField txtCodDonante;       // campo readonly para mostrar codDonante del pedido asociado
     private JRadioButton rdbVisitaFinal;
-    final LocalDate fecha;
+    LocalDate fecha=null;
     OrdenRetiroDTO orden;
      private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
     private JTextField textCodVoluntario;
@@ -43,7 +46,7 @@ public class AltaVisita extends JFrame {
        orden = api.obtenerOrdeneRetiro(codOrdenRetiro);
         String ordenP= orden.getPedido();
         
-       DonacionDTO donacion = api.obtenerDonacion(String ordenP);
+       DonacionDTO donacion = api.obtenerDonacion( ordenP);
         
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -91,7 +94,7 @@ public class AltaVisita extends JFrame {
         JButton btnSeleccionBien = new JButton("Bienes");
         btnSeleccionBien.setBounds(170, 89, 143, 23);
         btnSeleccionBien.addActionListener(e -> {
-            JOptionPane.showMessageDialog(AltaVisita.this, "Selector de bienes no implementado.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        	abrirSelectorBienes(donacion);
         });
         contentPane.add(btnSeleccionBien);
 
@@ -178,27 +181,52 @@ public class AltaVisita extends JFrame {
         setVisible(true);
     }
 
-    private void cargarVoluntarios() {
-        
-    }
 
-    private void actualizarCodDonanteDesdeOrdenRetiro() {
-        
-    }
 
-    private void onGuardar(LocalDate fecha,boolean esFinal) {
+
+    private void abrirSelectorBienes(DonacionDTO donacion) {
+    	List<BienDTO> listaBienes = donacion.getBienes();
+    	 ArrayList<BienDTO> listaParaMostrar = new ArrayList<>(listaBienes); 
+    	ListadoBienes listado = new ListadoBienes(api,  listaParaMostrar , (seleccion) -> {
+            if (seleccion != null) {
+            	bienesrecolectados= seleccion;
+            }
+        });
+        listado.setLocationRelativeTo(this);
+        listado.setVisible(true);
+		
+	}
+
+
+
+
+	private void onGuardar(LocalDate fecha,boolean esFinal) {
         String codOrdenRetiro = txtCodOR.getText();
       
         String tipo = (String) comboTipo.getSelectedItem();
       
         String observaciones = txtObservaciones.getText();
-        
-        VisitaDTO visita(null, fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
+        try {
+        VisitaDTO visita( fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
 
-        api.registrarVisita(visita);
+       
+        }catch(DataNullException | DataLengthException ex) {
+        	
+        	  JOptionPane.showMessageDialog(this,"Error en los datos de la visita: " + ex.getMessage(), "Error",  JOptionPane.ERROR_MESSAGE);
+        }
+        
+        try {
+        	 api.registrarVisita(visita);
+        }catch(Exception ex) {
+        	
+        	 JOptionPane.showMessageDialog(this, "Error al registrar visita: " + ex.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
   
+
+
+
 
 	private void limpiarCampos() {
         txtCodOR.setText("");
