@@ -27,10 +27,13 @@ public class AltaVisita extends JFrame {
     private JTextField txtFecha;             // cadena de fecha que parsearemos a LocalDate
     private JComboBox<String> comboTipo;
     private JTextArea txtObservaciones;
-    private JComboBox<VoluntarioDTO> comboVoluntarios;
     private JTextField txtCodDonante;       // campo readonly para mostrar codDonante del pedido asociado
     private JRadioButton rdbVisitaFinal;
 
+    
+    private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
+    private JTextField textCodVoluntario;
+    
     public AltaVisita(IApi api) {
         this.api = api;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -95,17 +98,13 @@ public class AltaVisita extends JFrame {
         lblVoluntario.setBounds(10, 165, 150, 14);
         contentPane.add(lblVoluntario);
 
-        comboVoluntarios = new JComboBox<>();
-        comboVoluntarios.setBounds(170, 162, 250, 22);
-        contentPane.add(comboVoluntarios);
-
         // CodDonante (solo lectura)
         JLabel lblCodDonante = new JLabel("Cod Donante (encargado OP):");
         lblCodDonante.setBounds(10, 195, 170, 14);
         contentPane.add(lblCodDonante);
 
         txtCodDonante = new JTextField();
-        txtCodDonante.setBounds(190, 192, 230, 20);
+        txtCodDonante.setBounds(170, 192, 150, 20);
         txtCodDonante.setEditable(false);
         contentPane.add(txtCodDonante);
 
@@ -133,6 +132,12 @@ public class AltaVisita extends JFrame {
         rdbVisitaFinal = new JRadioButton("Visita Final");
         rdbVisitaFinal.setBounds(21, 381, 120, 23);
         contentPane.add(rdbVisitaFinal);
+        
+        textCodVoluntario = new JTextField();
+        textCodVoluntario.setText("");
+        textCodVoluntario.setEditable(false);
+        textCodVoluntario.setBounds(170, 162, 150, 20);
+        contentPane.add(textCodVoluntario);
 
         // Eventos
         btnCancelar.addActionListener(e -> limpiarCampos());
@@ -144,7 +149,7 @@ public class AltaVisita extends JFrame {
             }
         });
 
-        // Llenar combo de voluntarios (defensivo)
+       
         cargarVoluntarios();
 
         setLocationRelativeTo(null);
@@ -152,60 +157,11 @@ public class AltaVisita extends JFrame {
     }
 
     private void cargarVoluntarios() {
-        comboVoluntarios.removeAllItems();
-        List<VoluntarioDTO> voluntarios = api.obtenerVoluntarios();
-        if (voluntarios == null || voluntarios.isEmpty()) {
-            comboVoluntarios.addItem(null);
-            return;
-        }
-        for (VoluntarioDTO v : voluntarios) {
-            comboVoluntarios.addItem(v);
-        }
+        
     }
 
     private void actualizarCodDonanteDesdeOrdenRetiro() {
-        String codOrdenRetiro = txtCodigo.getText();
-        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-            txtCodDonante.setText("");
-            return;
-        }
-        try {
-            List<ar.edu.unrn.seminario.dto.OrdenRetiroDTO> ordenesRetiro = api.obtenerOrdenesRetiro();
-            OrdenRetiroDTO encontrada = null;
-            if (ordenesRetiro != null) {
-                for (OrdenRetiroDTO or : ordenesRetiro) {
-                    if (or != null && codOrdenRetiro.equalsIgnoreCase(or.getCodigo())) {
-                        encontrada = or;
-                        break;
-                    }
-                }
-            }
-            if (encontrada == null) {
-                txtCodDonante.setText("");
-                return;
-            }
-            String codPedido = encontrada.getPedido();
-            if (codPedido == null || codPedido.trim().isEmpty()) {
-                txtCodDonante.setText("");
-                return;
-            }
-            List<OrdenPedidoDTO> pedidos = api.obtenerOrdenesPedido();
-            if (pedidos == null) { txtCodDonante.setText(""); return; }
-            OrdenPedidoDTO pedidoEncontrado = null;
-            for (OrdenPedidoDTO op : pedidos) {
-                if (op != null && codPedido.equalsIgnoreCase(op.getCodigo())) {
-                    pedidoEncontrado = op;
-                    break;
-                }
-            }
-            if (pedidoEncontrado == null) {
-                txtCodDonante.setText("");
-                return;
-            }
-            txtCodDonante.setText(pedidoEncontrado.getCodDonante() == null ? "" : pedidoEncontrado.getCodDonante());
-        } catch (Exception ex) {
-            txtCodDonante.setText("");
-        }
+        
     }
 
     private void onGuardar() {
@@ -215,67 +171,7 @@ public class AltaVisita extends JFrame {
         VoluntarioDTO voluntarioSel = (VoluntarioDTO) comboVoluntarios.getSelectedItem();
         String observaciones = txtObservaciones.getText();
 
-        // Validaciones
-        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresá el código de la Orden de Retiro.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (fechaTexto == null || fechaTexto.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresá la fecha.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (observaciones == null) observaciones = "";
 
-        // Parsear fecha (acepta yyyy-MM-dd o yyyy-MM-ddTHH:mm)
-        LocalDate fecha;
-        try {
-            fecha = LocalDate.parse(fechaTexto);
-        } catch (DateTimeParseException ex1) {
-            try {
-                LocalDateTime dt = LocalDateTime.parse(fechaTexto);
-                fecha = dt.toLocalDate();
-            } catch (DateTimeParseException ex2) {
-                JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Usá yyyy-MM-dd o yyyy-MM-ddTHH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        String codVoluntario = voluntarioSel == null ? null : voluntarioSel.getCodigo();
-
-        // Si implementás selector de bienes, reemplaza la lista vacía
-        ArrayList<BienDTO> bienesSeleccionados = new ArrayList<>();
-
-        VisitaDTO visitaDto = new VisitaDTO(
-                null,               // codigo nulo: que lo cree la entidad Visita en backend si corresponde
-                fecha,
-                codVoluntario,
-                codOrdenRetiro,
-                bienesSeleccionados,
-                observaciones,
-                tipo
-        );
-
-        try {
-            api.registrarVisita(visitaDto);
-
-            // Si es visita final, completar la orden de retiro asociada
-            if (rdbVisitaFinal.isSelected()) {
-                try {
-                    api.completarOrdenRetiro(codOrdenRetiro);
-                } catch (Exception exCompletar) {
-                    JOptionPane.showMessageDialog(this,
-                            "Visita registrada, pero no se pudo completar la OrdenRetiro: " + exCompletar.getMessage(),
-                            "Aviso", JOptionPane.WARNING_MESSAGE);
-                    limpiarCampos();
-                    return;
-                }
-            }
-
-            JOptionPane.showMessageDialog(this, "Visita registrada correctamente.", "OK", JOptionPane.INFORMATION_MESSAGE);
-            limpiarCampos();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al registrar la visita: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private void limpiarCampos() {
