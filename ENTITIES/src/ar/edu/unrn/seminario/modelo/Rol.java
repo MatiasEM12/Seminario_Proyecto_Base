@@ -30,7 +30,6 @@ public class Rol {
 		super();
 		try {
 			validarStringsRol(nombre,"Nombre");
-			validarStringsRol(descripcion,"Descripcion");
 		}catch(StateChangeException e) {
 			throw new DataNullException(e.getMessage());			
 		}
@@ -63,7 +62,6 @@ public class Rol {
 		super();
 		try {
 			validarStringsRol(nombre,"Nombre");
-			validarStringsRol(descripcion,"Descripcion");
 		}catch(StateChangeException e) {
 			throw new DataNullException(e.getMessage());			
 		}
