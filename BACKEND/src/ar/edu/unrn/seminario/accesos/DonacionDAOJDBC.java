@@ -31,41 +31,36 @@ public class DonacionDAOJDBC implements DonacionDAO {
     public void create(Donacion donacion) {
         try {
             Connection conn = ConnectionManager.getConnection();
-            PreparedStatement statement = conn.prepareStatement(
-                "INSERT INTO donacion(codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido) " +
-                "VALUES (?, ?, ?, ?, ?)"
-            );
+            PreparedStatement statement = conn
+                .prepareStatement("INSERT INTO donacion(codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido)"
+                                  + " VALUES (?, ?, ?, ?, ?)");
 
-            // si tu Donacion usa LocalDate: ajustar
             LocalDate fecha = donacion.getFechaDonacion();
             java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 
             statement.setString(1, donacion.getCodigo());
             statement.setString(2, donacion.getObservacion());
             statement.setDate(3, fechaSQL);
+            statement.setString(4, donacion.getDonante().getCodigo());
 
-            // Donante (no debería ser null, pero por las dudas)
-            String codDonante = (donacion.getDonante() != null)
-                    ? donacion.getDonante().getCodigo()
-                    : null;
-            statement.setString(4, codDonante);
-
-            // Pedido puede ser null
             String codPedido = (donacion.getPedido() != null)
                     ? donacion.getPedido().getCodigo()
-                    : null;
+                    : ""; // 👈 evita NULL, satisface el NOT NULL
             statement.setString(5, codPedido);
 
             int cantidad = statement.executeUpdate();
             if (cantidad <= 0) {
                 System.out.println("Error al insertar donación");
             }
+
         } catch (SQLException e) {
             System.out.println("Error al procesar consulta (INSERT donacion): " + e.getMessage());
+            e.printStackTrace();
         } finally {
             ConnectionManager.disconnect();
         }
     }
+
 
     @Override
     public void update(Donacion donacion) {

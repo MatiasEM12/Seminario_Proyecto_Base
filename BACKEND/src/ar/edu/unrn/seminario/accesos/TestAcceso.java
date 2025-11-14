@@ -102,9 +102,9 @@ public class TestAcceso {
         OrdenRetiroDTO retiroDTO = new OrdenRetiroDTO(
                 LocalDate.now(),
                 "PENDIENTE",
-                OrdenPedido.getTipo(),
+                pedidoDTO.getTipo(),
                 null,                         // generar código
-                pedidoModelo.getCodigo(),
+                pedidoDTO.getCodigo(),
                 null,                         // sin voluntario
                 null                          // sin visitas aún
         );

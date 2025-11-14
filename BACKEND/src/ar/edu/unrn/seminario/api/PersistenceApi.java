@@ -1,7 +1,6 @@
 package ar.edu.unrn.seminario.api;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -423,42 +422,13 @@ public class PersistenceApi implements IApi {
     public ArrayList<DonacionDTO> obtenerDonaciones() {
         List<Donacion> list = donacionDao.findAll();
         ArrayList<DonacionDTO> res = new ArrayList<>();
-
-        if (list == null)
-            return res;
-
+        if (list == null) return res;
         for (Donacion d : list) {
-
-            // 1. Convertir fecha donación a LocalDateTime (ya viene OK de tu modelo)
-            LocalDateTime fecha = LocalDateTime.now();
-
-            // 2. Obtener bienes (tal como requiere el constructor)
-            ArrayList<Bien> bienes = d.getBienes() != null
-                    ? new ArrayList<>(d.getBienes())
-                    : new ArrayList<>();
-
-            // 3. Obtener códigos de donante, pedido y retiro
-            String codDonante = (d.getDonante() != null) ? d.getDonante().getCodigo() : null;
-            String codPedido = (d.getPedido() != null) ? d.getPedido().getCodigo() : null;
-            String codRetiro = null; // Lo llenas si tu donación está vinculada a retiro
-
-            // 4. Crear DTO usando el constructor real (7 parámetros)
-            DonacionDTO dto = new DonacionDTO(
-                    d.getCodigo(),
-                    fecha,
-                    d.getObservacion(),
-                    bienes,
-                    codDonante,
-                    codPedido,
-                    codRetiro
-            );
-
-            res.add(dto);
+            res.add(new DonacionDTO(d.getCodigo(), d.getFechaDonacion(), d.getObservacion(), d.getBienes(),
+                    d.getDonante() != null ? d.getDonante().getCodigo() : null, null));
         }
-
         return res;
     }
-
 
     // --- Bienes ---
     @Override
@@ -643,13 +613,13 @@ public class PersistenceApi implements IApi {
 		    }
 
 		    try {
-		        // cambiar estado en modelo (tu setEstadoRetiro valida y sincroniza pedido)
+		        // cambiar estado en modelo (setEstadoRetiro valida y sincroniza pedido)
 		        orden.setEstadoRetiro("Completada");
 
 		        // persistir cambios en OrdenRetiro
 		        ordenRetiroDao.update(orden);
 
-		        // opcional: también actualizar ordenPedido si tu DAO lo requiere
+		       
 		        if (orden.getPedido() != null) {
 		            ordenPedidoDao.update(orden.getPedido());
 		        }
