@@ -141,6 +141,9 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
+    
+    //opcion 1
+    
     public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
         Rol rol = new Rol(codigo, nombre, estado);
         this.rolDao.create(rol);
@@ -201,6 +204,8 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
+    //opcion 2
+    
     public void guardarRol(RolDTO rol) throws DataNullException {
         Rol rolN = new Rol(rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
         this.rolDao.create(rolN);
@@ -576,8 +581,10 @@ public class PersistenceApi implements IApi {
         // pendiente: adaptar DTO->modelo y delegar a visitaDao
     }
 
-	@Override
+    //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
+        Rol rol = new Rol(codigo, nombre, descripcion, estado);
+        this.rolDao.create(rol);
 		// TODO Auto-generated method stub
 		
 	}
