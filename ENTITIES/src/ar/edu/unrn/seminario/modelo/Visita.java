@@ -18,8 +18,9 @@ public class Visita {
 	private String tipo;
 	private String codOrdenRetiro;
 	private ArrayList<Bien> bienesRecolectados;
+	private boolean esFinal;
 	private String estado;
-	//posibles estados realizada o fallida;
+ 	//posibles estados realizada o fallida;
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
 			ArrayList<Bien> bienesRecolectados) throws DataNullException, DataLengthException{
@@ -139,6 +140,25 @@ public class Visita {
 		return estado;
 	}
 
+
+	
+	
+	
+	public String getCodOrdenRetiro() {
+		return codOrdenRetiro;
+	}
+
+	public void setCodOrdenRetiro(String codOrdenRetiro) {
+		this.codOrdenRetiro = codOrdenRetiro;
+	}
+
+	public boolean isEsFinal() {
+		return esFinal;
+	}
+
+	public void setEsFinal(boolean esFinal) {
+		this.esFinal = esFinal;
+	}
 
 	public void setEstado(String estado) throws StateChangeException,DataNullException{
 	    if (estado == null || estado.isEmpty()) {

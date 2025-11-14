@@ -4,14 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.*;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
+import ar.edu.unrn.seminario.dto.DonacionDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
@@ -25,18 +28,24 @@ public class AltaVisita extends JFrame {
     private JPanel contentPane;
     private IApi api;
 
-    private JTextField txtCodigo;            // código de la orden de retiro (referencia)
+    private JTextField txtCodOR;            // código de la orden de retiro (referencia)
     private JComboBox<String> comboTipo;
     private JTextArea txtObservaciones;
     private JTextField txtCodDonante;       // campo readonly para mostrar codDonante del pedido asociado
     private JRadioButton rdbVisitaFinal;
-
-    
-    private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
+    final LocalDate fecha;
+    OrdenRetiroDTO orden;
+     private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
     private JTextField textCodVoluntario;
     
-    public AltaVisita(IApi api) {
+    public AltaVisita(IApi api, String codOrdenRetiro) {
         this.api = api;
+       orden = api.obtenerOrdeneRetiro(codOrdenRetiro);
+        String ordenP= orden.getPedido();
+        
+       DonacionDTO donacion = api.obtenerDonacion(String ordenP);
+        
+        
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 520, 607);
         contentPane = new JPanel();
@@ -48,18 +57,14 @@ public class AltaVisita extends JFrame {
         lblCodigo.setBounds(10, 10, 150, 14);
         contentPane.add(lblCodigo);
 
-        txtCodigo = new JTextField();
-        txtCodigo.setBounds(170, 7, 250, 20);
-        contentPane.add(txtCodigo);
-        txtCodigo.setColumns(10);
+        txtCodOR = new JTextField();
+        txtCodOR.setEditable(false);
+        txtCodOR.setBounds(170, 7, 143, 20);
+        contentPane.add(txtCodOR);
+        txtCodOR.setColumns(10);
+        textCodVoluntario.setText(codOrdenRetiro);
 
-        // Agrego listener para que al perder foco se busque codDonante y lo muestre
-        txtCodigo.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusLost(java.awt.event.FocusEvent e) {
-                actualizarCodDonanteDesdeOrdenRetiro();
-            }
-        });
+       
 
         // Fecha
         JLabel lblFecha = new JLabel("Fecha:");
@@ -72,7 +77,7 @@ public class AltaVisita extends JFrame {
         contentPane.add(lblTipo);
 
         comboTipo = new JComboBox<>();
-        comboTipo.setBounds(168, 48, 200, 22);
+        comboTipo.setBounds(168, 48, 145, 22);
         comboTipo.addItem("Regular");
         comboTipo.addItem("Visita Final");
         comboTipo.addItem("Seguimiento");
@@ -84,7 +89,7 @@ public class AltaVisita extends JFrame {
         contentPane.add(lblSeleccion);
 
         JButton btnSeleccionBien = new JButton("Bienes");
-        btnSeleccionBien.setBounds(170, 89, 120, 23);
+        btnSeleccionBien.setBounds(170, 89, 143, 23);
         btnSeleccionBien.addActionListener(e -> {
             JOptionPane.showMessageDialog(AltaVisita.this, "Selector de bienes no implementado.", "Info", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -101,10 +106,11 @@ public class AltaVisita extends JFrame {
         contentPane.add(lblCodDonante);
 
         txtCodDonante = new JTextField();
-        txtCodDonante.setBounds(170, 174, 150, 20);
+        txtCodDonante.setBounds(170, 174, 143, 20);
         txtCodDonante.setEditable(false);
+        txtCodDonante.setText(donacion.getCodDonante());
         contentPane.add(txtCodDonante);
-
+   
         // Observaciones
         JLabel lblObserv = new JLabel("Observaciones:");
         lblObserv.setBounds(10, 330, 100, 14);
@@ -131,9 +137,9 @@ public class AltaVisita extends JFrame {
         contentPane.add(rdbVisitaFinal);
         
         textCodVoluntario = new JTextField();
-        textCodVoluntario.setText("");
+        textCodVoluntario.setText(orden.getCodVoluntario());
         textCodVoluntario.setEditable(false);
-        textCodVoluntario.setBounds(170, 132, 150, 20);
+        textCodVoluntario.setBounds(170, 132, 143, 20);
         contentPane.add(textCodVoluntario);
         
         JCalendar calendar = new JCalendar();
@@ -144,18 +150,29 @@ public class AltaVisita extends JFrame {
         btnFecha.setBounds(231, 302, 137, 23);
         contentPane.add(btnFecha);
 
+
+        btnFecha.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              
+            	Date fechaSeleccionada = calendar.getDate();
+            	fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            }
+        });
+        
         // Eventos
         btnCancelar.addActionListener(e -> limpiarCampos());
 
         btnGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onGuardar();
+                onGuardar(fecha,  rdbVisitaFinal.isSelected());
             }
         });
 
        
-        cargarVoluntarios();
+
 
         setLocationRelativeTo(null);
         setVisible(true);
@@ -169,21 +186,29 @@ public class AltaVisita extends JFrame {
         
     }
 
-    private void onGuardar() {
-        String codOrdenRetiro = txtCodigo.getText();
-        String fechaTexto = txtFecha.getText();
+    private void onGuardar(LocalDate fecha,boolean esFinal) {
+        String codOrdenRetiro = txtCodOR.getText();
+      
         String tipo = (String) comboTipo.getSelectedItem();
-        VoluntarioDTO voluntarioSel = (VoluntarioDTO) comboVoluntarios.getSelectedItem();
+      
         String observaciones = txtObservaciones.getText();
+        
+        VisitaDTO visita(null, fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
 
-
+        api.registrarVisita(visita);
     }
 
-    private void limpiarCampos() {
-        txtCodigo.setText("");
+    private void visita(Object object, LocalDate fecha2, String codVoluntario, String codOrdenRetiro,
+			ArrayList<BienDTO> bienesrecolectados2, String observaciones, String tipo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void limpiarCampos() {
+        txtCodOR.setText("");
         txtObservaciones.setText("");
         txtCodDonante.setText("");
-        if (comboVoluntarios.getItemCount() > 0) comboVoluntarios.setSelectedIndex(0);
+
         if (comboTipo.getItemCount() > 0) comboTipo.setSelectedIndex(0);
         rdbVisitaFinal.setSelected(false);
     }
