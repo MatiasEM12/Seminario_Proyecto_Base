@@ -130,6 +130,7 @@ public class AltaRol extends JFrame {
             
             int cod = Integer.parseInt(textCodigo.getText());
             try {
+            	//aqui esta el problema
 				api.guardarRol(cod,textNombre.getText(),textDescripcion.getText(),estado);
 			} catch (DataNullException e1) {
 				// TODO Auto-generated catch block
