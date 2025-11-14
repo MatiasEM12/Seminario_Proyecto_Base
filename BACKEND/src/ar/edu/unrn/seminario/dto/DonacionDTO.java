@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -7,10 +8,10 @@ import ar.edu.unrn.seminario.modelo.*;
 
 public class DonacionDTO {
 	private String codigo;
-	private LocalDateTime fechaDonacion;
+	private LocalDate fechaDonacion;
 	private String observacion;
 	
-	private ArrayList<Bien> bienes;
+	private ArrayList<BienDTO> bienes;
 	private String codDonante;
 	private String codPedido;
 	private String codRetiro;
@@ -19,7 +20,7 @@ public class DonacionDTO {
 	
 	
 
-	public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,
+	public DonacionDTO(String codigo, LocalDate fechaDonacion, String observacion, ArrayList<BienDTO> bienes,
 			String codDonante, String codPedido, String codRetiro) {
 		super();
 		this.codigo = codigo;
@@ -34,7 +35,7 @@ public class DonacionDTO {
 	
 
 
-	public DonacionDTO(String codigo, LocalDateTime fechaDonacion, String observacion, ArrayList<Bien> bienes,
+	public DonacionDTO(String codigo, LocalDate fechaDonacion, String observacion, ArrayList<BienDTO> bienes,
 			String codDonante, String codPedido) {
 		super();
 		this.codigo = codigo;
@@ -53,10 +54,10 @@ public class DonacionDTO {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
-	public LocalDateTime getFechaDonacion() {
+	public LocalDate getFechaDonacion() {
 		return this.fechaDonacion;
 	}
-	public void setFechaDonacion(LocalDateTime fechaDonacion) {
+	public void setFechaDonacion(LocalDate fechaDonacion) {
 		this.fechaDonacion = fechaDonacion;
 	}
 	public String getObservacion() {
@@ -66,12 +67,12 @@ public class DonacionDTO {
 		this.observacion = observacion;
 	}
 	
-	public ArrayList<Bien> getBienes() {
+	public ArrayList<BienDTO> getBienes() {
 		return this.bienes;
 	}
 	
 	
-	public void setBienes(ArrayList<Bien> bienes){
+	public void setBienes(ArrayList<BienDTO> bienes){
 		this.bienes = bienes;
 	}
 

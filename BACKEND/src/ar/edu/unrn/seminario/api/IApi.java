@@ -64,7 +64,7 @@ public interface IApi {
 
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
-	
+	public OrdenRetiroDTO obtenerOrdeneRetiro(String codOrdenRetiro);
 	//public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
@@ -89,6 +89,8 @@ public interface IApi {
 	//Donacion
 	public void registrarDonacion(Donacion donacion);
 	ArrayList<DonacionDTO> obtenerDonaciones();
+	
+	public DonacionDTO obtenerDonacion(String ordenP);
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;

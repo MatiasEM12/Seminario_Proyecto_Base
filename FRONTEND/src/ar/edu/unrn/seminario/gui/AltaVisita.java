@@ -198,11 +198,7 @@ public class AltaVisita extends JFrame {
         api.registrarVisita(visita);
     }
 
-    private void visita(Object object, LocalDate fecha2, String codVoluntario, String codOrdenRetiro,
-			ArrayList<BienDTO> bienesrecolectados2, String observaciones, String tipo) {
-		// TODO Auto-generated method stub
-		
-	}
+  
 
 	private void limpiarCampos() {
         txtCodOR.setText("");

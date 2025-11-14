@@ -664,6 +664,30 @@ public class PersistenceApi implements IApi {
 	    }
 	}
 
+	@Override
+	public OrdenRetiroDTO obtenerOrdeneRetiro(String codOrdenRetiro) {
+	      OrdenRetiro orden =this.ordenRetiroDao.find(codOrdenRetiro);
+	      
+	     
+	      return   toOrdenRetiroDTO(orden);
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacion(String ordenP) {
+	
+		Donacion donacion = this.donacionDao.find(ordenP);
+		
+		
+		return toDonacionDTO(donacion);
+	}
+	
+	private DonacionDTO toDonacionDTO ( Donacion donacion) {
+		
+		DonacionDTO dto= new DonacionDTO( );
+		
+		return dto;
+	}
+
 }
 
 
