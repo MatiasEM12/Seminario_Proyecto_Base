@@ -39,7 +39,7 @@ public class ListadoBienes extends JFrame {
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         
 		this.api=api;
-		  this.onSeleccion = onSeleccion;
+		  this.setOnSeleccion(onSeleccion);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 609, 300);
 		contentPane = new JPanel();
@@ -121,5 +121,17 @@ public class ListadoBienes extends JFrame {
 			}
 		});
 
+	}
+
+
+
+	public Consumer<ArrayList<BienDTO>> getOnSeleccion() {
+		return onSeleccion;
+	}
+
+
+
+	public void setOnSeleccion(Consumer<ArrayList<BienDTO>> onSeleccion) {
+		this.onSeleccion = onSeleccion;
 	}
 }
