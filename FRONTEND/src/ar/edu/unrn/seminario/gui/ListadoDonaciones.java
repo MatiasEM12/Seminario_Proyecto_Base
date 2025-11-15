@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 
 public class ListadoDonaciones extends JFrame {
@@ -28,7 +29,7 @@ public class ListadoDonaciones extends JFrame {
     private java.util.List<DonacionDTO> donaciones;
     private IApi api;
 
-    public ListadoDonaciones(IApi api) {
+    public ListadoDonaciones(IApi api) throws DataNullException {
         this.api = api;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -65,7 +66,12 @@ public class ListadoDonaciones extends JFrame {
         btnRefrescar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cargarOrdenes();
+                try {
+					cargarOrdenes();
+				} catch (DataNullException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         });
 
@@ -76,7 +82,7 @@ public class ListadoDonaciones extends JFrame {
     }
 
  
-    private void cargarOrdenes() {
+    private void cargarOrdenes() throws DataNullException {
         donaciones = api.obtenerDonacionesPendientes();
         if (donaciones == null) {
             donaciones = java.util.Collections.emptyList();
