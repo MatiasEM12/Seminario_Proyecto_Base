@@ -96,6 +96,7 @@ public interface IApi {
 	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
+	public BienDTO obtenerBien (String codigo);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
@@ -125,4 +126,7 @@ public interface IApi {
 
 	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+
+
+	
 }

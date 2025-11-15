@@ -750,6 +750,12 @@ public class PersistenceApi implements IApi {
 		
 	}
 
+	@Override
+	public BienDTO obtenerBien(String codigo) {
+		Bien bien=this.bienDao.find(codigo);
+		return this.toBienDTO(bien);
+	}
+
 }
 
 

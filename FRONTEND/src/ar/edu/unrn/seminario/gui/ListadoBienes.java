@@ -99,13 +99,13 @@ public class ListadoBienes extends JFrame {
 				
 	              for (int filaVista : filasSeleccionadas) {
 	                  
-	            	  int filaMoledo=table.convertColumnIndexToModel(filaVista);
+	            	  int filaModelo=table.convertColumnIndexToModel(filaVista);
 	            	  
 	            	  //obtenemos el codigo
 	            	  String codigo=(String) modelo.getValueAt(filaModelo, 0);
 	            	  
 	            	  //lamada a la api para recuperar el bienDTO
-	            	  BienDTO bien;//
+	            	  BienDTO bien= api.obtenerBien(codigo);//
 	            	  
 	            	  if(bien!=null) {
 	            		  seleccionados.add(bien);
