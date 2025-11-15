@@ -215,15 +215,12 @@ public class AltaVisita extends JFrame {
         try {
         VisitaDTO visita= new VisitaDTO( fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
 
-       
+        api.cargarVisita(visita);
         }catch(DataNullException | DataLengthException ex) {
         	
         	  JOptionPane.showMessageDialog(this,"Error en los datos de la visita: " + ex.getMessage(), "Error",  JOptionPane.ERROR_MESSAGE);
         }
-        
-        try {
-        	 api.cargarVisita(visita);
-        }catch(Exception ex) {
+        catch(Exception ex) {
         	
         	 JOptionPane.showMessageDialog(this, "Error al registrar visita: " + ex.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
         }
