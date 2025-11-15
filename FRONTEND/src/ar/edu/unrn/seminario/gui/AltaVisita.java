@@ -41,18 +41,15 @@ public class AltaVisita extends JFrame {
      private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
     private JTextField textCodVoluntario;
     
-    public AltaVisita(IApi api, String codOrdenRetiro) {
+    public AltaVisita(IApi api, String codOrdenRetiro) throws DataNullException {
         this.api = api;
         orden = api.obtenerOrdenRetiro(codOrdenRetiro);
         String ordenP= orden.getPedido();
         
-        DonacionDTO donacion = null;
-	try {
+        DonacionDTO donacion;
+	
 		donacion = api.obtenerDonacion( ordenP);
-	} catch (DataNullException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	
         
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
