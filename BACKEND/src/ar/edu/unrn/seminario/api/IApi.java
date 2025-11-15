@@ -109,7 +109,7 @@ public interface IApi {
 	
 	//Visitas
 	public void registrarVisita(Visita visita);
-	public void cargarVisita(VisitaDTO visita);
+	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 	 public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException ;
 	 public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 

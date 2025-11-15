@@ -12,7 +12,7 @@ public interface OrdenRetiroDao {
 
 	void remove(OrdenRetiro orden);
 
-	OrdenRetiro find(String username);
+	OrdenRetiro find(String codigo);
 
 	List<OrdenRetiro> findAll();
 }

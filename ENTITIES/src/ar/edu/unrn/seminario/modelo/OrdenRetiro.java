@@ -1,9 +1,9 @@
 package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
-import java.util.List;
+
 
 import ar.edu.unrn.seminario.exception.*;
 
@@ -14,7 +14,7 @@ public class OrdenRetiro extends Orden{
 	private static int contadorOrdenRetiro = 0;
 	
 	private String codigo;
-	private String estadoRetiro;
+	
 	private OrdenPedido pedido;
 	private Voluntario voluntario;
 	
@@ -70,8 +70,9 @@ public class OrdenRetiro extends Orden{
 
 
 	public String getEstadoRetiro() {
-		return estadoRetiro;
+		return super.getEstadoString();
 	}
+	/*
 	public void setEstadoRetiro(String estadoRetiro) throws StateChangeException,DataNullException{
 	    if (estadoRetiro == null || estadoRetiro.isEmpty()) {
 	        throw new DataNullException("El campo 'estado de retiro' no puede estar vacío");
@@ -93,8 +94,45 @@ public class OrdenRetiro extends Orden{
 	    	}
 	    	
 	    }
+	} */
+	
+	
+	public void ordenEstadoCompleta() throws StateChangeException {
+		
+		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
+			
+			super.setEstado(EstadoOrden.COMPLETADA);
+		}else {
+			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
+		}
+		
 	}
 	
+	public void ordenEstadoProceso() throws StateChangeException {
+		
+	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
+			
+			super.setEstado(EstadoOrden.EN_PROCESO);
+		}else {
+			
+			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
+		}
+		
+	}
+	
+	public void ordenEstadoCancelada() throws StateChangeException {
+		
+		
+		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
+			
+			super.setEstado(EstadoOrden.CANCELADA);
+		}else {
+
+			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
+		}
+		
+		
+	}
 	public OrdenPedido getPedido() {
 		return pedido;
 	}
@@ -104,11 +142,30 @@ public class OrdenRetiro extends Orden{
 	public ArrayList<Visita> getVisitas() {
 		return visitas;
 	}
-	public void agregarVisita(Visita visita) {
+	public void agregarVisita(Visita visita) throws StateChangeException {
+		
+		
 		this.visitas.add(visita);
+		if(visita.getBienesRecolectados()!=null) {
+			
+			this.agregarBienes(visita.getBienesRecolectados());
+		}
+		
+		
+		if(visita.isEsFinal()==true ) {
+			this.ordenEstadoCompleta();
+		}
+		
+	
+		
+		
 	}
 	public void agregarBien(Bien bien) {
 		this.recolectados.add(bien);
+	}
+	
+	public void agregarBienes (ArrayList<Bien> bienes) {
+		this.recolectados.addAll(bienes);
 	}
 	public String getCodigo() {
 		return codigo;

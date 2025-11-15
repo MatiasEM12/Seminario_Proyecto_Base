@@ -155,24 +155,13 @@ public class BienDAOJDBC  implements BienDAO{
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				
-				if(rs.getString("tipo").equalsIgnoreCase("Alimento") ||rs.getString("tipo").equalsIgnoreCase("Medicamento")) {
+				
 					
 					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-					   java.time.LocalDate fecha = sqlDate.toLocalDate();
-					bien=new Bien(rs.getString("nombre"), rs.getString("descripcion"), fecha ,rs.getString("tipo"),rs.getString("codigo"));
-					
-				}else if(rs.getString("tipo").equalsIgnoreCase("Mueble") ||rs.getString("tipo").equalsIgnoreCase("Electrodomestico")) { 
-					
-					bien=new Bien(rs.getDouble("peso"), rs.getString("nombre"), rs.getString("descripcion"), rs.getString("material"),rs.getString("tipo"));
-					
-					
-				}else if(rs.getString("tipo").equalsIgnoreCase("Ropa") ) {
-					bien=new Bien(rs.getString("nombre"), rs.getString ("descripcion"), rs.getDouble("talle"), rs.getString ("material"),rs.getString("tipo"));
-				}else { 
-					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-					   java.time.LocalDate fecha = sqlDate.toLocalDate();
-					bien=new Bien(rs.getDouble("peso"), rs.getString("nombre"), rs.getString ("descripcion"), fecha, rs.getDouble("talle"),rs.getString("material"), rs.getString("tipo"));
-				}
+					 java.time.LocalDate fecha = sqlDate.toLocalDate();
+					bien=new Bien(rs.getString("codigo"),rs.getString("tipo"),rs.getDouble("peso"),rs.getString("nombre"),
+							rs.getString("descripcion"),rs.getInt("nivelNecesidad"),fecha,rs.getDouble("talle"),rs.getString("material"));
+			
 				
 			}
 		}

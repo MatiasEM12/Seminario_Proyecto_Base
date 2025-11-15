@@ -44,7 +44,7 @@ OrdenPedidoDao op;
 			statement.setString(5, orden.getPedido().getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
+				System.out.println("Modificando " + cantidad + " registros");
 			} else {
 				System.out.println("Error al actualizar");
 				// TODO: disparar Exception propia

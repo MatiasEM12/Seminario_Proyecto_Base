@@ -577,24 +577,16 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void cargarVisita(VisitaDTO visita) {
+    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
         
+    	Visita visita= toVisita(visitaDTO);
     
-    	//1- recive el Visitadto 
+    	OrdenRetiro oR = this.ordenRetiroDao.find(visita.getCodOrdenRetiro());
     	
-    	//2-transforma el dto en Visita
-    	
-    	//3- recupera la orden de Retiro
-    	
-    	//4-metodo cargar BienesVisita  
-			//metodo comparar, si BienesVisita ==BienesDonacion , edemas de esFinal de la OR
-    		// es una validacion más para que la OR este Completada. 
-    	
-    	//5-agrega esa visita a la orden
-    	
-    	//6-transforma esa ordenRetrio den DTO
-    	
-    	//7- actualiza la ordenModificada
+    	oR.agregarVisita(visita);
+    	this.actualizarBienVisita(visita);
+    	this.visitaDao.update(visita);
+    	this.ordenRetiroDao.update(oR);
     	
     	
     
@@ -603,14 +595,38 @@ public class PersistenceApi implements IApi {
     	
     }
     
-    private Visita toVisita(VisitaDTO visitaDTO) {
+    private void actualizarBienVisita(Visita visita) {
+    	
+    	ArrayList<Bien> bienes= visita.getBienesRecolectados();
+    	
+    	for(Bien b :  bienes) {
+    		this.bienVisitaDao.create(b.getCodigo(), visita.getCodigo());
+    	}
+    	
+    }
+    private Visita toVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException {
     	
     	Visita visita = new Visita (visitaDTO.getFechaVisita(), visitaDTO.getObservaciones(), visitaDTO.getTipo(), visitaDTO.getCodOrdenRetiro(),
-    	 visitaDTO.getBienesRecolectados(),visitaDTO.isEsFinal());
+    			 toBienesList(visitaDTO.getBienesRecolectados()),visitaDTO.isEsFinal());
     	
     	
     	return visita ;
     }
+    
+    private ArrayList<Bien> toBienesList(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException{
+    	
+    	ArrayList<Bien>bienes= new ArrayList<>();
+    	
+    	for(BienDTO dt : bienesDTO) {
+    		
+    		Bien bien = new Bien( dt.getCodigo(),dt.getTipo(),dt.getPeso(),dt.getNombre(),dt.getDescripcion(),dt.getNivelNecesidad(),dt.getFechaVencimiento(),dt.getTalle(),dt.getMaterial()  );
+    		bienes.add(bien);
+    	}
+    	
+    	return bienes;
+    }
+    
+    
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
@@ -639,35 +655,7 @@ public class PersistenceApi implements IApi {
 		
 	}
 
-	@Override
-		public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
-		    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-		        throw new IllegalArgumentException("Código de OrdenRetiro inválido");
-		    }
-
-		    // buscar la orden
-		    OrdenRetiro orden = ordenRetiroDao.find(codOrdenRetiro);
-		    if (orden == null) {
-		        throw new IllegalArgumentException("No existe OrdenRetiro con código: " + codOrdenRetiro);
-		    }
-
-		    try {
-		        // cambiar estado en modelo (tu setEstadoRetiro valida y sincroniza pedido)
-		        orden.setEstadoRetiro("Completada");
-
-		        // persistir cambios en OrdenRetiro
-		        ordenRetiroDao.update(orden);
-
-		        // opcional: también actualizar ordenPedido si tu DAO lo requiere
-		        if (orden.getPedido() != null) {
-		            ordenPedidoDao.update(orden.getPedido());
-		        }
-		    } catch (DataNullException | StateChangeException ex) {
-		        throw new Exception("No se pudo completar la OrdenRetiro: " + ex.getMessage(), ex);
-		    } catch (Exception ex) {
-		        throw new Exception("Error al persistir la OrdenRetiro completada: " + ex.getMessage(), ex);
-		    }
-		}
+	
 
 	@Override
 	public void registrarOrdenRetiro(OrdenRetiro retiroO)
@@ -754,6 +742,12 @@ public class PersistenceApi implements IApi {
 		}
 		
 		return dtos;
+	}
+
+	@Override
+	public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
