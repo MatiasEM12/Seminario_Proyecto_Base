@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Donacion;
 
 
@@ -19,6 +20,7 @@ public interface DonacionDAO {
 
 	Donacion find(String codigo);
 
-	List<Donacion> findAll();
+	List<Donacion> findAll() throws DataNullException;
+	List<Donacion> findAllPendiente() throws DataNullException;
 
 }
