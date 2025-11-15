@@ -43,10 +43,16 @@ public class AltaVisita extends JFrame {
     
     public AltaVisita(IApi api, String codOrdenRetiro) {
         this.api = api;
-       orden = api.obtenerOrdeneRetiro(codOrdenRetiro);
+        orden = api.obtenerOrdenRetiro(codOrdenRetiro);
         String ordenP= orden.getPedido();
         
-       DonacionDTO donacion = api.obtenerDonacion( ordenP);
+        DonacionDTO donacion = null;
+	try {
+		donacion = api.obtenerDonacion( ordenP);
+	} catch (DataNullException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
         
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -207,7 +213,7 @@ public class AltaVisita extends JFrame {
       
         String observaciones = txtObservaciones.getText();
         try {
-        VisitaDTO visita( fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
+        VisitaDTO visita= new VisitaDTO( fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
 
        
         }catch(DataNullException | DataLengthException ex) {
@@ -216,7 +222,7 @@ public class AltaVisita extends JFrame {
         }
         
         try {
-        	 api.registrarVisita(visita);
+        	 api.cargarVisita(visita);
         }catch(Exception ex) {
         	
         	 JOptionPane.showMessageDialog(this, "Error al registrar visita: " + ex.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);

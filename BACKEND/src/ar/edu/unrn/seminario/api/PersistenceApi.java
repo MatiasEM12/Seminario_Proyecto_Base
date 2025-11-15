@@ -425,7 +425,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<DonacionDTO> obtenerDonaciones() {
+    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException {
         List<Donacion> list = donacionDao.findAll();
         ArrayList<DonacionDTO> res = new ArrayList<>();
         if (list == null) return res;
@@ -465,7 +465,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) {
+    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException {
         ArrayList<BienDTO> retirar = new ArrayList<>();
         if (codOP == null || codOP.trim().isEmpty()) return retirar;
         List<Donacion> donaciones = donacionDao.findAll();
@@ -542,7 +542,8 @@ public class PersistenceApi implements IApi {
     @Override
     public void registrarVisita(Visita visita) {
         visitaDao.create(visita);
-    }
+    }   
+    
     public void registrarOrdenPedido(OrdenPedido orden) {
     	ordenPedidoDao.create(orden);
     }
@@ -576,8 +577,33 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void registrarVisita(VisitaDTO visita) {
-        // pendiente: adaptar DTO->modelo y delegar a visitaDao
+    public void cargarVisita(VisitaDTO visita) {
+        
+    	
+    	
+    	
+    	
+    	//1- recive el Visitadto 
+    	
+    	//2-transforma el dto en Visita
+    	
+    	//3- recupera la orden de Retiro
+    	
+    	//4-metodo cargar BienesVisita  
+			//metodo comparar, si BienesVisita ==BienesDonacion , edemas de esFinal de la OR
+    		// es una validacion más para que la OR este Completada. 
+    	
+    	//5-agrega esa visita a la orden
+    	
+    	//6-transforma esa ordenRetrio den DTO
+    	
+    	//7- actualiza la ordenModificada
+    	
+    	
+    
+    	
+    	
+    	
     }
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
@@ -664,7 +690,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public OrdenRetiroDTO obtenerOrdeneRetiro(String codOrdenRetiro) {
+	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) {
 	      OrdenRetiro orden =this.ordenRetiroDao.find(codOrdenRetiro);
 	      
 	     
@@ -672,9 +698,9 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public DonacionDTO obtenerDonacion(String ordenP) {
+	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException {
 	
-		Donacion donacion = this.donacionDao.find(ordenP);
+		Donacion donacion = this.donacionDao.findPorOrdenPedido(ordenP);
 		
 		
 		return toDonacionDTO(donacion);
@@ -700,6 +726,28 @@ public class PersistenceApi implements IApi {
 		
 		return dtos;
 		
+	}
+
+	@Override
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException {
+		
+		List<Donacion> donaciones= this.donacionDao.findAllPendiente(); 
+		
+		
+		return this.toDonacionDTO(donaciones) ;
+	}
+	
+	private ArrayList<DonacionDTO> toDonacionDTO(List <Donacion> donaciones){
+		
+		ArrayList<DonacionDTO>dtos= new ArrayList<>();
+		
+		for (Donacion e : donaciones) {
+			
+			DonacionDTO dto = this.toDonacionDTO(e);
+			dtos.add(dto);
+		}
+		
+		return dtos;
 	}
 
 }

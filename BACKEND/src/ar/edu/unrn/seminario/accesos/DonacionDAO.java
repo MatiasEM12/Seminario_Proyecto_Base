@@ -19,8 +19,10 @@ public interface DonacionDAO {
 	void remove(Donacion donacion);
 
 	Donacion find(String codigo);
+	Donacion  findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException;
 
 	List<Donacion> findAll() throws DataNullException;
 	List<Donacion> findAllPendiente() throws DataNullException;
+
 
 }

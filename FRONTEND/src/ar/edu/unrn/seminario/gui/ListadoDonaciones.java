@@ -77,7 +77,7 @@ public class ListadoDonaciones extends JFrame {
 
  
     private void cargarOrdenes() {
-        donaciones = api.obtenerDonaciones();
+        donaciones = api.obtenerDonacionesPendientes();
         if (donaciones == null) {
             donaciones = java.util.Collections.emptyList();
         }

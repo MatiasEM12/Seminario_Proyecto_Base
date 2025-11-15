@@ -36,7 +36,7 @@ BienDAO  b;
 							+ " VALUES (?, ?, ?,?,?)");
 			
 		
-			LocalDate fecha = donacion.getFechaDonacion().toLocalDate();
+			LocalDate fecha = donacion.getFechaDonacion();
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 			
 			statement.setString(1, donacion.getCodigo());
@@ -71,7 +71,7 @@ BienDAO  b;
 					.prepareStatement("UPDATE coordenada SET codigo=?,observacion=?,Fecha_Donacion=?,codigoDonante=?,codigoOrdenPedido=? "
 							+ "WHERE codigo = ?");
 
-			LocalDate fecha = donacion.getFechaDonacion().toLocalDate();
+			LocalDate fecha = donacion.getFechaDonacion();
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 			
 			statement.setString(1, donacion.getCodigo());
@@ -166,9 +166,9 @@ BienDAO  b;
 			if (rs.next()) {
 				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
 				   java.time.LocalDate localDate = sqlDate.toLocalDate();
-				   java.time.LocalDateTime localDateTime = localDate.atStartOfDay();
 				   
-				donacion =new Donacion (localDateTime,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
+				   
+				donacion =new Donacion (localDate,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
 						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
 				
 			}
@@ -251,6 +251,39 @@ BienDAO  b;
 			ConnectionManager.disconnect();
 		}
 	    return listado;
+	}
+
+	@Override
+	public Donacion findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException {
+
+		
+		Donacion donacion= null;
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido "
+			+ "FROM donacion "+ "WHERE codigoOrdenPedido codigo = ?");
+			sent.setString(1, codigoOrdenPedido);
+			ResultSet rs = sent.executeQuery();
+			if (rs.next()) {
+				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
+				   java.time.LocalDate localDate = sqlDate.toLocalDate();
+				   
+				   
+				donacion =new Donacion (localDate,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
+						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
+				
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return donacion;
 	}
 
 }

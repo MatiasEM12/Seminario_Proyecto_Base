@@ -64,7 +64,7 @@ public interface IApi {
 
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro();
 
-	public OrdenRetiroDTO obtenerOrdeneRetiro(String codOrdenRetiro);
+	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro);
 	//public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	//OrdenPedido 
@@ -88,16 +88,19 @@ public interface IApi {
 	
 	//Donacion
 	public void registrarDonacion(Donacion donacion);
-	ArrayList<DonacionDTO> obtenerDonaciones();
+	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException;
 	
-	public DonacionDTO obtenerDonacion(String ordenP);
+	
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException;
+	
+	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita);
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) ;
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
 
-	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP);
+	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException;
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
@@ -106,7 +109,7 @@ public interface IApi {
 	
 	//Visitas
 	public void registrarVisita(Visita visita);
-	public void registrarVisita(VisitaDTO visita);
+	public void cargarVisita(VisitaDTO visita);
 	 public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException ;
 	 public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 

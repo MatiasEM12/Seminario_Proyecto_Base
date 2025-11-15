@@ -20,7 +20,7 @@ public class OrdenRetiro extends Orden{
 	
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> recolectados;
-	//le cambie el localdatetime a LocalDate
+	
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
 			ArrayList<Visita> visitas)throws DataNullException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
