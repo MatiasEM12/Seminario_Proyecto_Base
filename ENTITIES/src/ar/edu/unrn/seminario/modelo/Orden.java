@@ -42,16 +42,19 @@ public abstract class Orden {
         EN_PROCESO("En proceso"),
         COMPLETADA("Completada"),
         CANCELADA("Cancelada");
+    	private final String etiqueta;
 
-        private final String descripcion;
-
-        EstadoOrden(String descripcion) {
-            this.descripcion = descripcion;
+        EstadoOrden(String etiqueta) {
+            this.etiqueta = etiqueta;
         }
 
+        public String getEtiqueta() {
+            return etiqueta;
+        }
+        
         @Override
         public String toString() {
-            return descripcion;
+            return etiqueta;
         }
     }
 
@@ -73,4 +76,34 @@ public abstract class Orden {
     public String getEstadoString() {
         return estado.toString();
     }
+    public void setEstadoDesdeString(String string) {
+        if (string == null) {
+            // si querés un default
+            this.estado = EstadoOrden.PENDIENTE;
+            return;
+        }
+
+        String valor = string.trim();
+
+        // 1) Intentar matchear contra la etiqueta del enum ("Pendiente", "En proceso", etc.)
+        for (EstadoOrden e : EstadoOrden.values()) {
+            if (e.getEtiqueta().equalsIgnoreCase(valor)) {
+                this.estado = e;
+                return;
+            }
+        }
+
+        // 2) Intentar matchear contra el nombre del enum ("PENDIENTE", "EN_PROCESO", etc.)
+        String mayus = valor.toUpperCase().replace(' ', '_');
+        for (EstadoOrden e : EstadoOrden.values()) {
+            if (e.name().equals(mayus)) {
+                this.estado = e;
+                return;
+            }
+        }
+
+        // 3) Si nada coincide, podés tirar excepción o dejar un default
+        throw new IllegalArgumentException("Estado de orden desconocido: " + string);
+    }
+
 }

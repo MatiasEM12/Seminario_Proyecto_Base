@@ -120,4 +120,6 @@ public interface IApi {
 
 	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+	void limpiarTablas();
+
 }

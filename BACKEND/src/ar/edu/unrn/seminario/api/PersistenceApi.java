@@ -1,5 +1,8 @@
 package ar.edu.unrn.seminario.api;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +15,7 @@ import ar.edu.unrn.seminario.accesos.Bien_DonacionDAO;
 import ar.edu.unrn.seminario.accesos.Bien_DonacionJDBC;
 import ar.edu.unrn.seminario.accesos.Bien_VisitaDAO;
 import ar.edu.unrn.seminario.accesos.Bien_VisitaJDBC;
+import ar.edu.unrn.seminario.accesos.ConnectionManager;
 import ar.edu.unrn.seminario.accesos.CoordenadaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonacionDAO;
 import ar.edu.unrn.seminario.accesos.DonacionDAOJDBC;
@@ -655,6 +659,28 @@ public class PersistenceApi implements IApi {
 	        return null;
 	    }
 	}
+	
+	public void limpiarTablas() {
+	    try (Connection conn = ConnectionManager.getConnection();
+	         Statement st = conn.createStatement()) {
+
+	        // Primero tablas dependientes si las tuvieras
+	        st.executeUpdate("DELETE FROM Bien_Visita");
+	        st.executeUpdate("DELETE FROM Bien_Donacion");
+	        st.executeUpdate("DELETE FROM Visitas");
+	        st.executeUpdate("DELETE FROM OrdenRetiro");
+	        st.executeUpdate("DELETE FROM donacion");
+	        st.executeUpdate("DELETE FROM OrdenPedido");
+	        // opcional: borrar el donante si siempre usás D00001
+	        // st.executeUpdate(\"DELETE FROM donante WHERE codigo='D00001'\");
+	    } catch (SQLException e) {
+	        System.out.println("Error limpiando tablas: " + e.getMessage());
+	        e.printStackTrace();
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
+
 
 }
 

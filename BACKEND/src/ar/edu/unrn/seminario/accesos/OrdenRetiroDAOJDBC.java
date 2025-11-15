@@ -11,6 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Orden;
@@ -20,45 +23,41 @@ import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 
-public class OrdenRetiroDAOJDBC implements OrdenRetiroDao{
-VisitaDao visita;
-VoluntarioDAO voluntario;
-OrdenPedidoDao op;
-	@Override
-	public void create(OrdenRetiro orden) {
-		try {
+public class OrdenRetiroDAOJDBC implements OrdenRetiroDao {
 
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenRetiro (codigo, Fecha_Emision,estado, codVoluntario,codOrdenPedido)"
-							+ " VALUES (?, ?,?, ?,?)");
-			
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
-			
-			
-			
-			statement.setString(1,orden.getCodigo());
-			statement.setDate(2, fechaSQL);
-			statement.setString(3,orden.getEstadoString());
-			statement.setString(4, orden.getVoluntario().getCodigo());
-			statement.setString(5, orden.getPedido().getCodigo());
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
-			} else {
-				System.out.println("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
+    VisitaDao visita;
+    VoluntarioDAO voluntario;
+    OrdenPedidoDao op;
 
-		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
-		
-		
-	}
+    @Override
+    public void create(OrdenRetiro orden) {
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement statement = conn.prepareStatement(
+                "INSERT INTO OrdenRetiro (codigo, tipo, estado, FechaCreacion, codVoluntario, codOrdenPedido) " +
+                "VALUES (?, ?, ?, ?, ?, ?)"
+            );
+
+            java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
+
+            statement.setString(1, orden.getCodigo());
+            statement.setString(2, OrdenRetiro.getTipo()); // o "OrdenRetiro"
+            statement.setString(3, orden.getEstadoString());
+            statement.setDate(4, fechaSQL);
+            statement.setString(5, orden.getVoluntario().getCodigo());
+            statement.setString(6, orden.getPedido().getCodigo());
+
+            int cantidad = statement.executeUpdate();
+            if (cantidad <= 0) {
+                System.out.println("Error al insertar OrdenRetiro");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage());
+        } finally {
+            ConnectionManager.disconnect();
+        }
+    }
 
 	@Override
 	public void update(OrdenRetiro orden) {
@@ -147,66 +146,59 @@ OrdenPedidoDao op;
 		
 	}
 
-	public OrdenRetiro find(String codigo) {
-		OrdenRetiro orden= null;
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo, estado,Fecha_Emision, codVoluntario,codOrdenPedido "
-			+ "FROM OrdenRetiro"+ "WHERE codigo = ?");
-			sent.setString(1, codigo);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				LocalDate fecha = rs.getDate("Fecha_Emision").toLocalDate();
-				
-				orden=new OrdenRetiro(rs.getString("codigo"), rs.getString("estado"),fecha,
-						voluntario.find(rs.getString("codVoluntario")) ,op.find(rs.getString("codOrdenPedido")),
-						visita.findAll(rs.getString(codigo)));
-				
-				//String codigo ,String estado,LocalDate fechaEmision, Voluntario voluntario,
-				//OrdenPedido ordenPedido,ArrayList <Visita> visitas
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return orden;
-	}
+	public OrdenRetiro find(String codigo) throws DataNullException, DataLengthException, StateChangeException {
+        OrdenRetiro orden = null;
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement sent = conn.prepareStatement(
+                "SELECT codigo, tipo, estado, FechaCreacion, codVoluntario, codOrdenPedido " +
+                "FROM OrdenRetiro WHERE codigo = ?"
+            );
+            sent.setString(1, codigo);
+            ResultSet rs = sent.executeQuery();
 
-	@Override
-	public List<OrdenRetiro> findAll() {
-		ArrayList <OrdenRetiro> ordenes = new ArrayList<>();
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo "
-			+ "FROM OrdenRetiro");
-			
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				
-				while (rs.next()) {
-					
-					ordenes.add(this.find(rs.getString("codigo")));
-				}
+            if (rs.next()) {
+                LocalDate fecha = rs.getDate("FechaCreacion").toLocalDate();
 
-			
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return ordenes;
-	}
+                Voluntario vol = voluntario.find(rs.getString("codVoluntario"));
+                OrdenPedido pedido = op.find(rs.getString("codOrdenPedido"));
+                ArrayList<Visita> visitas = visita.findAll(rs.getString("codigo"));
+
+                orden = new OrdenRetiro(
+                        rs.getString("codigo"),
+                        rs.getString("estado"),
+                        fecha,
+                        vol,
+                        pedido,
+                        visitas
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta (SELECT OrdenRetiro): " + e.getMessage());
+        } finally {
+            ConnectionManager.disconnect();
+        }
+        return orden;
+    }
+
+    @Override
+    public List<OrdenRetiro> findAll() throws DataNullException, DataLengthException, StateChangeException {
+        ArrayList<OrdenRetiro> ordenes = new ArrayList<>();
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement sent = conn.prepareStatement(
+                "SELECT codigo FROM OrdenRetiro"
+            );
+            ResultSet rs = sent.executeQuery();
+            while (rs.next()) {
+                ordenes.add(this.find(rs.getString("codigo")));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta (SELECT ALL OrdenRetiro): " + e.getMessage());
+        } finally {
+            ConnectionManager.disconnect();
+        }
+        return ordenes;
+    }
 
 }

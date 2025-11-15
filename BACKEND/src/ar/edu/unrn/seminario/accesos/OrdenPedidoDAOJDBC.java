@@ -8,6 +8,10 @@ import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
 
 
@@ -19,19 +23,18 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao {
         try {
             Connection conn = ConnectionManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(
-            		"INSERT INTO OrdenPedido (codigo, tipo, cargaPesada, estado, FechaCreacion) " +
-                            "VALUES (?, ?, ?, ?, ?,?)"
+                "INSERT INTO OrdenPedido (codigo, tipo, cargaPesada, observaciones, estado, FechaCreacion) " +
+                "VALUES (?, ?, ?, ?, ?, ?)"
             );
 
             java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 
             statement.setString(1, orden.getCodigo());
-            statement.setString(2, OrdenPedido.getTipo());
+            statement.setString(2, OrdenPedido.getTipo());        // 'OrdenPedido'
             statement.setBoolean(3, orden.isCargaPesada());
             statement.setString(4, orden.getObservaciones());
-            statement.setString(5, orden.getEstado().toString());
+            statement.setString(5, orden.getEstado().toString()); // enum -> String
             statement.setDate(6, fechaSQL);
-            
 
             int cantidad = statement.executeUpdate();
             if (cantidad <= 0) {
@@ -110,40 +113,35 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao {
     }
 
     @Override
-    public OrdenPedido find(String codigo) {
+    public OrdenPedido find(String codigo) throws DataNullException, DataLengthException, StateChangeException {
         OrdenPedido orden = null;
         try {
             Connection conn = ConnectionManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(
-                /*"SELECT o.codigo, o.fechaCreacion, o.cargaPesada, o.observaciones, o.codDonante, o.codDonacion " +
-                "FROM OrdenPedido o WHERE o.codigo = ?"*/
-            		"SELECT o.codigo, o.fechaCreacion, o.cargaPesada, o.observaciones" +
-                    "FROM OrdenPedido o WHERE o.codigo = ?"
+                "SELECT o.codigo, o.tipo, o.cargaPesada, o.observaciones, o.estado, o.FechaCreacion " +
+                "FROM OrdenPedido o WHERE o.codigo = ?"
             );
 
             statement.setString(1, codigo);
 
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-
-                    LocalDate fecha = rs.getDate("fechaEmision").toLocalDate();
+                    LocalDate fecha = rs.getDate("FechaCreacion").toLocalDate();
 
                     orden = new OrdenPedido(
                         fecha,
                         rs.getBoolean("cargaPesada"),
                         rs.getString("observaciones"),
-                        rs.getString("codDonante"),
-                        rs.getString("codDonacion")
+                        null,     // codDonante (no está en BD)
+                        null      // codDonacion (no está en BD)
                     );
                     orden.setCodigo(rs.getString("codigo"));
+                    orden.setEstadoDesdeString(rs.getString("estado")); // si tenés un setter así
                 }
             }
 
         } catch (SQLException e) {
             System.out.println("Error al procesar consulta (SELECT OrdenPedido): " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Error inesperado en find OrdenPedido: " + e.getMessage());
             e.printStackTrace();
         } finally {
             ConnectionManager.disconnect();
@@ -153,38 +151,34 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao {
     }
 
     @Override
-    public List<OrdenPedido> findAll() {
+    public List<OrdenPedido> findAll() throws StateChangeException, DataNullException, DataLengthException {
         List<OrdenPedido> ordenes = new ArrayList<>();
         try {
             Connection conn = ConnectionManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(
-                /*"SELECT o.codigo, o.fechaCreacion, o.cargaPesada, o.observaciones, o.codDonante, o.codDonacion" +
-                "FROM OrdenPedido o"*/
-            		"SELECT o.codigo, o.fechaCreacion, o.cargaPesada, o.observaciones" +
-                    "FROM OrdenPedido o"
+                "SELECT o.codigo, o.tipo, o.cargaPesada, o.observaciones, o.estado, o.FechaCreacion " +
+                "FROM OrdenPedido o"
             );
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                LocalDate fecha = rs.getDate("fechaEmision").toLocalDate();
+                LocalDate fecha = rs.getDate("FechaCreacion").toLocalDate();
 
                 OrdenPedido orden = new OrdenPedido(
                     fecha,
                     rs.getBoolean("cargaPesada"),
                     rs.getString("observaciones"),
-                    rs.getString("codDonante"),
-                    rs.getString("codDonacion")
+                    null,
+                    null
                 );
                 orden.setCodigo(rs.getString("codigo"));
+                orden.setEstadoDesdeString(rs.getString("estado"));
 
                 ordenes.add(orden);
             }
 
         } catch (SQLException e) {
             System.out.println("Error al procesar consulta (SELECT ALL OrdenPedido): " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Error inesperado en findAll OrdenPedido: " + e.getMessage());
             e.printStackTrace();
         } finally {
             ConnectionManager.disconnect();
@@ -193,3 +187,4 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao {
         return ordenes;
     }
 }
+

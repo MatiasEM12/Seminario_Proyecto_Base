@@ -10,12 +10,13 @@ import ar.edu.unrn.seminario.gui.VentanaPrincipal;
 public class Main {
 
 	public static void main(String[] args) {
-
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 
 					IApi api = new PersistenceApi();
+					api.limpiarTablas();
 					//IApi api = new MemoryApi();
 					VentanaPrincipal frame = new VentanaPrincipal(api);
 
