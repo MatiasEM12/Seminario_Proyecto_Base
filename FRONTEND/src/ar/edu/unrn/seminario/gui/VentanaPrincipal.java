@@ -187,15 +187,8 @@ public class VentanaPrincipal extends JFrame {
 		//Apartado configuracion bar
 		
 		JMenu configuracionMenu = new JMenu("Configuración");
-		JMenuItem registrarVisitaMenuItem=new JMenuItem("Alta Visita");
-		registrarVisitaMenuItem.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				AltaVisita ventanaVisita=new AltaVisita(api);
-				ventanaVisita.setLocationRelativeTo(null);
-				ventanaVisita.setVisible(true);
-		}
-		});
-		configuracionMenu.add(registrarVisitaMenuItem);
+		
+		
 		JMenuItem salirMenuItem = new JMenuItem("Salir");
 		configuracionMenu.add(salirMenuItem);
 		contentPane = new JPanel();
