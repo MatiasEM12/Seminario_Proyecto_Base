@@ -579,10 +579,7 @@ public class PersistenceApi implements IApi {
     @Override
     public void cargarVisita(VisitaDTO visita) {
         
-    	
-    	
-    	
-    	
+    
     	//1- recive el Visitadto 
     	
     	//2-transforma el dto en Visita
@@ -605,12 +602,21 @@ public class PersistenceApi implements IApi {
     	
     	
     }
+    
+    private Visita toVisita(VisitaDTO visitaDTO) {
+    	
+    	Visita visita = new Visita (visitaDTO.getFechaVisita(), visitaDTO.getObservaciones(), visitaDTO.getTipo(), visitaDTO.getCodOrdenRetiro(),
+    	 visitaDTO.getBienesRecolectados(),visitaDTO.isEsFinal());
+    	
+    	
+    	return visita ;
+    }
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
         Rol rol = new Rol(codigo, nombre, descripcion, estado);
         this.rolDao.create(rol);
-		// TODO Auto-generated method stub
+		
 		
 	}
 

@@ -23,7 +23,7 @@ public class Visita {
  	//posibles estados realizada o fallida;
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
-			ArrayList<Bien> bienesRecolectados) throws DataNullException, DataLengthException{
+			ArrayList<Bien> bienesRecolectados, boolean esFinal) throws DataNullException, DataLengthException{
 		super();
 		if (fechaVisita==null) {
 			throw new DataNullException("El campo Fecha no puede estar VACIO"); 
@@ -46,6 +46,7 @@ public class Visita {
 		this.tipo = tipo;
 		this.codOrdenRetiro = codOrdenRetiro;
 		this.bienesRecolectados = bienesRecolectados;
+		this.esFinal=esFinal;
 		crearCodigo();
 	}
 	
