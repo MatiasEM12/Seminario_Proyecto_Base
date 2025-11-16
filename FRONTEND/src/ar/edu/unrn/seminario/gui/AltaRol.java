@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -19,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class AltaRol extends JFrame {
 
@@ -37,7 +39,7 @@ public class AltaRol extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public AltaRol(IApi api) {
+	public AltaRol(IApi api){
 		
 		//this.roles = api.obtenerRoles();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -125,20 +127,36 @@ public class AltaRol extends JFrame {
 
         // vinculados al  botón Aceptar
         btnAceptarR.addActionListener(e -> {
-            actualizarEstados();
-            estado= rdbtnActivado.isSelected();
+        	try {
+        		int cod;
+        		if(textCodigo.getText().trim().isEmpty()) {
+    				JOptionPane.showMessageDialog(null, "Codigo no puede estar vacio", "Error", JOptionPane.ERROR_MESSAGE);
+    				return;
+        		}
+        		try {
+        			cod = Integer.parseInt(textCodigo.getText());
+        		}catch(NumberFormatException e1) {
+        			JOptionPane.showMessageDialog(null, "el codigo deve ser un numero entero", "Error", JOptionPane.ERROR_MESSAGE);
+        			return;
+        		}
+                
+        		actualizarEstados();
+                estado= rdbtnActivado.isSelected();
+                try {
+    				api.guardarRol(cod,textNombre.getText(),textDescripcion.getText(),estado);
+    			} catch (DataNullException e2) {
+    				// TODO Auto-generated catch block
+    				JOptionPane.showMessageDialog(null, e2.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    				e2.printStackTrace();
+    				return;
+    			}
+                
+                
+                AltaRol.this.setVisible(false);
+        	}catch(Exception e3) {
+    			JOptionPane.showMessageDialog(null, "Algo salio mal: "+ e3.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);  
+        	}
             
-            int cod = Integer.parseInt(textCodigo.getText());
-            try {
-            	//aqui esta el problema
-				api.guardarRol(cod,textNombre.getText(),textDescripcion.getText(),estado);
-			} catch (DataNullException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-            
-            
-            AltaRol.this.setVisible(false);
         });
     }
 
