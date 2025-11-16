@@ -128,5 +128,8 @@ public interface IApi {
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 
 
+
+
+
 	
 }

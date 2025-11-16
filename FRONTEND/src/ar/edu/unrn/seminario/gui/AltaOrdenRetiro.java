@@ -120,8 +120,8 @@ public class AltaOrdenRetiro extends JFrame {
 		    	    	);
 		    	    api.registrarOrdenRetiro(retiro);
 
-                    
-                    api.inicializarOrdenesRetiro(ordenSeleccionada.getCodigo());
+                    //memoryApi
+                    //api.inicializarOrdenesRetiro(ordenSeleccionada.getCodigo());
 
                     // Limpieza
                     ordenSeleccionada = null;

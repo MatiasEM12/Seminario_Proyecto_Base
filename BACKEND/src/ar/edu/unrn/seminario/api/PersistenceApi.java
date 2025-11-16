@@ -419,9 +419,26 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void registrarDonacion(Donacion don) {
+    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException {
+    	
+    	Donacion donacion = this.toDonacion(don);
+    	
+    	
         if (don == null) return;
-        donacionDao.create(don);
+        
+        
+        
+        donacionDao.create(donacion);
+        this.actualizarBienDonacion(donacion);
+    }
+    
+    
+    private Donacion toDonacion(DonacionDTO dto) throws DataNullException, DataDoubleException {
+    	
+    	Donacion donacion= new Donacion(dto.getFechaDonacion(),dto.getObservacion(),this.listBien(dto.getBienes()),
+    			this.donanteDao.find(dto.getCodDonante()),this.ordenPedidoDao.find(dto.getCodPedido()),dto.getCodigo()  );
+    	
+    	return donacion;
     }
 
     @Override
@@ -561,7 +578,7 @@ public class PersistenceApi implements IApi {
             }
     		OrdenPedido pedido= new OrdenPedido(
 	                orden.getCodigo(),
-	                LocalDate.now(),
+	                orden.getFechaEmision(),
 	                orden.getObservaciones(),
 	                orden.isCargaPesada(),
 	                donante.getCodigo()
@@ -592,6 +609,15 @@ public class PersistenceApi implements IApi {
     
     	
     	
+    	
+    }
+    private void actualizarBienDonacion(Donacion donacion) {
+    	
+    	ArrayList<Bien> bienes= donacion.getBienes();
+    	
+    	for(Bien b :  bienes) {
+    		this.bienVisitaDao.create(b.getCodigo(), donacion.getCodigo());
+    	}
     	
     }
     
@@ -720,6 +746,35 @@ public class PersistenceApi implements IApi {
 		
 		return dtos;
 		
+	}
+	private ArrayList<Bien> listBien(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException{
+		
+		ArrayList<Bien> bienes= new ArrayList<>();
+		
+		for(BienDTO dt : bienesDTO) {
+			
+			Bien b = this.toBien(dt);
+			bienes.add(b);
+		}
+		
+		return bienes;
+		
+	}
+	
+	private Bien toBien(BienDTO bien) throws DataNullException, DataDoubleException {
+		
+		
+		 return new Bien(
+	            bien.getCodigo(),               // String codigo
+	            bien.getTipo(),                 // String tipo
+	            bien.getPeso(),                 // double peso
+	            bien.getNombre(),               // String nombre
+	            bien.getDescripcion(),          // String descripcion
+	            bien.getNivelNecesidad(),       // int nivelNecesidad
+	            bien.getFechaVencimiento(),     // LocalDate fechaVencimiento
+	            bien.getTalle(),                // Double talle
+	            bien.getMaterial()              // String material
+	        );
 	}
 
 	@Override

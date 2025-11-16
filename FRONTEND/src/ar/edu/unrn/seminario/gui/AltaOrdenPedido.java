@@ -170,9 +170,5 @@ public class AltaOrdenPedido extends JFrame {
 	    
 	    public void recibirDonacion(DonacionDTO donacion) {
 	        this.donacionSeleccionada = donacion;
-
-	       txtCodigo.setText(donacion.getCodigo());
-	                    
-	       txtFecha.setText(donacion.getFechaDonacion().toString());
 	    }
 	}

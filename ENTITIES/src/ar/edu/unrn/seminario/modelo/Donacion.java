@@ -16,26 +16,22 @@ public class Donacion {
 	private OrdenPedido pedido;
 	
 	
-	public Donacion( LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,OrdenPedido pedido) {
+	public Donacion( LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,OrdenPedido pedido,String codigo) {
 		super();
 		this.pedido=pedido;
 		this.fechaDonacion = fechaDonacion;
 		this.observacion = observacion;
 		this.bienes = bienes;
 		this.donante = donante;
-		crearCodigo();
+		
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
+	
 	}
-	public Donacion(LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes,Donante donante,OrdenPedido pedido,String codigo) {
-		super();
-
-		this.pedido=pedido;
-		this.fechaDonacion = fechaDonacion;
-		this.observacion = observacion;
-		this.bienes = bienes;
-		this.donante = donante;
-		this.codigo=codigo;
-	}
-
+	
 
 	
 	public String getCodigo() {
