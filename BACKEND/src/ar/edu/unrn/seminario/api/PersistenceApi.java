@@ -429,7 +429,7 @@ public class PersistenceApi implements IApi {
         
         
         donacionDao.create(donacion);
-        this.actualizarBienDonacion(donacion);
+        this.crearBienDonacion(donacion);
     }
     
     
@@ -601,7 +601,7 @@ public class PersistenceApi implements IApi {
     	OrdenRetiro oR = this.ordenRetiroDao.find(visita.getCodOrdenRetiro());
     	
     	oR.agregarVisita(visita);
-    	this.actualizarBienVisita(visita);
+    	this.crearBienVisita(visita);
     	this.visitaDao.update(visita);
     	this.ordenRetiroDao.update(oR);
     	
@@ -611,7 +611,7 @@ public class PersistenceApi implements IApi {
     	
     	
     }
-    private void actualizarBienDonacion(Donacion donacion) {
+    private void crearBienDonacion(Donacion donacion) {
     	
     	ArrayList<Bien> bienes= donacion.getBienes();
     	
@@ -621,7 +621,7 @@ public class PersistenceApi implements IApi {
     	
     }
     
-    private void actualizarBienVisita(Visita visita) {
+    private void crearBienVisita(Visita visita) {
     	
     	ArrayList<Bien> bienes= visita.getBienesRecolectados();
     	
