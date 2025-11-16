@@ -51,11 +51,10 @@ OrdenPedidoDao op;
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 		
 	}

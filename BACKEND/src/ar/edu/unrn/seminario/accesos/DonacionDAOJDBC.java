@@ -54,11 +54,10 @@ BienDAO  b;
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 

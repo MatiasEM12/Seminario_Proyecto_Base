@@ -19,7 +19,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenPedido (fechaemision, cargaPesada, observaciones, codDonante, codDonacion,codigo)"
+					.prepareStatement("INSERT INTO ordenPedido (fechaCreacion, cargaPesada, observaciones, codDonante, codDonacion,codigo)"
 							+ " VALUES (?, ?, ?, ?, ?,?)");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 			
@@ -36,13 +36,12 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 				System.out.println("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
-
+			
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT OrdenPedido): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 

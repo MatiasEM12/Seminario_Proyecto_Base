@@ -25,8 +25,8 @@ BienDAO biendao;
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO visita (fechaVisita, observaciones, tipo, ordenRetiro,codigo)"
-							+ " VALUES (?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO Visitas (fechaVisita,observaciones, tipo, codOrdenRetiro,codigo)"
+							+ " VALUES (?, ?, ?, ?, ?, ?)");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(visita.getFechaVisita());
 			
 			statement.setDate(1, fechaSQL);
@@ -43,11 +43,10 @@ BienDAO biendao;
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 
@@ -75,11 +74,10 @@ BienDAO biendao;
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 

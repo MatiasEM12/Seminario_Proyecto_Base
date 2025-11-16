@@ -301,8 +301,8 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	bienes1.add(new Bien("Manteca", "Manteca sin sal", LocalDate.now(), "Alimento"));
-        	Bien b2 = new Bien("Camisa", "Camisa de ToyStory 23", 5.0, "algodon", "Ropa");
+        	bienes1.add(new Bien("Manteca", "Alimento", 0.200, "Manteca sin sal", null, 2, LocalDate.now(), 0, "Alimento"));
+        	Bien b2 = new Bien("Camisa", "Ropa",0.200,"Camisa de ToyStory 23",null, 2,LocalDate.now(), 5.0,"algodon");
      
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
@@ -890,6 +890,37 @@ public class MemoryApi implements IApi {
 
 	@Override
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BienDTO obtenerBien(String codigo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void cargarVisita(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
 		// TODO Auto-generated method stub
 		
 	}

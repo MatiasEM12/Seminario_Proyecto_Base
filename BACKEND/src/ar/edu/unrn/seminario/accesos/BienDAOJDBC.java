@@ -44,11 +44,10 @@ public class BienDAOJDBC  implements BienDAO{
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        System.out.println("Error al procesar consulta (INSERT Bien): " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 		
 	}
 
