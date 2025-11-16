@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -99,15 +100,17 @@ public class ListadoRol extends JFrame {
 	    	        if (activo)
 						try {
 							api.activarRol(codigo);
+							JOptionPane.showMessageDialog(null, "Estado actualizado", "Estado", JOptionPane.INFORMATION_MESSAGE);
 						} catch (StateChangeException e1) {
-							// TODO Auto-generated catch block
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.INFORMATION_MESSAGE);
 							e1.printStackTrace();
 						}
 					else
 						try {
 							api.desactivarRol(codigo);
+							JOptionPane.showMessageDialog(null, "Estado actualizado", "Estado", JOptionPane.INFORMATION_MESSAGE);
 						} catch (StateChangeException e1) {
-							// TODO Auto-generated catch block
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.INFORMATION_MESSAGE);
 							e1.printStackTrace();
 						}
 
