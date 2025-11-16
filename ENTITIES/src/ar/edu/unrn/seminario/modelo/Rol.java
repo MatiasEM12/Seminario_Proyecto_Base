@@ -57,7 +57,7 @@ public class Rol {
 	}
 	
 	
-
+//este es al que entra siempre
 	public Rol(Integer codigo, String nombre,  String descripcion ,boolean estado )throws DataNullException {
 		super();
 		try {
