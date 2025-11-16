@@ -15,6 +15,8 @@ import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.api.MemoryApi;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
+import ar.edu.unrn.seminario.exception.DataNullException;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
@@ -105,9 +107,16 @@ public class AltaOrdenPedido extends JFrame {
 	        btnDonaciones.setBounds(140, 6, 151, 21);
 	        contentPane.add(btnDonaciones);
 	        btnDonaciones.addActionListener(e -> {
-				ListadoDonaciones listadoDonaciones = new ListadoDonaciones(api);
-				listadoDonaciones.setLocationRelativeTo(this);
-				listadoDonaciones.setVisible(true);
+				ListadoDonaciones listadoDonaciones;
+				try {
+					listadoDonaciones = new ListadoDonaciones(api,this);
+					listadoDonaciones.setLocationRelativeTo(this);
+					listadoDonaciones.setVisible(true);
+				} catch (DataNullException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
 		});
 	        btnGuardar.addActionListener(e -> {
 	            String fechaTexto = txtFecha.getText();
@@ -145,8 +154,9 @@ public class AltaOrdenPedido extends JFrame {
 	                chckbxLiviana.setBounds(242, 47, 93, 21);
 	                contentPane.add(chckbxLiviana);
 
-	                // Si querés cerrar después de guardar:
-	                // dispose();
+	             
+	                
+	               dispose();
 	            } catch (Exception ex) {
 	                JOptionPane.showMessageDialog(
 	                    this,
@@ -158,11 +168,11 @@ public class AltaOrdenPedido extends JFrame {
 	        });
 	    }
 	    
-	    public void recibirDonaciones(DonacionDTO donacion) {
+	    public void recibirDonacion(DonacionDTO donacion) {
 	        this.donacionSeleccionada = donacion;
 
-	      //  txtCodigo.setText(donacion.getCodigo());
-	        //txtEstado.setText(donacion.getEstado().toString());             
-	        //txtFecha.setText(donacion.getFechaEmision().toString());
+	       txtCodigo.setText(donacion.getCodigo());
+	                    
+	       txtFecha.setText(donacion.getFechaDonacion().toString());
 	    }
 	}

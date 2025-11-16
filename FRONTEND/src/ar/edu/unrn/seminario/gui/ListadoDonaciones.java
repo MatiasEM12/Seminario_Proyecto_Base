@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
+import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.exception.DataNullException;
 
 
@@ -28,10 +30,11 @@ public class ListadoDonaciones extends JFrame {
     private DefaultTableModel modelo;
     private java.util.List<DonacionDTO> donaciones;
     private IApi api;
-
-    public ListadoDonaciones(IApi api) throws DataNullException {
+    private AltaOrdenPedido ventanaPedido;
+    public ListadoDonaciones(IApi api, AltaOrdenPedido altaPedido) throws DataNullException {
         this.api = api;
 
+        this.ventanaPedido=altaPedido; 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 800, 380);
         contentPane = new JPanel();
@@ -58,6 +61,10 @@ public class ListadoDonaciones extends JFrame {
         JButton btnCerrar = new JButton("Cerrar");
         btnCerrar.setBounds(654, 305, 120, 25);
         contentPane.add(btnCerrar);
+        
+        JButton btnSeleccionar = new JButton("Seleccionar");
+        btnSeleccionar.setBounds(147, 306, 134, 23);
+        contentPane.add(btnSeleccionar);
 
         // Cargar datos por primera vez
         cargarOrdenes();
@@ -89,10 +96,7 @@ public class ListadoDonaciones extends JFrame {
         }
 
        
-         donaciones = donaciones.stream()
-                .filter(Objects::nonNull)
-                .filter(d -> "Pendiente".equalsIgnoreCase(String.valueOf(api.obtenerEstadoOrdenPedido(d.getCodPedido()))))
-                .collect(Collectors.toList());
+        
 
         // Asegurar lista limpia
         modelo.setRowCount(0);
@@ -100,7 +104,7 @@ public class ListadoDonaciones extends JFrame {
         for (DonacionDTO D : donaciones) {
             if (D == null) continue;
 
-            // Obtenemos valores de forma segura (si faltan getters adapta aquí)
+            // Obtenemos valores de forma segura)
             Object cargaPesada = null;
             try {
                 // Intentar usar isCargaPesada() si existe en DonacionDTO
@@ -139,5 +143,19 @@ public class ListadoDonaciones extends JFrame {
 
     private String safeString(Object o) {
         return o == null ? "" : String.valueOf(o);
+    }
+    
+    private void seleccionarPedido() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccioná una orden");
+            return;
+        }
+        DonacionDTO seleccionada = donaciones.get(fila);
+
+        // Pasa los datos a la ventana de Retiro
+        ventanaPedido.recibirDonacion(seleccionada);
+
+        dispose(); // cerrar esta ventana
     }
 }
