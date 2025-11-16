@@ -53,20 +53,26 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM usuario WHERE username = ? "
+		            "UPDATE usuarios SET contrasena = ?, nombre = ?, contacto = ?, activo = ?, codigoRol = ? WHERE usuario = ?"
 		        );
-
-		        statement.setString(1, usuario.getNombre());
+		        statement.setString(1, usuario.getContrasena());
+		        statement.setString(2, usuario.getNombre());
+				statement.setString(3, usuario.getEmail());
+				statement.setBoolean(4, usuario.isActivo());
+				statement.setInt(5, usuario.getRol().getCodigo());
+		        statement.setString(6, usuario.getUsuario());
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("Usuario eliminado correctamente.");
+		            System.out.println("Usuario actualizado correctamente.");
 		        } else {
 		            System.out.println("No se encontró el Usuario.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Usuario");
-		}
+			System.out.println("Error al actualisar Usuario");
+		}finally {
+		ConnectionManager.disconnect();
+	}
 	}
 	
 
