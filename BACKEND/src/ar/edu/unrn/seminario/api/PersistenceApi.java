@@ -182,7 +182,7 @@ public class PersistenceApi implements IApi {
     public void activarUsuario(String username) throws StateChangeException{
     	Usuario usuario=usuarioDao.find(username);
         if(usuario== null) {
-        	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
+        	throw new StateChangeException("no se pudo encontrar un usuario con ese nombre");
         }
         usuario.activar();
         usuarioDao.update(usuario);

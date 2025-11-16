@@ -123,6 +123,7 @@ public class ListadoUsuario extends JFrame {
 	                    api.eliminarUsuario(user);
 	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                    model.removeRow(filaSeleccionada);
+						JOptionPane.showMessageDialog(null, "se eliminaron correctamente. un total de 1 usuarios", "Usuario", JOptionPane.INFORMATION_MESSAGE);
 	                }
 	            } else {
 	                JOptionPane.showMessageDialog(null, "Operación cancelada.");
