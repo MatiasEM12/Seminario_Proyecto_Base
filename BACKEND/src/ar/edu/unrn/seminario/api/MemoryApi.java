@@ -307,7 +307,7 @@ public class MemoryApi implements IApi {
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
             Donante donante1 = donantesByUser.get("pedro_don");
-            Donacion donacion1 = new Donacion(LocalDateTime.now(), "Entrega en sede central", bienes1, donante1,null);
+            Donacion donacion1 = new Donacion(LocalDate.now(), "Entrega en sede central", bienes1, donante1,null,null);
             
             OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
             donacion1.setCodigo(ordenPedido.getCodigo());
@@ -365,8 +365,8 @@ public class MemoryApi implements IApi {
 	
 		    // crear bienes ejemplo
 		    ArrayList<Bien> bienesComida = new ArrayList<>();
-		    Bien b1 = new Bien("Manteca", "Manteca sin sal", LocalDate.now(), "Alimento");
-		    Bien b2 = new Bien("Camisa", "Camisa de ToyStory 23", 5.0, "algodon", "Ropa");
+		    Bien b1 = new Bien(null,"Alimento",0,"Manteca", "Manteca sin sal",0, LocalDate.now(),0,null );
+		    Bien b2 = new Bien(null,"Ropa",0,"Camisa", "Camisa de ToyStory 23",0,null, 5.0, "algodon");
 	
 		  
 
@@ -529,8 +529,9 @@ public class MemoryApi implements IApi {
         Donacion donacion;
         for (int i = 0; i < donaciones.size(); i++) {
             donacion = donaciones.get(i);
+
             donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), 
-            		donacion.getObservacion(),donacion.getBienes(),donacion.getDonante().getCodigo(),null));
+            		donacion.getObservacion(),donacion.getBienes(),donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo(),null));
 
         }
         return donacionesDTO;
