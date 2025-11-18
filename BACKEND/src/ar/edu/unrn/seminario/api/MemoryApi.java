@@ -301,10 +301,9 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	System.out.print("aqui1");
         	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, null));
         	Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
-        	
+        	System.out.print("aqui1");
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
             Donante donante1 = donantesByUser.get("pedro_don");
