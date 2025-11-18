@@ -128,6 +128,8 @@ public interface IApi {
 	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
 
+	
+	public void registrarUbicacion(Ubicacion ubicacion);
 
 
 

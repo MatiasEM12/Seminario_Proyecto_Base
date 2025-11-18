@@ -24,6 +24,8 @@ import ar.edu.unrn.seminario.accesos.OrdenPedidoDAOJDBC;
 import ar.edu.unrn.seminario.accesos.OrdenRetiroDao;
 import ar.edu.unrn.seminario.accesos.OrdenRetiroDAOJDBC;
 import ar.edu.unrn.seminario.accesos.RolDAOJDBC;
+import ar.edu.unrn.seminario.accesos.UbicacionDAO;
+import ar.edu.unrn.seminario.accesos.UbicacionDAOJDBC;
 import ar.edu.unrn.seminario.accesos.UsuarioDAOJDBC;
 import ar.edu.unrn.seminario.accesos.VisitaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.VoluntarioDAOJDBC;
@@ -51,6 +53,7 @@ import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 import ar.edu.unrn.seminario.modelo.Rol;
+import ar.edu.unrn.seminario.modelo.Ubicacion;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
 public class PersistenceApi implements IApi {
@@ -66,6 +69,7 @@ public class PersistenceApi implements IApi {
     private DonacionDAO donacionDao;
     private VoluntarioDAOJDBC voluntarioDao;
     private DonanteDao donanteDao;
+    private UbicacionDAO ubicacionDao;
 
     public PersistenceApi() {
         // inicializar DAOs JDBC
@@ -80,6 +84,7 @@ public class PersistenceApi implements IApi {
         this.donacionDao = new DonacionDAOJDBC();
         this.voluntarioDao = new VoluntarioDAOJDBC();
         this.donanteDao = new DonanteDAOJDBC();
+        this.ubicacionDao=new UbicacionDAOJDBC();
     }
 
     // --- Usuario / Rol ---
@@ -683,7 +688,10 @@ public class PersistenceApi implements IApi {
     	return bienes;
     }
     
-    
+    public void registrarUbicacion(Ubicacion ubicacion) {
+    	
+    	this.ubicacionDao.create(ubicacion);
+    }
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
