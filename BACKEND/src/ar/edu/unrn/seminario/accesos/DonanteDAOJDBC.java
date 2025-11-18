@@ -34,7 +34,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			statement.setString(5, donante.getContacto());
 			statement.setDate(6,fechaSQL);
 			statement.setString(7, donante.getUsername());
-			statement.setObject(8, donante.getUbicacion().getCodigo());
+			statement.setString(8, donante.getUbicacion().getCodigo());
 			statement.setObject(9, true);
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
