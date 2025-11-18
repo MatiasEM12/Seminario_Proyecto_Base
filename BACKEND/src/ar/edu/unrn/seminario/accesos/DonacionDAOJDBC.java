@@ -31,44 +31,52 @@ BienDAO  b;
 	
 	@Override
 	public void create(Donacion donacion) throws DataNullException {
-	try {
-			
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO donacion(codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido)"
-							+ " VALUES (?, ?, ?,?,?)");
-			
-		
-			LocalDate fecha = donacion.getFechaDonacion();
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
-			
-			statement.setString(1, donacion.getCodigo());
-			statement.setString(2, donacion.getObservacion());
-			statement.setDate(3, fechaSQL);
-			
-			Donante donante = donacion.getDonante();
-			if (donante == null) {
-			    throw new DataNullException("La donación no tiene donante asociado");
-			}
-			statement.setString(4, donante.getCodigo());
-			statement.setString(4, donacion.getDonante().getCodigo());
-			statement.setString(5, donacion.getPedido().getCodigo());
-			
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
-			} else {
-				System.out.println("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
+	    Connection conn = null;
+	    PreparedStatement statement = null;
 
-		} catch (SQLException e) {
+	    try {
+	        conn = ConnectionManager.getConnection();
+	        statement = conn.prepareStatement(
+	            "INSERT INTO donacion(" +
+	                "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
+	            ") VALUES (?, ?, ?, ?, ?)"
+	        );
+
+	        LocalDate fecha = donacion.getFechaDonacion();
+	        java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
+
+	        statement.setString(1, donacion.getCodigo());
+	        statement.setString(2, donacion.getObservacion());
+	        statement.setDate(3, fechaSQL);
+
+	        Donante donante = donacion.getDonante();
+	        if (donante == null) {
+	            throw new DataNullException("La donación no tiene donante asociado");
+	        }
+	        statement.setString(4, donante.getCodigo());
+
+	        if (donacion.getPedido() != null) {
+	            statement.setString(5, donacion.getPedido().getCodigo());
+	        } else {
+	            statement.setNull(5, java.sql.Types.VARCHAR);
+	        }
+
+	        int cantidad = statement.executeUpdate();
+	        if (cantidad > 0) {
+	            System.out.println("INSERT Donacion OK - codigo=" + donacion.getCodigo()
+	                    + ", codDonante=" + donante.getCodigo());
+	        } else {
+	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
+	        }
+
+	    } catch (SQLException e) {
 	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
 	    } finally {
+	        try { if (statement != null) statement.close(); } catch (SQLException ex) {}
 	        ConnectionManager.disconnect();
 	    }
-		
 	}
+
 
 	@Override
 	public void update(Donacion donacion) {
