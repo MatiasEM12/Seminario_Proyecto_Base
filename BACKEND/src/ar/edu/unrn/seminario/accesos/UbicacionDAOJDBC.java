@@ -27,7 +27,9 @@ public void create(Ubicacion ubicacion) {
 	        ResultSet rs = checkCoord.executeQuery();
 			
 	        if(!rs.next()) { // Si no existe se crea
-	        	
+	        	if (coordenada == null) {
+	        	    coordenada = new CoordenadaDAOJDBC();
+	        	}
 	        	coordenada.create( ubicacion.getCoordenada());
 	                 System.out.println("Coordenada creada: " + ubicacion.getCoordenada().getCodigo());
 	        } 

@@ -20,8 +20,8 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO donante(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username, codUbicacion)"
-							+ " VALUES (?, ?, ?, ?, ?, ?,?,?)");
+					.prepareStatement("INSERT INTO donante(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username, codUbicacion, activo)"
+							+ " VALUES (?, ?, ?, ?, ?, ?,?,?,?)");
 			
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(donante.getFecha_nac());
 			
@@ -35,7 +35,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			statement.setDate(6,fechaSQL);
 			statement.setString(7, donante.getUsername());
 			statement.setObject(8, donante.getUbicacion().getCodigo());
-		
+			statement.setObject(9, true);
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -186,12 +186,16 @@ public class DonanteDAOJDBC implements DonanteDao{
 		List<Donante> donantes = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo"+ "FROM donante ");
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo "+ "FROM donante ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
-				
-				
-				donantes.add(this.find(rs.getString("codigo")));
+				 String codigo = rs.getString("codigo");
+				    Donante d = this.find(codigo);
+				    if (d != null) {
+				        donantes.add(d);
+				    } else {
+				        System.out.println("Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista.");
+				    }
 			}
 		}
 		catch(SQLException e){

@@ -50,7 +50,7 @@ import ar.edu.unrn.seminario.modelo.Voluntario;
 public class TestAcceso {
 	public static void main(String[] args) throws Exception {
 		
-	try (Connection conn = ConnectionManager.getConnection()) {
+	try {
 		IApi api = new PersistenceApi();
 		
 		RolDao rolDao = new RolDAOJDBC();
@@ -73,42 +73,71 @@ public class TestAcceso {
 			
 	System.out.println("......prueba inserccion para la simulacion......");
 	
-		Coordenada coordenada= new Coordenada(3.454,5.234);
+		Coordenada coordenada= new Coordenada(3.454,5.234,"C00004");
 		Ubicacion ubicacion= new Ubicacion ( "Zona_Prueba","Barrio_Prueba","234_dir_prueba",coordenada); 
+		
 		api.registrarUbicacion(ubicacion);
 		
 		api.registrarUsuario("user_prueba", "1223", "prueba@gmail.com", "Nombre_Prueba",3, true);
-		Donante donantePrueba = new Donante("Nombre_Prueba","Apellido_Prueba",LocalDate.of(2000, 20, 2),"11111222","prueba@gmail.com",ubicacion,"user_prueba");
+		Donante donantePrueba = new Donante("Nombre_Prueba","Apellido_Prueba",LocalDate.of(2000, 2, 20),"11111222","prueba@gmail.com",ubicacion,"user_prueba");
 		api.registrarDonante(donantePrueba);
 		
 		ArrayList<Bien> bienes1 = new ArrayList<>();
     	bienes1.add(new Bien(null,"Alimento",0.200,"Manteca","Manteca sin sal", 1, LocalDate.of(2026, 1, 17), 0,null));
     	bienes1.add( new Bien(null,"Ropa",0.2, "Camisa","Camisa de ToyStory 23",2,null, 5.0,"algodon"));
 
-    	Donacion donacionPrueba= new Donacion(LocalDate.now(),"Un alimento y Una camisa para donar",bienes1,donantePrueba,null,null); 
-    	
-    	List<DonanteDTO> donantes=api.obtenerDonantes();
-    	DonanteDTO donanteDTO= donantes.stream().filter(d ->d.getNombre().equals("Nombre_Prueba")).findFirst().orElse(null);
-    	
 
-	    ArrayList<BienDTO>bienesDTO = bienes1.stream(). 
-	            map(bien -> api.toBienDTO(bien)) // Convierte cada Bien a un BienDTO mediante el método toBienDTO()
-	            .collect(Collectors.toCollection(ArrayList::new)); // Recolecta el resultado en un ArrayList<BienDTO>
-    
-	    String PedidoNulo=null; // el valor de le dara cuando se realice la siulacion  
-    	String RetiroNulo=null; // el valor de le dara cuando se realice la siulacion  
     	
-    	DonacionDTO donacionPruebaDTO= new DonacionDTO(donacionPrueba.getCodigo(),
-    			donacionPrueba.getFechaDonacion(),
-    			donacionPrueba.getObservacion(),
-    			bienesDTO,
-    			donanteDTO.getCodigo(),PedidoNulo,RetiroNulo
-    			);
-    	api.registrarDonacion(donacionPruebaDTO);
-  
+    	 
+        DonanteDTO donanteDTO = null;
+        try {
+            List<DonanteDTO> donantes = api.obtenerDonantes();
+            String usernamePrueba="Nombre_Prueba";
+			donanteDTO = donantes.stream()
+                    .filter(d -> "Nombre_Prueba".equals(d.getNombre()) || usernamePrueba.equals(d.getUsername()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (donanteDTO == null) {
+                System.out.println("No se encontró DonanteDTO después del registro. Revisa el registro previo.");
+            } else {
+                System.out.println("DonanteDTO encontrado: codigo=" + donanteDTO.getCodigo() + ", nombre=" + donanteDTO.getNombre());
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR al recuperar donantes: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+       
+        ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+        try {
+            bienesDTO = bienes1.stream()
+                    .map(b -> api.toBienDTO(b))
+                    .collect(Collectors.toCollection(ArrayList::new));
+            System.out.println("Bienes convertidos a DTO: cantidad=" + bienesDTO.size());
+        } catch (Exception e) {
+            System.out.println("ERROR al convertir bienes a DTO: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+     
+        if (donanteDTO == null) {
+            System.out.println("NO se registra Donacion: donanteDTO es null (el registro del donante falló).");
+        } else {
+            DonacionDTO donacionPruebaDTO = new DonacionDTO(
+                    null, // codigo null para que la API lo asigne
+                    LocalDate.now(),
+                    "Un alimento y Una camisa para donar",
+                    bienesDTO,
+                    donanteDTO.getCodigo(),
+                    null, // pedidoNulo se carga en la siulacion
+                    null  // retiroNulo se carga en la simulacion
+            );
+        }
    	}catch(Exception e) {
    		e.printStackTrace();
+   	
+	
    	}
- }
-
+}
 }

@@ -76,8 +76,8 @@ BienDAO  b;
 			statement.setString(1, donacion.getCodigo());
 			statement.setString(2, donacion.getObservacion());
 			statement.setDate(3, fechaSQL);
-			statement.setString(4, donacion.getDonante().getCodigo());
-			statement.setString(5, donacion.getPedido().getCodigo());
+			statement.setString(4, donacion.getDonante() != null ? donacion.getDonante().getCodigo() : null);
+			statement.setString(5,  donacion.getPedido() != null ? donacion.getPedido().getCodigo() : null);
 			statement.setString(6, donacion.getCodigo());
 			
 			int cantidad = statement.executeUpdate();

@@ -415,8 +415,8 @@ public class PersistenceApi implements IApi {
      
         List<Donante> list = donanteDao.findAll();
         if (list == null) return new ArrayList<>();
-        return list.stream().map(d -> new DonanteDTO(d.getNombre(), d.getCodigo(), d.getApellido(), d.getContacto(), null,
-                d.getUbicacion() != null ? d.getUbicacion().getCodigo() : null, null)).collect(Collectors.toList());
+        return list.stream().filter(Objects::nonNull).map(d -> new DonanteDTO(d.getNombre(), d.getCodigo(), d.getApellido(), d.getContacto(), null,
+                d.getUbicacion() != null ? d.getUbicacion().getCodigo() : null, null)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 
