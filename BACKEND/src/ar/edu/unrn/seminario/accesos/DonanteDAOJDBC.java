@@ -154,42 +154,86 @@ public class DonanteDAOJDBC implements DonanteDao{
 	}
 
 	public Donante find(String codigo) throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-		 Connection conn = null;
-		    PreparedStatement ps = null;
-		    ResultSet rs = null;
-		    Donante donante = null;
-		    try {
-		        conn = ConnectionManager.getConnection();
-		        String sql = 
-		          "SELECT D.codigo AS d_codigo, D.nombre AS d_nombre, D.apellido AS d_apellido, D.dni AS d_dni, " +
-		          "D.Fecha_Nacimiento AS d_fecha, D.username AS d_username, D.contacto AS d_contacto, " +
-		          "U.codigo AS u_codigo, U.zona AS u_zona, U.barrio AS u_barrio, U.direccion AS u_direccion, " +
-		          "C.codigo AS c_codigo, C.Latitud AS c_latitud, C.Longitud AS c_longitud " +
-		          "FROM donante D " +
-		          "JOIN ubicacion U ON D.codUbicacion = U.codigo " +
-		          "JOIN coordenada C ON U.codCoordenada = C.codigo " +
-		          "WHERE D.codigo = ?";
-		        ps = conn.prepareStatement(sql);
-		        ps.setString(1, codigo);
-		        rs = ps.executeQuery();
-		        if (rs.next()) {
-		            Coordenada c = new Coordenada(rs.getDouble("c_latitud"), rs.getDouble("c_longitud"), rs.getString("c_codigo"));
-		            Ubicacion u = new Ubicacion(rs.getString("u_zona"), rs.getString("u_barrio"), rs.getString("u_direccion"), c);
-		            java.sql.Date sqlDate = rs.getDate("d_fecha");
-		            LocalDate fecha = sqlDate != null ? sqlDate.toLocalDate() : null;
-		            donante = new Donante(rs.getString("d_nombre"), rs.getString("d_apellido"), fecha,
-		                                  rs.getString("d_dni"), rs.getString("d_contacto"), u, rs.getString("d_username"), rs.getString("d_codigo"));
-		        }
-		    } catch (SQLException e) {
-		        System.out.println("Error al procesar consulta (find Donante): " + e.getMessage());
-		        throw new RuntimeException(e);
-		    } finally {
-		        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
-		        try { if (ps != null) ps.close(); } catch (SQLException ex) {}
-		        ConnectionManager.disconnect();
-		    }
-		    return donante;
-		}
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    Donante donante = null;
+	    try {
+	        conn = ConnectionManager.getConnection();
+	        String sql =
+	                "SELECT D.codigo           AS d_codigo, " +
+	                "       D.nombre           AS d_nombre, " +
+	                "       D.apellido         AS d_apellido, " +
+	                "       D.dni              AS d_dni, " +
+	                "       D.Fecha_Nacimiento AS d_fecha, " +
+	                "       D.username         AS d_username, " +
+	                "       D.contacto         AS d_contacto, " +
+	                "       U.codigo           AS u_codigo, " +
+	                "       U.zona             AS u_zona, " +
+	                "       U.barrio           AS u_barrio, " +
+	                "       U.direccion        AS u_direccion, " +
+	                "       C.codigo           AS c_codigo, " +
+	                "       C.Latitud          AS c_latitud, " +
+	                "       C.Longitud         AS c_longitud " +
+	                "FROM donante D " +
+	                // IMPORTANTE: LEFT JOIN en vez de JOIN
+	                "LEFT JOIN ubicacion U ON D.codUbicacion = U.codigo " +
+	                "LEFT JOIN coordenada C ON U.codCoordenada = C.codigo " +
+	                "WHERE D.codigo = ?";
+
+	        ps = conn.prepareStatement(sql);
+	        ps.setString(1, codigo);
+	        rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            
+	            Coordenada c = null;
+	            Ubicacion u = null;
+
+	            String codUbicacion = rs.getString("u_codigo");
+	            if (codUbicacion != null) {
+	                String codCoordenada = rs.getString("c_codigo");
+	                if (codCoordenada != null) {
+	                    c = new Coordenada(
+	                            rs.getDouble("c_latitud"),
+	                            rs.getDouble("c_longitud"),
+	                            codCoordenada
+	                    );
+	                }
+	                u = new Ubicacion(
+	                        rs.getString("u_zona"),
+	                        rs.getString("u_barrio"),
+	                        rs.getString("u_direccion"),
+	                        c
+	                );
+	            }
+
+	            java.sql.Date sqlDate = rs.getDate("d_fecha");
+	            LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+	            donante = new Donante(
+	                    rs.getString("d_nombre"),
+	                    rs.getString("d_apellido"),
+	                    fecha,
+	                    rs.getString("d_dni"),
+	                    rs.getString("d_contacto"),
+	                    u,
+	                    rs.getString("d_username"),
+	                    rs.getString("d_codigo")
+	            );
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta (find Donante): " + e.getMessage());
+	        throw new RuntimeException(e);
+	    } finally {
+	        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+	        try { if (ps != null) ps.close(); } catch (SQLException ex) {}
+	        ConnectionManager.disconnect();
+	    }
+	    return donante;
+	}
+
 
 	public List<Donante> findAll() {
 		List<Donante> donantes = new ArrayList<>();
