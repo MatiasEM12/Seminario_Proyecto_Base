@@ -156,18 +156,18 @@ public class DonanteDAOJDBC implements DonanteDao{
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido,D.dni,D.Fecha_Nacimiento,D.username D.contacto, D.ubicacion,"+
 			"U.codigo, U.zona, U.barrio, U.direccion, C.codigo,C.Latitud,C.Longitud"
-			+ "FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ "WHERE D.codigo = ? AND U.codCoordenada=C.codigo");
+			+ " FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ " WHERE D.codigo = ? AND U.codCoordenada=C.codigo");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 		
 			if (rs.next()) {
-				Coordenada coordenada= new Coordenada(rs.getDouble("Latitud"),rs.getDouble("Longitud"),rs.getString("codigo"));
-				Ubicacion ubicacion = new Ubicacion(rs.getString("U.codigo"),rs.getString("U.zona"),rs.getString("U.barrio"),rs.getString("U.direccion"),coordenada);
-				
-			Date sqlDate = rs.getDate("D.Fecha_Nacimiento");
-			LocalDate fecha = sqlDate.toLocalDate();
-				donante=new Donante(rs.getString("nombre"),rs.getString("apellido"),  fecha  , rs.getString("D.dni"),rs.getString("D.contacto"),ubicacion,rs.getString("D.username"),rs.getString("D.codigo"));
-				donante.setUbicacion(ubicacion);
+			    Coordenada coordenada = new Coordenada(rs.getDouble("c_latitud"), rs.getDouble("c_longitud"), rs.getString("c_codigo"));
+			    Ubicacion ubicacion = new Ubicacion(rs.getString("u_zona"), rs.getString("u_barrio"), rs.getString("u_direccion"), coordenada);
+			    java.sql.Date sqlDate = rs.getDate("d_fecha");
+			    LocalDate fecha = sqlDate != null ? sqlDate.toLocalDate() : null;
+			    donante = new Donante(rs.getString("d_nombre"), rs.getString("d_apellido"), fecha,
+			                          rs.getString("d_dni"), rs.getString("d_contacto"),
+			                          ubicacion, rs.getString("d_username"), rs.getString("d_codigo"));
 			}
 		}
 		catch(SQLException e){
