@@ -100,12 +100,21 @@ public class ListadoOrdenes extends JFrame {
         		
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
-                    String tipo =(String) tabla.getValueAt(filaSeleccionada,0);
+                    String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
+                	String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);	
 					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
+					
+						AltaVisita av;
+						try {
+							av = new AltaVisita(api,codOR);
+							av.setLocationRelativeTo(null);
+							av.setVisible(true);
+						} catch (DataNullException e1) {
 							
-						AltaVisita av= new AltaVisita(api);
-						av.setLocationRelativeTo(null);
-						av.setVisible(true);
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					
 					}else {
 					
 					}
@@ -124,19 +133,25 @@ public class ListadoOrdenes extends JFrame {
         		
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
-                    String tipo =(String) tabla.getValueAt(filaSeleccionada,0);
+                    String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
 					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
 						
 						String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);
 	                    ArrayList<BienDTO> lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
-	                    ListadoBienes bienes = new ListadoBienes(api, lista);
+	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
 						
 					}else {
 						String codOP = (String) tabla.getValueAt(filaSeleccionada, 0);
-	                    ArrayList<BienDTO> lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
-	                    ListadoBienes bienes = new ListadoBienes(api, lista);
+	                    ArrayList<BienDTO> lista = null;
+						try {
+							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
+						} catch (DataNullException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
 					}

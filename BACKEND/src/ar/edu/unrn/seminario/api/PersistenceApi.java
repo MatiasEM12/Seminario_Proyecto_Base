@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ar.edu.unrn.seminario.accesos.BienDAO;
 import ar.edu.unrn.seminario.accesos.BienDAOJDBC;
@@ -103,7 +104,7 @@ public class PersistenceApi implements IApi {
         List<Usuario> usuarios = usuarioDao.findAll();
         if (usuarios != null) {
             for (Usuario u : usuarios) {
-                dtos.add(new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
+                dtos.add(new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
                         u.getRol().getNombre(), u.isActivo(), u.obtenerEstado()));
             }
         }
@@ -114,7 +115,7 @@ public class PersistenceApi implements IApi {
     public UsuarioDTO obtenerUsuario(String username) {
         Usuario u = usuarioDao.find(username);
         if (u == null) return null;
-        return new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
+        return new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
                 u.getRol().getNombre(), u.isActivo(), u.obtenerEstado());
     }
 
@@ -403,19 +404,45 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserDonantes() {
-        // Se pueden filtrar usuarios por rol DONANTE
-        return new ArrayList<>();
+    public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException {
+       
+    	 List<Usuario>donantes= this.usuarioDao.findAll();
+         donantes=donantes.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Donante")).collect(Collectors.toList());
+          List<UsuarioDTO>donantesDTO= donantes.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
+        		  
+        		return donantesDTO;
+    }
+    
+    
+    
+    private UsuarioDTO toUsuarioDTO(Usuario user) {
+    	
+    	UsuarioDTO userDTO = new UsuarioDTO (user.getUsuario(),user.getContrasena(),user.getNombre(),user.getContacto(),user.getRolName(),user.isActivo(),user.getCodigo(),user.getEstado());
+    	
+
+    	return userDTO;
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserVoluntarios() {
-        return new ArrayList<>();
+    public List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException {
+           
+          List<Usuario>voluntarios= this.usuarioDao.findAll();
+         voluntarios=voluntarios.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Voluntario")).collect(Collectors.toList());
+          
+          List<UsuarioDTO>voluntariosDTO= voluntarios.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
+        		  
+        		return voluntariosDTO;
+        
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserAdministrador() {
-        return new ArrayList<>();
+    public List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException {
+    	  List<Usuario>administradores= this.usuarioDao.findAll();
+          administradores=administradores.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Admin")).collect(Collectors.toList());
+           List<UsuarioDTO>administradoresDTO= administradores.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
+         		  
+         		return administradoresDTO;
+         
     }
 
     @Override

@@ -4,34 +4,34 @@ public class UsuarioDTO {
 	private String username;
 	private String password;
 	private String nombre;
-	private String email;
+	private String contacto;
 	private String rol;
 	private boolean activo;
-	private String estado;
 	private String codigo;
+	private String estado;
 
-	public UsuarioDTO(String username, String password, String nombre, String email, String rol, boolean activo,
-			String estado, String codigo) {
+	public UsuarioDTO(String username, String password, String nombre, String contacto, String rol, boolean activo,
+			 String codigo,String estado) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.nombre = nombre;
-		this.email = email;
+		this.contacto = contacto;
 		this.rol = rol;
 		this.activo = activo;
-		this.estado=estado;
 		this.codigo=codigo;
+		this.estado=estado;
 	}
 
-	public UsuarioDTO(String usuario, String contrasena, String nombre, String email,String rol, boolean activo,String obtenerEstado) {
+	public UsuarioDTO(String usuario, String contrasena, String nombre, String email,String rol, boolean activo,String estado) {
 		this.username = usuario;
 		this.password = contrasena;
 		this.nombre = nombre;
-		this.email = email;
+		this.contacto = email;
 		this.rol=rol;
 		this.activo = activo;
-		this.estado=obtenerEstado;
-
+		this.estado=estado;
+	
 	}
 
 	public String getUsername() {
@@ -59,11 +59,11 @@ public class UsuarioDTO {
 	}
 
 	public String getEmail() {
-		return email;
+		return contacto;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmail(String contacto) {
+		this.contacto = contacto;
 	}
 
 	public String getRol() {
@@ -86,9 +86,7 @@ public class UsuarioDTO {
 		return estado;
 	}
 
-	public void setEstado(String estado) {
-		this.estado = estado;
-	}
+	
 
 	public String getCodigo() {
 		return codigo;

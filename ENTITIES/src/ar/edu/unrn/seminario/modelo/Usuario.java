@@ -6,11 +6,12 @@ public class Usuario {
 	private String usuario;
 	private String contrasena;
 	private String nombre;
-	private String email;
+	private String contacto;
 	private Rol rol;
-	private boolean activo;
+	private boolean activo=false;
+	private String estado;
 
-	public Usuario(String usuario, String contrasena, String nombre, String email, Rol rol) throws DataEmptyException {
+	public Usuario(String usuario, String contrasena, String nombre, String contacto, Rol rol) throws DataEmptyException {
 
 		if (usuario == null) {
 			System.out.println("usuario no puede ser nulo");
@@ -19,14 +20,14 @@ public class Usuario {
 		
 		validarCampoVacio(usuario, "usuario");
 		validarCampoVacio(contrasena, "contraseña");
-		validarCampoVacio(email, "contraseña");
+		validarCampoVacio(contacto, "contraseña");
 		
 		this.usuario = usuario;
 		this.contrasena = contrasena;
 		this.nombre = nombre;
-		this.email = email;
+		this.contacto = contacto;
 		this.rol = rol;
-		
+		this.setEstado();
 		crearCodigo();
 	}
 	public Usuario(String usuario, String contrasena, String nombre, String email, Rol rol,boolean activo) throws DataEmptyException {
@@ -42,11 +43,23 @@ public class Usuario {
 		this.usuario = usuario;
 		this.contrasena = contrasena;
 		this.nombre = nombre;
-		this.email = email;
+		this.contacto = email;
 		this.rol = rol;
 		this.activo=activo;
-		
+		this.setEstado();
 		crearCodigo();
+	}
+	private void setEstado() {
+		
+		if(this.activo) {
+			this.estado="Activo";
+		}else {
+			this.estado="Inactivo";
+		}
+		
+	}
+	public String getEstado() {
+		return estado;
 	}
 
 	public String getUsuario() {
@@ -73,12 +86,12 @@ public class Usuario {
 		this.nombre = nombre;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getContacto() {
+		return contacto;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setContacto(String contacto) {
+		this.contacto= contacto;
 	}
 
 	public Rol getRol() {
@@ -167,7 +180,7 @@ public class Usuario {
 	}
 	@Override
 	public String toString() {
-		return "Usuario [codigo=" + codigo + ", usuario=" + usuario + ", nombre=" + nombre + ", email=" + email
+		return "Usuario [codigo=" + codigo + ", usuario=" + usuario + ", nombre=" + nombre + ", email=" + contacto
 				+ ", rol=" + rol + ", activo=" + activo + "]";
 	}
 	

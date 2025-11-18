@@ -81,10 +81,10 @@ public interface IApi {
 	//Voluntario 
 	public void registrarVoluntario(Voluntario voluntario);
 	List<VoluntarioDTO> obtenerVoluntarios();
-	List<UsuarioDTO> obtenerUserVoluntarios();
+	List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException;
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro);
 	//Administrador 
-	List<UsuarioDTO> obtenerUserAdministrador();
+	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException;
 	
 	//Donacion
 	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException;
