@@ -846,7 +846,9 @@ public class MemoryApi implements IApi {
 
 	@Override
 	public BienDTO obtenerBien(String codigo) {
-		// TODO Auto-generated method stub
+		for (BienDTO b : bienes) {
+		    if (b.getCodigo().equals(codigo)) return b;
+		}
 		return null;
 	}
 
