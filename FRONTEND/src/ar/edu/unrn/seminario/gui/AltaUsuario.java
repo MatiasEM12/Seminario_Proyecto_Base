@@ -81,7 +81,7 @@ public class AltaUsuario extends JFrame {
 					
 					
 					api.registrarUsuario(usuarioTextField.getText(), contrasenaTextField.getText(),
-							nombreTextField.getText(), emailTextField.getText(), rol.getCodigo(),false);
+							 emailTextField.getText(),nombreTextField.getText(), rol.getCodigo(),false);
 					JOptionPane.showMessageDialog(null, "Usuario registrado con exito!", "Info", JOptionPane.INFORMATION_MESSAGE);
 					setVisible(false);
 					dispose();
