@@ -302,9 +302,8 @@ public class MemoryApi implements IApi {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
         	System.out.print("aqui1");
-        	bienes1.add(new Bien("","Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, ""));
-        	Bien b2 = new Bien("","Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
-        	System.out.print("aqui1");
+        	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, null));
+        	Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
         	
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
@@ -368,8 +367,8 @@ public class MemoryApi implements IApi {
 	
 		    // crear bienes ejemplo
 		    ArrayList<Bien> bienesComida = new ArrayList<>();
-		    Bien b1 = new Bien(null,"Alimento",0,"Manteca", "Manteca sin sal",0, LocalDate.now(),0,null );
-		    Bien b2 = new Bien(null,"Ropa",0,"Camisa", "Camisa de ToyStory 23",0,null, 5.0, "algodon");
+		    Bien b1 = new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, null );
+		    Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
 	
 		  
 
