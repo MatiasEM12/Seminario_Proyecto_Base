@@ -11,7 +11,7 @@ public class Usuario {
 	private boolean activo=false;
 	private String estado;
 
-	public Usuario(String usuario, String contrasena, String nombre, String contacto, Rol rol) throws DataEmptyException {
+	public Usuario(String usuario, String contrasena, String nombre, String contacto, Rol rol,boolean activo,String codigo) throws DataEmptyException {
 
 		if (usuario == null) {
 			System.out.println("usuario no puede ser nulo");
@@ -27,28 +27,16 @@ public class Usuario {
 		this.nombre = nombre;
 		this.contacto = contacto;
 		this.rol = rol;
-		this.setEstado();
-		crearCodigo();
-	}
-	public Usuario(String usuario, String contrasena, String nombre, String email, Rol rol,boolean activo) throws DataEmptyException {
-
-		if (usuario == null) {
-			System.out.println("usuario no puede ser nulo");
-			//TODO: disparar exception propia
-		}
-		
-		validarCampoVacio(usuario, "usuario");
-		validarCampoVacio(contrasena, "contraseña");
-		
-		this.usuario = usuario;
-		this.contrasena = contrasena;
-		this.nombre = nombre;
-		this.contacto = email;
-		this.rol = rol;
 		this.activo=activo;
 		this.setEstado();
-		crearCodigo();
+		
+		if(codigo==null) {
+			this.crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
+
 	private void setEstado() {
 		
 		if(this.activo) {
@@ -183,7 +171,11 @@ public class Usuario {
 		return "Usuario [codigo=" + codigo + ", usuario=" + usuario + ", nombre=" + nombre + ", email=" + contacto
 				+ ", rol=" + rol + ", activo=" + activo + "]";
 	}
-	
-	
 
+	public static void setContadorUsuario(int contadorUsuario) {
+		Usuario.contadorUsuario = contadorUsuario;
+	}
+	
+	
+	
 }

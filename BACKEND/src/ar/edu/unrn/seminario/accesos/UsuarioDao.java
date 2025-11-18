@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -17,5 +18,5 @@ public interface UsuarioDao {
 	Usuario find(String username);
 
 	List<Usuario> findAll() throws DataNullException;
-
+   int obtenerCantidadUsuarios() throws SQLException;
 }

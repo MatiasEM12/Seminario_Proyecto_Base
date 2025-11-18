@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.api;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,18 +84,22 @@ public class PersistenceApi implements IApi {
 
     // --- Usuario / Rol ---
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol)
-            throws DataEmptyException {
+    public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)
+            throws DataEmptyException, SQLException {
+    	
+    	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rol = rolDao.find(codigoRol);
-        Usuario usuario = new Usuario(username, password, nombre, email, rol);
+        Usuario usuario = new Usuario(username, password, nombre, contacto, rol,false,null);
         this.usuarioDao.create(usuario);
     }
 
     @Override
     public void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo)
-            throws DataEmptyException {
+            throws DataEmptyException, SQLException {
+    	
+    	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rolN = rolDao.find(rol);
-        Usuario usuario = new Usuario(username, password, nombre, email, rolN, activo);
+        Usuario usuario = new Usuario(username, password, nombre, email, rolN, activo,null);
         this.usuarioDao.create(usuario);
     }
 
@@ -104,8 +109,7 @@ public class PersistenceApi implements IApi {
         List<Usuario> usuarios = usuarioDao.findAll();
         if (usuarios != null) {
             for (Usuario u : usuarios) {
-                dtos.add(new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
-                        u.getRol().getNombre(), u.isActivo(), u.obtenerEstado()));
+                dtos.add(this.toUsuarioDTO(u));
             }
         }
         return dtos;

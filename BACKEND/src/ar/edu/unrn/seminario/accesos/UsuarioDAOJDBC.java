@@ -20,13 +20,14 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn.prepareStatement("INSERT INTO usuarios(usuario, contrasena, nombre, contacto, activo,codigoRol) "+ "VALUES (?, ?, ?, ?, ?, ?)");
-			statement.setString(1, usuario.getUsuario());
-			statement.setString(2, usuario.getContrasena());
-			statement.setString(3, usuario.getNombre());
-			statement.setString(4, usuario.getEmail());
-			statement.setBoolean(5, usuario.isActivo());
-			statement.setInt(6, usuario.getRol().getCodigo());
+			PreparedStatement statement = conn.prepareStatement("INSERT INTO usuarios(codigo,usuario, contrasena, nombre, contacto, activo,codigoRol) "+ "VALUES (?, ?, ?, ?, ?, ?,?)");
+			statement.setString(1, usuario.getCodigo());
+			statement.setString(2, usuario.getUsuario());
+			statement.setString(3, usuario.getContrasena());
+			statement.setString(4, usuario.getNombre());
+			statement.setString(5, usuario.getContacto());
+			statement.setBoolean(6, usuario.isActivo());
+			statement.setInt(7, usuario.getRol().getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				System.out.println("Modificando " + cantidad + " registros");
@@ -53,14 +54,15 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "UPDATE usuarios SET contrasena = ?, nombre = ?, contacto = ?, activo = ?, codigoRol = ? WHERE usuario = ?"
+		            "UPDATE usuarios SET contrasena = ?, nombre = ?, contacto = ?, activo = ?, codigoRol = ? ,codigo=?WHERE usuario = ?"
 		        );
 		        statement.setString(1, usuario.getContrasena());
 		        statement.setString(2, usuario.getNombre());
-				statement.setString(3, usuario.getEmail());
+				statement.setString(3, usuario.getContacto());
 				statement.setBoolean(4, usuario.isActivo());
 				statement.setInt(5, usuario.getRol().getCodigo());
 		        statement.setString(6, usuario.getUsuario());
+		        statement.setString(7, usuario.getCodigo());
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("Usuario actualizado correctamente.");
@@ -127,7 +129,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn.prepareStatement(
-					"SELECT u.usuario,  u.contrasena, u.nombre, u.contacto,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol "
+					"SELECT u.codigo, u.usuario,  u.contrasena, u.nombre, u.contacto,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol "
 							+ " FROM usuarios u JOIN roles r ON (u.codigoRol = r.codigo) " + " WHERE u.usuario = ?");
 
 			statement.setString(1, username);
@@ -142,7 +144,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 				}
 				
 				usuario = new Usuario(rs.getString("usuario"), rs.getString("contrasena"), rs.getString("nombre"),
-						rs.getString("contacto"), rol,activo);
+						rs.getString("contacto"), rol,activo,rs.getString("codigo"));
 			}
 
 		} catch (SQLException e) {
@@ -166,7 +168,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			Connection conn = ConnectionManager.getConnection();
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT u.usuario,  u.contrasena, u.nombre, u.contacto,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol  "
+					"SELECT u.codigo, u.usuario,  u.contrasena, u.nombre, u.contacto,u.activo, r.codigo as codigo_rol, r.nombre as nombre_rol  "
 							+ "FROM usuarios u JOIN roles r ON (u.codigoRol = r.codigo) ");
 
 			while (rs.next()) {
@@ -183,7 +185,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			
 				try {
 					usuario = new Usuario(rs.getString("usuario"), rs.getString("contrasena"),
-							rs.getString("nombre"), rs.getString("contacto"), rol,activo);
+							rs.getString("nombre"), rs.getString("contacto"), rol,activo,rs.getString("codigo"));
 				} catch (DataEmptyException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -203,5 +205,19 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 		return usuarios;
 	}
+//Metodo Helper, al cargar usuaios desde la base de datos, cuando se crean Usuarion desde el programa puede generar claves repetidas
+	//esta cantdad se utiliza para que sea la base del contador de la clase Usuario. 
+	public int obtenerCantidadUsuarios() throws SQLException {
+	    String sql = "SELECT COUNT(*) FROM usuarios";
 
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            return rs.getInt(1);  // devuelve el COUNT(*)
+	        }
+	    }
+	    return 0;
+	}
 }

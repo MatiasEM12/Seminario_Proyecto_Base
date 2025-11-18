@@ -2,6 +2,7 @@ package ar.edu.unrn.seminario.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +96,9 @@ public class AltaUsuario extends JFrame {
 					e.printStackTrace();
 				} catch (DataDateException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

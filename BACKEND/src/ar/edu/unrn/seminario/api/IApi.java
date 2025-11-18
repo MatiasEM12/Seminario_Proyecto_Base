@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.api;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface IApi {
 	
 	//Usuario
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException ;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException ;
 	
 	 
 	UsuarioDTO obtenerUsuario(String username);
@@ -106,7 +107,7 @@ public interface IApi {
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException;
 	
 	//Visitas
 	public void registrarVisita(Visita visita);
