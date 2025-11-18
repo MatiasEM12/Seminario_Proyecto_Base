@@ -6,8 +6,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.*;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -146,7 +149,18 @@ public class ListadoOrdenes extends JFrame {
 						String codOP = (String) tabla.getValueAt(filaSeleccionada, 0);
 	                    ArrayList<BienDTO> lista = null;
 						try {
-							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
+							try {
+								lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
+							} catch (DataEmptyException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DataObjectException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DataDateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						} catch (DataNullException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
