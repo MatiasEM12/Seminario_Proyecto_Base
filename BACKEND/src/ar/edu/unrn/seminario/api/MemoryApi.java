@@ -301,10 +301,8 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	System.out.print("aqui1");
-        	bienes1.add(new Bien("","Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, ""));
-        	Bien b2 = new Bien("","Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
-        	System.out.print("aqui1");
+        	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, null));
+        	Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
         	
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
@@ -313,11 +311,12 @@ public class MemoryApi implements IApi {
             Donacion donacion1 = new Donacion(LocalDate.now(), "Entrega en sede central", bienes1, donante1,null,null);
             
             OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
+            donacion1.setPedido(ordenPedido);
             donacion1.setCodigo(ordenPedido.getCodigo());
             
             registrarDonacion(donacion1);
             registrarOrdenPedido(ordenPedido);
-           //aqui esta el error
+            //aqui esta el error
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(null, "Error al inicializar órdenes: " + e.getMessage());
         }
@@ -330,7 +329,6 @@ public class MemoryApi implements IApi {
   	    }
 
   	    OrdenRetiro ordenRetiro = null;
-
   	    // Intentar obtener una orden de retiro existente asociada al pedido.
   	    try {
   	        ordenRetiro = this.obtenerOrdenRetiroPorPedido(codPedido);
@@ -361,119 +359,38 @@ public class MemoryApi implements IApi {
   	}
   	
   	
-    private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
-		  if (retiro == null) return;
+  	private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException, StateChangeException {
+  	    if (retiro == null) {
+  	        return;
+  	    }
+  	    Visita v1 = new Visita(LocalDate.now(),"El donante estaba ausente","RETIRO",retiro.getCodigo(),new ArrayList<>(),false);
+  	    v1.setEstado("fallida");
 
-		
-	
-		    // crear bienes ejemplo
-		    ArrayList<Bien> bienesComida = new ArrayList<>();
-		    Bien b1 = new Bien(null,"Alimento",0,"Manteca", "Manteca sin sal",0, LocalDate.now(),0,null );
-		    Bien b2 = new Bien(null,"Ropa",0,"Camisa", "Camisa de ToyStory 23",0,null, 5.0, "algodon");
-	
-		  
+  	    // Convertir bienes a DTO
+  	    ArrayList<BienDTO> bienesDTOv1 = new ArrayList<>();
+  	    VisitaDTO dto1 = new VisitaDTO(v1.getCodigo(),v1.getFechaVisita(),null
+  	    		,retiro.getCodigo(),bienesDTOv1,v1.getObservaciones(),v1.getTipo(),false);
 
-		    bienesComida.add(b1);
-		    ArrayList<Bien> bienesRopa = new ArrayList<>();
-		    bienesRopa.add(b2);
+  	    this.visitas.add(dto1);
 
-		    // primera visita (fallida, sin bienes)
-		    Visita v1 = new Visita(LocalDate.now(), "Primera visita el donante se encontraba ausente", "RETIRO", retiro.getCodigo(), new ArrayList<Bien>(),false);
+  	    // Segunda visita (exitosa, con bienes del retiro)
+  	    ArrayList<BienDTO> bienesDTOv2 = new ArrayList<>();
+  	    for (Bien b : retiro.getRecolectados()) {
+  	        bienesDTOv2.add(toBienDTO(b));
+  	    }
 
+  	    Visita v2 = new Visita(LocalDate.now(),"Retiro realizado","RETIRO",retiro.getCodigo(),retiro.getRecolectados(),true);
+  	    v2.setEstado("realizada");
+  	    
+  	    VisitaDTO dto2 = new VisitaDTO(v2.getCodigo(),v2.getFechaVisita(),null
+  	    		,retiro.getCodigo(),bienesDTOv2,v2.getObservaciones(),v2.getTipo(),true);
+  	    this.visitas.add(dto2);
 
-		    v1.setEstado("fallida");
-
-		    // segunda visita (completada) con bienes
-		    ArrayList<Bien> bienesSegundaVisita = new ArrayList<>();
-		    bienesSegundaVisita.addAll(bienesComida);
-		    bienesSegundaVisita.addAll(bienesRopa);
-		    retiro.agregarBien(b1);
-		    retiro.agregarBien(b2);
-		    Visita v2 = new Visita(LocalDate.now(), "Segunda visita retiro realizado correctamente", "RETIRO", "we", bienesSegundaVisita,true);
-		    v2.setEstado("realizada");//
-
-		    // asociar visitas a la orden (entidad)
-		    ArrayList<Visita> visitasParaOrden = new ArrayList<>();
-		    visitasParaOrden.add(v1);
-		   visitasParaOrden.add(v2); //
-		    retiro.setVisitas(visitasParaOrden);
-
-		    // registrar bienes como DTOs para que obtenerBienesDeVisita los encuentre
-		    for (Bien bien : retiro.getRecolectados()) {
-
-		        // Verificamos que el bien no sea nulo antes de crear su DTO
-		        if (bien != null) {
-
-		            // Creamos el DTO del bien 
-		            BienDTO dto = toBienDTO(bien);
-		            // Verificamos si ya existe un bien con el mismo código en la lista 'bienes'
-		            boolean existe = false;
-		            for (BienDTO b : this.bienes) {
-		                if (b.getCodigo().equalsIgnoreCase(dto.getCodigo())) {
-		                    existe = true;
-		                    break;
-		                }
-		            }
-
-		            // Si el bien no existe todavía, lo agregamos a la lista
-		            if (!existe) {
-		                this.bienes.add(dto);
-		            }
-		        }
-		    }
-
-		    // crear y agregar VisitaDTOs para que ListadoVisitas las muestre
-		    // v1 (sin bienes)
-	/*	    VisitaDTO dtoV1 = new VisitaDTO(
-		        v1.getCodigo(),
-		        v1.getFechaVisita(),
-		        v1.getObservaciones(),
-		        v1.getTipo(),
-		        retiro.getCodigo(),
-		        new String[0], // no hay bienes
-		        v1.getEstado()
-		    );
-		    this.visitas.add(dtoV1);
-
-		    // v2 (con bienes -> usar los códigos de los BienDTOs)
-		    // construir arreglo de códigos
-		    String[] codigosBienes = bienesSegundaVisita.stream()
-		        .filter(Objects::nonNull)
-		        .map(Bien::getCodigo)
-		        .toArray(String[]::new);
-
-	  VisitaDTO dtoV2 = new VisitaDTO(
-		        v2.getCodigo(),
-		        v2.getFechaVisita(),
-		        v2.getObservaciones(),
-		        v2.getTipo(),
-		        retiro.getCodigo(),
-		        codigosBienes,
-		        v2.getEstado()
-		    );
-		    this.visitas.add(dtoV2);
-
-		    OrdenPedido pedido= (retiro.getPedido());
-		    pedido.setEstado(EstadoOrden(this.visitas.get(this.visitas.size() - 1).getEstado()  ));
-		    retiro.setEstado(EstadoOrden(this.visitas.get(this.visitas.size() - 1).getEstado()  ));
-	   }
-
-    private EstadoOrden EstadoOrden(String estado) {
-    	
-    	if(estado.equals(Orden.EstadoOrden.COMPLETADA.toString())) {
-    		 return Orden.EstadoOrden.COMPLETADA;	
-    	}else if(estado.equals(Orden.EstadoOrden.EN_PROCESO.toString())) {
-    		 return Orden.EstadoOrden.EN_PROCESO;	
-    	}else if(estado.equals(Orden.EstadoOrden.PENDIENTE.toString())) {
-    	     return Orden.EstadoOrden.PENDIENTE;
-    	}
-    		return Orden.EstadoOrden.CANCELADA;	
-  */  	
-    
-       
-      
-      
-    }
+  	    ArrayList<Visita> lista = new ArrayList<>();
+  	    lista.add(v1);
+  	    lista.add(v2);
+  	    retiro.setVisitas(lista);
+  	}
     
     // ORDEN PEDIDO
 
@@ -496,6 +413,7 @@ public class MemoryApi implements IApi {
 
 	public void registrarOrdenRetiro(OrdenRetiro oR) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
 	       ordenesRetiro.add(oR);
+	       
 	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
 	       inicializarVisitas(oR);
 	}
@@ -928,7 +846,9 @@ public class MemoryApi implements IApi {
 
 	@Override
 	public BienDTO obtenerBien(String codigo) {
-		// TODO Auto-generated method stub
+		for (BienDTO b : bienes) {
+		    if (b.getCodigo().equals(codigo)) return b;
+		}
 		return null;
 	}
 
