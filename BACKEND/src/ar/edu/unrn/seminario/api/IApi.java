@@ -132,6 +132,9 @@ public interface IApi {
 	public void registrarUbicacion(Ubicacion ubicacion);
 
 
+	List<DonanteDTO> obtenerDonantes();
+	 public  BienDTO toBienDTO(Bien bien);
+
 
 
 	

@@ -406,11 +406,19 @@ public class PersistenceApi implements IApi {
     @Override
     public List<DonanteDTO> obtenerDonantes(String userSolicitante) {
      
+      
+        return null;
+    }
+    
+    @Override
+    public List<DonanteDTO> obtenerDonantes() {
+     
         List<Donante> list = donanteDao.findAll();
         if (list == null) return new ArrayList<>();
         return list.stream().map(d -> new DonanteDTO(d.getNombre(), d.getCodigo(), d.getApellido(), d.getContacto(), null,
                 d.getUbicacion() != null ? d.getUbicacion().getCodigo() : null, null)).collect(Collectors.toList());
     }
+
 
     @Override
     public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException {
@@ -535,7 +543,7 @@ public class PersistenceApi implements IApi {
     
 
     // --- helpers DTO ---
-    private BienDTO toBienDTO(Bien bien) {
+  public  BienDTO toBienDTO(Bien bien) {
         if (bien == null) return null;
 
         return new BienDTO(

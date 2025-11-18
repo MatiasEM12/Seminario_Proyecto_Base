@@ -4,11 +4,15 @@ import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import ar.edu.unrn.seminario.api.PersistenceApi;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
+import ar.edu.unrn.seminario.dto.DonanteDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.RolDTO;
@@ -45,13 +49,13 @@ import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 public class TestAcceso {
 	public static void main(String[] args) throws Exception {
+		
+	try (Connection conn = ConnectionManager.getConnection()) {
 		IApi api = new PersistenceApi();
 		
 		RolDao rolDao = new RolDAOJDBC();
 		List<Rol> roles = rolDao.findAll();
 
-	try (Connection conn = ConnectionManager.getConnection()) {
-	           
 		System.out.println("......prueba de contenido Usuarios y Roles......");
 		
 	
@@ -83,15 +87,27 @@ public class TestAcceso {
 
     	Donacion donacionPrueba= new Donacion(LocalDate.now(),"Un alimento y Una camisa para donar",bienes1,donantePrueba,null,null); 
     	
-    	DonacionDTO donacionPruebaDTO= new DonacionDTO(donacionPrueba.getFechaDonacion(),
+    	List<DonanteDTO> donantes=api.obtenerDonantes();
+    	DonanteDTO donanteDTO= donantes.stream().filter(d ->d.getNombre().equals("Nombre_Prueba")).findFirst().orElse(null);
+    	
+
+	    ArrayList<BienDTO>bienesDTO = bienes1.stream(). 
+	            map(bien -> api.toBienDTO(bien)) // Convierte cada Bien a un BienDTO mediante el método toBienDTO()
+	            .collect(Collectors.toCollection(ArrayList::new)); // Recolecta el resultado en un ArrayList<BienDTO>
+    
+	    String PedidoNulo=null; // el valor de le dara cuando se realice la siulacion  
+    	String RetiroNulo=null; // el valor de le dara cuando se realice la siulacion  
+    	
+    	DonacionDTO donacionPruebaDTO= new DonacionDTO(donacionPrueba.getCodigo(),
+    			donacionPrueba.getFechaDonacion(),
     			donacionPrueba.getObservacion(),
-    			biendto,
-    			
+    			bienesDTO,
+    			donanteDTO.getCodigo(),PedidoNulo,RetiroNulo
     			);
     	api.registrarDonacion(donacionPruebaDTO);
-    	
-    	//tring codigo, LocalDate fechaDonacion, String observacion, ArrayList<BienDTO> bienes,
-		//String codDonante, String codPedido, String codRetiro
+  
+   	}catch(Exception e) {
+   		e.printStackTrace();
    	}
  }
 
