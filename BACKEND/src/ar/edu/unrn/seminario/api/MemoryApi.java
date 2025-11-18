@@ -84,7 +84,7 @@ public class MemoryApi implements IApi {
    
         if (!existeUsuario(username)) {
             Rol role = this.buscarRol(rol);
-            Usuario usuario = new Usuario(username, password, nombre, email, role,activo);
+            Usuario usuario = new Usuario(username, password, nombre, email, role,activo,null);
             this.usuariosByUsername.put(username, usuario);
             
             // mapUsuarios.put(username, password); // eliminado
@@ -110,7 +110,7 @@ public class MemoryApi implements IApi {
     public List<UsuarioDTO> obtenerUsuarios() {
         List<UsuarioDTO> dtos = new ArrayList<>();
         for (Usuario u : this.usuariosByUsername.values()) {
-            dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+            dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
                     u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
         }
         return dtos;
@@ -121,7 +121,7 @@ public class MemoryApi implements IApi {
 
         Usuario u = usuariosByUsername.get(username);
         if (u != null) {
-            return 	new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getEmail(),
+            return 	new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
                     u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo());
         }
         return null;
@@ -169,7 +169,7 @@ public class MemoryApi implements IApi {
         	Rol r=u.getRol();
         	if("DONANTE".equalsIgnoreCase(r.getNombre())){
         		
-        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
                           u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
         	}
             
@@ -184,7 +184,7 @@ public class MemoryApi implements IApi {
 	        	Rol r=u.getRol();
 	        	if("VOLUNTARIO".equalsIgnoreCase(r.getNombre())){
 	        		
-	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
 	                          u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
 	        	}
 	            
@@ -199,7 +199,7 @@ public class MemoryApi implements IApi {
 	        	Rol r=u.getRol();
 	        	if("ADMIN".equalsIgnoreCase(r.getNombre())){
 	        		
-	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getEmail(),
+	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
 	                          u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
 	        	}
 	            
@@ -922,6 +922,12 @@ public class MemoryApi implements IApi {
 	@Override
 	public void cargarVisita(VisitaDTO visita)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException {
 		// TODO Auto-generated method stub
 		
 	}
