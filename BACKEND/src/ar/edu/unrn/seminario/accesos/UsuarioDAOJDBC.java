@@ -52,17 +52,18 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	@Override
 	public void update(Usuario usuario) {
 		try {
+			System.out.print(usuario.getUsuario());
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "UPDATE usuarios SET contrasena = ?, nombre = ?, contacto = ?, activo = ?, codigoRol = ? ,codigo=?WHERE usuario = ?"
+		            "UPDATE usuarios SET contrasena = ?, nombre = ?, contacto = ?, activo = ?, codigoRol = ? ,codigo=? WHERE usuario = ?"
 		        );
 		        statement.setString(1, usuario.getContrasena());
 		        statement.setString(2, usuario.getNombre());
 				statement.setString(3, usuario.getContacto());
 				statement.setBoolean(4, usuario.isActivo());
 				statement.setInt(5, usuario.getRol().getCodigo());
-		        statement.setString(6, usuario.getUsuario());
-		        statement.setString(7, usuario.getCodigo());
+		        statement.setString(6, usuario.getCodigo());
+		        statement.setString(7, usuario.getUsuario());
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("Usuario actualizado correctamente.");
