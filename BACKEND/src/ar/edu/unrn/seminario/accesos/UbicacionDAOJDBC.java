@@ -14,59 +14,77 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	CoordenadaDAO coordenada = null;
 	
 	@Override
-public void create(Ubicacion ubicacion) {
-		try {
-			
+	public void create(Ubicacion ubicacion) {
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
 
-			Connection conn = ConnectionManager.getConnection();
-			
-			// Se verifica si la coordenada existe en la Base de Datos
-			PreparedStatement checkCoord= conn
-					.prepareStatement("SELECT codigo FROM coordenada WHERE codigo = ?");
-			checkCoord.setString(1, ubicacion.getCoordenada().getCodigo());
-	        ResultSet rs = checkCoord.executeQuery();
-			
-	        if(!rs.next()) { // Si no existe se crea
-	        	if (coordenada == null) {
-	        	    coordenada = new CoordenadaDAOJDBC();
-	        	}
-	        	coordenada.create( ubicacion.getCoordenada());
-	                 System.out.println("Coordenada creada: " + ubicacion.getCoordenada().getCodigo());
-	        } 
-	             //  Si la coordenada SÍ existe , solo se informa
-	             else {
-	                 System.out.println("Coordenada ya existente: " + ubicacion.getCoordenada().getCodigo());
-	             }
-	        // Se carga la Ubicacion en la Base de Datos	
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO Ubicacion(codigo,zona,barrio,direccion,codCoordenada)"
-							+ " VALUES (?, ?, ?,?,?)");
-			
-			statement.setString(1, ubicacion.getCodigo());
-			statement.setString(2, ubicacion.getZona());
-			statement.setString(3,ubicacion.getBarrio() );
-			statement.setString(4,ubicacion.getDireccion());
-			statement.setString(5,ubicacion.getCoordenada().getCodigo());
-			
-			
-		
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
-			} else {
-				System.out.println("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
+	    try {
+	        conn = ConnectionManager.getConnection();
 
-		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        // 1) -- Asegurar que la coordenada exista (si no, crearla)
+	        ps = conn.prepareStatement("SELECT codigo FROM coordenada WHERE codigo = ?");
+	        ps.setString(1, ubicacion.getCoordenada().getCodigo());
+	        rs = ps.executeQuery();
+	        boolean coordExiste = rs.next();
+	        rs.close(); ps.close();
+
+	        if (!coordExiste) {
+	            // creamos la coordenada con el DAO (simple)
+	            CoordenadaDAO coordDao = new CoordenadaDAOJDBC();
+	            coordDao.create(ubicacion.getCoordenada());
+	            System.out.println("Coordenada creada: " + ubicacion.getCoordenada().getCodigo());
+	        } else {
+	            System.out.println("Coordenada ya existente: " + ubicacion.getCoordenada().getCodigo());
+	        }
+
+	        // 2) -- Si no tiene código, generamos uno corto y seguro: UB1, UB2, ...
+	        if (ubicacion.getCodigo() == null || ubicacion.getCodigo().trim().isEmpty()) {
+	            try {
+	                ps = conn.prepareStatement("SELECT COUNT(*) FROM ubicacion");
+	                rs = ps.executeQuery();
+	                int count = 0;
+	                if (rs.next()) count = rs.getInt(1);
+	                rs.close(); ps.close();
+
+	                // Generar UB<numero> — no es bonito para producción pero evita códigos largos
+	                String gen = "UB" + (count + 1);
+	                ubicacion.setCodigo(gen);
+	                System.out.println("Codigo generado para ubicacion: " + gen);
+	            } catch (SQLException e) {
+	                // si falla el COUNT, generar un código rápido que quepa: UB1
+	                ubicacion.setCodigo("UB1");
+	                try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+	                try { if (ps != null) ps.close(); } catch (SQLException ex) {}
+	            }
+	        }
+
+	        // 3) -- Insertar la ubicacion usando el codigo (asegurate que el tamaño encaja en la columna)
+	        ps = conn.prepareStatement(
+	            "INSERT INTO ubicacion(codigo, zona, barrio, direccion, codCoordenada) VALUES (?, ?, ?, ?, ?)"
+	        );
+	        ps.setString(1, ubicacion.getCodigo());
+	        ps.setString(2, ubicacion.getZona());
+	        ps.setString(3, ubicacion.getBarrio());
+	        ps.setString(4, ubicacion.getDireccion());
+	        ps.setString(5, ubicacion.getCoordenada().getCodigo());
+
+	        int cantidad = ps.executeUpdate();
+	        if (cantidad <= 0) {
+	            System.out.println("Error al insertar ubicacion");
+	        } else {
+	            System.out.println("Ubicacion insertada: " + ubicacion.getCodigo());
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta (create Ubicacion): " + e.getMessage());
+	        throw new RuntimeException(e);
+	    } finally {
+	        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+	        try { if (ps != null) ps.close(); } catch (SQLException ex) {}
+	        ConnectionManager.disconnect();
+	    }
 	}
-	
-	
 	
 
 	@Override

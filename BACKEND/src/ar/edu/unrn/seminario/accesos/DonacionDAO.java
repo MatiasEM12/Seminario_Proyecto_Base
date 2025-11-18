@@ -2,13 +2,16 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Donacion;
 
 
 public interface DonacionDAO {
 
-	void create(Donacion donacion);
+	void create(Donacion donacion) throws DataNullException;
 
 	void update(Donacion donacion);
 
@@ -21,8 +24,8 @@ public interface DonacionDAO {
 	Donacion find(String codigo);
 	Donacion  findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException;
 
-	List<Donacion> findAll() throws DataNullException;
-	List<Donacion> findAllPendiente() throws DataNullException;
+	List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
+	List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 
 
 }

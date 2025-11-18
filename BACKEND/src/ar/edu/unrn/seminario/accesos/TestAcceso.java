@@ -49,6 +49,7 @@ import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 public class TestAcceso {
 	public static void main(String[] args) throws Exception {
+	DonanteDao donanteDao=new DonanteDAOJDBC();
 		
 	try {
 		IApi api = new PersistenceApi();
@@ -79,6 +80,7 @@ public class TestAcceso {
 		api.registrarUbicacion(ubicacion);
 		
 		api.registrarUsuario("user_prueba", "1223", "prueba@gmail.com", "Nombre_Prueba",3, true);
+		Donante.setContadorDonante(donanteDao.obtenerCantidadUsuarios());
 		Donante donantePrueba = new Donante("Nombre_Prueba","Apellido_Prueba",LocalDate.of(2000, 2, 20),"11111222","prueba@gmail.com",ubicacion,"user_prueba");
 		api.registrarDonante(donantePrueba);
 		
@@ -133,6 +135,14 @@ public class TestAcceso {
                     null, // pedidoNulo se carga en la siulacion
                     null  // retiroNulo se carga en la simulacion
             );
+            
+            try {
+                api.registrarDonacion(donacionPruebaDTO);
+                System.out.println("Donación registrada OK para donanteCodigo=" + donanteDTO.getCodigo());
+            } catch (Exception e) {
+                System.out.println("ERROR al registrar donacion: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
    	}catch(Exception e) {
    		e.printStackTrace();

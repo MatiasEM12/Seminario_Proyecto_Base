@@ -150,4 +150,12 @@ public class Ubicacion {
 		  contadorUbicacion++;
 		  this.codigo = "UBI" + String.format("%05d", contadorUbicacion);
 	}
+
+
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	
+	
 }

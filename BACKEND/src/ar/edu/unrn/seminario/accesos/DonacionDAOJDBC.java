@@ -11,7 +11,10 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
@@ -27,7 +30,7 @@ OrdenPedidoDao op;
 BienDAO  b;
 	
 	@Override
-	public void create(Donacion donacion) {
+	public void create(Donacion donacion) throws DataNullException {
 	try {
 			
 			Connection conn = ConnectionManager.getConnection();
@@ -42,6 +45,12 @@ BienDAO  b;
 			statement.setString(1, donacion.getCodigo());
 			statement.setString(2, donacion.getObservacion());
 			statement.setDate(3, fechaSQL);
+			
+			Donante donante = donacion.getDonante();
+			if (donante == null) {
+			    throw new DataNullException("La donación no tiene donante asociado");
+			}
+			statement.setString(4, donante.getCodigo());
 			statement.setString(4, donacion.getDonante().getCodigo());
 			statement.setString(5, donacion.getPedido().getCodigo());
 			
@@ -186,7 +195,7 @@ BienDAO  b;
 
 	
 	@Override
-	public List<Donacion> findAll() throws DataNullException{
+	public List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException{
 		List<Donacion> listado = new ArrayList<>();
 	    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido FROM donacion d ";
 
@@ -218,7 +227,7 @@ BienDAO  b;
 	    return listado;
 	}
 	
-	public List<Donacion> findAllPendiente() throws DataNullException {
+	public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
 		List<Donacion> listado = new ArrayList<>();
 	    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido "
 	    		+ "FROM donacion d "

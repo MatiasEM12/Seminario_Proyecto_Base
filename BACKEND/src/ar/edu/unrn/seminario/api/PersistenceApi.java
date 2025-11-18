@@ -39,10 +39,12 @@ import ar.edu.unrn.seminario.dto.RolDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Donacion;
@@ -86,7 +88,7 @@ public class PersistenceApi implements IApi {
         this.donanteDao = new DonanteDAOJDBC();
         this.ubicacionDao=new UbicacionDAOJDBC();
     }
-
+   
     // --- Usuario / Rol ---
     @Override
     public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)
@@ -463,30 +465,48 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException {
-    	
-    	Donacion donacion = this.toDonacion(don);
+    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException {
     	
     	
-        if (don == null) return;
-        
-        
-        
-        donacionDao.create(donacion);
-        this.crearBienDonacion(donacion);
+    	 if (don == null) return;      
+    	    Donacion donacion = this.toDonacion(don);   
+    	    donacionDao.create(donacion);
+    	    this.crearBienDonacion(donacion);
     }
     
     
-    private Donacion toDonacion(DonacionDTO dto) throws DataNullException, DataDoubleException {
+    private Donacion toDonacion(DonacionDTO dto) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException {
     	
-    	Donacion donacion= new Donacion(dto.getFechaDonacion(),dto.getObservacion(),this.listBien(dto.getBienes()),
-    			this.donanteDao.find(dto.getCodDonante()),this.ordenPedidoDao.find(dto.getCodPedido()),dto.getCodigo()  );
-    	
-    	return donacion;
+
+        if (dto == null)
+            throw new DataNullException("DonacionDTO es null");
+
+        Donante donante = donanteDao.find(dto.getCodDonante());
+        if (donante == null) {
+            throw new DataNullException("No se encontró Donante con código: " + dto.getCodDonante());
+        }
+
+        OrdenPedido pedido = null;
+        if (dto.getCodPedido() != null && !dto.getCodPedido().trim().isEmpty()) {
+            pedido = ordenPedidoDao.find(dto.getCodPedido());
+            if (pedido == null) {
+                throw new DataNullException("No se encontró OrdenPedido con código: " + dto.getCodPedido());
+            }
+        }
+
+        return new Donacion(
+                dto.getFechaDonacion(),
+                dto.getObservacion(),
+                this.listBien(dto.getBienes()),
+                donante,
+                pedido,
+                dto.getCodigo()
+        );
+    
     }
 
     @Override
-    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException {
+    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
         List<Donacion> list = donacionDao.findAll();
         ArrayList<DonacionDTO> res = new ArrayList<>();
         if (list == null) return res;
@@ -526,7 +546,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException {
+    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
         ArrayList<BienDTO> retirar = new ArrayList<>();
         if (codOP == null || codOP.trim().isEmpty()) return retirar;
         List<Donacion> donaciones = donacionDao.findAll();
@@ -825,7 +845,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException {
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
 		
 		List<Donacion> donaciones= this.donacionDao.findAllPendiente(); 
 		

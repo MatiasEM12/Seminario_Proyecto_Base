@@ -88,11 +88,11 @@ public interface IApi {
 	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException;
 	
 	//Donacion
-	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException;
-	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException;
+	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException;
+	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 	
 	
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException;
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 	
 	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
 	
@@ -102,7 +102,7 @@ public interface IApi {
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException;
 
-	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException;
+	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
