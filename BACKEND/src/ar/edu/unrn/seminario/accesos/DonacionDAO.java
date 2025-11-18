@@ -11,7 +11,7 @@ import ar.edu.unrn.seminario.modelo.Donacion;
 
 public interface DonacionDAO {
 
-	void create(Donacion donacion);
+	void create(Donacion donacion) throws DataNullException;
 
 	void update(Donacion donacion);
 

@@ -30,7 +30,7 @@ OrdenPedidoDao op;
 BienDAO  b;
 	
 	@Override
-	public void create(Donacion donacion) {
+	public void create(Donacion donacion) throws DataNullException {
 	try {
 			
 			Connection conn = ConnectionManager.getConnection();
@@ -45,6 +45,12 @@ BienDAO  b;
 			statement.setString(1, donacion.getCodigo());
 			statement.setString(2, donacion.getObservacion());
 			statement.setDate(3, fechaSQL);
+			
+			Donante donante = donacion.getDonante();
+			if (donante == null) {
+			    throw new DataNullException("La donación no tiene donante asociado");
+			}
+			statement.setString(4, donante.getCodigo());
 			statement.setString(4, donacion.getDonante().getCodigo());
 			statement.setString(5, donacion.getPedido().getCodigo());
 			

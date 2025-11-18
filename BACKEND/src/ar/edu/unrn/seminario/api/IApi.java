@@ -92,7 +92,7 @@ public interface IApi {
 	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 	
 	
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException;
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException;
 	
 	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
 	
