@@ -375,8 +375,10 @@ public class MemoryApi implements IApi {
 		    bienesRopa.add(b2);
 
 		    // primera visita (fallida, sin bienes)
-		    Visita v1 = new Visita(LocalDate.now(), "Primera visita el donante se encontraba ausente", "RETIRO", "23", new ArrayList<>());
-		    v1.setEstado(Orden.EstadoOrden.EN_PROCESO.toString());
+		    Visita v1 = new Visita(LocalDate.now(), "Primera visita el donante se encontraba ausente", "RETIRO", retiro.getCodigo(), new ArrayList<Bien>(),false);
+
+
+		    v1.setEstado("fallida");
 
 		    // segunda visita (completada) con bienes
 		    ArrayList<Bien> bienesSegundaVisita = new ArrayList<>();
@@ -384,8 +386,8 @@ public class MemoryApi implements IApi {
 		    bienesSegundaVisita.addAll(bienesRopa);
 		    retiro.agregarBien(b1);
 		    retiro.agregarBien(b2);
-		    Visita v2 = new Visita(LocalDate.now(), "Segunda visita retiro realizado correctamente", "RETIRO", "we", bienesSegundaVisita);
-		    v2.setEstado(Orden.EstadoOrden.COMPLETADA.toString());//
+		    Visita v2 = new Visita(LocalDate.now(), "Segunda visita retiro realizado correctamente", "RETIRO", "we", bienesSegundaVisita,true);
+		    v2.setEstado("realizada");//
 
 		    // asociar visitas a la orden (entidad)
 		    ArrayList<Visita> visitasParaOrden = new ArrayList<>();
@@ -527,12 +529,20 @@ public class MemoryApi implements IApi {
     public ArrayList<DonacionDTO> obtenerDonaciones() {
         ArrayList<DonacionDTO> donacionesDTO = new ArrayList<>();
         Donacion donacion;
+
         for (int i = 0; i < donaciones.size(); i++) {
             donacion = donaciones.get(i);
-
+            ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+            ArrayList<Bien> bienes = donacion.getBienes();
+            if (bienes != null) {
+                for (Bien bien : bienes) {
+                    if (bien != null) {
+                        bienesDTO.add(toBienDTO(bien));
+                    }
+                }
+            }
             donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), 
-            		donacion.getObservacion(),donacion.getBienes(),donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo(),null));
-
+            		donacion.getObservacion(),bienesDTO,donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo(),null));
         }
         return donacionesDTO;
     }
