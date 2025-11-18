@@ -812,7 +812,7 @@ public class MemoryApi implements IApi {
 	
 	//HELPERS 
 	
-	private BienDTO toBienDTO(Bien bien) {
+	public BienDTO toBienDTO(Bien bien) {
 	    if (bien == null) return null;
 	    return new BienDTO(
 	        bien.getCodigo(),
@@ -940,6 +940,18 @@ public class MemoryApi implements IApi {
 	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void registrarUbicacion(Ubicacion ubicacion) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<DonanteDTO> obtenerDonantes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
