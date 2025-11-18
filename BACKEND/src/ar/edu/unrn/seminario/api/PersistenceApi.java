@@ -86,7 +86,7 @@ public class PersistenceApi implements IApi {
         this.donanteDao = new DonanteDAOJDBC();
         this.ubicacionDao=new UbicacionDAOJDBC();
     }
-
+   
     // --- Usuario / Rol ---
     @Override
     public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)
@@ -465,6 +465,8 @@ public class PersistenceApi implements IApi {
     @Override
     public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException {
     	
+    	
+   
     	Donacion donacion = this.toDonacion(don);
     	
     	

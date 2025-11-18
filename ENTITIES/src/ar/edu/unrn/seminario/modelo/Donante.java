@@ -158,6 +158,11 @@ public class Donante extends Persona  {
 			throw new DataListException("List invalida");
 		}
 	}
+
+
+	public static void setContadorDonante(int contadorDonante) {
+		Donante.contadorDonante = contadorDonante;
+	}
 	
 	
 }

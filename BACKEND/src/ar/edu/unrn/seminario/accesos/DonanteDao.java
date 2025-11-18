@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.modelo.Donante;
@@ -17,5 +18,6 @@ public interface DonanteDao {
 
 
 	List<Donante> findAll();
+	public int obtenerCantidadUsuarios() throws SQLException ;
 
 }

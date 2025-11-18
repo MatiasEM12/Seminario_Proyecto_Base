@@ -220,6 +220,20 @@ public class DonanteDAOJDBC implements DonanteDao{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public int obtenerCantidadUsuarios() throws SQLException {
+	    String sql = "SELECT COUNT(*) FROM donante";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            return rs.getInt(1);  // devuelve el COUNT(*)
+	        }
+	    }
+	    return 0;
+	}
 
 	
 }
