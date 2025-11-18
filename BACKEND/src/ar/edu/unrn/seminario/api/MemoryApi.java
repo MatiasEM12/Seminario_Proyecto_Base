@@ -301,12 +301,15 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	bienes1.add(new Bien("Manteca", "Alimento", 0.200, "Manteca sin sal", null, 2, LocalDate.now(), 0, "Alimento"));
-        	Bien b2 = new Bien("Camisa", "Ropa",0.200,"Camisa de ToyStory 23",null, 2,LocalDate.now(), 5.0,"algodon");
-     
+        	System.out.print("aqui1");
+        	bienes1.add(new Bien("","Alimento", 0.200,"Manteca", "Manteca sin sal", 2, LocalDate.now(), 0, ""));
+        	Bien b2 = new Bien("","Ropa", 0.200,"Camisa","Camisa de ToyStory 23",1,null, 5.0,"algodon");
+        	System.out.print("aqui1");
+        	
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
             Donante donante1 = donantesByUser.get("pedro_don");
+            
             Donacion donacion1 = new Donacion(LocalDate.now(), "Entrega en sede central", bienes1, donante1,null,null);
             
             OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
@@ -314,7 +317,7 @@ public class MemoryApi implements IApi {
             
             registrarDonacion(donacion1);
             registrarOrdenPedido(ordenPedido);
-           
+           //aqui esta el error
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(null, "Error al inicializar órdenes: " + e.getMessage());
         }
