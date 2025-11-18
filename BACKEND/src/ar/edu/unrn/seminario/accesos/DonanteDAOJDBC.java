@@ -154,9 +154,14 @@ public class DonanteDAOJDBC implements DonanteDao{
 		Donante donante= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT D.codigo, D.nombre, D.apellido,D.dni,D.Fecha_Nacimiento,D.username D.contacto, D.ubicacion,"+
-			"U.codigo, U.zona, U.barrio, U.direccion, C.codigo,C.Latitud,C.Longitud"
-			+ " FROM Donante D "+"JOIN Ubicacion U ON D.ubicacion = U.codigo"+ " WHERE D.codigo = ? AND U.codCoordenada=C.codigo");
+			PreparedStatement sent = conn.prepareStatement(  "SELECT D.codigo AS d_codigo, D.nombre AS d_nombre, D.apellido AS d_apellido, D.dni AS d_dni, " +
+				    "D.Fecha_Nacimiento AS d_fecha, D.username AS d_username, D.contacto AS d_contacto, " +
+				    "U.codigo AS u_codigo, U.zona AS u_zona, U.barrio AS u_barrio, U.direccion AS u_direccion, " +
+				    "C.codigo AS c_codigo, C.Latitud AS c_latitud, C.Longitud AS c_longitud " +
+				    "FROM donante D " +
+				    "JOIN ubicacion U ON D.codUbicacion = U.codigo " +
+				    "JOIN coordenada C ON U.codCoordenada = C.codigo " +
+				    "WHERE D.codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 		
