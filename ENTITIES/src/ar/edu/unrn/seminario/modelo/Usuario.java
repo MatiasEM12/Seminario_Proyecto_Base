@@ -20,6 +20,7 @@ public class Usuario {
 		
 		validarCampoVacio(usuario, "usuario");
 		validarCampoVacio(contrasena, "contraseña");
+		validarCampoVacio(nombre, "nombre");
 		validarCampoVacio(contacto, "contacto");
 		
 		this.usuario = usuario;
