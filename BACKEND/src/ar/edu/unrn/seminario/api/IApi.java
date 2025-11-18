@@ -87,7 +87,7 @@ public interface IApi {
 	List<UsuarioDTO> obtenerUserAdministrador();
 	
 	//Donacion
-	public void registrarDonacion(Donacion donacion);
+	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException;
 	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException;
 	
 	
