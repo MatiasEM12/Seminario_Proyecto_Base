@@ -36,7 +36,7 @@ BienDAO  b = new BienDAOJDBC();
 	    PreparedStatement statement = null;
 
 	    try {
-<<<<<<< HEAD
+
 	        conn = ConnectionManager.getConnection();
 
 	        // Si la donación viene sin código, lo generamos a partir de la BD
@@ -50,27 +50,25 @@ BienDAO  b = new BienDAOJDBC();
 	                        "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
 	                ") VALUES (?, ?, ?, ?, ?)"
 	        );
-=======
+
 	    	 conn = ConnectionManager.getConnection();
 		        statement = conn.prepareStatement(
 		            "INSERT INTO donacion(" +
 		                "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
 		            ") VALUES (?, ?, ?, ?, ?)"
 		        );
->>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
+
 
 		        LocalDate fecha = donacion.getFechaDonacion();
 		        java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 
-<<<<<<< HEAD
 	        statement.setString(1, codigo);
 	        statement.setString(2, donacion.getObservacion());
 	        statement.setDate(3, fechaSQL);
-=======
+
 		        statement.setString(1, donacion.getCodigo());
 		        statement.setString(2, donacion.getObservacion());
 		        statement.setDate(3, fechaSQL);
->>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
 
 		        Donante donante = donacion.getDonante();
 		        if (donante == null) {
@@ -78,7 +76,7 @@ BienDAO  b = new BienDAOJDBC();
 		        }
 		        statement.setString(4, donante.getCodigo());
 
-<<<<<<< HEAD
+
 	        if (donacion.getPedido() != null) {
 	            statement.setString(5, donacion.getPedido().getCodigo());
 	        } else {
@@ -92,21 +90,13 @@ BienDAO  b = new BienDAOJDBC();
 	        } else {
 	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
 	        }
-=======
+
 		        if (donacion.getPedido() != null) {
 		            statement.setString(5, donacion.getPedido().getCodigo());
 		        } else {
 		            statement.setNull(5, java.sql.Types.VARCHAR);
 		        }
->>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
 
-		        int cantidad = statement.executeUpdate();
-		        if (cantidad > 0) {
-		            System.out.println("INSERT Donacion OK - codigo=" + donacion.getCodigo()
-		                    + ", codDonante=" + donante.getCodigo());
-		        } else {
-		            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
-		        }
 	    } catch (SQLException e) {
 	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
 	        throw new RuntimeException(e);
