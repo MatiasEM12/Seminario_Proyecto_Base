@@ -13,138 +13,142 @@ import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 
 public class Bien_DonacionJDBC implements Bien_DonacionDAO {
-BienDAO bien;
-	@Override
-	public void create(String codBien, String codDonacion) {
-		try {
-			
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO Bien_Donacion(codBien,codDonacion)"
-							+ " VALUES (?, ?)");
-			
-			statement.setString(1, codBien);
-			statement.setString(2, codDonacion);
-	
-	
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
-			} else {
-				System.out.println("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
 
-		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
-		
-		
-	}
+    private BienDAO bienDao; // inyectalo por constructor o setter si lo necesitás
 
-	@Override
-	public void update(String codBienNuevo,String codBienViejo, String codDonacion) {
-try {
-			
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("UPDATE SET codBien=?, codDonacion=? FROM Bien_Donacion WHERE codBien=? AND codDonacion=?)"
-							+ " VALUES (?, ?)");
-			
-			statement.setString(1, codBienNuevo);
-			statement.setString(2, codDonacion);
-			statement.setString(3, codBienViejo);
-			statement.setString(4, codDonacion);
-	
-	
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				 System.out.println("El Bien_ Donacion se ha actualizado correctamente");
-			} else {
-				System.out.println("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
+    @Override
+    public void create(String codBien, String codDonacion) {
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement statement = conn.prepareStatement(
+                "INSERT INTO Bien_Donacion(codBien, codDonacion) VALUES (?, ?)"
+            );
 
-		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
-		
-		
-	}
+            statement.setString(1, codBien);
+            statement.setString(2, codDonacion);
 
-	@Override
-	public void remove(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
+            int cantidad = statement.executeUpdate();
+            if (cantidad <= 0) {
+                System.out.println("No se insertó registro en Bien_Donacion");
+            }
 
-	@Override
-	public void remove(String codigoDonacion) {
-		// TODO Auto-generated method stub
-		
-	}
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e); // si querés que reviente y no diga "Donación OK"
+        } finally {
+            ConnectionManager.disconnect();
+        }
+    }
 
-	@Override
-	public List<Bien> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void update(String codBienNuevo, String codBienViejo, String codDonacion) {
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement statement = conn.prepareStatement(
+                "UPDATE Bien_Donacion SET codBien = ? " +
+                "WHERE codBien = ? AND codDonacion = ?"
+            );
 
-	@Override
-	public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException {
-	    ArrayList<Bien> resultado = new ArrayList<>();
-	    if (codDonacion == null || codDonacion.trim().isEmpty()) return resultado;
+            statement.setString(1, codBienNuevo);
+            statement.setString(2, codBienViejo);
+            statement.setString(3, codDonacion);
 
-	    Connection conn = null;
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
+            int cantidad = statement.executeUpdate();
+            if (cantidad > 0) {
+                System.out.println("El Bien_Donacion se ha actualizado correctamente");
+            } else {
+                System.out.println("No se encontró registro a actualizar en Bien_Donacion");
+            }
 
-	    try {
-	        conn = ConnectionManager.getConnection();
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta (UPDATE Bien_Donacion): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            ConnectionManager.disconnect();
+        }
+    }
 
-	        String sql =
-	            "SELECT b.codigo, b.tipo, b.nombre, b.peso, b.descripcion, b.nivelNecesidad, " +
-	            "       b.fechaVencimiento, b.talle, b.material " +
-	            "FROM bien b " +
-	            "JOIN bien_donacion bd ON b.codigo = bd.codBien " +
-	            "WHERE bd.codDonacion = ?";
+    @Override
+    public void remove(Long id) {
+        // no lo usás
+    }
 
-	        ps = conn.prepareStatement(sql);
-	        ps.setString(1, codDonacion);
+    @Override
+    public void remove(String codigoDonacion) {
+        // si lo necesitás, implementalo así:
+        /*
+        try {
+            Connection conn = ConnectionManager.getConnection();
+            PreparedStatement statement = conn.prepareStatement(
+                "DELETE FROM Bien_Donacion WHERE codDonacion = ?"
+            );
+            statement.setString(1, codigoDonacion);
+            int cantidad = statement.executeUpdate();
+            ...
+        } catch (SQLException e) {
+            ...
+        } finally {
+            ConnectionManager.disconnect();
+        }
+        */
+    }
 
-	        rs = ps.executeQuery();
-	        while (rs.next()) {
-	            Bien bien = new Bien(
-	                rs.getString("codigo"),
-	                rs.getString("tipo"),
-	                rs.getObject("peso") != null ? rs.getDouble("peso") : 0.0,
-	                rs.getString("nombre"),
-	                rs.getString("descripcion"),
-	                rs.getObject("nivelNecesidad") != null ? rs.getInt("nivelNecesidad") : 0,
-	                rs.getDate("fechaVencimiento") != null
-	                        ? rs.getDate("fechaVencimiento").toLocalDate()
-	                        : null,
-	                rs.getObject("talle") != null ? rs.getDouble("talle") : null,
-	                rs.getString("material")
-	            );
+    @Override
+    public List<Bien> findAll() {
+        return null; // no lo usás
+    }
 
-	            resultado.add(bien);
-	        }
+    @Override
+    public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException {
+        ArrayList<Bien> resultado = new ArrayList<>();
+        if (codDonacion == null || codDonacion.trim().isEmpty()) return resultado;
 
-	    } catch (SQLException e) {
-	        System.out.println("Error al recuperar bienes de donación: " + e.getMessage());
-	    } finally {
-	        try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
-	        try { if (ps != null) ps.close(); } catch (SQLException ignored) {}
-	        ConnectionManager.disconnect();
-	    }
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-	    return resultado;
-	}
+        try {
+            conn = ConnectionManager.getConnection();
+
+            String sql =
+                "SELECT b.codigo, b.tipo, b.nombre, b.peso, b.descripcion, b.nivelNecesidad, " +
+                "       b.fechaVencimiento, b.talle, b.material " +
+                "FROM bien b " +
+                "JOIN Bien_Donacion bd ON b.codigo = bd.codBien " +
+                "WHERE bd.codDonacion = ?";
+
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, codDonacion);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Bien bien = new Bien(
+                    rs.getString("codigo"),
+                    rs.getString("tipo"),
+                    rs.getObject("peso") != null ? rs.getDouble("peso") : 0.0,
+                    rs.getString("nombre"),
+                    rs.getString("descripcion"),
+                    rs.getObject("nivelNecesidad") != null ? rs.getInt("nivelNecesidad") : 0,
+                    rs.getDate("fechaVencimiento") != null
+                            ? rs.getDate("fechaVencimiento").toLocalDate()
+                            : null,
+                    rs.getObject("talle") != null ? rs.getDouble("talle") : null,
+                    rs.getString("material")
+                );
+
+                resultado.add(bien);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al recuperar bienes de donación: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
+            try { if (ps != null) ps.close(); } catch (SQLException ignored) {}
+            ConnectionManager.disconnect();
+        }
+
+        return resultado;
+    }
 }
