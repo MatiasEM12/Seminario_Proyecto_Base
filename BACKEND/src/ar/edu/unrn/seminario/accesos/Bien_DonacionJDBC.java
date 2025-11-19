@@ -14,7 +14,7 @@ import ar.edu.unrn.seminario.modelo.Coordenada;
 
 public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
-    private BienDAO bienDao; // inyectalo por constructor o setter si lo necesitás
+    private BienDAO bienDao; 
 
     @Override
     public void create(String codBien, String codDonacion) {
@@ -35,7 +35,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
         } catch (SQLException e) {
             System.out.println("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException(e); // si querés que reviente y no diga "Donación OK"
+            throw new RuntimeException(e); 
         } finally {
             ConnectionManager.disconnect();
         }
@@ -71,32 +71,17 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
     @Override
     public void remove(Long id) {
-        // no lo usás
+        //
     }
 
     @Override
     public void remove(String codigoDonacion) {
-        // si lo necesitás, implementalo así:
-        /*
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement statement = conn.prepareStatement(
-                "DELETE FROM Bien_Donacion WHERE codDonacion = ?"
-            );
-            statement.setString(1, codigoDonacion);
-            int cantidad = statement.executeUpdate();
-            ...
-        } catch (SQLException e) {
-            ...
-        } finally {
-            ConnectionManager.disconnect();
-        }
-        */
+      
     }
 
     @Override
     public List<Bien> findAll() {
-        return null; // no lo usás
+        return null; 
     }
 
     @Override

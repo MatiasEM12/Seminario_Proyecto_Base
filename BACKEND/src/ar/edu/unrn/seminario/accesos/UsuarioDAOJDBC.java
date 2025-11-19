@@ -81,26 +81,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 	@Override
 	public void remove(Long id) {//   (String codigo)
-		/*try {
-			 Connection conn = ConnectionManager.getConnection();
-		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM donante WHERE codigo=?"
-		        );
-
 	
-		        statement.setString(1, id);
-
-		        int cantidad = statement.executeUpdate();
-		        if (cantidad > 0) {
-		            System.out.println("Usuario eliminado correctamente.");
-		        } else {
-		            System.out.println("No se encontró el Usuario.");
-		        }
-			
-		}catch(SQLException e) {
-			System.out.println("Error al Eliminar usuario");
-		}
-*/
 	}
 
 	@Override

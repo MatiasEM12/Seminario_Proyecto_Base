@@ -86,7 +86,7 @@ public class ListadoDonaciones extends JFrame {
     }
 
     private void cargarOrdenes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-        // intentamos obtener donaciones pendientes (puede lanzar excepciones segun tu API)
+        // intentamos obtener donaciones pendientes 
         try {
             donaciones = api.obtenerDonacionesPendientes();
         } catch (Exception e) {

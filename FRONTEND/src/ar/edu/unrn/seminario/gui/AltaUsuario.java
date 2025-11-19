@@ -85,7 +85,7 @@ public class AltaUsuario extends JFrame {
 					JOptionPane.showMessageDialog(null, "Usuario registrado con exito!", "Info", JOptionPane.INFORMATION_MESSAGE);
 					setVisible(false);
 					dispose();
-					//en realidad en alta usuario solo puede llegar a ocurir dataEmtyException.
+					
 				} catch (DataEmptyException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				} catch (DataObjectException e) {

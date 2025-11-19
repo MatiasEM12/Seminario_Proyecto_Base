@@ -39,7 +39,7 @@ public class VentanaOrdenPedido extends JFrame {
         lblNewLabel.setBounds(280, 10, 250, 16);
         contentPane.add(lblNewLabel);
 
-        // Títulos que coinciden con los datos que vamos a agregar (7 columnas)
+        // Títulos que coinciden con los datos que vamos a agregar 
         String[] titulos = {
             "CÓDIGO", "CARGA PESADA", "OBSERVACIONES",
             "FECHA EMISIÓN", "ESTADO", "DONANTE", "DONACIÓN"

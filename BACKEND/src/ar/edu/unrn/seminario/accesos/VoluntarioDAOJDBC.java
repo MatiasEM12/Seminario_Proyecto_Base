@@ -15,8 +15,7 @@ import ar.edu.unrn.seminario.modelo.Voluntario;
 
 public class VoluntarioDAOJDBC implements VoluntarioDAO{
 
-    //codigo,nombre,apellido,dni,contacto,Fecha_Nacimiento,username,
-
+    
 	@Override
 	public void create(Voluntario voluntario) {
 		try {

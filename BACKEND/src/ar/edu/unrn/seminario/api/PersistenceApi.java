@@ -319,8 +319,8 @@ public class PersistenceApi implements IApi {
         Voluntario v = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
             v = voluntarioDao.find(retiro.getCodVoluntario());
-            // opcional: lanzar excepción si el voluntario no existe
-            // if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
+           
+             if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
         }
 
         // Buscar pedido (obligatorio)
@@ -342,8 +342,7 @@ public class PersistenceApi implements IApi {
                 if (vFound != null) {
                     visitas.add(vFound);
                 }
-                // Si querés que falle cuando una visita referenciada no exista, descomenta:
-                // else throw new DataNullException("Visita no encontrada: " + codVis);
+       
             }
         }
 
