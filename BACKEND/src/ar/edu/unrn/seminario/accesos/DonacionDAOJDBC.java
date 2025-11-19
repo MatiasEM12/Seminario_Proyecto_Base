@@ -36,6 +36,7 @@ BienDAO  b = new BienDAOJDBC();
 	    PreparedStatement statement = null;
 
 	    try {
+<<<<<<< HEAD
 	        conn = ConnectionManager.getConnection();
 
 	        // Si la donación viene sin código, lo generamos a partir de la BD
@@ -49,20 +50,35 @@ BienDAO  b = new BienDAOJDBC();
 	                        "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
 	                ") VALUES (?, ?, ?, ?, ?)"
 	        );
+=======
+	    	 conn = ConnectionManager.getConnection();
+		        statement = conn.prepareStatement(
+		            "INSERT INTO donacion(" +
+		                "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
+		            ") VALUES (?, ?, ?, ?, ?)"
+		        );
+>>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
 
-	        LocalDate fecha = donacion.getFechaDonacion();
-	        java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
+		        LocalDate fecha = donacion.getFechaDonacion();
+		        java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 
+<<<<<<< HEAD
 	        statement.setString(1, codigo);
 	        statement.setString(2, donacion.getObservacion());
 	        statement.setDate(3, fechaSQL);
+=======
+		        statement.setString(1, donacion.getCodigo());
+		        statement.setString(2, donacion.getObservacion());
+		        statement.setDate(3, fechaSQL);
+>>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
 
-	        Donante donante = donacion.getDonante();
-	        if (donante == null) {
-	            throw new DataNullException("La donación no tiene donante asociado");
-	        }
-	        statement.setString(4, donante.getCodigo());
+		        Donante donante = donacion.getDonante();
+		        if (donante == null) {
+		            throw new DataNullException("La donación no tiene donante asociado");
+		        }
+		        statement.setString(4, donante.getCodigo());
 
+<<<<<<< HEAD
 	        if (donacion.getPedido() != null) {
 	            statement.setString(5, donacion.getPedido().getCodigo());
 	        } else {
@@ -76,12 +92,26 @@ BienDAO  b = new BienDAOJDBC();
 	        } else {
 	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
 	        }
+=======
+		        if (donacion.getPedido() != null) {
+		            statement.setString(5, donacion.getPedido().getCodigo());
+		        } else {
+		            statement.setNull(5, java.sql.Types.VARCHAR);
+		        }
+>>>>>>> f330b179939831d7edc1aa05d8d6497bd253e69c
 
+		        int cantidad = statement.executeUpdate();
+		        if (cantidad > 0) {
+		            System.out.println("INSERT Donacion OK - codigo=" + donacion.getCodigo()
+		                    + ", codDonante=" + donante.getCodigo());
+		        } else {
+		            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
+		        }
 	    } catch (SQLException e) {
 	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
 	        throw new RuntimeException(e);
 	    } finally {
-	        try { if (statement != null) statement.close(); } catch (SQLException ex) {}
+	    	 try { if (statement != null) statement.close(); } catch (SQLException ex) {}
 	        ConnectionManager.disconnect();
 	    }
 	}
@@ -248,41 +278,38 @@ BienDAO  b = new BienDAOJDBC();
 	
 
 		public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-			  List<Donacion> listado = new ArrayList<>();
-			    String sql = "SELECT codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido " +
-			                 "FROM donacion WHERE codigoOrdenPedido IS NULL";
+			 List<Donacion> listado = new ArrayList<>();
+			    // Seleccionamos donaciones cuya columna codigoOrdenPedido es NULL (sin orden asignada)
+			    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido "
+			               + "FROM donacion d "
+			               + "WHERE d.codigoOrdenPedido IS NULL";
 
 			    Connection conn = null;
-			    Statement stmt = null;
-			    ResultSet rs = null;
+			    Statement sentencia = null;
+			    ResultSet resultado = null;
 			    try {
 			        conn = ConnectionManager.getConnection();
-			        stmt = conn.createStatement();
-			        rs = stmt.executeQuery(sql);
+			        sentencia = conn.createStatement();
+			        resultado = sentencia.executeQuery(sql);
 
-			        while (rs.next()) {
-			            String codigo = rs.getString("codigo");
-			            String observacion = rs.getString("observacion");
-			            java.sql.Date sqlFecha = rs.getDate("Fecha_Donacion");
-			            LocalDate fecha = sqlFecha != null ? sqlFecha.toLocalDate() : null;
-			            String codigoDonante = rs.getString("codigoDonante");
-
-			            // Usar el DonanteDao inicializado en el constructor
-			            Donante donante = this.d.find(codigoDonante);
-
-			            // No hay pedido (porque filtramos por NULL)
-			            OrdenPedido pedido = null;
-
-			            ArrayList<Bien> bienes = this.b.findBienDonacion(codigo);
-
+			        while (resultado.next()) {
+			            String codigo = resultado.getString("codigo");
+			            String observacion = resultado.getString("observacion");
+			            Date Fecha_Donacion = resultado.getDate("Fecha_Donacion");
+			            LocalDate fecha = Fecha_Donacion != null ? Fecha_Donacion.toLocalDate() : null;
+			            String codigoDonante = resultado.getString("codigoDonante");
+			            String codigoOrdenPedido = resultado.getString("codigoOrdenPedido"); // será null
+			            Donante donante = (codigoDonante != null) ? d.find(codigoDonante) : null;
+			            OrdenPedido pedido = (codigoOrdenPedido != null) ? op.find(codigoOrdenPedido) : null;
+			            ArrayList<Bien> bienes = b.findBienDonacion(codigo);
 			            Donacion donacion = new Donacion(fecha, observacion, bienes, donante, pedido, codigo);
 			            listado.add(donacion);
 			        }
 			    } catch (SQLException e) {
-			        System.out.println("ERROR SQL en findAllPendiente(): " + e.getMessage());
+			        System.out.println("Error de mySql\n" + e.toString());
 			    } finally {
-			        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
-			        try { if (stmt != null) stmt.close(); } catch (SQLException ex) {}
+			        try { if (resultado != null) resultado.close(); } catch (SQLException ex) {}
+			        try { if (sentencia != null) sentencia.close(); } catch (SQLException ex) {}
 			        ConnectionManager.disconnect();
 			    }
 			    return listado;
@@ -351,6 +378,7 @@ BienDAO  b = new BienDAOJDBC();
 	    // Formato DN00001, DN00002, etc.
 	    return String.format("DN%05d", siguienteNumero);
 	}
+
 
 
 }

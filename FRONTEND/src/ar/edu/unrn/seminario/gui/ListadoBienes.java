@@ -36,7 +36,7 @@ public class ListadoBienes extends JFrame {
 	
 		
 		   // Permitir selección de múltiples filas (CTRL/SHIFT)
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    
         
 		this.api=api;
 		  this.setOnSeleccion(onSeleccion);
@@ -55,7 +55,7 @@ public class ListadoBienes extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(10, 11, 573, 194);
 		contentPane.add(scrollPane);
-			
+	    table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.bienes = new ArrayList<>(bienesDTO == null ? new ArrayList<>() : bienesDTO);
 		
 		for(BienDTO b : bienes) {
