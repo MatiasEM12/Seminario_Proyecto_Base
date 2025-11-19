@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataDoubleException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 
@@ -95,32 +97,43 @@ try {
 	}
 
 	@Override
-	public List<Bien> findDonacion(String codDonacion) {
-		List<Bien> bienes = new ArrayList<>();
-		
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT bd.codBien  "
-					+ "FROM Bien_Donacion bd, donacion d WHERE bd.codDonacion=? AND d.codigo=? AND  bd.codDonacion=d.codigo");
-			
-			sent.setString(1, codDonacion);
-			sent.setString(2, codDonacion);
-			ResultSet rs = sent.executeQuery();
-			while (rs.next()) {
-				
-				bienes.add(bien.find(rs.getString("bd.codBien")));
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return bienes;
-	
+	public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException {
+		 ArrayList<Bien> resultado = new ArrayList<>();
+		    if (codDonacion == null) return resultado;
+
+		    Connection conn = null;
+		    PreparedStatement ps = null;
+		    ResultSet rs = null;
+		    try {
+		        conn = ConnectionManager.getConnection();
+		        String sql = "SELECT b.codigo, b.tipo, b.nombre, b.peso, b.descripcion, b.nivelNecesidad, b.fechaVencimiento, b.talle, b.material " +
+		                     "FROM bien b " +
+		                     "JOIN Bien_Donacion bd ON b.codigo = bd.codBien " +
+		                     "WHERE bd.codDonacion = ?";
+		        ps = conn.prepareStatement(sql);
+		        ps.setString(1, codDonacion);
+		        rs = ps.executeQuery();
+		        while (rs.next()) {
+		            Bien bien = new Bien(
+		                rs.getString("codigo"),
+		                rs.getString("tipo"),
+		                rs.getDouble("peso"),
+		                rs.getString("nombre"),
+		                rs.getString("descripcion"),
+		                rs.getInt("nivelNecesidad"),
+		                rs.getDate("fechaVencimiento") != null ? rs.getDate("fechaVencimiento").toLocalDate() : null,
+		                rs.getObject("talle") != null ? rs.getDouble("talle") : null,
+		                rs.getString("material")
+		            );
+		            resultado.add(bien);
+		        }
+		    } catch (SQLException e) {
+		        System.out.println("Error en findBienDonacion: " + e.getMessage());
+		    } finally {
+		        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+		        try { if (ps != null) ps.close(); } catch (SQLException ex) {}
+		        ConnectionManager.disconnect();
+		    }
+		    return resultado;
 	}
 }

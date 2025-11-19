@@ -25,10 +25,11 @@ import ar.edu.unrn.seminario.modelo.Rol;
 
 public class DonacionDAOJDBC implements DonacionDAO{
 
-DonanteDao d;
-OrdenPedidoDao op;
-BienDAO  b;
-	
+DonanteDao d= new DonanteDAOJDBC();
+OrdenPedidoDao op= new OrdenPedidoDAOJDBC();
+BienDAO  b = new BienDAOJDBC();
+
+
 	@Override
 	public void create(Donacion donacion) throws DataNullException {
 	try {
@@ -227,39 +228,49 @@ BienDAO  b;
 	    return listado;
 	}
 	
-	public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-		List<Donacion> listado = new ArrayList<>();
-	    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido "
-	    		+ "FROM donacion d "
-	    		+"JOIN ordenpedido o ON d.codigoOrdenPedido = o.codigo JOIN donante don ON d.codigoDonante = don.codigo "
-	    		+ "WHERE o.estado = 'PENDIENTE'";
 
-	    try (Connection conn = ConnectionManager.getConnection();
-	         Statement sentencia = conn.createStatement();
-	         ResultSet resultado = sentencia.executeQuery(sql)) {
+		public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+			  List<Donacion> listado = new ArrayList<>();
+			    String sql = "SELECT codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido " +
+			                 "FROM donacion WHERE codigoOrdenPedido IS NULL";
 
-	        while (resultado.next()) {
-	            String codigo = resultado.getString("codigo");
-	            String observacion = resultado.getString("observacion");
-	            Date Fecha_Donacion = resultado.getDate("Fecha_Donacion");
-	            LocalDate fecha = Fecha_Donacion.toLocalDate();
-	            String codigoDonante = resultado.getString("codigoDonante");
-	            String codigoOrdenPedido = resultado.getString("codigoOrdenPedido");
-	            Donante donante = d.find(codigoDonante);
-	            OrdenPedido pedido = op.find(codigoOrdenPedido);
-	            ArrayList<Bien> bienes = b.findBienDonacion(codigo);
-	            // Usamos el constructor que ya tenés:
-	            Donacion donacion = new Donacion(fecha,observacion,bienes,donante,pedido,codigo);
-	            listado.add(donacion);
-	        }
-	    } catch (SQLException e) {
-			System.out.println("Error de mySql\n" + e.toString());
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
+			    Connection conn = null;
+			    Statement stmt = null;
+			    ResultSet rs = null;
+			    try {
+			        conn = ConnectionManager.getConnection();
+			        stmt = conn.createStatement();
+			        rs = stmt.executeQuery(sql);
+
+			        while (rs.next()) {
+			            String codigo = rs.getString("codigo");
+			            String observacion = rs.getString("observacion");
+			            java.sql.Date sqlFecha = rs.getDate("Fecha_Donacion");
+			            LocalDate fecha = sqlFecha != null ? sqlFecha.toLocalDate() : null;
+			            String codigoDonante = rs.getString("codigoDonante");
+
+			            // Usar el DonanteDao inicializado en el constructor
+			            Donante donante = this.d.find(codigoDonante);
+
+			            // No hay pedido (porque filtramos por NULL)
+			            OrdenPedido pedido = null;
+
+			            ArrayList<Bien> bienes = this.b.findBienDonacion(codigo);
+
+			            Donacion donacion = new Donacion(fecha, observacion, bienes, donante, pedido, codigo);
+			            listado.add(donacion);
+			        }
+			    } catch (SQLException e) {
+			        System.out.println("ERROR SQL en findAllPendiente(): " + e.getMessage());
+			    } finally {
+			        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+			        try { if (stmt != null) stmt.close(); } catch (SQLException ex) {}
+			        ConnectionManager.disconnect();
+			    }
+			    return listado;
 		}
-	    return listado;
-	}
+
+	
 
 	@Override
 	public Donacion findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException {

@@ -677,11 +677,14 @@ public class PersistenceApi implements IApi {
     }
     private void crearBienDonacion(Donacion donacion) {
     	
-    	ArrayList<Bien> bienes= donacion.getBienes();
-    	
-    	for(Bien b :  bienes) {
-    		this.bienVisitaDao.create(b.getCodigo(), donacion.getCodigo());
-    	}
+    	 if (donacion == null || donacion.getBienes() == null) return;
+    	    ArrayList<Bien> bienes = donacion.getBienes();
+
+    	    for (Bien b : bienes) {
+    	        if (b != null && b.getCodigo() != null && donacion.getCodigo() != null) {
+    	            this.bienDonacionDao.create(b.getCodigo(), donacion.getCodigo());
+    	        }
+    	    }
     	
     }
     
@@ -794,11 +797,28 @@ public class PersistenceApi implements IApi {
 	}
 	
 	private DonacionDTO toDonacionDTO ( Donacion donacion) {
-		
-		DonacionDTO dto= new DonacionDTO( donacion.getCodigo(),donacion.getFechaDonacion(),donacion.getObservacion(),
-				listBienDTO(donacion.getBienes()), donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo());
-		
-		return dto;
+		   if (donacion == null) return null;
+
+		    String codDonante = null;
+		    if (donacion.getDonante() != null) {
+		        codDonante = donacion.getDonante().getCodigo();
+		    }
+
+		    String codPedido = null;
+		    if (donacion.getPedido() != null) {
+		        codPedido = donacion.getPedido().getCodigo();
+		    }
+
+		    ArrayList<BienDTO> bienesDTO = donacion.getBienes() != null ? listBienDTO(donacion.getBienes()) : new ArrayList<>();
+
+		    return new DonacionDTO(
+		            donacion.getCodigo(),
+		            donacion.getFechaDonacion(),
+		            donacion.getObservacion(),
+		            bienesDTO,
+		            codDonante,
+		            codPedido
+		    );
 	}
 	
 	private ArrayList<BienDTO> listBienDTO(ArrayList<Bien> bienes){
