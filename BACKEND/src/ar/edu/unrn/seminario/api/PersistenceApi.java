@@ -797,10 +797,35 @@ public class PersistenceApi implements IApi {
 	
 	private DonacionDTO toDonacionDTO ( Donacion donacion) {
 		
-		DonacionDTO dto= new DonacionDTO( donacion.getCodigo(),donacion.getFechaDonacion(),donacion.getObservacion(),
-				listBienDTO(donacion.getBienes()), donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo());
-		
-		return dto;
+		  if (donacion == null) return null;
+
+		    String codDonante = null;
+		    String codPedido = null;
+
+		    if (donacion.getDonante() != null) {
+		        codDonante = donacion.getDonante().getCodigo();
+		    } else {
+		        // opcional: loguear para depuración
+		        System.err.println("Aviso: Donacion " + donacion.getCodigo() + " sin Donante asociado.");
+		    }
+
+		    if (donacion.getPedido() != null) {
+		        codPedido = donacion.getPedido().getCodigo();
+		    } else {
+		        // opcional: loguear
+		        System.err.println("Aviso: Donacion " + donacion.getCodigo() + " sin OrdenPedido asociado.");
+		    }
+
+		    ArrayList<BienDTO> bienesDto = donacion.getBienes() != null ? listBienDTO(donacion.getBienes()) : new ArrayList<>();
+
+		    return new DonacionDTO(
+		            donacion.getCodigo(),
+		            donacion.getFechaDonacion(),
+		            donacion.getObservacion(),
+		            bienesDto,
+		            codDonante,
+		            codPedido
+		    );
 	}
 	
 	private ArrayList<BienDTO> listBienDTO(ArrayList<Bien> bienes){
