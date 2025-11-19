@@ -296,4 +296,3 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		return ubicaciones;
 	}
 }
-
