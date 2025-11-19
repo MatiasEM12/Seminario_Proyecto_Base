@@ -72,7 +72,7 @@ public class OrdenRetiro extends Orden{
 	public String getEstadoRetiro() {
 		return super.getEstadoString();
 	}
-	/*
+	/* 
 	public void setEstadoRetiro(String estadoRetiro) throws StateChangeException,DataNullException{
 	    if (estadoRetiro == null || estadoRetiro.isEmpty()) {
 	        throw new DataNullException("El campo 'estado de retiro' no puede estar vacío");
@@ -81,16 +81,16 @@ public class OrdenRetiro extends Orden{
 	    if (!estadoRetiro.equals("Pendiente") && !estadoRetiro.equals("En proceso") && !estadoRetiro.equals("Completada") && !estadoRetiro.equals("Cancelada")) {
 	        throw new StateChangeException("El estado de retiro ingresado es invalido");
 	    }
-	    this.estadoRetiro = estadoRetiro;
+	   
 	    //actualisa la orden y el pedido si es necesario
 	    if(estadoRetiro.equals("Completada")  || estadoRetiro.equals("Cancelada")) {	    
 	    	if(estadoRetiro.equals("Completada")) {
 	    		super.setEstado(EstadoOrden.COMPLETADA);
-	    		pedido.setEstado(EstadoOrden.COMPLETADA);
+	    		
 	    	}
 	    	else {
 	    		super.setEstado(EstadoOrden.CANCELADA);
-	    		pedido.setEstado(EstadoOrden.CANCELADA);
+	    		
 	    	}
 	    	
 	    }
