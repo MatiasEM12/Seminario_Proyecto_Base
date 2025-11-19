@@ -136,8 +136,8 @@ public class ListadoOrdenes extends JFrame {
         		
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
-                    String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
-					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
+					String tipo = (String) tabla.getValueAt(filaSeleccionada, 1);
+					if("ORDEN_RETIRO".equalsIgnoreCase(tipo)) {
 						
 						String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);
 	                    ArrayList<BienDTO> lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
