@@ -2,8 +2,6 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
-import ar.edu.unrn.seminario.exception.DataDoubleException;
-import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
 
 public interface Bien_DonacionDAO {
@@ -18,7 +16,7 @@ public interface Bien_DonacionDAO {
 
 	List<Bien> findAll();
 
-	List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException;
+	List<Bien> findDonacion(String codDonacion);
 
 	void update(String codBienNuevo, String codBienViejo, String codDonacion);
 

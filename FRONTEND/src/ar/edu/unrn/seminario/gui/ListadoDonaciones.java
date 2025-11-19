@@ -4,22 +4,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JOptionPane;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
-import ar.edu.unrn.seminario.exception.DataDateException;
-import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.exception.DataNullException;
-import ar.edu.unrn.seminario.exception.DataObjectException;
+
 
 public class ListadoDonaciones extends JFrame {
 
@@ -30,11 +31,10 @@ public class ListadoDonaciones extends JFrame {
     private java.util.List<DonacionDTO> donaciones;
     private IApi api;
     private AltaOrdenPedido ventanaPedido;
-
-    public ListadoDonaciones(IApi api, AltaOrdenPedido altaPedido) throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+    public ListadoDonaciones(IApi api, AltaOrdenPedido altaPedido) throws DataNullException {
         this.api = api;
-        this.ventanaPedido = altaPedido;
 
+        this.ventanaPedido=altaPedido; 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 800, 380);
         contentPane = new JPanel();
@@ -42,7 +42,8 @@ public class ListadoDonaciones extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        String[] titulos = { "CÓDIGO", "OBSERVACIONES", "FECHA DONACIÓN", "DONANTE", "COD PEDIDO" };
+        // Títulos de la tabla (asegurate que coincidan con los campos que vas a añadir)
+        String[] titulos = { "CÓDIGO", "CARGA PESADA", "OBSERVACIONES", "FECHA DONACIÓN", "ESTADO", "DONANTE", "COD DONACIÓN" };
         modelo = new DefaultTableModel(new Object[][] {}, titulos) {
             private static final long serialVersionUID = 1L;
             @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -57,58 +58,85 @@ public class ListadoDonaciones extends JFrame {
         btnRefrescar.setBounds(10, 305, 120, 25);
         contentPane.add(btnRefrescar);
 
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setBounds(654, 305, 120, 25);
+        contentPane.add(btnCerrar);
+        
         JButton btnSeleccionar = new JButton("Seleccionar");
         btnSeleccionar.setBounds(147, 306, 134, 23);
         contentPane.add(btnSeleccionar);
 
-        JButton btnCerrar = new JButton("Cerrar");
-        btnCerrar.setBounds(654, 305, 120, 25);
+        // Cargar datos por primera vez
+        cargarOrdenes();
+
+        // Listeners
+        btnRefrescar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+					cargarOrdenes();
+				} catch (DataNullException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        });
+
         btnCerrar.addActionListener(e -> {
             setVisible(false);
             dispose();
         });
-        contentPane.add(btnCerrar);
-
-        // cargar inicialmente
-        cargarOrdenes();
-
-        // listeners
-        btnRefrescar.addActionListener(e -> {
-            try {
-                cargarOrdenes();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error al refrescar donaciones: " + ex.getMessage());
-            }
-        });
-
-        btnSeleccionar.addActionListener(e -> seleccionarPedido());
     }
 
-    private void cargarOrdenes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-        // intentamos obtener donaciones pendientes (puede lanzar excepciones segun tu API)
-        try {
-            donaciones = api.obtenerDonacionesPendientes();
-        } catch (Exception e) {
-            // si falla, mostramos lista vacía y aviso
+ 
+    private void cargarOrdenes() throws DataNullException {
+        donaciones = api.obtenerDonacionesPendientes();
+        if (donaciones == null) {
             donaciones = java.util.Collections.emptyList();
-            System.err.println("Error al obtener donaciones pendientes: " + e.getMessage());
         }
 
-        if (donaciones == null) donaciones = java.util.Collections.emptyList();
+       
+        
 
+        // Asegurar lista limpia
         modelo.setRowCount(0);
 
         for (DonacionDTO D : donaciones) {
             if (D == null) continue;
 
-            Object fecha = D.getFechaDonacion() != null ? D.getFechaDonacion() : null;
+            // Obtenemos valores de forma segura)
+            Object cargaPesada = null;
+            try {
+                // Intentar usar isCargaPesada() si existe en DonacionDTO
+                cargaPesada = D.getClass().getMethod("isCargaPesada").invoke(D);
+            } catch (Exception ex) {
+                // método no disponible o error -> dejar false por defecto
+                cargaPesada = Boolean.FALSE;
+            }
+
+            Object estado = null;
+            try {
+                Object st = api.obtenerEstadoOrdenPedido(D.getCodPedido());
+                estado = (st == null) ? "" : st.toString();
+            } catch (Exception ex) {
+                estado = "";
+            }
+
+            Object fecha = null;
+            try {
+                fecha = D.getFechaDonacion(); // LocalDate esperado
+            } catch (Exception ex) {
+                fecha = null;
+            }
+
             modelo.addRow(new Object[] {
                     safeString(D.getCodigo()),
-                    safeString(D.getObservacion()),
+                    cargaPesada,
+                    safeString(D.getObservacion() != null ? D.getObservacion() : D.getObservacion()), // distintos DTOs usan 'observacion' o 'observaciones'
                     fecha,
+                    estado,
                     safeString(D.getCodDonante()),
-                    safeString(D.getCodPedido())
+                    safeString(api.obtenerEstadoOrdenPedido(D.getCodPedido()))
             });
         }
     }
@@ -116,20 +144,18 @@ public class ListadoDonaciones extends JFrame {
     private String safeString(Object o) {
         return o == null ? "" : String.valueOf(o);
     }
-
+    
     private void seleccionarPedido() {
         int fila = tabla.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccioná una donación.");
+            JOptionPane.showMessageDialog(this, "Seleccioná una orden");
             return;
         }
         DonacionDTO seleccionada = donaciones.get(fila);
 
-        if (ventanaPedido != null) {
-            ventanaPedido.recibirDonacion(seleccionada);
-        }
+        // Pasa los datos a la ventana de Retiro
+        ventanaPedido.recibirDonacion(seleccionada);
 
-        setVisible(false);
-        dispose();
+        dispose(); // cerrar esta ventana
     }
 }
