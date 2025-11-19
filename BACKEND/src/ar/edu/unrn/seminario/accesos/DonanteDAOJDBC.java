@@ -153,11 +153,14 @@ public class DonanteDAOJDBC implements DonanteDao{
 		}
 	}
 
-	public Donante find(String codigo) throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+	public Donante find(String codigo)
+	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+
 	    Connection conn = null;
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
 	    Donante donante = null;
+
 	    try {
 	        conn = ConnectionManager.getConnection();
 	        String sql =
@@ -172,11 +175,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 	                "       U.zona             AS u_zona, " +
 	                "       U.barrio           AS u_barrio, " +
 	                "       U.direccion        AS u_direccion, " +
+	                "       U.codCoordenada    AS u_codCoordenada, " +
 	                "       C.codigo           AS c_codigo, " +
 	                "       C.Latitud          AS c_latitud, " +
 	                "       C.Longitud         AS c_longitud " +
 	                "FROM donante D " +
-	                // IMPORTANTE: LEFT JOIN en vez de JOIN
 	                "LEFT JOIN ubicacion U ON D.codUbicacion = U.codigo " +
 	                "LEFT JOIN coordenada C ON U.codCoordenada = C.codigo " +
 	                "WHERE D.codigo = ?";
@@ -186,13 +189,24 @@ public class DonanteDAOJDBC implements DonanteDao{
 	        rs = ps.executeQuery();
 
 	        if (rs.next()) {
-	            
-	            Coordenada c = null;
+	            // Ubicacion + Coordenada
 	            Ubicacion u = null;
 
 	            String codUbicacion = rs.getString("u_codigo");
 	            if (codUbicacion != null) {
 	                String codCoordenada = rs.getString("c_codigo");
+	                String codCoordenadaRef = rs.getString("u_codCoordenada");
+
+	                if (codCoordenada == null && codCoordenadaRef != null) {
+	                    // Hay referencia a coordenada pero no fila en tabla coordenada
+	                    throw new DataObjectException(
+	                        "La ubicacion " + codUbicacion +
+	                        " tiene codCoordenada=" + codCoordenadaRef +
+	                        " pero no existe fila en la tabla coordenada"
+	                    );
+	                }
+
+	                Coordenada c = null;
 	                if (codCoordenada != null) {
 	                    c = new Coordenada(
 	                            rs.getDouble("c_latitud"),
@@ -200,6 +214,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 	                            codCoordenada
 	                    );
 	                }
+
 	                u = new Ubicacion(
 	                        rs.getString("u_zona"),
 	                        rs.getString("u_barrio"),
@@ -235,33 +250,45 @@ public class DonanteDAOJDBC implements DonanteDao{
 	}
 
 
+
 	public List<Donante> findAll() {
-	    List<Donante> donantes = new ArrayList<>();
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement sent = conn.prepareStatement("SELECT codigo FROM donante");
-	        ResultSet rs = sent.executeQuery();
-	        while (rs.next()) {
-	            String codigo = rs.getString("codigo");
-	            try {
-	                Donante d = this.find(codigo);
-	                if (d != null) {
-	                    donantes.add(d);
-	                } else {
-	                    System.out.println("Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista.");
-	                }
-	            } catch (Exception ex) {
-	                // Si justo un donante tiene datos inconsistentes, no tumba toda la lista
-	                System.out.println("Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage());
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta " + e.getMessage());
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-	    return donantes;
-	}
+        List<Donante> donantes = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement sent = null;
+        ResultSet rs = null;
+
+        try {
+            conn = ConnectionManager.getConnection();
+            sent = conn.prepareStatement("SELECT codigo FROM donante");
+            rs = sent.executeQuery();
+
+            while (rs.next()) {
+                String codigo = rs.getString("codigo");
+                try {
+                    Donante d = this.find(codigo);
+                    if (d != null) {
+                        donantes.add(d);
+                    } else {
+                        System.out.println(
+                                "Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista."
+                        );
+                    }
+                } catch (Exception ex) {
+                    System.out.println(
+                            "Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage()
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al procesar consulta " + e.getMessage());
+        } finally {
+            try { if (rs != null) rs.close(); } catch (SQLException ex) {}
+            try { if (sent != null) sent.close(); } catch (SQLException ex) {}
+            ConnectionManager.disconnect();
+        }
+        return donantes;
+    }
+
 
 
 	@Override

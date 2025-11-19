@@ -88,6 +88,8 @@ public class PersistenceApi implements IApi {
         this.voluntarioDao = new VoluntarioDAOJDBC();
         this.donanteDao = new DonanteDAOJDBC();
         this.ubicacionDao=new UbicacionDAOJDBC();
+        this.coordenadaDAO = new CoordenadaDAOJDBC();
+        this.ubicacionDao  = new UbicacionDAOJDBC();
     }
    
     // --- Usuario / Rol ---
@@ -480,14 +482,17 @@ public class PersistenceApi implements IApi {
             throws DataNullException, DataDoubleException, DataEmptyException,
                    DataObjectException, DataDateException {
 
-        if (dto == null)
+        if (dto == null) {
             throw new DataNullException("DonacionDTO es null");
+        }
 
+        // Donante obligatorio
         Donante donante = donanteDao.find(dto.getCodDonante());
         if (donante == null) {
             throw new DataNullException("No se encontró Donante con código: " + dto.getCodDonante());
         }
 
+        // Pedido opcional
         OrdenPedido pedido = null;
         if (dto.getCodPedido() != null && !dto.getCodPedido().trim().isEmpty()) {
             pedido = ordenPedidoDao.find(dto.getCodPedido());
@@ -496,15 +501,17 @@ public class PersistenceApi implements IApi {
             }
         }
 
+        // Construir entidad Donacion
         return new Donacion(
                 dto.getFechaDonacion(),
                 dto.getObservacion(),
                 this.listBien(dto.getBienes()),
                 donante,
-                pedido,             // puede ser null
+                pedido,           // puede ser null
                 dto.getCodigo()
         );
     }
+
 
 
     @Override
@@ -722,9 +729,11 @@ public class PersistenceApi implements IApi {
     }
     
     public void registrarUbicacion(Ubicacion ubicacion) {
-    	
-    	this.ubicacionDao.create(ubicacion);
+        if (ubicacion == null) return;
+        coordenadaDAO.create(ubicacion.getCoordenada());  // crea o ignora si ya existe
+        ubicacionDao.create(ubicacion);                   // crea o ignora si ya existe
     }
+
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {

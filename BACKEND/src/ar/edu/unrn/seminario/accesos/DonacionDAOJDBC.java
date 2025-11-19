@@ -37,16 +37,23 @@ BienDAO  b = new BienDAOJDBC();
 
 	    try {
 	        conn = ConnectionManager.getConnection();
+
+	        // Si la donación viene sin código, lo generamos a partir de la BD
+	        String codigo = donacion.getCodigo();
+	        if (codigo == null || codigo.trim().isEmpty()) {
+	            codigo = generarNuevoCodigo(conn);
+	        }
+
 	        statement = conn.prepareStatement(
-	            "INSERT INTO donacion(" +
-	                "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
-	            ") VALUES (?, ?, ?, ?, ?)"
+	                "INSERT INTO donacion(" +
+	                        "codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido" +
+	                ") VALUES (?, ?, ?, ?, ?)"
 	        );
 
 	        LocalDate fecha = donacion.getFechaDonacion();
 	        java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 
-	        statement.setString(1, donacion.getCodigo());
+	        statement.setString(1, codigo);
 	        statement.setString(2, donacion.getObservacion());
 	        statement.setDate(3, fechaSQL);
 
@@ -64,19 +71,22 @@ BienDAO  b = new BienDAOJDBC();
 
 	        int cantidad = statement.executeUpdate();
 	        if (cantidad > 0) {
-	            System.out.println("INSERT Donacion OK - codigo=" + donacion.getCodigo()
-	                    + ", codDonante=" + donante.getCodigo());
+	            System.out.println("INSERT Donacion OK - codigo=" + codigo +
+	                               ", codDonante=" + donante.getCodigo());
 	        } else {
 	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
 	        }
 
 	    } catch (SQLException e) {
 	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
+	        throw new RuntimeException(e);
 	    } finally {
 	        try { if (statement != null) statement.close(); } catch (SQLException ex) {}
 	        ConnectionManager.disconnect();
 	    }
 	}
+
+
 
 
 	@Override
@@ -312,5 +322,35 @@ BienDAO  b = new BienDAOJDBC();
 		}	 
 		return donacion;
 	}
+	
+	private String generarNuevoCodigo(Connection conn) throws SQLException {
+	    String ultimoCodigo = null;
+	    String sql = "SELECT codigo FROM donacion ORDER BY codigo DESC LIMIT 1";
+
+	    try (PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            ultimoCodigo = rs.getString(1); // ej: "DN00001"
+	        }
+	    }
+
+	    int siguienteNumero = 1;
+	    if (ultimoCodigo != null && ultimoCodigo.startsWith("DN")) {
+	        // Tomo la parte numérica después del prefijo "DN"
+	        String parteNumerica = ultimoCodigo.substring(2); // "00001"
+	        try {
+	            int valor = Integer.parseInt(parteNumerica);
+	            siguienteNumero = valor + 1;
+	        } catch (NumberFormatException e) {
+	            // Si por alguna razón no es número, dejamos siguienteNumero en 1
+	            siguienteNumero = 1;
+	        }
+	    }
+
+	    // Formato DN00001, DN00002, etc.
+	    return String.format("DN%05d", siguienteNumero);
+	}
+
 
 }

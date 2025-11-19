@@ -77,8 +77,7 @@ public class Donacion {
 		this.pedido = pedido;
 	}
 	private void crearCodigo() {
-		  contadorDonacion++;
-		  this.codigo = "DN" + String.format("%05d", contadorDonacion);
+		this.codigo = String.format("DN%05d", contadorDonacion++);
 	}
 
 }

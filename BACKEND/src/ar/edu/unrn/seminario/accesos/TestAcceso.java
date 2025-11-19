@@ -75,16 +75,22 @@ public class TestAcceso {
 			System.out.println("......prueba inserccion para la simulacion......");
 
 			try {
-			    // 1) Coordenada y Ubicacion
+			    // 1) Coordenada y Ubicacion de prueba
 			    Coordenada coordenada = new Coordenada(3.454, 5.234, "C00004");
 			    Ubicacion ubicacion = new Ubicacion("Zona_Prueba", "Barrio_Prueba", "234_dir_prueba", coordenada);
 
-			    // Registrar ubicación (si ya existe, tu DAO la ignora y sigue)
+			    // Registrar ubicación (internamente insertará coordenada/ubicación o las reutilizará)
 			    api.registrarUbicacion(ubicacion);
 
 			    // 2) Usuario para el donante de prueba
-			    api.registrarUsuario("user_prueba", "1223", "prueba@gmail.com",
-			                         "Nombre_Prueba", 3, true);
+			    api.registrarUsuario(
+			            "user_prueba",
+			            "1223",
+			            "prueba@gmail.com",
+			            "Nombre_Prueba",
+			            3,       // código de rol DONANTE
+			            true
+			    );
 
 			    // 3) Crear Donante con contador actualizado
 			    Donante.setContadorDonante(donanteDao.obtenerCantidadUsuarios());
@@ -97,14 +103,14 @@ public class TestAcceso {
 			            ubicacion,
 			            "user_prueba"
 			    );
-			    api.registrarDonante(donantePrueba);
 
+			    api.registrarDonante(donantePrueba);
 			    System.out.println("Donante de prueba registrado con codigo = " + donantePrueba.getCodigo());
 
 			    // 4) Bienes de prueba (entidades)
 			    ArrayList<Bien> bienes1 = new ArrayList<>();
 			    bienes1.add(new Bien(
-			            null,               // codigo null: lo asigna la API
+			            null,
 			            "Alimento",
 			            0.200,
 			            "Manteca",
@@ -138,15 +144,14 @@ public class TestAcceso {
 			        e.printStackTrace();
 			    }
 
-			    // 6) Armar DonacionDTO usando directamente el código del Donante recien creado
+			    // 6) Armar DonacionDTO usando directamente el código del Donante recién creado
 			    DonacionDTO donacionPruebaDTO = new DonacionDTO(
-			            null,                           // codigo null para que la API lo asigne
+			            null,                           // codigo de donación (lo asigna la API)
 			            LocalDate.now(),
 			            "Un alimento y Una camisa para donar",
 			            bienesDTO,
-			            donantePrueba.getCodigo(),      // ACA usamos el codigo del donantePrueba
-			            null,                           // pedidoNulo en la simulacion
-			            null                            // retiroNulo en la simulacion
+			            donantePrueba.getCodigo(),      // codDonante
+			            null                            // codPedido = null en la simulación
 			    );
 
 			    // 7) Registrar la Donación
@@ -161,6 +166,8 @@ public class TestAcceso {
 			} catch (Exception e) {
 			    e.printStackTrace();
 			}
+
+
 
    	}catch(Exception e) {
    		e.printStackTrace();
