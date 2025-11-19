@@ -29,11 +29,12 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                
+                // Ya existe, NO intentamos insertarla de nuevo
                 System.out.println("Ubicacion ya existente: " + ubicacion.getCodigo());
                 return;
             }
 
+            // Cierro el select antes del insert
             rs.close();
             ps.close();
 
@@ -57,7 +58,8 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
             }
 
         } catch (SQLException e) {
-            
+            // Ya no envolvemos TODO en RuntimeException,
+            // solo mostramos el error y dejamos seguir la ejecución
             System.out.println("Error al procesar consulta (create Ubicacion): " + e.getMessage());
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) {}

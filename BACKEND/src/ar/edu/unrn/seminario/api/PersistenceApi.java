@@ -14,7 +14,6 @@ import ar.edu.unrn.seminario.accesos.Bien_DonacionDAO;
 import ar.edu.unrn.seminario.accesos.Bien_DonacionJDBC;
 import ar.edu.unrn.seminario.accesos.Bien_VisitaDAO;
 import ar.edu.unrn.seminario.accesos.Bien_VisitaJDBC;
-import ar.edu.unrn.seminario.accesos.CoordenadaDAO;
 import ar.edu.unrn.seminario.accesos.CoordenadaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonacionDAO;
 import ar.edu.unrn.seminario.accesos.DonacionDAOJDBC;
@@ -73,7 +72,7 @@ public class PersistenceApi implements IApi {
     private VoluntarioDAOJDBC voluntarioDao;
     private DonanteDao donanteDao;
     private UbicacionDAO ubicacionDao;
-    private CoordenadaDAO coordenadaDAO; 
+
     public PersistenceApi() {
         // inicializar DAOs JDBC
         this.rolDao = new RolDAOJDBC();
@@ -476,9 +475,8 @@ public class PersistenceApi implements IApi {
     }
     
     
-    private Donacion toDonacion(DonacionDTO dto)
-            throws DataNullException, DataDoubleException, DataEmptyException,
-                   DataObjectException, DataDateException {
+    private Donacion toDonacion(DonacionDTO dto) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException {
+    	
 
         if (dto == null)
             throw new DataNullException("DonacionDTO es null");
@@ -501,11 +499,11 @@ public class PersistenceApi implements IApi {
                 dto.getObservacion(),
                 this.listBien(dto.getBienes()),
                 donante,
-                pedido,             // puede ser null
+                pedido,
                 dto.getCodigo()
         );
+    
     }
-
 
     @Override
     public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {

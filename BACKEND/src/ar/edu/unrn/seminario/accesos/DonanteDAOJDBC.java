@@ -236,33 +236,32 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 
 	public List<Donante> findAll() {
-	    List<Donante> donantes = new ArrayList<>();
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement sent = conn.prepareStatement("SELECT codigo FROM donante");
-	        ResultSet rs = sent.executeQuery();
-	        while (rs.next()) {
-	            String codigo = rs.getString("codigo");
-	            try {
-	                Donante d = this.find(codigo);
-	                if (d != null) {
-	                    donantes.add(d);
-	                } else {
-	                    System.out.println("Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista.");
-	                }
-	            } catch (Exception ex) {
-	                // Si justo un donante tiene datos inconsistentes, no tumba toda la lista
-	                System.out.println("Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage());
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta " + e.getMessage());
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-	    return donantes;
+		List<Donante> donantes = new ArrayList<>();
+		try {
+			Connection conn= ConnectionManager.getConnection();
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo "+ "FROM donante ");
+			ResultSet rs = sent.executeQuery();
+			while (rs.next()) {
+				 String codigo = rs.getString("codigo");
+				    Donante d = this.find(codigo);
+				    if (d != null) {
+				        donantes.add(d);
+				    } else {
+				        System.out.println("Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista.");
+				    }
+			}
+		}
+		catch(SQLException e){
+			System.out.println("Error al procesar consulta"+ e.getMessage());
+		}
+		catch (Exception e) {
+			System.out.println("Error inesperado: " + e.getMessage());
+		} 
+		finally {
+			ConnectionManager.disconnect();
+		}	 
+		return donantes;
 	}
-
 
 	@Override
 	public void remove(Long id) {
