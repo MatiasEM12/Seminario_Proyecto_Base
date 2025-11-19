@@ -682,7 +682,7 @@ public class PersistenceApi implements IApi {
     	ArrayList<Bien> bienes= donacion.getBienes();
     	
     	for(Bien b :  bienes) {
-    		this.bienVisitaDao.create(b.getCodigo(), donacion.getCodigo());
+    		this.bienDonacionDao.create(b.getCodigo(), donacion.getCodigo());
     	}
     	
     }
