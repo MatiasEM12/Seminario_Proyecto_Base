@@ -1,22 +1,27 @@
 package ar.edu.unrn.seminario.modelo;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
 import ar.edu.unrn.seminario.exception.DataNullException;
-public class OrdenEntrega {
+import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
+public class OrdenEntrega extends Orden{
 	
 	private static int contadorEntrega = 0;
 	
+	public static String tipo="ORDEN_ENTREGA";
 	private String codigo=null;
 	private LocalDateTime fechaHoraProgramada=null;
-	// aranca siempre como pendiente que es true
+	// comiensa siempre como pendiente que es true
 	private boolean entregaEstado = true;
 	//esto podriamos usuarlo para saver si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
 	private boolean confimacionRecepcion=false;
 	private Bien Entrega[];
 	private Beneficiario beneficiario;
-	
-	public OrdenEntrega(Bien Entrega[],Beneficiario beneficiario)throws DataNullException {
+
+	public OrdenEntrega(Bien Entrega[],Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException {
+		//cambiaria lo de fecha de emision por un now
+		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		if(Entrega.length==0) {
 			throw new DataNullException("no puede crearse una Entrega sin bienes");
 		}
@@ -31,6 +36,8 @@ public class OrdenEntrega {
 		}
 		this.beneficiario=beneficiario;
 	}
+	
+	
 	private void setFecha(LocalDateTime fechaHoraProgramada) {
 		this.fechaHoraProgramada=fechaHoraProgramada;	
 	}
