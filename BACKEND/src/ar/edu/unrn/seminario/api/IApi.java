@@ -106,9 +106,8 @@ public interface IApi {
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
-
 	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException;
-	
+
 	//Visitas
 	public void registrarVisita(Visita visita);
 	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
@@ -136,6 +135,22 @@ public interface IApi {
 	 public  BienDTO toBienDTO(Bien bien);
 
 
-
+	 
+	 
+	// nuevo
+	// Inventario
+	public void eliminarBineInventario(String username);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
