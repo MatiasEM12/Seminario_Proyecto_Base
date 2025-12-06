@@ -24,6 +24,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
 
 
@@ -32,6 +33,7 @@ public class VentanaInventario extends JFrame {
     private JPanel contentPane;
     private JTable table;
     private DefaultTableModel modelo;
+    private JComboBox<String> comboBox;
     IApi api;
 
     public VentanaInventario(IApi api) {
@@ -69,20 +71,54 @@ public class VentanaInventario extends JFrame {
         contentPane.add(lblNewLabel);
         
         JComboBox comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Todos", "Alimento", "Medicamento", "Ropa", "Mueble", "Electrodomestico", "Otros", "Bienes vencidos"}));
+        comboBox.setModel(new DefaultComboBoxModel<>(new String[] {"Todos", "Alimento", "Medicamento", "Ropa", "Mueble", "Electrodomestico", "Otros", "Bienes vencidos"}));
         comboBox.setBounds(229, 10, 123, 30);
         contentPane.add(comboBox);
         
         JButton btnNewButton_1 = new JButton("Eliminar");
         btnNewButton_1.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
+	        public void actionPerformed(ActionEvent e) {
+	            int opcion = JOptionPane.showConfirmDialog(null, "¿Seguro que querés eliminar el bien?",
+	                    "Confirmación", JOptionPane.YES_NO_OPTION);
+	            if (opcion == JOptionPane.YES_OPTION) {
+	                int filaSeleccionada = table.getSelectedRow();
+	                if (filaSeleccionada >= 0) {
+	                    String codigo = (String) table.getValueAt(filaSeleccionada, 0);
+	                    api.eliminarBineInventario(codigo);
+	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+	                    model.removeRow(filaSeleccionada);
+						JOptionPane.showMessageDialog(null, "se eliminaron correctamente. un total de 1 bien", "Inventario", JOptionPane.INFORMATION_MESSAGE);
+	                }
+	            } else {
+	                JOptionPane.showMessageDialog(null, "Operación cancelada.");
+	            }
+	        }
+	    });
         btnNewButton_1.setBounds(453, 380, 100, 30);
         contentPane.add(btnNewButton_1);
         
         JButton btnNewButton_2 = new JButton("Cantidad");
         btnNewButton_2.setBounds(328, 383, 100, 25);
         contentPane.add(btnNewButton_2);
+        btnNewButton_2.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                String tipoSeleccionado=(String) comboBox.getSelectedItem();
+                int cantidad=0;
+                for (int i=0; i<modelo.getRowCount(); i++){
+                    String tipoFila=(String) modelo.getValueAt(i, 1);
+                    //el if comprueba que el tipo de busqueda se realiso si era todos contara todos, sino comprobara si tienen el mismo tipo
+                    if (tipoSeleccionado.equals("Todos")||tipoFila.equals(tipoSeleccionado)){
+                        cantidad++;
+                    }
+                }
+                JOptionPane.showMessageDialog(null,
+                        "Cantidad de bienes de tipo '" + tipoSeleccionado + "': " + cantidad,
+                        "Inventario",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
+        
+        
     }
 }
