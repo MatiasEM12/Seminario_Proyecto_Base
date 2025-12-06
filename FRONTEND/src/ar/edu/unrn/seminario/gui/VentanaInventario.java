@@ -69,7 +69,7 @@ public class VentanaInventario extends JFrame {
         contentPane.add(lblNewLabel);
         
         JComboBox comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Todos", "Alimento", "Medicamento", "Ropa", "Mueble", "Electrodomestico", "Otros"}));
+        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Todos", "Alimento", "Medicamento", "Ropa", "Mueble", "Electrodomestico", "Otros", "Alimentos Vencidos"}));
         comboBox.setBounds(229, 10, 123, 30);
         contentPane.add(comboBox);
         
