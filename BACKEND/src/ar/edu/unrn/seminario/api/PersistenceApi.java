@@ -138,6 +138,7 @@ public class PersistenceApi implements IApi {
         Usuario user = this.usuarioDao.find(username);
         if (user != null) this.usuarioDao.remove(user);
     }
+    
 
     @Override
     public List<RolDTO> obtenerRoles() throws StateChangeException {
@@ -912,6 +913,29 @@ public class PersistenceApi implements IApi {
 		Bien bien=this.bienDao.find(codigo);
 		return this.toBienDTO(bien);
 	}
+	
+	
+
+
+
+
+
+	//nuevo
+	//inventario
+
+	//revisar esas eliminando el bien lo que tendrias que eliminar es el inventario
+	public void eliminarBineInventario(String codigo) {
+	    Bien bien = this.bienDao.find(codigo);
+	    if (bien != null) this.bienDao.remove(bien);
+	}
+
+
+
+
+
+
+
+	
 
 }
 
