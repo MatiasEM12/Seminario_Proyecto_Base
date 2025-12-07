@@ -930,9 +930,26 @@ public class PersistenceApi implements IApi {
 	}
 
 
-
-
-
+	public List<BienDTO> obtenerTodosLosBienes(){
+		List<Bien> bienes= bienDao.findAll();
+		List<BienDTO> bienesDTO= new ArrayList<>();
+		for (Bien bien : bienes) {
+			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
+				    bien.getNombre(),bien.getDescripcion(),bien.getNivelNecesidad(),bien.getFechaVencimiento(),bien.getTalle(),bien.getMaterial() ));
+        }
+		return bienesDTO;
+	}
+	
+	public List<BienDTO> obtenerBienesPorTipo(String tipo){
+		List<Bien> bienes= bienDao.findALLTipo(tipo);
+		List<BienDTO> bienesDTO= new ArrayList<>();
+		for (Bien bien : bienes) {
+			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
+				    bien.getNombre(),bien.getDescripcion(),bien.getNivelNecesidad(),bien.getFechaVencimiento(),bien.getTalle(),bien.getMaterial() ));
+        }
+		return bienesDTO;
+	}
+	
 
 
 	
