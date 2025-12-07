@@ -10,14 +10,20 @@ import javax.swing.JButton;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.dto.BienDTO;
+import ar.edu.unrn.seminario.dto.InventarioDTO;
+import ar.edu.unrn.seminario.dto.UsuarioDTO;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -118,7 +124,44 @@ public class VentanaInventario extends JFrame {
             }
         });
         
-        
-        
+        comboBox.addActionListener(e -> {
+            modelo.setRowCount(0);              // Limpiar las filas actuales
+            try {
+                filtrar((String) comboBox.getSelectedItem());  // Filtra usando el valor seleccionado
+            } catch (DataNullException e1) {
+                e1.printStackTrace();
+            }
+        });
     }
+    
+    
+    
+    
+    
+    //no terminado del todo porque no se como va a estar inventario dto
+	private void filtrar(String tipo) throws DataNullException {
+	    //Obtiene los bienes de acuerdo al tipo elegido
+	    List<BienDTO> bienes = obtenerBienesPorTipo(tipo);
+	    for (BienDTO bien : bienes) {
+	        modelo.addRow(new Object[] {
+	            bien.getCodigo(),
+	            bien.getTipo(),
+	            bien.getNombre(),
+	            bien.getDescripcion(),
+	            bien.getPeso(),
+	            bien.getFechaVencimiento(),
+	            bien.getTalle(),
+	            bien.getMaterial()
+	        });
+	    }
+	}
+	
+	private List<BienDTO> obtenerBienesPorTipo(String tipo) {
+	    if (tipo.equals("Todos")) {
+	        return api.obtenerTodosLosBienes();
+	    } else {
+	        return api.obtenerBienesPorTipo(tipo);
+	    }
+	}
+    
 }
