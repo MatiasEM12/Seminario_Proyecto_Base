@@ -24,4 +24,6 @@ public interface BienDAO {
 	ArrayList<Bien> findBienDonacion(String codDonacion);
 
 	ArrayList<Bien> findBienVisita(String codVisita);
+	
+	List<Bien> findALLTipo(String tipo);
 }
