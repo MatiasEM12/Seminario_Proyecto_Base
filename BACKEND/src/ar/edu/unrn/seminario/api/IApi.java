@@ -143,7 +143,9 @@ public interface IApi {
 	
 	
 	
+	public List<BienDTO> obtenerTodosLosBienes();
 	
+	public List<BienDTO> obtenerBienesPorTipo(String tipo);
 	
 	
 	
