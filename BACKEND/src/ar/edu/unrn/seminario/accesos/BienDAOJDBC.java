@@ -260,7 +260,74 @@ ArrayList<Bien> bienes = new ArrayList<>();
 		return bienes;
 
 	}
+	
+	
+	
+	// para iventario
+	
+	
+	public List<Bien> findALLTipo(String tipo) {
+	    List<Bien> bienes = new ArrayList<>();
+	    try {
+	        //rebisa si la busqueda no fue por bienes vencidos
+	        if (tipo.equals("Bienes vencidos")) {
+	            Connection conn = ConnectionManager.getConnection();
+	            PreparedStatement sent = conn.prepareStatement(
+	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
+	                "FROM bien WHERE fechaVencimiento < ?");  //comparara la fecha con la actual
+	            sent.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+	            ResultSet rs = sent.executeQuery();
+	            while (rs.next()) {
+	                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+	                java.time.LocalDate fecha = sqlDate.toLocalDate();
+	                Bien bien = new Bien(
+	                    rs.getString("codigo"),
+	                    rs.getString("tipo"),
+	                    rs.getDouble("peso"),
+	                    rs.getString("nombre"),
+	                    rs.getString("descripcion"),
+	                    rs.getInt("nivelNecesidad"),
+	                    fecha,
+	                    rs.getDouble("talle"),
+	                    rs.getString("material")
+	                );
+	                bienes.add(bien);
+	            }
+	        }else{ // recupera todos los que sean iguales al tipo.
+	            Connection conn = ConnectionManager.getConnection();
+	            PreparedStatement sent = conn.prepareStatement(
+	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
+	                "FROM bien WHERE tipo = ?");
+	            sent.setString(1, tipo);
+	            ResultSet rs = sent.executeQuery();
+	            
+	            while (rs.next()) {
+	                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+	                java.time.LocalDate fecha = sqlDate.toLocalDate();
+	                Bien bien = new Bien(
+	                    rs.getString("codigo"),
+	                    rs.getString("tipo"),
+	                    rs.getDouble("peso"),
+	                    rs.getString("nombre"),
+	                    rs.getString("descripcion"),
+	                    rs.getInt("nivelNecesidad"),
+	                    fecha,
+	                    rs.getDouble("talle"),
+	                    rs.getString("material")
+	                );
+	                bienes.add(bien);
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	    } catch (Exception e) {
+	        System.out.println("Error inesperado: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 
+	    return bienes;
+	}
 }
 
 
