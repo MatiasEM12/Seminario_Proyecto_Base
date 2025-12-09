@@ -17,8 +17,8 @@ public class ConnectionManager {
 		try {
 			conn = DriverManager.getConnection(URL_DB + DB, user, pass);
 		} catch (SQLException sqlEx) {
-			System.out.println("No se ha podido conectar a " + URL_DB + DB + ". " + sqlEx.getMessage());
-			System.out.println("Error al cargar el driver");
+			System.out.println("No se ha podido conectar a " + URL_DB + DB + ". " + sqlEx.getMessage()+". codigo error CM100");
+			System.out.println("Error al cargar el driver. codigo error CM101");
 		}
 	}
 	
