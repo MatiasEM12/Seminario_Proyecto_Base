@@ -44,12 +44,12 @@ public class DonanteDAOJDBC implements DonanteDao{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error UD100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Donante): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT Donante): " + e.getMessage()+". codigo error UD101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -82,11 +82,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 			if (cantidad > 0) {
 			    System.out.println("INSERT Donante OK - codigo=" + donante.getCodigo() + ", username=" + donante.getUsername());
 			} else {
-			    throw new SQLException("No se insertó el donante (executeUpdate devolvió 0)");
+			    throw new SQLException("No se insertó el donante (executeUpdate devolvió 0). codigo error UD200");
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error UD201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -114,11 +114,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 		        if (cantidad > 0) {
 		            System.out.println("Donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró al donante.");
+		            System.out.println("No se encontró al donante. codigo error UD300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donanre");
+			System.out.println("Error al Eliminar donanre. codigo error UD301");
 		}
 		
 	}
@@ -145,11 +145,11 @@ public class DonanteDAOJDBC implements DonanteDao{
 		        if (cantidad > 0) {
 		            System.out.println("donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el donante.");
+		            System.out.println("No se encontró el donante. codigo error UD400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donante");
+			System.out.println("Error al Eliminar donante. codigo error UD401");
 		}
 	}
 
@@ -203,7 +203,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 	                        "La ubicacion " + codUbicacion +
 	                        " tiene codCoordenada=" + codCoordenadaRef +
 	                        " pero no existe fila en la tabla coordenada"
-	                    );
+	                    +". codigo error UD500");
 	                }
 
 	                Coordenada c = null;
@@ -239,7 +239,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (find Donante): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (find Donante): " + e.getMessage()+". codigo error UD501");
 	        throw new RuntimeException(e);
 	    } finally {
 	        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
@@ -270,17 +270,17 @@ public class DonanteDAOJDBC implements DonanteDao{
                         donantes.add(d);
                     } else {
                         System.out.println(
-                                "Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista."
+                                "Advertencia: find(codigo=" + codigo + ") devolvió null - no se añadirá a la lista. codigo error UD600"
                         );
                     }
                 } catch (Exception ex) {
                     System.out.println(
-                            "Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage()
+                            "Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage()+". codigo error UD601"
                     );
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta " + e.getMessage());
+            System.out.println("Error al procesar consulta " + e.getMessage()+". codigo error UD602");
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) {}
             try { if (sent != null) sent.close(); } catch (SQLException ex) {}
