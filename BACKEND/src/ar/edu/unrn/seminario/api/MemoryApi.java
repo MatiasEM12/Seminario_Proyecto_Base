@@ -877,6 +877,24 @@ public class MemoryApi implements IApi {
 		return null;
 	}
 
+	@Override
+	public void eliminarBineInventario(String username) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<BienDTO> obtenerTodosLosBienes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesPorTipo(String tipo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	
 }
