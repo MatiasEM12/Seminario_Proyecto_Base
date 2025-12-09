@@ -29,12 +29,12 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error BV100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error BV101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -59,12 +59,12 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			if (cantidad > 0) {
 				 System.out.println("El Bien_ Visita se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error BV200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error BV201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -108,10 +108,10 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+ ". codigo error BV300");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage() + ". codigo error BV301");
 		} 
 		finally {
 			ConnectionManager.disconnect();
