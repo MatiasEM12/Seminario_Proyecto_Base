@@ -29,11 +29,11 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
             int cantidad = statement.executeUpdate();
             if (cantidad <= 0) {
-                System.out.println("No se insertó registro en Bien_Donacion");
+                System.out.println("No se insertó registro en Bien_Donacion codigo error B100");
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage());
+            System.out.println("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage() + "codigo error B101");
             e.printStackTrace();
             throw new RuntimeException(e); 
         } finally {
@@ -58,11 +58,11 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
             if (cantidad > 0) {
                 System.out.println("El Bien_Donacion se ha actualizado correctamente");
             } else {
-                System.out.println("No se encontró registro a actualizar en Bien_Donacion");
+                System.out.println("No se encontró registro a actualizar en Bien_Donacion codigo error B200");
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (UPDATE Bien_Donacion): " + e.getMessage());
+            System.out.println("Error al procesar consulta (UPDATE Bien_Donacion): " + e.getMessage() + "codigo error B201" );
             e.printStackTrace();
         } finally {
             ConnectionManager.disconnect();
@@ -126,7 +126,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al recuperar bienes de donación: " + e.getMessage());
+            System.out.println("Error al recuperar bienes de donación: " + e.getMessage() + "codigo error B300");
             e.printStackTrace();
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
