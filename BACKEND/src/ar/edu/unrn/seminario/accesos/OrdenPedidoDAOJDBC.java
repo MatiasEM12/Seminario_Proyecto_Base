@@ -33,12 +33,12 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error OP100");
 				// TODO: disparar Exception propia
 			}
 			
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT OrdenPedido): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT OrdenPedido): " + e.getMessage()+". codigo error OP101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -64,12 +64,12 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			if (cantidad > 0) {
 				 System.out.println("La orden se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error OP200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error OP201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -90,11 +90,11 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró el rol con ese código. codigo error OP300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden");
+			System.out.println("Error al Eliminar Orden. codigo error OP301");
 		}
 	}
 
@@ -112,11 +112,11 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		            System.out.println("No se encontró el rol con ese código. codigo error OP400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden");
+			System.out.println("Error al Eliminar Orden. codigo error OP401");
 		}		
 	}
 
@@ -148,7 +148,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        }
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error OP500");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getSQLState(), e.getMessage());
 		} catch (Exception e) {
@@ -185,7 +185,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error OP600");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getSQLState(), e.getMessage());
 		} catch (Exception e) {
