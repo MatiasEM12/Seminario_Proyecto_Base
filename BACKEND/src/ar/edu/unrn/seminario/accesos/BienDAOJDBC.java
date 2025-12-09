@@ -39,12 +39,12 @@ public class BienDAOJDBC  implements BienDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error B100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Bien): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT Bien): " + e.getMessage() + ". codigo error B101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -73,12 +73,12 @@ public class BienDAOJDBC  implements BienDAO{
 			if (cantidad > 0) {
 				 System.out.println("El bien se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error B200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error B201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -104,13 +104,13 @@ public class BienDAOJDBC  implements BienDAO{
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("bien correctamente.");
+		            System.out.println("bien eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el bien.");
+		            System.out.println("No se encontró el bien. codigo error B300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar bien");
+			System.out.println("Error al Eliminar bien. codigo error B301");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -131,11 +131,11 @@ public class BienDAOJDBC  implements BienDAO{
 		        if (cantidad > 0) {
 		            System.out.println("bien eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el bien.");
+		            System.out.println("No se encontró el bien. codigo error B400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar bien");
+			System.out.println("Error al Eliminar bien. codigo error B401");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -165,10 +165,10 @@ public class BienDAOJDBC  implements BienDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -191,10 +191,10 @@ List<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -220,10 +220,10 @@ ArrayList<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B700");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B701");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -249,10 +249,10 @@ ArrayList<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B801");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B801");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -319,9 +319,9 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	        System.out.println("Error al procesar consulta: " + e.getMessage()+". codigo error B900");
 	    } catch (Exception e) {
-	        System.out.println("Error inesperado: " + e.getMessage());
+	        System.out.println("Error inesperado: " + e.getMessage()+". codigo error B901");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
