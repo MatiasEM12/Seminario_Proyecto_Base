@@ -72,7 +72,7 @@ BienDAO  b = new BienDAOJDBC();
 
 		        Donante donante = donacion.getDonante();
 		        if (donante == null) {
-		            throw new DataNullException("La donación no tiene donante asociado");
+		            throw new DataNullException("La donación no tiene donante asociado. codigo error D100 ");
 		        }
 		        statement.setString(4, donante.getCodigo());
 
@@ -88,7 +88,7 @@ BienDAO  b = new BienDAOJDBC();
 	            System.out.println("INSERT Donacion OK - codigo=" + codigo +
 	                               ", codDonante=" + donante.getCodigo());
 	        } else {
-	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0)");
+	            System.out.println("Error al insertar Donacion (executeUpdate devolvió 0). codigo error D101");
 	        }
 
 		        if (donacion.getPedido() != null) {
@@ -98,7 +98,7 @@ BienDAO  b = new BienDAOJDBC();
 		        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT Donacion): " + e.getMessage()+". codigo error D102");
 	        throw new RuntimeException(e);
 	    } finally {
 	    	 try { if (statement != null) statement.close(); } catch (SQLException ex) {}
@@ -132,12 +132,12 @@ BienDAO  b = new BienDAOJDBC();
 			if (cantidad > 0) {
 				 System.out.println("La coordenada se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error D200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error D201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -164,11 +164,11 @@ BienDAO  b = new BienDAOJDBC();
 		        if (cantidad > 0) {
 		            System.out.println("Donacion eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la donacion.");
+		            System.out.println("No se encontró la donacion. codigo error D300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donacion");
+			System.out.println("Error al Eliminar donacion. codigo error D301");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -189,11 +189,11 @@ BienDAO  b = new BienDAOJDBC();
 		        if (cantidad > 0) {
 		            System.out.println("Donacion eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la donacion.");
+		            System.out.println("No se encontró la donacion. codigo error D400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donacion");
+			System.out.println("Error al Eliminar donacion. codigo error D401");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -221,10 +221,10 @@ BienDAO  b = new BienDAOJDBC();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error D500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error D501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -257,7 +257,7 @@ BienDAO  b = new BienDAOJDBC();
 	            listado.add(donacion);
 	        }
 	    } catch (SQLException e) {
-			System.out.println("Error de mySql\n" + e.toString());
+			System.out.println("Error de mySql\n" + e.toString()+". codigo error D600");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -296,7 +296,7 @@ BienDAO  b = new BienDAOJDBC();
 			            listado.add(donacion);
 			        }
 			    } catch (SQLException e) {
-			        System.out.println("Error de mySql\n" + e.toString());
+			        System.out.println("Error de mySql\n" + e.toString()+". codigo error D700");
 			    } finally {
 			        try { if (resultado != null) resultado.close(); } catch (SQLException ex) {}
 			        try { if (sentencia != null) sentencia.close(); } catch (SQLException ex) {}
@@ -329,10 +329,10 @@ BienDAO  b = new BienDAOJDBC();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error D800");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error D801");
 		} 
 		finally {
 			ConnectionManager.disconnect();
