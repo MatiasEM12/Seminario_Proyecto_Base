@@ -163,5 +163,5 @@ public class VentanaInventario extends JFrame {
 	        return api.obtenerBienesPorTipo(tipo);
 	    }
 	}
-    
+    // poner como condicion que el almacendao de bien se true para que sea que esta almacenado, false el bien aun no esta almacenado
 }
