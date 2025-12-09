@@ -28,12 +28,12 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error C100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error C101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -58,12 +58,12 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			if (cantidad > 0) {
 				 System.out.println("La coordenada se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar. codigo error C200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta. codigo error C201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -90,11 +90,11 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		        if (cantidad > 0) {
 		            System.out.println("coordenada eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la coordenada.");
+		            System.out.println("No se encontró la coordenada. codigo error C300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar coordenada");
+			System.out.println("Error al Eliminar coordenada. codigo error C301");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -116,11 +116,11 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		        if (cantidad > 0) {
 		            System.out.println("coordenada eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la coordenada.");
+		            System.out.println("No se encontró la coordenada. codigo error C400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar coordenada");
+			System.out.println("Error al Eliminar coordenada. codigo error C401");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -144,10 +144,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error C500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error C501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -170,10 +170,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error C600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+". codigo error C601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
