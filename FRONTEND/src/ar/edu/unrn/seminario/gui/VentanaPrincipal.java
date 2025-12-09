@@ -183,7 +183,17 @@ public class VentanaPrincipal extends JFrame {
 		});		
 						
 			
-		
+		JMenuItem itemSolicitudesEntrega =new JMenuItem("Solicitudes de entrega");
+		 itemSolicitudesEntrega.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				ListadoOrdenes ventanaListado=new ListadoOrdenes(api);
+				ventanaListado.setLocationRelativeTo(null);
+				ventanaListado.setVisible(true);
+				
+				
+			}
+		});		
+
 		//Apartado configuracion bar
 		
 		JMenu configuracionMenu = new JMenu("Configuración");
@@ -213,6 +223,7 @@ public class VentanaPrincipal extends JFrame {
 		menuOrdenes.add(itemOrdenesPedidoAM);
 		menuOrdenes.add(itemOrdenesRetiroAM);
 		menuOrdenes.add(itemListarOrdenes);
+		menuOrdenes.add(itemSolicitudesEntrega);
 		menuRuta.add(itemPRuta);
 		menuRuta.add(itemListarRuta);
 		menuBar.add(configuracionMenu);
