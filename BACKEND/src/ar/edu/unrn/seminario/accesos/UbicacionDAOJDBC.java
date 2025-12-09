@@ -30,7 +30,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
             if (rs.next()) {
                 
-                System.out.println("Ubicacion ya existente: " + ubicacion.getCodigo());
+                System.out.println("Ubicacion ya existente: " + ubicacion.getCodigo()+".codigo UB100");
                 return;
             }
 
@@ -58,7 +58,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
         } catch (SQLException e) {
             
-            System.out.println("Error al procesar consulta (create Ubicacion): " + e.getMessage());
+            System.out.println("Error al procesar consulta (create Ubicacion): " + e.getMessage()+".codigo UB200");
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) {}
             try { if (ps != null) ps.close(); } catch (SQLException ex) {}
@@ -94,7 +94,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta"+".codigo UB300");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -168,7 +168,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		    	   }
 
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar ubicacion");
+			System.out.println("Error al Eliminar ubicacion"+".codigo UB400");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -229,7 +229,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		    	   }
 
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar ubicacion");
+			System.out.println("Error al Eliminar ubicacion"+".codigo UB500");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -258,10 +258,10 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo UB600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo UB601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -285,10 +285,10 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo UB700");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo UB701");
 		} 
 		finally {
 			ConnectionManager.disconnect();

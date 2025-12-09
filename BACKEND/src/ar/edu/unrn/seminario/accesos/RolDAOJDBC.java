@@ -158,7 +158,7 @@ public class RolDAOJDBC implements RolDao {
 	            int activoBD = resultado.getInt("activo"); // 0 o 1
 	            boolean activo = (activoBD == 1);
 
-	            // Usamos el constructor que ya tenés:
+	       
 	            Rol rol = new Rol(codigo, nombre, activo);
 
 	            listado.add(rol);
@@ -167,7 +167,7 @@ public class RolDAOJDBC implements RolDao {
 	        System.out.println("Error de MySQL\n" + e);
 	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
 	        // si el constructor de Rol tira DataNullException
-	        System.out.println("Error de datos al crear Rol: " + e.getMessage());
+	        System.out.println("Error de datos al crear Rol: " + e.getMessage()+".codigo R600");
 	    }
 
 	    return listado;

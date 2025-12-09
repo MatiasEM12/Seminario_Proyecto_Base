@@ -41,7 +41,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			e.printStackTrace();
 			// TODO: disparar Exception propia
 		} catch (Exception e) {
-			System.out.println("Error al insertar un usuario");
+			System.out.println("Error al insertar un usuario"+".codigo U100");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -72,7 +72,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al actualisar Usuario");
+			System.out.println("Error al actualisar Usuario"+".codigo U200");
 		}finally {
 		ConnectionManager.disconnect();
 	}
@@ -101,7 +101,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		        }
 	
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar usuario");
+			System.out.println("Error al Eliminar usuario"+".codigo U300");
 		}
 	}
 
