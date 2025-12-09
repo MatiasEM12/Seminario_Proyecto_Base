@@ -43,7 +43,7 @@ BienDAO biendao;
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT100");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -74,7 +74,7 @@ BienDAO biendao;
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT200");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -99,7 +99,7 @@ BienDAO biendao;
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Visita");
+			System.out.println("Error al Eliminar Visita"+".codigo VT300");
 		}
 	}
 
@@ -121,7 +121,7 @@ BienDAO biendao;
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar visita");
+			System.out.println("Error al Eliminar visita"+".codigo VT400");
 		}
 	}
 
@@ -148,10 +148,10 @@ BienDAO biendao;
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo VT500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo VT501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -182,7 +182,7 @@ BienDAO biendao;
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo VT600");
 	        // TODO: lanzar tu excepción propia (DataAccessException, etc.)
 	    } finally {
 	        ConnectionManager.disconnect();
@@ -211,7 +211,7 @@ BienDAO biendao;
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo VT700");
 	        // TODO: lanzar tu excepción propia (DataAccessException, etc.)
 	    } finally {
 	        ConnectionManager.disconnect();

@@ -51,7 +51,7 @@ OrdenPedidoDao op;
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage());
+	        System.out.println("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage()+".codigo OR100");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -93,7 +93,7 @@ OrdenPedidoDao op;
 	            System.out.println("OrdenRetiro.update: no se actualizó ningún registro para codigo=" + orden.getCodigo());
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al actualizar OrdenRetiro: " + e.getMessage());
+	        System.out.println("Error al actualizar OrdenRetiro: " + e.getMessage()+".codigo OR200");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -118,7 +118,7 @@ OrdenPedidoDao op;
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden");
+			System.out.println("Error al Eliminar Orden"+".codigo OR300");
 		}
 		
 	}
@@ -141,7 +141,7 @@ OrdenPedidoDao op;
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden");
+			System.out.println("Error al Eliminar Orden"+".codigo OR400");
 		}
 		
 	}
@@ -161,15 +161,14 @@ OrdenPedidoDao op;
 						voluntario.find(rs.getString("codVoluntario")) ,op.find(rs.getString("codOrdenPedido")),
 						visita.findAll(rs.getString(codigo)));
 				
-				//String codigo ,String estado,LocalDate fechaEmision, Voluntario voluntario,
-				//OrdenPedido ordenPedido,ArrayList <Visita> visitas
+				
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo OR500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo OR501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -197,10 +196,10 @@ OrdenPedidoDao op;
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo OR600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo OR601");
 		} 
 		finally {
 			ConnectionManager.disconnect();

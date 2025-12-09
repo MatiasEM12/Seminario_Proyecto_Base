@@ -35,7 +35,7 @@ public class RolDAOJDBC implements RolDao {
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta"+".codigo R100");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -63,7 +63,7 @@ public class RolDAOJDBC implements RolDao {
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta"+".codigo R200");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -87,7 +87,7 @@ public class RolDAOJDBC implements RolDao {
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol");
+			System.out.println("Error al Eliminar rol"+".codigo R300");
 		}
 	}
 
@@ -109,7 +109,7 @@ public class RolDAOJDBC implements RolDao {
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol");
+			System.out.println("Error al Eliminar rol"+".codigo 400");
 		}
 	}
 
@@ -134,9 +134,9 @@ public class RolDAOJDBC implements RolDao {
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage());
+	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo R500");
 	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
-	        System.out.println("Error de datos al crear Rol: " + e.getMessage());
+	        System.out.println("Error de datos al crear Rol: " + e.getMessage()+".codigo R501");
 	    }
 
 	    return rol;

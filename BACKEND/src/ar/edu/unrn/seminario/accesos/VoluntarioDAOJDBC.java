@@ -42,12 +42,12 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizar.codigo V100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta.codigo V101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -80,12 +80,12 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			if (cantidad > 0) {
 				 System.out.println("El Donante se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				System.out.println("Error al actualizarcodigo V200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			System.out.println("Error al procesar consulta.codigo V2001");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -119,7 +119,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Voluntario");
+			System.out.println("Error al Eliminar Voluntario.codigo V300");
 		}
 		
 		
@@ -143,7 +143,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	        }
 		
 	}catch(SQLException e) {
-		System.out.println("Error al Eliminar Voluntario");
+		System.out.println("Error al Eliminar Voluntario.codigo V400");
 	}
 	
 		
@@ -166,10 +166,10 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo V500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo V501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -191,10 +191,10 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage());
+			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo V600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage());
+			System.out.println("Error inesperado: " + e.getMessage()+".codigo V601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
