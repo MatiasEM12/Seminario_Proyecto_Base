@@ -104,8 +104,16 @@ public class VentanaInventario extends JFrame {
         contentPane.add(btnNewButton_1);
         
         JButton btnNewButton_2 = new JButton("Cantidad");
-        btnNewButton_2.setBounds(328, 383, 100, 25);
+        btnNewButton_2.setBounds(343, 383, 100, 25);
         contentPane.add(btnNewButton_2);
+        
+        JButton btnNewButton_3 = new JButton("Modificar");
+        btnNewButton_3.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        btnNewButton_3.setBounds(233, 383, 100, 25);
+        contentPane.add(btnNewButton_3);
         btnNewButton_2.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 String tipoSeleccionado=(String) comboBox.getSelectedItem();
@@ -163,5 +171,5 @@ public class VentanaInventario extends JFrame {
 	        return api.obtenerBienesPorTipo(tipo);
 	    }
 	}
-    // poner como condicion que el almacendao de bien se true para que sea que esta almacenado, false el bien aun no esta almacenado
+	// poner como condicion que el almacendao de bien se true para que sea que esta almacenado, false el bien aun no esta almacenado
 }
