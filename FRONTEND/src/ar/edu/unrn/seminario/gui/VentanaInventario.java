@@ -24,6 +24,7 @@ import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.InventarioDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.modelo.Bien;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -107,13 +108,28 @@ public class VentanaInventario extends JFrame {
         btnNewButton_2.setBounds(343, 383, 100, 25);
         contentPane.add(btnNewButton_2);
         
-        JButton btnNewButton_3 = new JButton("Modificar");
-        btnNewButton_3.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
+        
+        JButton btnNewButton_3 =new JButton("Modificar");
+        btnNewButton_3.addActionListener(e -> {
+            int fila=table.getSelectedRow();
+            if (fila<0) {
+                JOptionPane.showMessageDialog(null, "No se seleciono un bien para modificar.");
+                return;
+            }
+            String codigo=(String) table.getValueAt(fila, 0);
+            Bien bien=api.ObtenerBien(codigo);
+            if (bien==null) {
+                JOptionPane.showMessageDialog(null, "Ocurio un error al intenar cargar el bien.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            ModificarBien ventana=new ModificarBien(api, bien, VentanaInventario.this);
+            ventana.setVisible(true);
+
         });
         btnNewButton_3.setBounds(233, 383, 100, 25);
         contentPane.add(btnNewButton_3);
+        
+        
         btnNewButton_2.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 String tipoSeleccionado=(String) comboBox.getSelectedItem();
