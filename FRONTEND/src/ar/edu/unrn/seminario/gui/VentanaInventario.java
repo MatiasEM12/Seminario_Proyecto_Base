@@ -109,7 +109,7 @@ public class VentanaInventario extends JFrame {
         contentPane.add(btnNewButton_2);
         
         
-        JButton btnNewButton_3 =new JButton("Modificar");
+        JButton btnNewButton_3 = new JButton("Modificar");
         btnNewButton_3.addActionListener(e -> {
             int fila=table.getSelectedRow();
             if (fila<0) {
