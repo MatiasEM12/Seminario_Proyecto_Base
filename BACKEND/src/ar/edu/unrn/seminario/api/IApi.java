@@ -147,6 +147,10 @@ public interface IApi {
 	
 	public List<BienDTO> obtenerBienesPorTipo(String tipo);
 	
+	public void ModificarBienInventario(Bien bien);
+	
+	public Bien ObtenerBien(String codigo);
+	
 	
 	
 	
