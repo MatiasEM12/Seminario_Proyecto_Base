@@ -951,6 +951,13 @@ public class PersistenceApi implements IApi {
 	}
 	
 
+	public void ModificarBienInventario(Bien bien) {
+		this.bienDao.update(bien);
+	}
+	
+	public Bien ObtenerBien(String codigo) {
+		return this.bienDao.find(codigo);
+	}
 
 	
 
