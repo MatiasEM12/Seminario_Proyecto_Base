@@ -7,14 +7,18 @@ import javax.swing.JTextField;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
+import ar.edu.unrn.seminario.modelo.Bien;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.awt.event.ActionEvent;
 
 public class ModificarBien extends JFrame{
 
-	private BienDTO bien;
+	private Bien bien;
     private IApi api;
     private VentanaInventario inventario;
     
@@ -30,7 +34,7 @@ public class ModificarBien extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ModificarBien(IApi api, BienDTO bien, VentanaInventario inventario) {
+	public ModificarBien(IApi api, Bien bien, VentanaInventario inventario) {
         this.api = api;
         this.bien = bien;
         this.inventario = inventario;
@@ -71,7 +75,12 @@ public class ModificarBien extends JFrame{
         lblNewLabel_3.setBounds(110, 114, 60, 20);
         getContentPane().add(lblNewLabel_3);
         
-        textField_3 = new JTextField(bien.getFechaVencimiento().toString());
+        if(bien.getFechaVencimiento()!=null) {
+        	textField_3 = new JTextField(bien.getFechaVencimiento().toString());
+        }
+        else {
+        	textField_3 = new JTextField("");
+        }
         textField_3.setBounds(180, 115, 96, 18);
         getContentPane().add(textField_3);
         textField_3.setColumns(10);
@@ -98,7 +107,12 @@ public class ModificarBien extends JFrame{
         lblNewLabel_6.setBounds(126, 200, 44, 15);
         getContentPane().add(lblNewLabel_6);
         
-        textField_6 = new JTextField(bien.getMaterial());
+        if (bien.getMaterial()!=null) {
+        	textField_6 = new JTextField(bien.getMaterial());
+        }
+        else {
+        	textField_6=new JTextField("");
+        }
         textField_6.setBounds(180, 199, 96, 18);
         getContentPane().add(textField_6);
         textField_6.setColumns(10);
@@ -115,6 +129,29 @@ public class ModificarBien extends JFrame{
         getContentPane().add(btnNewButton);
         
         JButton btnNewButton_1 = new JButton("Guardar");
+        btnNewButton_1.addActionListener(e -> {
+        	try {
+        		bien.setNombre(textField_1.getText());
+        		bien.setDescripcion(textField_2.getText());
+        		if (!textField_3.getText().isBlank()) {
+        			bien.setFechaVencimiento(LocalDate.parse(textField_3.getText()));
+        		}
+        		if (!textField_4.getText().isBlank()) {
+            		bien.setTalle(Double.parseDouble(textField_4.getText()));
+        		}
+        		if (!textField_5.getText().isBlank()) {
+            		bien.setPeso(Double.parseDouble(textField_5.getText()));
+        		}
+        		if (!textField_6.getText().isBlank()) {
+            		bien.setMaterial(textField_6.getText());
+        		}
+        		api.ModificarBienInventario(bien);
+        		JOptionPane.showMessageDialog(null, "Se modifico corectamente los datos del Bien", "Actualizacion", JOptionPane.INFORMATION_MESSAGE);
+        	}catch(Exception e1){
+        		JOptionPane.showMessageDialog(null, "Algo salio mal al intentar actualizar"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        		
+        	}
+        });
         btnNewButton_1.setBounds(86, 233, 84, 20);
         getContentPane().add(btnNewButton_1);
         
