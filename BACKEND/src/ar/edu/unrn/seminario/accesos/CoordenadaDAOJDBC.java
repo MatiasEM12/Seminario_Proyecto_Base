@@ -47,11 +47,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE coordenada SET codigo ?, Latitud = ?, Longitud = ? WHERE codigo = ?");
-			statement.setString(1, coordenada.getCodigo());
-			statement.setDouble(2, coordenada.getLatitud());
-			statement.setDouble(3, coordenada.getLongitud());
-			statement.setString(4, coordenada.getCodigo());
+					.prepareStatement("UPDATE coordenada SET Latitud = ?, Longitud = ? WHERE codigo = ?");
+			statement.setDouble(1, coordenada.getLatitud());
+			statement.setDouble(2, coordenada.getLongitud());
+			statement.setString(3, coordenada.getCodigo());
 			
 			
 			int cantidad = statement.executeUpdate();
@@ -134,7 +133,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigo,Latitud,Longitud "
-			+ "FROM coordenada "+ "WHERE D.codigo = ?");
+			+ "FROM coordenada "+ "WHERE codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {

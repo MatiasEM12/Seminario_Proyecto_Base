@@ -11,7 +11,8 @@ import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class UbicacionDAOJDBC  implements UbicacionDAO{
-	CoordenadaDAO coordenada = null;
+	CoordenadaDAO coordenada = new CoordenadaDAOJDBC();
+
 	
 	@Override
 	public void create(Ubicacion ubicacion) {
@@ -74,7 +75,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE ubicacion SET codigo ?, zona= ?, barrio = ? , direccion= ?, codCoordenada= ? "
+					.prepareStatement("UPDATE ubicacion SET codigo=?, zona= ?, barrio = ? , direccion= ?, codCoordenada= ? "
 							+ "WHERE codigo = ?");
 			statement.setString(1, ubicacion.getCodigo());
 			statement.setString(2, ubicacion.getZona());
@@ -246,15 +247,32 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		Coordenada coordenada = null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT U.codigo,U.zona,U.barrio,U.descripcion, C.codigo,C.Latitud,C.Longitud "
-			+ "FROM coordenada C, ubicacion U "+ "WHERE U.codigo = ? AND U.codCoordenada==C.codigo");
+			PreparedStatement sent = conn.prepareStatement(
+				    "SELECT " +
+				    "U.codigo AS u_codigo, U.zona, U.barrio, U.direccion, " +
+				    "C.codigo AS c_codigo, C.Latitud, C.Longitud " +
+				    "FROM ubicacion U " +
+				    "JOIN coordenada C ON U.codCoordenada = C.codigo " +
+				    "WHERE U.codigo = ?"
+				);
+
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				
-				coordenada=new Coordenada(rs.getDouble("C.Latitud"),rs.getDouble("C.Longitud"),rs.getString("C.codigo"));
-				ubicacion= new Ubicacion(rs.getString("U.codigo"),rs.getString("U.zona"),rs.getString("U.barrio"),rs.getString("U.descripcion")
-						,coordenada);
+				coordenada = new Coordenada(
+					    rs.getDouble("Latitud"),
+					    rs.getDouble("Longitud"),
+					    rs.getString("c_codigo")
+					);
+
+					ubicacion = new Ubicacion(
+					    rs.getString("u_codigo"),
+					    rs.getString("zona"),
+					    rs.getString("barrio"),
+					    rs.getString("direccion"),
+					    coordenada
+					);
 			}
 		}
 		catch(SQLException e){
@@ -271,28 +289,28 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 	@Override
 	public List<Ubicacion> findAll() {
-		List<Ubicacion> ubicaciones = new ArrayList<>();
-		
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo"
-					+ "FROM ubicacion ");
-			ResultSet rs = sent.executeQuery();
-			while (rs.next()) {
-				
-				ubicaciones.add(this.find(rs.getString("codigo")));
-			
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo UB700");
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo UB701");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return ubicaciones;
+	    List<Ubicacion> ubicaciones = new ArrayList<>();
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT codigo FROM ubicacion"
+	        );
+	        ResultSet rs = sent.executeQuery();
+
+	        while (rs.next()) {
+	            ubicaciones.add(this.find(rs.getString("codigo")));
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta " + e.getMessage() + ".codigo UB700");
+	    } catch (Exception e) {
+	        System.out.println("Error inesperado: " + e.getMessage() + ".codigo UB701");
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ubicaciones;
 	}
+
 }

@@ -19,6 +19,10 @@ public class TestAcceso2 {
 			
 			RolDao rolDAO = new RolDAOJDBC();
 			UsuarioDAOJDBC usuarioDAO = new UsuarioDAOJDBC();
+			CoordenadaDAOJDBC coordDAO = new CoordenadaDAOJDBC();
+			UbicacionDAOJDBC ubiDAO = new UbicacionDAOJDBC();
+			
+			//TEST ROL
 			/*
 			System.out.println("=== CREAR ROL ===");
             Rol rol = new Rol(10, "ADMIN", true);
@@ -53,6 +57,86 @@ public class TestAcceso2 {
 			 Rol r = rolDAO.find(20);
 			 System.out.println(r);
 */
+			//TEST USER
+			/*
+			 System.out.println("===== TEST ROL =====");
+
+	            Rol rol = new Rol(40, "OPERADOR", true);
+	            rolDAO.create(rol);
+
+	            Rol rolBD = rolDAO.find(20);
+	            System.out.println("Rol encontrado: " + rolBD);
+
+	            System.out.println("\n===== TEST USUARIO =====");
+
+	            // sincronizar contador (opcional pero recomendado)
+	            Usuario.setContadorUsuario(usuarioDAO.obtenerCantidadUsuarios());
+
+	            Usuario usuario = new Usuario(
+	                    "juan123",
+	                    "1234",
+	                    "Juan Perez",
+	                    "juan@mail.com",
+	                    rolBD,
+	                    true,
+	                    null   // genera código automático
+	            );
+
+	            usuarioDAO.create(usuario);
+
+	            System.out.println("\n--- Buscar usuario ---");
+	            Usuario buscado = usuarioDAO.find("juan123");
+	            System.out.println(buscado);
+
+	            System.out.println("\n--- Actualizar usuario ---");
+	            buscado.setNombre("Juan Carlos Perez");
+	            buscado.setContacto("juan.c@mail.com");
+	            buscado.desactivar();
+	            usuarioDAO.update(buscado);
+
+	            System.out.println("\n--- Listar usuarios ---");
+	            List<Usuario> usuarios = usuarioDAO.findAll();
+	            for (Usuario u : usuarios) {
+	                System.out.println(u);
+	            }
+
+	            System.out.println("\n--- Eliminar usuario ---");
+	            usuarioDAO.remove(buscado);
+
+	            System.out.println("\n--- Eliminar rol ---");
+	            rolDAO.remove(rolBD); */
+			
+			
+			System.out.println("\n===== TEST COORDENADA + UBICACION =====");
+			 // 1️⃣ Crear coordenada
+		    Coordenada coord = new Coordenada(-40.8135, -62.9967);
+		    coordDAO.create(coord);
+
+		    // 2️⃣ Crear ubicación
+		    Ubicacion ubi = new Ubicacion(
+		            "Centro",
+		            "Barrio Norte",
+		            "Av. Roca 123",
+		            coord
+		    );
+		    ubiDAO.create(ubi);
+
+		    // 3️⃣ Buscar ubicación
+		    System.out.println("\n--- Buscar Ubicación ---");
+		    Ubicacion buscada = ubiDAO.find(ubi.getCodigo());
+		    System.out.println("Ubicacion encontrada: " + buscada.getCodigo());
+
+		    // 4️⃣ Listar ubicaciones
+		    System.out.println("\n--- Listar Ubicaciones ---");
+		    List<Ubicacion> ubicaciones = ubiDAO.findAll();
+		    for (Ubicacion u : ubicaciones) {
+		        System.out.println(u.getCodigo() + " - " + u.getDireccion());
+		    }
+
+		    // 5️⃣ Eliminar ubicación (y coordenada si no se usa)
+		    System.out.println("\n--- Eliminar Ubicación ---");
+		    ubiDAO.remove(ubi);
+
 			 
 		}catch(Exception e) {
 	   		e.printStackTrace();
