@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
@@ -17,7 +18,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
     private BienDAO bienDao; 
 
     @Override
-    public void create(String codBien, String codDonacion) {
+    public void create(String codBien, String codDonacion) throws DAOException{
         try {
             Connection conn = ConnectionManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(
@@ -29,20 +30,18 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
             int cantidad = statement.executeUpdate();
             if (cantidad <= 0) {
-                System.out.println("No se insertó registro en Bien_Donacion. codigo error BD100");
+            	throw new DAOException("No se insertó registro en Bien_Donacion. codigo error BD100");
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage() + ". codigo error BD101");
-            e.printStackTrace();
-            throw new RuntimeException(e); 
+            throw new RuntimeException("Error al procesar consulta (INSERT Bien_Donacion): " + e.getMessage() + ". codigo error BD101"); 
         } finally {
             ConnectionManager.disconnect();
         }
     }
 
     @Override
-    public void update(String codBienNuevo, String codBienViejo, String codDonacion) {
+    public void update(String codBienNuevo, String codBienViejo, String codDonacion) throws DAOException{
         try {
             Connection conn = ConnectionManager.getConnection();
             PreparedStatement statement = conn.prepareStatement(
@@ -58,12 +57,12 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
             if (cantidad > 0) {
                 System.out.println("El Bien_Donacion se ha actualizado correctamente");
             } else {
-                System.out.println("No se encontró registro a actualizar en Bien_Donacion. codigo error BD200");
+            	throw new DAOException("No se encontró registro a actualizar en Bien_Donacion. codigo error BD200");
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (UPDATE Bien_Donacion): " + e.getMessage() + ". codigo error BD201" );
-            e.printStackTrace();
+        	throw new DAOException("Error al procesar consulta (UPDATE Bien_Donacion): " + e.getMessage() + ". codigo error BD201" );
+            
         } finally {
             ConnectionManager.disconnect();
         }
@@ -85,7 +84,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
     }
 
     @Override
-    public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException {
+    public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException, DAOException{
         ArrayList<Bien> resultado = new ArrayList<>();
         if (codDonacion == null || codDonacion.trim().isEmpty()) return resultado;
 
@@ -126,8 +125,8 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al recuperar bienes de donación: " + e.getMessage() + ". codigo error BD300");
-            e.printStackTrace();
+        	throw new DAOException("Error al recuperar bienes de donación: " + e.getMessage() + ". codigo error BD300");
+            
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ignored) {}
             try { if (ps != null) ps.close(); } catch (SQLException ignored) {}
