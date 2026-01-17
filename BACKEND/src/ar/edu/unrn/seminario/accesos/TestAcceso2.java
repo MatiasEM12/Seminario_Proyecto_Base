@@ -138,7 +138,7 @@ public class TestAcceso2 {
 		    ubiDAO.remove(ubi);
 
 			 */
-			
+			/*
 			 DonanteDAOJDBC dao = new DonanteDAOJDBC();
 
 	            // 1️⃣ Crear Ubicacion y Coordenada
@@ -189,7 +189,51 @@ public class TestAcceso2 {
 	            dao.remove(actualizado.getCodigo());
 
 	            Donante borrado = dao.find(actualizado.getCodigo());
-	            System.out.println("Debe ser null -> " + borrado);
+	            System.out.println("Debe ser null -> " + borrado); */
+		    BienDAO dao = new BienDAOJDBC();
+
+	        // 1️⃣ Crear Bien
+	        Bien b = new Bien(
+	            null,
+	            "Alimento",
+	            1.5,
+	            "Arroz",
+	            "Arroz largo fino",
+	            3,
+	            LocalDate.now().plusMonths(6),
+	            0,
+	            null
+	        );
+
+	        // 2️⃣ INSERT
+	        System.out.println("=== INSERT ===");
+	        dao.create(b);
+
+	        // 3️⃣ FIND
+	        System.out.println("=== FIND ===");
+	        Bien encontrado = dao.find(b.getCodigo());
+	        System.out.println(encontrado.getCodigo());
+
+	        // 4️⃣ UPDATE
+	        System.out.println("=== UPDATE ===");
+	        encontrado.setDescripcion("Arroz largo fino premium");
+	        dao.update(encontrado);
+
+	        Bien actualizado = dao.find(encontrado.getCodigo());
+	        System.out.println(actualizado.getDescripcion());
+
+	        // 5️⃣ FIND ALL
+	        System.out.println("=== FIND ALL ===");
+	        dao.findAll().forEach(bien ->
+	            System.out.println(bien.getCodigo())
+	        );
+
+	        // 6️⃣ REMOVE
+	        System.out.println("=== REMOVE ===");
+	        dao.remove(actualizado.getCodigo());
+
+	        Bien borrado = dao.find(actualizado.getCodigo());
+	        System.out.println("Debe ser null -> " + borrado);
 		}catch(Exception e) {
 	   		e.printStackTrace();
 	   	   	

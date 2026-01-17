@@ -28,12 +28,13 @@ public class BienDAOJDBC  implements BienDAO{
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
 			statement.setString(1, bien.getCodigo());
 			statement.setString(2, bien.getTipo());
-			statement.setDouble(3, bien.getPeso());
-			statement.setString(4, bien.getDescripcion());
-			statement.setInt(5, bien.getNivelNecesidad());
-			statement.setDate(6,fechaSQL);
-			statement.setDouble(7,bien.getTalle());
-			statement.setString(8,bien.getMaterial());
+			statement.setString(3, bien.getNombre());
+			statement.setDouble(4, bien.getPeso());
+			statement.setString(5, bien.getDescripcion());
+			statement.setInt(6, bien.getNivelNecesidad());
+			statement.setDate(7, fechaSQL);
+			statement.setDouble(8, bien.getTalle());
+			statement.setString(9, bien.getMaterial());
 		
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
@@ -61,13 +62,15 @@ public class BienDAOJDBC  implements BienDAO{
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
 			statement.setString(1, bien.getCodigo());
 			statement.setString(2, bien.getTipo());
-			statement.setDouble(3, bien.getPeso());
-			statement.setString(4, bien.getDescripcion());
-			statement.setInt(5, bien.getNivelNecesidad());
-			statement.setDate(6,fechaSQL);
-			statement.setDouble(7,bien.getTalle());
-			statement.setString(8,bien.getMaterial());
-			statement.setString(9, bien.getCodigo());
+			statement.setString(3, bien.getNombre());
+			statement.setDouble(4, bien.getPeso());
+			statement.setString(5, bien.getDescripcion());
+			statement.setInt(6, bien.getNivelNecesidad());
+			statement.setDate(7, fechaSQL);
+			statement.setDouble(8, bien.getTalle());
+			statement.setString(9, bien.getMaterial());
+			statement.setString(10, bien.getCodigo());
+
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
@@ -208,8 +211,12 @@ ArrayList<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
-					+ "FROM bien b , Bien_Visita WHERE Bien_Visita.codVisita=?");
+			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo\r\n"
+					+ "FROM bien b\r\n"
+					+ "JOIN Bien_Visita bv ON b.codigo = bv.codBien\r\n"
+					+ "WHERE bv.codVisita = ?\r\n"
+					+ ""
+					+ "");
 		
 			sent.setString(1, codVisita);
 			ResultSet rs = sent.executeQuery();
@@ -237,8 +244,10 @@ ArrayList<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
-					+ "FROM bien b , Bien_Visita WHERE Bien_Donacion.codDonacion=?");
+			PreparedStatement sent = conn.prepareStatement("FROM bien b\r\n"
+					+ "JOIN Bien_Donacion bd ON b.codigo = bd.codBien\r\n"
+					+ "WHERE bd.codDonacion = ?\r\n"
+					+ "");
 		
 			sent.setString(1, codDonacion);
 			ResultSet rs = sent.executeQuery();
