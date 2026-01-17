@@ -156,7 +156,14 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 		        ;
 		        statement.setString( 1,donante.getCodigo());
-		        u.remove(rs.getString("codUbicacion"));
+		        String codUbicacion = null;
+		        if (rs.next()) {
+		            codUbicacion = rs.getString("codUbicacion");
+		        }
+
+		        if (codUbicacion != null) {
+		            u.remove(codUbicacion);
+		        }
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("donante eliminado correctamente.");
