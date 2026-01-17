@@ -18,11 +18,12 @@ import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class DonanteDAOJDBC implements DonanteDao{
-	UbicacionDAO u;
+	private UbicacionDAO u = new UbicacionDAOJDBC();
 	public void create(Donante donante) {
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
+			u.create(donante.getUbicacion());
 			PreparedStatement statement = conn
 					.prepareStatement("INSERT INTO donante(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username, codUbicacion, activo)"
 							+ " VALUES (?, ?, ?, ?, ?, ?,?,?,?)");
@@ -61,22 +62,29 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE donante SET codigo ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? codUbicacion = ? "
-							+ "WHERE codigo = ?");
+					.prepareStatement("UPDATE donante \r\n"
+							+ "SET nombre = ?, \r\n"
+							+ "    apellido = ?, \r\n"
+							+ "    dni = ?, \r\n"
+							+ "    contacto = ?, \r\n"
+							+ "    Fecha_Nacimiento = ?, \r\n"
+							+ "    username = ?, \r\n"
+							+ "    codUbicacion = ?\r\n"
+							+ "WHERE codigo = ?\r\n"
+							+ "");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(donante.getFecha_nac());
 			
-			statement.setDate(1, fechaSQL);
 			
-			statement.setString(1, donante.getCodigo());
-			statement.setString(2, donante.getNombre());
-			statement.setString(3, donante.getApellido());
-			statement.setString(4, donante.getDni());
-			statement.setString(5, donante.getContacto());
-			statement.setDate(6,fechaSQL);
-			statement.setString(7, donante.getUsername());
-			statement.setObject(8, donante.getUbicacion().getCodigo());
-			statement.setString(9, donante.getCodigo());
+			statement.setString(1, donante.getNombre());
+			statement.setString(2, donante.getApellido());
+			statement.setString(3, donante.getDni());
+			statement.setString(4, donante.getContacto());
+			statement.setDate(5, fechaSQL);
+			statement.setString(6, donante.getUsername());
+			statement.setString(7, donante.getUbicacion().getCodigo());
+			statement.setString(8, donante.getCodigo());
 			
+
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
@@ -102,14 +110,22 @@ public class DonanteDAOJDBC implements DonanteDao{
 			        );
 			 
 			  statement1.setString(1, codigo);
+			  String codUbicacion = null;
 			  ResultSet rs = statement1.executeQuery();
+			  if (rs.next()) {
+				  codUbicacion = rs.getString("codUbicacion");
+			  }
 		        PreparedStatement statement = conn.prepareStatement(
 		            "DELETE FROM donante WHERE codigo = ?"
 		        );
 
 		        statement.setString(1, codigo);
 		        
-		        u.remove(rs.getString("codUbicacion"));
+				
+				if (codUbicacion != null) {
+				    u.remove(codUbicacion);
+				}
+	        u.remove(rs.getString("codUbicacion"));
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
 		            System.out.println("Donante eliminado correctamente.");
@@ -133,8 +149,8 @@ public class DonanteDAOJDBC implements DonanteDao{
 			  statement1.setString(1, donante.getUsername());
 			  ResultSet rs = statement1.executeQuery();
 			  
-			 Connection conn2 = ConnectionManager.getConnection();
-		        PreparedStatement statement = conn2.prepareStatement(
+			 
+		        PreparedStatement statement = conn.prepareStatement(
 		            "DELETE FROM donante WHERE codigo = ? "
 		        );
 
@@ -152,102 +168,56 @@ public class DonanteDAOJDBC implements DonanteDao{
 			System.out.println("Error al Eliminar donante. codigo error UD401");
 		}
 	}
-
 	public Donante find(String codigo)
 	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
 
-	    Connection conn = null;
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
 	    Donante donante = null;
 
 	    try {
-	        conn = ConnectionManager.getConnection();
-	        String sql =
-	                "SELECT D.codigo           AS d_codigo, " +
-	                "       D.nombre           AS d_nombre, " +
-	                "       D.apellido         AS d_apellido, " +
-	                "       D.dni              AS d_dni, " +
-	                "       D.Fecha_Nacimiento AS d_fecha, " +
-	                "       D.username         AS d_username, " +
-	                "       D.contacto         AS d_contacto, " +
-	                "       U.codigo           AS u_codigo, " +
-	                "       U.zona             AS u_zona, " +
-	                "       U.barrio           AS u_barrio, " +
-	                "       U.direccion        AS u_direccion, " +
-	                "       U.codCoordenada    AS u_codCoordenada, " +
-	                "       C.codigo           AS c_codigo, " +
-	                "       C.Latitud          AS c_latitud, " +
-	                "       C.Longitud         AS c_longitud " +
-	                "FROM donante D " +
-	                "LEFT JOIN ubicacion U ON D.codUbicacion = U.codigo " +
-	                "LEFT JOIN coordenada C ON U.codCoordenada = C.codigo " +
-	                "WHERE D.codigo = ?";
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(
+	            "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, codUbicacion " +
+	            "FROM donante WHERE codigo = ?"
+	        );
 
-	        ps = conn.prepareStatement(sql);
 	        ps.setString(1, codigo);
-	        rs = ps.executeQuery();
+	        ResultSet rs = ps.executeQuery();
 
 	        if (rs.next()) {
-	            // Ubicacion + Coordenada
-	            Ubicacion u = null;
 
-	            String codUbicacion = rs.getString("u_codigo");
-	            if (codUbicacion != null) {
-	                String codCoordenada = rs.getString("c_codigo");
-	                String codCoordenadaRef = rs.getString("u_codCoordenada");
+	            UbicacionDAO ubicacionDAO = new UbicacionDAOJDBC();
+	            String codUbicacion = rs.getString("codUbicacion");
 
-	                if (codCoordenada == null && codCoordenadaRef != null) {
-	                    // Hay referencia a coordenada pero no fila en tabla coordenada
-	                    throw new DataObjectException(
-	                        "La ubicacion " + codUbicacion +
-	                        " tiene codCoordenada=" + codCoordenadaRef +
-	                        " pero no existe fila en la tabla coordenada"
-	                    +". codigo error UD500");
-	                }
-
-	                Coordenada c = null;
-	                if (codCoordenada != null) {
-	                    c = new Coordenada(
-	                            rs.getDouble("c_latitud"),
-	                            rs.getDouble("c_longitud"),
-	                            codCoordenada
-	                    );
-	                }
-
-	                u = new Ubicacion(
-	                        rs.getString("u_zona"),
-	                        rs.getString("u_barrio"),
-	                        rs.getString("u_direccion"),
-	                        c
+	            Ubicacion u = ubicacionDAO.find(codUbicacion);
+	            if (u == null) {
+	                throw new DataObjectException(
+	                    "Ubicacion inexistente para donante " + codigo
 	                );
 	            }
 
-	            java.sql.Date sqlDate = rs.getDate("d_fecha");
-	            LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+	            LocalDate fecha = rs.getDate("Fecha_Nacimiento").toLocalDate();
 
 	            donante = new Donante(
-	                    rs.getString("d_nombre"),
-	                    rs.getString("d_apellido"),
-	                    fecha,
-	                    rs.getString("d_dni"),
-	                    rs.getString("d_contacto"),
-	                    u,
-	                    rs.getString("d_username"),
-	                    rs.getString("d_codigo")
+	                rs.getString("nombre"),
+	                rs.getString("apellido"),
+	                fecha,
+	                rs.getString("dni"),
+	                rs.getString("contacto"),
+	                u,
+	                rs.getString("username"),
+	                rs.getString("codigo")
 	            );
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (find Donante): " + e.getMessage()+". codigo error UD501");
-	        throw new RuntimeException(e);
+	        System.out.println("Error SQL find Donante: " + e.getMessage());
 	    } finally {
-	        try { if (rs != null) rs.close(); } catch (SQLException ex) {}
-	        try { if (ps != null) ps.close(); } catch (SQLException ex) {}
 	        ConnectionManager.disconnect();
 	    }
+
 	    return donante;
 	}
+
 
 
 

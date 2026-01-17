@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
@@ -239,53 +240,69 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	}
 
 	
-	
 	@Override
 	public Ubicacion find(String codigo) {
-		
-		Ubicacion ubicacion= null;
-		Coordenada coordenada = null;
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement(
-				    "SELECT " +
-				    "U.codigo AS u_codigo, U.zona, U.barrio, U.direccion, " +
-				    "C.codigo AS c_codigo, C.Latitud, C.Longitud " +
-				    "FROM ubicacion U " +
-				    "JOIN coordenada C ON U.codCoordenada = C.codigo " +
-				    "WHERE U.codigo = ?"
-				);
 
-			sent.setString(1, codigo);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				
-				coordenada = new Coordenada(
-					    rs.getDouble("Latitud"),
-					    rs.getDouble("Longitud"),
-					    rs.getString("c_codigo")
-					);
+	    Ubicacion ubicacion = null;
 
-					ubicacion = new Ubicacion(
-					    rs.getString("u_codigo"),
-					    rs.getString("zona"),
-					    rs.getString("barrio"),
-					    rs.getString("direccion"),
-					    coordenada
-					);
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo UB600");
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo UB601");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return ubicacion;
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT " +
+	            "U.codigo AS u_codigo, U.zona, U.barrio, U.direccion, " +
+	            "U.codCoordenada AS u_codCoordenada, " +
+	            "C.codigo AS c_codigo, C.Latitud, C.Longitud " +
+	            "FROM ubicacion U " +
+	            "LEFT JOIN coordenada C ON U.codCoordenada = C.codigo " +
+	            "WHERE U.codigo = ?"
+	        );
+
+	        sent.setString(1, codigo);
+	        ResultSet rs = sent.executeQuery();
+
+	        if (rs.next()) {
+
+	            Coordenada coordenada = null;
+
+	            String codCoordenada = rs.getString("c_codigo");
+	            String codCoordenadaRef = rs.getString("u_codCoordenada");
+
+	            if (codCoordenada == null && codCoordenadaRef != null) {
+	                throw new DataObjectException(
+	                    "La ubicación " + codigo +
+	                    " referencia codCoordenada=" + codCoordenadaRef +
+	                    " inexistente"
+	                );
+	            }
+
+	            if (codCoordenada != null) {
+	                coordenada = new Coordenada(
+	                    rs.getDouble("Latitud"),
+	                    rs.getDouble("Longitud"),
+	                    codCoordenada
+	                );
+	            }
+
+	            ubicacion = new Ubicacion(
+	                rs.getString("u_codigo"),
+	                rs.getString("zona"),
+	                rs.getString("barrio"),
+	                rs.getString("direccion"),
+	                coordenada
+	            );
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error SQL Ubicacion.find: " + e.getMessage() + ". codigo UB600");
+	    } catch (Exception e) {
+	        System.out.println("Error inesperado Ubicacion.find: " + e.getMessage() + ". codigo UB601");
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ubicacion;
 	}
+
 
 	@Override
 	public List<Ubicacion> findAll() {

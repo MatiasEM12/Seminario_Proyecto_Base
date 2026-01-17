@@ -57,7 +57,11 @@ public class Donante extends Persona  {
 		this.username=username;
 		ordenesPedido= new ArrayList<>();
 		donaciones= new ArrayList<>();
-		crearCodigo();
+		if (codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo; 		}
+		
 	}
 
 	

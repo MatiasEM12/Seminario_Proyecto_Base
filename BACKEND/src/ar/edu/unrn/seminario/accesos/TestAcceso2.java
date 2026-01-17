@@ -106,7 +106,7 @@ public class TestAcceso2 {
 	            System.out.println("\n--- Eliminar rol ---");
 	            rolDAO.remove(rolBD); */
 			
-			
+			/*
 			System.out.println("\n===== TEST COORDENADA + UBICACION =====");
 			 // 1️⃣ Crear coordenada
 		    Coordenada coord = new Coordenada(-40.8135, -62.9967);
@@ -137,7 +137,59 @@ public class TestAcceso2 {
 		    System.out.println("\n--- Eliminar Ubicación ---");
 		    ubiDAO.remove(ubi);
 
-			 
+			 */
+			
+			 DonanteDAOJDBC dao = new DonanteDAOJDBC();
+
+	            // 1️⃣ Crear Ubicacion y Coordenada
+	            Coordenada c = new Coordenada(-40.813, -62.996, "C00001");
+
+	            Ubicacion u = new Ubicacion(
+	                    "Zona Centro",
+	                    "Barrio Norte",
+	                    "Av. Roca 123",
+	                    c
+	            );
+
+	            // 2️⃣ Crear Donante
+	            Donante d = new Donante(
+	                    "Juan",
+	                    "Pérez",
+	                    LocalDate.of(1990, 5, 20),
+	                    "30123456",
+	                    "2994123456",
+	                    u,
+	                    "juanperez"
+	            );
+
+	            // 3️⃣ INSERT
+	            System.out.println("=== INSERT ===");
+	            dao.create(d);
+
+	            // 4️⃣ FIND
+	            System.out.println("=== FIND ===");
+	            Donante encontrado = dao.find(d.getCodigo());
+	            System.out.println(encontrado);
+
+	            // 5️⃣ UPDATE
+	            System.out.println("=== UPDATE ===");
+	            encontrado.setUsername("juan_actualizado");
+	            dao.update(encontrado);
+
+	            Donante actualizado = dao.find(encontrado.getCodigo());
+	            System.out.println(actualizado);
+
+	            // 6️⃣ FIND ALL
+	            System.out.println("=== FIND ALL ===");
+	            List<Donante> lista = dao.findAll();
+	            lista.forEach(System.out::println);
+
+	            // 7️⃣ REMOVE
+	            System.out.println("=== REMOVE ===");
+	            dao.remove(actualizado.getCodigo());
+
+	            Donante borrado = dao.find(actualizado.getCodigo());
+	            System.out.println("Debe ser null -> " + borrado);
 		}catch(Exception e) {
 	   		e.printStackTrace();
 	   	   	
