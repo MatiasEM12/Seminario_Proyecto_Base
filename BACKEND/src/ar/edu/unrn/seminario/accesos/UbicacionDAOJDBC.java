@@ -23,7 +23,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
         try {
             conn = ConnectionManager.getConnection();
-
+            coordenada.create(ubicacion.getCoordenada());
             // 1) Verificar si ya existe la ubicación con ese código
             String sqlExiste = "SELECT codigo FROM ubicacion WHERE codigo = ?";
             ps = conn.prepareStatement(sqlExiste);

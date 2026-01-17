@@ -197,7 +197,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 	            Ubicacion u = ubicacionDAO.find(codUbicacion);
 	            if (u == null) {
-	                throw new DataObjectException(
+	                throw new DataObjectException( //200
 	                    "Ubicacion inexistente para donante " + codigo
 	                );
 	            }
