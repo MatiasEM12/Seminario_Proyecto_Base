@@ -177,7 +177,7 @@ public class TestAcceso2 {
 	            dao.update(encontrado);
 
 	            Donante actualizado = dao.find(encontrado.getCodigo());
-	            System.out.println(actualizado);
+	            System.out.println(actualizado); 
 
 	            // 6️⃣ FIND ALL
 	            System.out.println("=== FIND ALL ===");
