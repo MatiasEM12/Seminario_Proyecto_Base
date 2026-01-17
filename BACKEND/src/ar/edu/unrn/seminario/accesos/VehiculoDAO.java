@@ -14,7 +14,7 @@ public interface VehiculoDAO {
 	
 	void remove(String matricula) throws DAOException;
 
-	Vehiculo find(String matricula);
+	Vehiculo find(String matricula)throws DAOException;
 
-	List<Vehiculo> findAll();
+	List<Vehiculo> findAll()throws DAOException;
 }
