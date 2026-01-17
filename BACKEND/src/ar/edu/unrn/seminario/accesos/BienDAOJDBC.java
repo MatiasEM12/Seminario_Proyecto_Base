@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
@@ -16,7 +17,7 @@ import ar.edu.unrn.seminario.modelo.Coordenada;
 public class BienDAOJDBC  implements BienDAO{
 
 	@Override
-	public void create(Bien bien) {
+	public void create(Bien bien) throws DAOException{
 		
 		try {
 			
@@ -40,12 +41,12 @@ public class BienDAOJDBC  implements BienDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar. codigo error B100");
+				throw new DAOException("Error al actualizar. codigo error B100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Bien): " + e.getMessage() + ". codigo error B101");
+			throw new DAOException("Error al procesar consulta (INSERT Bien): " + e.getMessage() + ". codigo error B101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -53,7 +54,7 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public void update(Bien bien) {
+	public void update(Bien bien) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -76,12 +77,12 @@ public class BienDAOJDBC  implements BienDAO{
 			if (cantidad > 0) {
 				 System.out.println("El bien se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar. codigo error B200");
+				throw new DAOException("Error al actualizar. codigo error B200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error B201");
+			throw new DAOException("Error al procesar consulta. codigo error B201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -96,7 +97,7 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -113,7 +114,7 @@ public class BienDAOJDBC  implements BienDAO{
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar bien. codigo error B301");
+			throw new DAOException("Error al Eliminar bien. codigo error B301");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -121,7 +122,8 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public void remove(Bien bien) {
+	public void remove(Bien bien) throws DAOException{
+
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -138,7 +140,7 @@ public class BienDAOJDBC  implements BienDAO{
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar bien. codigo error B401");
+			throw new DAOException("Error al Eliminar bien. codigo error B401");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -147,8 +149,11 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public Bien find(String codigo) {
+	public Bien find(String codigo) throws DataNullException, DAOException{
 		Bien bien= null;
+		if (codigo == null || codigo.isBlank()) {
+		    throw new DataNullException("Matrícula inválida. B502");
+		}
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigo,tipo,nombre,peso,descripcion,nivelNecesidad,fechaVencimiento,talle,material "
@@ -168,10 +173,10 @@ public class BienDAOJDBC  implements BienDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B500");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error B500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B501");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error B501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -180,7 +185,7 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public List<Bien> findAll() {
+	public List<Bien> findAll() throws DAOException{
 List<Bien> bienes = new ArrayList<>();
 		
 		try {
@@ -194,10 +199,10 @@ List<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B600");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error B600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B601");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error B601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -206,8 +211,11 @@ List<Bien> bienes = new ArrayList<>();
 	}
 	
 	@Override
-	public ArrayList<Bien> findBienVisita(String codVisita) {
-ArrayList<Bien> bienes = new ArrayList<>();
+	public ArrayList<Bien> findBienVisita(String codVisita) throws DataNullException, DAOException{
+		ArrayList<Bien> bienes = new ArrayList<>();
+		if (codVisita == null || codVisita.isBlank()) {
+			throw new DataNullException("Matrícula inválida. B702");
+		}
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -227,10 +235,10 @@ ArrayList<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B700");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error B700");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B701");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error B701");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -239,9 +247,11 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	}
 	
 	@Override
-	public ArrayList<Bien> findBienDonacion(String codDonacion) {
+	public ArrayList<Bien> findBienDonacion(String codDonacion) throws DataNullException,DAOException{
 		ArrayList<Bien> bienes = new ArrayList<>();
-		
+		if (codDonacion == null || codDonacion.isBlank()) {
+			throw new DataNullException("Matrícula inválida. B802");
+		}
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("FROM bien b\r\n"
@@ -258,10 +268,10 @@ ArrayList<Bien> bienes = new ArrayList<>();
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error B801");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error B801");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error B801");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error B801");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -275,8 +285,11 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	// para iventario
 	
 	
-	public List<Bien> findALLTipo(String tipo) {
+	public List<Bien> findALLTipo(String tipo) throws DataNullException,DAOException{
 	    List<Bien> bienes = new ArrayList<>();
+	    if (tipo == null || tipo.isBlank()) {
+			throw new DataNullException("Matrícula inválida. B902");
+		}
 	    try {
 	        //rebisa si la busqueda no fue por bienes vencidos
 	        if (tipo.equals("Bienes vencidos")) {
@@ -328,9 +341,9 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage()+". codigo error B900");
+	    	throw new DAOException ("Error al procesar consulta: " + e.getMessage()+". codigo error B900");
 	    } catch (Exception e) {
-	        System.out.println("Error inesperado: " + e.getMessage()+". codigo error B901");
+	    	throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error B901");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
