@@ -8,13 +8,13 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.*;
 
 
-import ar.edu.unrn.seminario.modelo.Coordenada;
-
 import java.util.ArrayList;
 
+import ar.edu.unrn.seminario.modelo.Vehiculo;
 
-public class VehiculoDAOJDBC {
-	void create(Vehiculo vehiculo) throws DAOException{
+public class VehiculoDAOJDBC implements VehiculoDAO{
+	
+	public void create(Vehiculo vehiculo) throws DAOException{
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn.prepareStatement("INSERT INTO Vehiculo(matricula, tipo, modelo, capacidadMaxCarga, disponibilidad,cronogramaMantenimiento) "+ 
@@ -43,7 +43,7 @@ public class VehiculoDAOJDBC {
 		}
 	}
 
-	void update(Vehiculo vehiculo) throws DAOException{
+	public void update(Vehiculo vehiculo) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -75,7 +75,10 @@ public class VehiculoDAOJDBC {
 		}
 	}
 	
-	void remove(String matricula) throws DAOException{
+	public void remove(String matricula) throws DAOException{
+		if (matricula == null || matricula.isBlank()) {
+		    throw new DAOException("Matrícula inválida. V302");
+		}
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -98,7 +101,7 @@ public class VehiculoDAOJDBC {
 		}
 	}
 
-	Vehiculo find(String matricula) {
+	public Vehiculo find(String matricula) throws DAOException{
 		Vehiculo vehiculo= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -124,7 +127,7 @@ public class VehiculoDAOJDBC {
 		return vehiculo;
 	}
 
-	List<Vehiculo> findAll(){
+	public List<Vehiculo> findAll() throws DAOException{
 		List<Vehiculo> vehiculo = new ArrayList<>();
 		
 		try {
