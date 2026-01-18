@@ -8,13 +8,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Rol;
 
 public class RolDAOJDBC implements RolDao {
 
 	@Override
-	public void create(Rol rol) {
+	public void create(Rol rol) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -30,12 +32,12 @@ public class RolDAOJDBC implements RolDao {
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta"+".codigo R100");
+			throw new DAOException("Error al procesar consulta"+".codigo R100");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -45,7 +47,7 @@ public class RolDAOJDBC implements RolDao {
 
 	@Override
 	//funciona
-	public void update(Rol rol) {
+	public void update(Rol rol) throws DAOException{
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
@@ -58,19 +60,19 @@ public class RolDAOJDBC implements RolDao {
 			if (cantidad > 0) {
 				 System.out.println("El Rol se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta"+".codigo R200");
+			throw new DAOException("Error al procesar consulta"+".codigo R200");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
 		}
 	}
 
-	public void remove(Integer codigo) {
+	public void remove(Integer codigo) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -83,16 +85,18 @@ public class RolDAOJDBC implements RolDao {
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		        	throw new DAOException("No se encontró el rol con ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol"+".codigo R300");
+			throw new DAOException("Error al Eliminar rol"+".codigo R300");
+		}finally {
+			ConnectionManager.disconnect();
 		}
 	}
 
 	@Override
-	public void remove(Rol rol) {
+	public void remove(Rol rol) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -105,15 +109,17 @@ public class RolDAOJDBC implements RolDao {
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código.");
+		        	throw new DAOException("No se encontró el rol con ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar rol"+".codigo 400");
+			throw new DAOException("Error al Eliminar rol"+".codigo 400");
+		}finally {
+			ConnectionManager.disconnect();
 		}
 	}
 
-	public Rol find(Integer codigo) {
+	public Rol find(Integer codigo) throws DAOException{
 	    Rol rol = null;
 
 	    String sql = "SELECT r.codigo, r.nombre, r.activo FROM roles r WHERE r.codigo = ?";
@@ -134,16 +140,16 @@ public class RolDAOJDBC implements RolDao {
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo R500");
+	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+".codigo R500");
 	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
-	        System.out.println("Error de datos al crear Rol: " + e.getMessage()+".codigo R501");
+	    	throw new DAOException("Error de datos al crear Rol: " + e.getMessage()+".codigo R501");
 	    }
 
 	    return rol;
 	}
 
 	@Override
-	public List<Rol> findAll() throws StateChangeException {
+	public List<Rol> findAll() throws DataNullException, DAOException{
 	    List<Rol> listado = new ArrayList<>();
 
 	    String sql = "SELECT r.codigo, r.nombre, r.activo FROM roles r";
@@ -164,10 +170,10 @@ public class RolDAOJDBC implements RolDao {
 	            listado.add(rol);
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error de MySQL\n" + e);
-	    } catch (ar.edu.unrn.seminario.exception.DataNullException e) {
+	    	throw new DAOException("Error de MySQL\n" + e);
+	    } catch (DataNullException e) {
 	        // si el constructor de Rol tira DataNullException
-	        System.out.println("Error de datos al crear Rol: " + e.getMessage()+".codigo R600");
+	    	throw new DataNullException("Error de datos al crear Rol: " + e.getMessage()+".codigo R600");
 	    }
 
 	    return listado;
