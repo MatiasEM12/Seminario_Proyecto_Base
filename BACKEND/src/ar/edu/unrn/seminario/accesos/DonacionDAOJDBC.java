@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -234,7 +235,7 @@ BienDAO  b = new BienDAOJDBC();
 
 	
 	@Override
-	public List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException{
+	public List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException{
 		List<Donacion> listado = new ArrayList<>();
 	    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido FROM donacion d ";
 
@@ -267,7 +268,7 @@ BienDAO  b = new BienDAOJDBC();
 	}
 	
 
-		public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+		public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
 			 List<Donacion> listado = new ArrayList<>();
 			    // Seleccionamos donaciones cuya columna codigoOrdenPedido es NULL (sin orden asignada)
 			    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido "
