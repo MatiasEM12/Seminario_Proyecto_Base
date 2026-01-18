@@ -17,9 +17,9 @@ public interface DonanteDao {
 
 	void remove(Long id);
 	
-	void remove(String codigo) throws DAOException;
+	void remove(String codigo) throws DAOException, DataNullException;
 	
-	void remove(Donante Usuario) throws DAOException;
+	void remove(Donante Usuario) throws DAOException, DataNullException;
 
 	Donante find(String codigo) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
 
