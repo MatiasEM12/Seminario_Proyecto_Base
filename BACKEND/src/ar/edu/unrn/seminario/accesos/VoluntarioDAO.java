@@ -2,21 +2,22 @@ package ar.edu.unrn.seminario.accesos;
 
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 
 public interface VoluntarioDAO {
 	
-	void create(Voluntario voluntario);
+	void create(Voluntario voluntario)throws DAOException;
 
-	void update(Voluntario voluntario);
+	void update(Voluntario voluntario)throws DAOException;
 
 	void remove(Long id);
 	
-	void remove(String codigo);
+	void remove(String codigo)throws DAOException;
 
-	void remove(Voluntario voluntario);
+	void remove(Voluntario voluntario)throws DAOException;
 
-	Voluntario find(String codigo);
+	Voluntario find(String codigo)throws DAOException;
 
-	List<Voluntario> findAll();
+	List<Voluntario> findAll()throws DAOException;
 }
