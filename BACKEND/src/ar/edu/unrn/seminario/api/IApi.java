@@ -15,26 +15,26 @@ public interface IApi {
 	
 	//Usuario
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException ;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException, DAOException ;
 	
 	 
-	UsuarioDTO obtenerUsuario(String username);
+	UsuarioDTO obtenerUsuario(String username) throws DAOException;
 
-	void eliminarUsuario(String username);
+	void eliminarUsuario(String username) throws DAOException;
 	
-	List<UsuarioDTO> obtenerUsuarios() throws DataNullException; // recuperar todos los usuarios
+	List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException; // recuperar todos los usuarios
 
 	void activarUsuario(String username) throws StateChangeException ; // recuperar el objeto Usuario, implementar el comportamiento de estado.
 
 	void desactivarUsuario(String username)  throws StateChangeException; // recuperar el objeto Usuario, implementar el comportamiento de estado.
 	
-	public Boolean existeUsuario(String username );
+	public Boolean existeUsuario(String username ) throws DAOException;
 	
 	
 	//Rol
 	List<RolDTO> obtenerRoles() throws StateChangeException;
 
-	List<RolDTO> obtenerRolesActivos() throws StateChangeException;
+	List<RolDTO> obtenerRolesActivos() throws StateChangeException, DataNullException, DAOException;
 
 	void guardarRol(Integer codigo,String nombre, String descripcion, boolean estado) throws DataNullException; // crear el objeto de dominio  Rol
 
@@ -106,7 +106,7 @@ public interface IApi {
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException, DAOException;
 
 	//Visitas
 	public void registrarVisita(Visita visita);
@@ -149,7 +149,7 @@ public interface IApi {
 	
 	public void ModificarBienInventario(Bien bien);
 	
-	public Bien ObtenerBien(String codigo);
+	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException;
 	
 	
 	
