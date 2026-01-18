@@ -103,7 +103,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		
 	}
 
-	public void remove(String codigo) throws DAOException{
+	public void remove(String codigo) throws DAOException, DataNullException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 			  PreparedStatement statement1 = conn.prepareStatement(
@@ -140,7 +140,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		
 	}
 
-	public void remove(Donante donante) throws DAOException{
+	public void remove(Donante donante) throws DAOException, DataNullException{
 		try {
 			
 			 Connection conn = ConnectionManager.getConnection();
