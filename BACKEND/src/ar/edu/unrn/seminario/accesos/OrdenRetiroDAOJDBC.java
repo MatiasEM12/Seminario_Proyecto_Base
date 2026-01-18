@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Orden;
@@ -25,7 +26,7 @@ VisitaDao visita;
 VoluntarioDAO voluntario;
 OrdenPedidoDao op;
 	@Override
-	public void create(OrdenRetiro orden) {
+	public void create(OrdenRetiro orden) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -46,12 +47,12 @@ OrdenPedidoDao op;
 			if (cantidad > 0) {
 				System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar. codigo OR100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage()+".codigo OR100");
+			throw new DAOException("Error al procesar consulta (INSERT OrdenRetiro): " + e.getMessage()+".codigo OR101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -60,7 +61,7 @@ OrdenPedidoDao op;
 	}
 
 	@Override
-	public void update(OrdenRetiro orden) {
+	public void update(OrdenRetiro orden) throws DAOException{
 		try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement statement = conn.prepareStatement(
@@ -90,10 +91,10 @@ OrdenPedidoDao op;
 
 	        int cantidad = statement.executeUpdate();
 	        if (cantidad <= 0) {
-	            System.out.println("OrdenRetiro.update: no se actualizó ningún registro para codigo=" + orden.getCodigo());
+	        	throw new DAOException("OrdenRetiro.update: no se actualizó ningún registro para codigo=" + orden.getCodigo());
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al actualizar OrdenRetiro: " + e.getMessage()+".codigo OR200");
+	    	throw new DAOException("Error al actualizar OrdenRetiro: " + e.getMessage()+".codigo OR200");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -101,7 +102,7 @@ OrdenPedidoDao op;
 	}
 
 	@Override
-	public void remove(OrdenRetiro orden) {
+	public void remove(OrdenRetiro orden) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -114,17 +115,19 @@ OrdenPedidoDao op;
 		        if (cantidad > 0) {
 		            System.out.println("Orden Retiro eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró la Orden Retiro con ese código.");
+		        	throw new DAOException("No se encontró la Orden Retiro con ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden"+".codigo OR300");
-		}
+			throw new DAOException("Error al Eliminar Orden"+".codigo OR300");
+		}finally {
+			ConnectionManager.disconnect();
+		}	 
 		
 	}
 
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -137,16 +140,18 @@ OrdenPedidoDao op;
 		        if (cantidad > 0) {
 		            System.out.println("Orden Retiro eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró la Orden Retiro con ese código.");
+		        	throw new DAOException("No se encontró la Orden Retiro con ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden"+".codigo OR400");
-		}
+			throw new DAOException("Error al Eliminar Orden"+".codigo OR400");
+		}finally {
+			ConnectionManager.disconnect();
+		}	 
 		
 	}
 
-	public OrdenRetiro find(String codigo) {
+	public OrdenRetiro find(String codigo) throws DAOException{
 		OrdenRetiro orden= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -165,10 +170,10 @@ OrdenPedidoDao op;
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo OR500");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo OR500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo OR501");
+			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo OR501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -177,7 +182,7 @@ OrdenPedidoDao op;
 	}
 
 	@Override
-	public List<OrdenRetiro> findAll() {
+	public List<OrdenRetiro> findAll() throws DAOException{
 		ArrayList <OrdenRetiro> ordenes = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -196,10 +201,10 @@ OrdenPedidoDao op;
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo OR600");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo OR600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo OR601");
+			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo OR601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
