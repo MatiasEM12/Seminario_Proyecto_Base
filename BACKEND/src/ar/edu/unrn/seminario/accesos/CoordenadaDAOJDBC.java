@@ -6,12 +6,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 
 public class CoordenadaDAOJDBC implements CoordenadaDAO{
 
 	@Override
-	public void create(Coordenada coordenada) {
+	public void create(Coordenada coordenada) throws DAOException{
 		
 		try {
 			
@@ -28,12 +30,12 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar. codigo error C100");
+				throw new DAOException("Error al actualizar. codigo error C100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error C101");
+			throw new DAOException("Error al procesar consulta. codigo error C101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -42,7 +44,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	}
 
 	@Override
-	public void update(Coordenada coordenada) {
+	public void update(Coordenada coordenada) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -57,12 +59,12 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			if (cantidad > 0) {
 				 System.out.println("La coordenada se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar. codigo error C200");
+				throw new DAOException("Error al actualizar. codigo error C200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error C201");
+			throw new DAOException("Error al procesar consulta. codigo error C201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -76,7 +78,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	}
 
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DataNullException,DAOException{
+		if (codigo == null || codigo.isBlank()) {
+		    throw new DAOException("Matrícula inválida. V302");
+		}
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -89,11 +94,11 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		        if (cantidad > 0) {
 		            System.out.println("coordenada eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la coordenada. codigo error C300");
+		        	throw new DAOException("No se encontró la coordenada. codigo error C300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar coordenada. codigo error C301");
+			throw new DAOException("Error al Eliminar coordenada. codigo error C301");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -101,7 +106,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	}
 
 	@Override
-	public void remove(Coordenada coordenada) {
+	public void remove(Coordenada coordenada) throws DAOException{
 		
 		try {
 			 Connection conn = ConnectionManager.getConnection();
@@ -113,13 +118,13 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
-		            System.out.println("coordenada eliminada correctamente.");
+		        	throw new DAOException("coordenada eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la coordenada. codigo error C400");
+		        	throw new DAOException("No se encontró la coordenada. codigo error C400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar coordenada. codigo error C401");
+			throw new DAOException("Error al Eliminar coordenada. codigo error C401");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -128,8 +133,11 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	
 
 	@Override
-	public Coordenada find(String codigo) {
+	public Coordenada find(String codigo) throws DataNullException,DAOException{
 		Coordenada coordenada= null;
+		if (codigo == null || codigo.isBlank()) {
+		    throw new DAOException("Matrícula inválida. C502");
+		}
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigo,Latitud,Longitud "
@@ -143,10 +151,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error C500");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error C500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error C501");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error C501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -155,7 +163,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 	}
 
 	@Override
-	public List<Coordenada> findAll() {
+	public List<Coordenada> findAll() throws DAOException{
 		List<Coordenada> coordenadas = new ArrayList<>();
 		
 		try {
@@ -169,10 +177,10 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error C600");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error C600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error C601");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error C601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
