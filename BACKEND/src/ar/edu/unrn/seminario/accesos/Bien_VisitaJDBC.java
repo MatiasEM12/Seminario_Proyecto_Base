@@ -7,12 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.Bien;
 
 public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 	BienDAO bien;
 	@Override
-	public void create(String codBien, String codVisita) {
+	public void create(String codBien, String codVisita) throws DAOException{
 
 		try {
 			
@@ -29,12 +30,12 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar. codigo error BV100");
+				throw new DAOException("Error al actualizar. codigo error BV100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error BV101");
+			throw new DAOException("Error al procesar consulta. codigo error BV101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -43,7 +44,7 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 	}
 
 	@Override
-	public void update(String codBienNuevo,String codBienViejo, String codVisita) {
+	public void update(String codBienNuevo,String codBienViejo, String codVisita) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -59,12 +60,12 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			if (cantidad > 0) {
 				 System.out.println("El Bien_ Visita se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar. codigo error BV200");
+				throw new DAOException("Error al actualizar. codigo error BV200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error BV201");
+			throw new DAOException("Error al procesar consulta. codigo error BV201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -91,7 +92,7 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 	}
 
 	@Override
-	public List<Bien> findVisita(String codVisita) {
+	public List<Bien> findVisita(String codVisita) throws DAOException{
 		List<Bien> bienes = new ArrayList<>();
 		
 		try {
@@ -108,10 +109,10 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+ ". codigo error BV300");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+ ". codigo error BV300");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage() + ". codigo error BV301");
+			throw new DAOException("Error inesperado: " + e.getMessage() + ". codigo error BV301");
 		} 
 		finally {
 			ConnectionManager.disconnect();
