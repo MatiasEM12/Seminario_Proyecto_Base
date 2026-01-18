@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
@@ -20,7 +21,7 @@ import ar.edu.unrn.seminario.modelo.Visita;
 public class VisitaDAOJDBC implements VisitaDao{
 BienDAO biendao;
 	@Override
-	public void create(Visita visita) {
+	public void create(Visita visita) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -38,12 +39,12 @@ BienDAO biendao;
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT100");
+			throw new DAOException("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT100");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -51,7 +52,7 @@ BienDAO biendao;
 	}
 
 	@Override
-	public void update(Visita visita) {
+	public void update(Visita visita) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -69,12 +70,12 @@ BienDAO biendao;
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT200");
+			throw new DAOException("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT200");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -82,7 +83,7 @@ BienDAO biendao;
 	}
 
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -95,16 +96,19 @@ BienDAO biendao;
 		        if (cantidad > 0) {
 		            System.out.println("Visita eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la visita con ese código.");
+		        	throw new DAOException("No se encontró la visita con ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Visita"+".codigo VT300");
-		}
+			throw new DAOException("Error al Eliminar Visita"+".codigo VT300");
+		}finally {
+	        ConnectionManager.disconnect();
+	    }
+
 	}
 
 	@Override
-	public void remove(Visita visita) {
+	public void remove(Visita visita) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -117,16 +121,19 @@ BienDAO biendao;
 		        if (cantidad > 0) {
 		            System.out.println("Visita eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la visitacon ese código.");
+		        	throw new DAOException("No se encontró la visitacon ese código.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar visita"+".codigo VT400");
-		}
+			throw new DAOException("Error al Eliminar visita"+".codigo VT400");
+		}finally {
+	        ConnectionManager.disconnect();
+	    }
+
 	}
 
 	@Override
-	public Visita find(String codigo) throws DataNullException, DataLengthException {
+	public Visita find(String codigo) throws DataNullException, DataLengthException, DAOException {
 	   
 		Visita visita=null;
 		
@@ -148,10 +155,10 @@ BienDAO biendao;
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo VT500");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo VT500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo VT501");
+			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo VT501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -163,7 +170,7 @@ BienDAO biendao;
 
 
 	@Override
-	public List<Visita> findAll() throws DataNullException, DataLengthException {
+	public List<Visita> findAll() throws DataNullException, DataLengthException, DAOException {
 	    List<Visita> visitas = new ArrayList<>();
 
 	    String sqlVisitas =
@@ -182,7 +189,7 @@ BienDAO biendao;
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo VT600");
+	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+".codigo VT600");
 	        // TODO: lanzar tu excepción propia (DataAccessException, etc.)
 	    } finally {
 	        ConnectionManager.disconnect();
@@ -192,7 +199,7 @@ BienDAO biendao;
 	}
 
 	@Override
-	public ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException {
+	public ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException {
 	    ArrayList<Visita> visitas = new ArrayList<>() ;
 
 
@@ -211,7 +218,7 @@ BienDAO biendao;
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta: " + e.getMessage()+".codigo VT700");
+	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+".codigo VT700");
 	        // TODO: lanzar tu excepción propia (DataAccessException, etc.)
 	    } finally {
 	        ConnectionManager.disconnect();
