@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Voluntario;
@@ -17,7 +18,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 
     
 	@Override
-	public void create(Voluntario voluntario) {
+	public void create(Voluntario voluntario) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -42,12 +43,12 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar.codigo V100");
+				throw new DAOException("Error al actualizar.codigo V100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta.codigo V101");
+			throw new DAOException("Error al procesar consulta.codigo V101");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -56,7 +57,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	}
 
 	@Override
-	public void update(Voluntario voluntario) {
+	public void update(Voluntario voluntario) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -80,12 +81,12 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			if (cantidad > 0) {
 				 System.out.println("El Donante se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizarcodigo V200");
+				throw new DAOException("Error al actualizarcodigo V200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta.codigo V2001");
+			throw new DAOException("Error al procesar consulta.codigo V2001");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -101,7 +102,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	}
 
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DAOException{
 		try {
 			 
 			Connection conn = ConnectionManager.getConnection();
@@ -115,18 +116,21 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 		        if (cantidad > 0) {
 		            System.out.println("Voluntario eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró al voluntario.");
+		        	throw new DAOException("No se encontró al voluntario.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Voluntario.codigo V300");
-		}
+			throw new DAOException("Error al Eliminar Voluntario.codigo V300");
+		}finally {
+	        ConnectionManager.disconnect();
+	    }
+
 		
 		
 	}
 
 	@Override
-	public void remove(Voluntario voluntario) {
+	public void remove(Voluntario voluntario) throws DAOException{
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn.prepareStatement(
@@ -139,18 +143,21 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	        if (cantidad > 0) {
 	            System.out.println("Voluntario eliminado correctamente.");
 	        } else {
-	            System.out.println("No se encontró al voluntario.");
+	        	throw new DAOException("No se encontró al voluntario.");
 	        }
 		
 	}catch(SQLException e) {
-		System.out.println("Error al Eliminar Voluntario.codigo V400");
-	}
+		throw new DAOException("Error al Eliminar Voluntario.codigo V400");
+	}finally {
+        ConnectionManager.disconnect();
+    }
+
 	
 		
 	}
 
 	@Override
-	public Voluntario find(String codigo) {
+	public Voluntario find(String codigo) throws DAOException{
 		Voluntario voluntario= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -166,10 +173,10 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo V500");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo V500");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo V501");
+			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo V501");
 		} 
 		finally {
 			ConnectionManager.disconnect();
@@ -178,7 +185,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	}
 
 	@Override
-	public List<Voluntario> findAll() {
+	public List<Voluntario> findAll() throws DAOException{
 		List<Voluntario> voluntarios = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
@@ -191,10 +198,10 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			}
 		}
 		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+".codigo V600");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo V600");
 		}
 		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+".codigo V601");
+			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo V601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
