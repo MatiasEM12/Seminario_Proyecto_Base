@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -19,7 +20,7 @@ import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class DonanteDAOJDBC implements DonanteDao{
 	private UbicacionDAO u = new UbicacionDAOJDBC();
-	public void create(Donante donante) {
+	public void create(Donante donante) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -45,19 +46,19 @@ public class DonanteDAOJDBC implements DonanteDao{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar. codigo error UD100");
+				throw new DAOException("Error al actualizar. codigo error UD100");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT Donante): " + e.getMessage()+". codigo error UD101");
+			throw new DAOException("Error al procesar consulta (INSERT Donante): " + e.getMessage()+". codigo error UD101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
 		
 	}
 
-	public void update(Donante donante) {
+	public void update(Donante donante) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -94,7 +95,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error UD201");
+			throw new DAOException("Error al procesar consulta. codigo error UD201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -102,7 +103,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		
 	}
 
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 			  PreparedStatement statement1 = conn.prepareStatement(
@@ -130,16 +131,16 @@ public class DonanteDAOJDBC implements DonanteDao{
 		        if (cantidad > 0) {
 		            System.out.println("Donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró al donante. codigo error UD300");
+		        	throw new DAOException("No se encontró al donante. codigo error UD300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donanre. codigo error UD301");
+			throw new DAOException("Error al Eliminar donanre. codigo error UD301");
 		}
 		
 	}
 
-	public void remove(Donante donante) {
+	public void remove(Donante donante) throws DAOException{
 		try {
 			
 			 Connection conn = ConnectionManager.getConnection();
@@ -168,15 +169,15 @@ public class DonanteDAOJDBC implements DonanteDao{
 		        if (cantidad > 0) {
 		            System.out.println("donante eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el donante. codigo error UD400");
+		        	throw new DAOException("No se encontró el donante. codigo error UD400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar donante. codigo error UD401");
+			throw new DAOException("Error al Eliminar donante. codigo error UD401");
 		}
 	}
 	public Donante find(String codigo)
-	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
 
 	    Donante donante = null;
 
@@ -217,7 +218,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error SQL find Donante: " + e.getMessage());
+	    	throw new DAOException("Error SQL find Donante: " + e.getMessage());
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -228,7 +229,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 
 
-	public List<Donante> findAll() {
+	public List<Donante> findAll() throws DAOException{
         List<Donante> donantes = new ArrayList<>();
         Connection conn = null;
         PreparedStatement sent = null;
@@ -251,13 +252,13 @@ public class DonanteDAOJDBC implements DonanteDao{
                         );
                     }
                 } catch (Exception ex) {
-                    System.out.println(
+                	throw new DAOException(
                             "Advertencia: error al cargar donante codigo=" + codigo + " - " + ex.getMessage()+". codigo error UD601"
                     );
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta " + e.getMessage()+". codigo error UD602");
+        	throw new DAOException("Error al procesar consulta " + e.getMessage()+". codigo error UD602");
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) {}
             try { if (sent != null) sent.close(); } catch (SQLException ex) {}
