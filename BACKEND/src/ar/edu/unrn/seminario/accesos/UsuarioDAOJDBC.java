@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Rol;
@@ -16,7 +17,7 @@ import ar.edu.unrn.seminario.modelo.Usuario;
 public class UsuarioDAOJDBC implements UsuarioDao {
 
 	@Override
-	public void create(Usuario usuario) {
+	public void create(Usuario usuario) throws DAOException{
 
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -32,16 +33,16 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			if (cantidad > 0) {
 				System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
-			e.printStackTrace();
+			throw new DAOException("Error al procesar consulta"+e);
+
 			// TODO: disparar Exception propia
 		} catch (Exception e) {
-			System.out.println("Error al insertar un usuario"+".codigo U100");
+			throw new DAOException("Error al insertar un usuario"+".codigo U100"+e);
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -50,7 +51,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	}
 
 	@Override
-	public void update(Usuario usuario) {
+	public void update(Usuario usuario) throws DAOException{
 		try {
 			System.out.print(usuario.getUsuario());
 			 Connection conn = ConnectionManager.getConnection();
@@ -68,11 +69,11 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		        if (cantidad > 0) {
 		            System.out.println("Usuario actualizado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el Usuario.");
+		        	throw new DAOException("No se encontró el Usuario.");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al actualisar Usuario"+".codigo U200");
+			throw new DAOException("Error al actualisar Usuario"+".codigo U200");
 		}finally {
 		ConnectionManager.disconnect();
 	}
@@ -85,7 +86,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	}
 
 	@Override
-	public void remove(Usuario usuario) {
+	public void remove(Usuario usuario) throws DAOException{
 		
 		try {
 			 Connection conn = ConnectionManager.getConnection();
@@ -97,16 +98,18 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		        if (cantidad > 0) {
 		            System.out.println("se eliminaron correctamente. un total de "+cantidad+ " usuarios");
 		        } else {
-		            System.out.println("No se encontró usuarios con ese tipo de rol.");
+		        	throw new DAOException("No se encontró usuarios con ese tipo de rol.");
 		        }
 	
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar usuario"+".codigo U300");
+			throw new DAOException("Error al Eliminar usuario"+".codigo U300");
+		}finally {
+			ConnectionManager.disconnect();
 		}
 	}
 
 	@Override
-	public Usuario find(String username) {
+	public Usuario find(String username) throws DAOException{
 		Usuario usuario = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -130,10 +133,11 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta");
+			throw new DAOException("Error al procesar consulta");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getSQLState(), e.getMessage());
 		} catch (Exception e) {
+			throw new DAOException("Error al procesar consulta");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
 		} finally {
@@ -144,7 +148,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	}
 
 	@Override
-	public List<Usuario> findAll() throws DataNullException {
+	public List<Usuario> findAll() throws DataNullException, DAOException{
 		List<Usuario> usuarios = new ArrayList<Usuario>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -170,13 +174,13 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 							rs.getString("nombre"), rs.getString("contacto"), rol,activo,rs.getString("codigo"));
 				} catch (DataEmptyException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new DAOException("error: "+e);
 				}
 
 				usuarios.add(usuario);
 			}
 		} catch (SQLException e) {
-			System.out.println("Error de mySql\n" + e.toString());
+			throw new DAOException("Error de mySql\n" + e.toString());
 			// TODO: disparar Exception propia
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -199,7 +203,9 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 	        if (rs.next()) {
 	            return rs.getInt(1);  // devuelve el COUNT(*)
 	        }
-	    }
+	    }finally {
+			ConnectionManager.disconnect();
+		}
 	    return 0;
 	}
 }
