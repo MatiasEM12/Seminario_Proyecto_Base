@@ -8,13 +8,15 @@ import java.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
 
 
 public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 	@Override
-	public void create(OrdenPedido orden) {
+	public void create(OrdenPedido orden) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -33,12 +35,12 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
-				System.out.println("Error al actualizar. codigo error OP100");
+				throw new DAOException("Error al actualizar. codigo error OP100");
 				// TODO: disparar Exception propia
 			}
 			
 		} catch (SQLException e) {
-	        System.out.println("Error al procesar consulta (INSERT OrdenPedido): " + e.getMessage()+". codigo error OP101");
+			throw new DAOException("Error al procesar consulta (INSERT OrdenPedido): " + e.getMessage()+". codigo error OP101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -46,7 +48,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 	}
 
 	@Override
-	public void update(OrdenPedido orden) {
+	public void update(OrdenPedido orden) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -64,12 +66,12 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			if (cantidad > 0) {
 				 System.out.println("La orden se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar. codigo error OP200");
+				throw new DAOException("Error al actualizar. codigo error OP200");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error OP201");
+			throw new DAOException("Error al procesar consulta. codigo error OP201");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -77,7 +79,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 	}
 
 	@Override
-	public void remove(String id) {
+	public void remove(String id) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -90,16 +92,18 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código. codigo error OP300");
+		        	throw new DAOException("No se encontró el rol con ese código. codigo error OP300");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden. codigo error OP301");
+			throw new DAOException("Error al Eliminar Orden. codigo error OP301");
+		}finally {
+			ConnectionManager.disconnect();
 		}
 	}
 
 	@Override
-	public void remove(OrdenPedido orden) {
+	public void remove(OrdenPedido orden) throws DAOException{
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
@@ -112,16 +116,18 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        if (cantidad > 0) {
 		            System.out.println("Rol eliminado correctamente.");
 		        } else {
-		            System.out.println("No se encontró el rol con ese código. codigo error OP400");
+		        	throw new DAOException("No se encontró el rol con ese código. codigo error OP400");
 		        }
 			
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar Orden. codigo error OP401");
-		}		
+			throw new DAOException("Error al Eliminar Orden. codigo error OP401");
+		}finally {
+			ConnectionManager.disconnect();
+		}
 	}
 
 	@Override
-	public OrdenPedido find(String codigo) {
+	public OrdenPedido find(String codigo) throws DAOException{
 		OrdenPedido orden = null;
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -148,10 +154,11 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		        }
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error OP500");
+			throw new DAOException("Error al procesar consulta. codigo error OP500");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getSQLState(), e.getMessage());
 		} catch (Exception e) {
+			throw new DAOException("Error al procesar consulta. codigo error OP501"+e);
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
 		} finally {
@@ -162,7 +169,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 	}
 
 	@Override
-	public List<OrdenPedido> findAll() {
+	public List<OrdenPedido> findAll() throws DAOException{
 		List<OrdenPedido> ordenes = new ArrayList<>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -185,12 +192,13 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta. codigo error OP600");
+			throw new DAOException("Error al procesar consulta. codigo error OP600");
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getSQLState(), e.getMessage());
 		} catch (Exception e) {
 			// TODO: disparar Exception propia
 			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
+			throw new DAOException("Error al procesar consulta. codigo error OP601"+e);
 		} finally {
 			ConnectionManager.disconnect();
 		}
