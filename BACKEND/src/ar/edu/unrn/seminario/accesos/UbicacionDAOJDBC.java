@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
@@ -16,7 +18,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 	
 	@Override
-	public void create(Ubicacion ubicacion) {
+	public void create(Ubicacion ubicacion) throws DAOException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -55,12 +57,12 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
             if (cantidad > 0) {
                 System.out.println("Ubicacion insertada: " + ubicacion.getCodigo());
             } else {
-                System.out.println("No se insertó la ubicacion (executeUpdate devolvió 0)");
+            	throw new DAOException("No se insertó la ubicacion (executeUpdate devolvió 0)");
             }
 
         } catch (SQLException e) {
             
-            System.out.println("Error al procesar consulta (create Ubicacion): " + e.getMessage()+".codigo UB200");
+        	throw new DAOException("Error al procesar consulta (create Ubicacion): " + e.getMessage()+".codigo UB200");
         } finally {
             try { if (rs != null) rs.close(); } catch (SQLException ex) {}
             try { if (ps != null) ps.close(); } catch (SQLException ex) {}
@@ -71,7 +73,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	
 
 	@Override
-	public void update(Ubicacion ubicacion) {
+	public void update(Ubicacion ubicacion) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
@@ -91,12 +93,12 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 			if (cantidad > 0) {
 				 System.out.println("La ubucacion se ha actualizado correctamente");
 			} else {
-				System.out.println("Error al actualizar");
+				throw new DAOException("Error al actualizar");
 				// TODO: disparar Exception propia
 			}
 
 		} catch (SQLException e) {
-			System.out.println("Error al procesar consulta"+".codigo UB300");
+			throw new DAOException("Error al procesar consulta"+".codigo UB300");
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -118,7 +120,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	
 	
 	@Override
-	public void remove(String codigo) {
+	public void remove(String codigo) throws DataNullException, DAOException {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 			 String sqlSelect = "SELECT codCoordenada FROM ubicacion WHERE codigo = ?";
@@ -148,7 +150,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		        if (cantidad > 0) {
 		            System.out.println("ubicacion eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la ubicacion.");
+		        	throw new DAOException("No se encontró la ubicacion.");
 		        }
 			
 		     // Verificar si hay otras ubicaciones que usan la misma coordenada
@@ -170,7 +172,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		    	   }
 
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar ubicacion"+".codigo UB400");
+			throw new DAOException("Error al Eliminar ubicacion"+".codigo UB400");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -179,7 +181,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	}
 
 	@Override
-	public void remove(Ubicacion ubicacion) {
+	public void remove(Ubicacion ubicacion) throws DataNullException, DAOException {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 			 String sqlSelect = "SELECT codCoordenada FROM ubicacion WHERE codigo = ?";
@@ -209,7 +211,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		        if (cantidad > 0) {
 		            System.out.println("ubicacion eliminada correctamente.");
 		        } else {
-		            System.out.println("No se encontró la ubicacion.");
+		        	throw new DAOException("No se encontró la ubicacion.");
 		        }
 			
 		     // Verificar si hay otras ubicaciones que usan la misma coordenada
@@ -231,7 +233,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 		    	   }
 
 		}catch(SQLException e) {
-			System.out.println("Error al Eliminar ubicacion"+".codigo UB500");
+			throw new DAOException("Error al Eliminar ubicacion"+".codigo UB500");
 		}finally {
 			ConnectionManager.disconnect();
 		}
@@ -241,7 +243,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 	
 	@Override
-	public Ubicacion find(String codigo) {
+	public Ubicacion find(String codigo) throws DAOException{
 
 	    Ubicacion ubicacion = null;
 
@@ -293,9 +295,9 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error SQL Ubicacion.find: " + e.getMessage() + ". codigo UB600");
+	    	throw new DAOException("Error SQL Ubicacion.find: " + e.getMessage() + ". codigo UB600");
 	    } catch (Exception e) {
-	        System.out.println("Error inesperado Ubicacion.find: " + e.getMessage() + ". codigo UB601");
+	    	throw new DAOException("Error inesperado Ubicacion.find: " + e.getMessage() + ". codigo UB601");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -305,7 +307,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 
 	@Override
-	public List<Ubicacion> findAll() {
+	public List<Ubicacion> findAll() throws DAOException{
 	    List<Ubicacion> ubicaciones = new ArrayList<>();
 
 	    try {
@@ -320,9 +322,9 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 	        }
 
 	    } catch (SQLException e) {
-	        System.out.println("Error al procesar consulta " + e.getMessage() + ".codigo UB700");
+	    	throw new DAOException("Error al procesar consulta " + e.getMessage() + ".codigo UB700");
 	    } catch (Exception e) {
-	        System.out.println("Error inesperado: " + e.getMessage() + ".codigo UB701");
+	    	throw new DAOException("Error inesperado: " + e.getMessage() + ".codigo UB701");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
