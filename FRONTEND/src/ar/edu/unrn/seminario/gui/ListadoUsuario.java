@@ -15,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 
@@ -120,7 +121,11 @@ public class ListadoUsuario extends JFrame {
 	                int filaSeleccionada = table.getSelectedRow();
 	                if (filaSeleccionada >= 0) {
 	                    String user = (String) table.getValueAt(filaSeleccionada, 2);
-	                    api.eliminarUsuario(user);
+	                    try {
+							api.eliminarUsuario(user);
+						} catch (DAOException e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+						}
 	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                    model.removeRow(filaSeleccionada);
 						JOptionPane.showMessageDialog(null, "se eliminaron correctamente. un total de 1 usuarios", "Usuario", JOptionPane.INFORMATION_MESSAGE);
@@ -212,7 +217,7 @@ public class ListadoUsuario extends JFrame {
 	private void filtrar(JComboBox<String> combo, JTextField texto) throws DataNullException {
 		 modelo.setRowCount(0); 
 		String filtro =combo.getSelectedItem().toString();
-		List<UsuarioDTO> usuarios;
+		List<UsuarioDTO> usuarios = null;
 	
 		
 		
@@ -240,7 +245,11 @@ public class ListadoUsuario extends JFrame {
 			
 		}else {//todos
 			
-			usuarios = api.obtenerUsuarios();
+			try {
+				usuarios = api.obtenerUsuarios();
+			} catch (DataNullException | DAOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 			
 			for (UsuarioDTO u : usuarios) {
 				modelo.addRow(new Object[] { u.getCodigo(), u.getRol(),u.getUsername(), u.getNombre(),u.getEmail(),u.getEstado() });
