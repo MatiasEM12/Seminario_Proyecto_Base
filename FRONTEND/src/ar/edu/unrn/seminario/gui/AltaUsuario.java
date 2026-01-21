@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -41,7 +42,11 @@ public class AltaUsuario extends JFrame {
 	public AltaUsuario(IApi api) throws StateChangeException {
 
 		// Obtengo los roles
-		this.roles = api.obtenerRolesActivos();
+		try {
+			this.roles = api.obtenerRolesActivos();
+		} catch (StateChangeException | DataNullException | DAOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
 		setTitle("Alta Usuario");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -80,8 +85,12 @@ public class AltaUsuario extends JFrame {
 					
 					
 					
-					api.registrarUsuario(usuarioTextField.getText(), contrasenaTextField.getText(),
-							 emailTextField.getText(),nombreTextField.getText(), rol.getCodigo(),false);
+					try {
+						api.registrarUsuario(usuarioTextField.getText(), contrasenaTextField.getText(),
+								 emailTextField.getText(),nombreTextField.getText(), rol.getCodigo(),false);
+					} catch (DAOException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+					}
 					JOptionPane.showMessageDialog(null, "Usuario registrado con exito!", "Info", JOptionPane.INFORMATION_MESSAGE);
 					setVisible(false);
 					dispose();
