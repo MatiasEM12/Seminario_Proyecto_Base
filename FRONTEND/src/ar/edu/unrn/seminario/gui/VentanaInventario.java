@@ -23,6 +23,7 @@ import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.InventarioDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
 
@@ -117,7 +118,12 @@ public class VentanaInventario extends JFrame {
                 return;
             }
             String codigo=(String) table.getValueAt(fila, 0);
-            Bien bien=api.ObtenerBien(codigo);
+            Bien bien = null;
+			try {
+				bien = api.ObtenerBien(codigo);
+			} catch (DataNullException | DAOException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
             if (bien==null) {
                 JOptionPane.showMessageDialog(null, "Ocurio un error al intenar cargar el bien.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
