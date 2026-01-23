@@ -1,6 +1,7 @@
 package ar.edu.unrn.seminario.gui;
 
 import java.awt.EventQueue;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
+import ar.edu.unrn.seminario.modelo.Donacion;
 
 public class SolicitudesEntrega extends JFrame {
 
@@ -81,6 +83,7 @@ public class SolicitudesEntrega extends JFrame {
 
     private void cargarSolicitudes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
         // intentamos obtener donaciones pendientes 
+    	List <DonacionDTO> donaciones;
         try {
             donaciones = api.obtenerDonacionesPendientes();
         } catch (Exception e) {
@@ -117,7 +120,8 @@ public class SolicitudesEntrega extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleccioná una donación.");
             return;
         }
-        DonacionDTO seleccionada = donaciones.get(fila);
+        List<DonacionDTO> donaciones;
+		DonacionDTO seleccionada = donaciones.get(fila);
 
         if (ventanaPedido != null) {
             ventanaPedido.recibirDonacion(seleccionada);
