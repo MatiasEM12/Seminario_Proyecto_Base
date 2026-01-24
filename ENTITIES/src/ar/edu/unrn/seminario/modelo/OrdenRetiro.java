@@ -65,6 +65,11 @@ public class OrdenRetiro extends Orden{
 			this.visitas = visitas;
 			this.recolectados = new ArrayList<>();
 			this.voluntario=voluntario;
+			if(codigo==null) {
+				crearCodigo();
+			}else {
+				this.codigo=codigo;
+			}
 	}
 	
 
