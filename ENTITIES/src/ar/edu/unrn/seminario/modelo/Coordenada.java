@@ -22,6 +22,7 @@ public class Coordenada {
 		
 		this.latitud = latitud;
 		this.longitud = longitud;
+		
 		this.crearCodigo();
 	}
 
@@ -38,7 +39,11 @@ public class Coordenada {
 		
 		this.latitud = latitud;
 		this.longitud = longitud;
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
 	public double getLatitud() {
 		return latitud;
