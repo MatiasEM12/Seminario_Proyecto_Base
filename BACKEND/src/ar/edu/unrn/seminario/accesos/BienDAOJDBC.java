@@ -351,5 +351,3 @@ List<Bien> bienes = new ArrayList<>();
 	    return bienes;
 	}
 }
-
-
