@@ -64,7 +64,11 @@ public class Ubicacion {
 		this.barrio = barrio;
 		this.direccion = direccion;
 		this.coordenada=coordenada;
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
 	public Ubicacion(String codigo, String zona, String barrio, String direccion) throws DataNullException, DataEmptyException, DataObjectException {
 		super();
@@ -77,7 +81,11 @@ public class Ubicacion {
 		this.validarCampoNull(barrio);
 		this.validarCampoVacio(barrio, this.barrio);
 		
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 		this.zona=zona;
 		this.barrio=barrio;
 		this.direccion=direccion;
