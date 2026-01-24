@@ -43,6 +43,7 @@ public class Coordenada {
 			crearCodigo();
 		}else {
 			this.codigo=codigo;
+			
 		}
 	}
 	public double getLatitud() {
