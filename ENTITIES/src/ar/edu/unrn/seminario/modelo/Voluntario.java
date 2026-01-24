@@ -40,7 +40,11 @@ public class Voluntario extends Persona{
 		
 		
 		this.username = username;
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
 
 	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,boolean disponible) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
