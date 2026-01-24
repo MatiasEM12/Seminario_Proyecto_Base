@@ -60,7 +60,8 @@ public class Donante extends Persona  {
 		if (codigo==null) {
 			crearCodigo();
 		}else {
-			this.codigo=codigo; 		}
+			this.codigo=codigo; 		
+			}
 		
 	}
 
