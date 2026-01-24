@@ -86,7 +86,11 @@ public class Visita {
 		this.tipo = tipo;
 		this.codOrdenRetiro = codOrdenRetiro;
 		this.bienesRecolectados = bienesRecolectados;
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
@@ -98,7 +102,11 @@ public class Visita {
 		this.codOrdenRetiro = codOrdenRetiro;
 		this.bienesRecolectados = new ArrayList<>();
 		this.bienesRecolectados.add(bien);
-		this.codigo=codigo;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
 	public String getCodigo() {
 		return codigo;
