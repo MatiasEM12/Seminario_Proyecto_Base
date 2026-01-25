@@ -209,5 +209,21 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 		return voluntarios;
 	
 	}
+	
+	public int obtenerCantidadVoluntarios() throws SQLException {
+	    String sql = "SELECT COUNT(*) FROM voluntario";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            return rs.getInt(1);  // devuelve el COUNT(*)
+	        }
+	    }finally {
+			ConnectionManager.disconnect();
+		}
+	    return 0;
+	}
 
 }
