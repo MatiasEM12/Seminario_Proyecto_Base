@@ -48,5 +48,6 @@ public class Licencia {
 	public void setFechaVencimiento(LocalDateTime fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
 	}
+	
 
 }

@@ -182,6 +182,9 @@ public class Bien {
 		this.material = material;
 	}
 	
+	public static void setContadorBien(int contador) {
+		Bien.contadorBien = contador;
+	}
 	
 	private void crearCodigo() {
 		  contadorBien++;

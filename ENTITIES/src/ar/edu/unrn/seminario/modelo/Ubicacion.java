@@ -159,7 +159,9 @@ public class Ubicacion {
 		  this.codigo = "UBI" + String.format("%05d", contadorUbicacion);
 	}
 
-
+	public static void setContadorUbicacion(int contador) {
+		Ubicacion.contadorUbicacion = contador;
+	}
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;

@@ -48,6 +48,7 @@ import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
+import ar.edu.unrn.seminario.modelo.Beneficiario;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
@@ -93,6 +94,12 @@ public class PersistenceApi implements IApi {
         this.ubicacionDao  = new UbicacionDAOJDBC();
     }
    
+    //Iniciaizar
+    public void InicializarContadores() {
+    	//Beneficiario.setContadorDonante(0);
+    	//Bien.setContadorBien(0);
+    }
+    
     // --- Usuario / Rol ---
     @Override
     public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)

@@ -84,6 +84,10 @@ public class OrdenEntrega extends Orden{
 		contadorEntrega++;
 		  this.codigo = "E" + String.format("%05d", contadorEntrega);
 	}
+	
+	public static void setContadorCoordenada(int contador) {
+		OrdenEntrega.contadorEntrega = contador;
+	}
 	}
 
 
