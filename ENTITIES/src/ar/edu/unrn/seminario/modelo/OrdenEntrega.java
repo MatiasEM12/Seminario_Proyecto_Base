@@ -12,9 +12,9 @@ public class OrdenEntrega extends Orden{
 	public static String tipo="ORDEN_ENTREGA";
 	private String codigo=null;
 	private LocalDateTime fechaHoraProgramada=null;
-	// comiensa siempre como pendiente que es true
+	// comienza siempre como pendiente que es true
 	private boolean entregaEstado = true;
-	//esto podriamos usuarlo para saver si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
+	//esto podriamos usuarlo para saber si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
 	private boolean confimacionRecepcion=false;
 	private Bien Entrega[];
 	private Beneficiario beneficiario;
