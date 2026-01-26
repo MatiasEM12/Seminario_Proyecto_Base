@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -17,4 +18,6 @@ public interface OrdenRetiroDao {
 	OrdenRetiro find(String codigo)throws DAOException;
 
 	List<OrdenRetiro> findAll()throws DAOException;
+	
+	int obtenerCantidadOR() throws SQLException;
 }

@@ -12,7 +12,7 @@ import ar.edu.unrn.seminario.modelo.*;
 public interface IApi {
 	
 	
-	  public void InicializarContadores();
+	  public void InicializarContadores() throws SQLException;
 	//Usuario
 
 	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException, DAOException ;

@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface VisitaDao {
 	List<Visita> findAll() throws DataNullException, DataLengthException, DAOException;
 
 	ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException;
+
+	 int obtenerCantidadVisitas() throws SQLException;
 }
