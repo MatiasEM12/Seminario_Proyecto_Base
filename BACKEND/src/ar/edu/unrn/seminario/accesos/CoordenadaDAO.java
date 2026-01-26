@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -21,5 +22,6 @@ public interface CoordenadaDAO {
 	Coordenada find(String codigo)throws DataNullException,DAOException;
 
 	List<Coordenada> findAll()throws DAOException;
-
+	
+	 int obtenerCantidadCoordenadas() throws SQLException;
 }

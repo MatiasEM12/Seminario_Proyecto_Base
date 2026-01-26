@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface BienDAO {
 	ArrayList<Bien> findBienVisita(String codVisita)throws DataNullException,DAOException;
 	
 	List<Bien> findALLTipo(String tipo)throws DataNullException,DAOException;
+	
+	int obtenerCantidadBienes() throws SQLException;
 }

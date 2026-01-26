@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -23,4 +24,6 @@ public interface UbicacionDAO {
 	Ubicacion find(String codigo)throws DAOException;
 
 	List<Ubicacion> findAll()throws DAOException;
+	
+	int obtenerCantidadUbicaciones() throws SQLException;
 }

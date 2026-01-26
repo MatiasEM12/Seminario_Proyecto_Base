@@ -25,6 +25,8 @@ public interface DonanteDao {
 
 
 	List<Donante> findAll() throws DAOException;
-	public int obtenerCantidadUsuarios() throws SQLException ;
+	public int obtenerCantidadDonantes() throws SQLException ;
+	
+
 
 }

@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 import ar.edu.unrn.seminario.exception.*;
 
@@ -17,4 +18,6 @@ public interface VehiculoDAO {
 	Vehiculo find(String matricula)throws DAOException;
 
 	List<Vehiculo> findAll()throws DAOException;
+	
+	int obtenerCantidadVehiculos() throws SQLException;
 }

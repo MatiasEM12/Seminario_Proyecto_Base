@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -27,6 +28,7 @@ public interface DonacionDAO {
 
 	List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
 	List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
-
+	 
+	int obtenerCantidadDonaciones() throws SQLException;
 
 }
