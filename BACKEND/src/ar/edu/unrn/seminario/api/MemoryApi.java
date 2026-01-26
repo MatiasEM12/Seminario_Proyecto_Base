@@ -895,6 +895,24 @@ public class MemoryApi implements IApi {
 		return null;
 	}
 
+	@Override
+	public void InicializarContadores() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void ModificarBienInventario(Bien bien) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	
 }
