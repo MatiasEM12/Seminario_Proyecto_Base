@@ -44,6 +44,7 @@ import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataExistsException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
@@ -115,22 +116,34 @@ public class PersistenceApi implements IApi {
     // --- Usuario / Rol ---
     @Override
     public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)
-            throws DataEmptyException, SQLException, DAOException {
+            throws DataEmptyException, SQLException, DAOException, DataExistsException {
     	
     	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rol = rolDao.find(codigoRol);
         Usuario usuario = new Usuario(username, password, nombre, contacto, rol,false,null);
-        this.usuarioDao.create(usuario);
+        try {
+			this.usuarioDao.create(usuario);
+		} catch (DAOException e) {
+			throw new DAOException(e.getMessage()); 
+		} catch (DataExistsException e) {
+			throw new DataExistsException(e.getMessage()); 
+		}
     }
 
     @Override
     public void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo)
-            throws DataEmptyException, SQLException, DAOException {
+            throws DataEmptyException, SQLException, DAOException, DataExistsException {
     	
     	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rolN = rolDao.find(rol);
         Usuario usuario = new Usuario(username, password, nombre, email, rolN, activo,null);
-        this.usuarioDao.create(usuario);
+        try {
+			this.usuarioDao.create(usuario);
+		} catch (DAOException e) {
+			throw new DAOException(e.getMessage()); 
+		} catch (DataExistsException e) {
+			throw new DataExistsException(e.getMessage()); 
+		}
     }
 
     @Override
