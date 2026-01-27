@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataExistsException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Usuario;
@@ -17,7 +19,7 @@ import ar.edu.unrn.seminario.modelo.Usuario;
 public class UsuarioDAOJDBC implements UsuarioDao {
 
 	@Override
-	public void create(Usuario usuario) throws DAOException{
+	public void create(Usuario usuario) throws DAOException, DataExistsException{
 
 		try {
 			Connection conn = ConnectionManager.getConnection();
@@ -37,12 +39,14 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 				// TODO: disparar Exception propia
 			}
 
+		} catch (SQLIntegrityConstraintViolationException e) {
+			throw new DataExistsException("Error el usuario que intenta agregar ya existe" + e.getMessage()+".codigo U05");
 		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta"+e);
+			throw new DAOException("Error al procesar consulta"+e.getMessage());
 
 			// TODO: disparar Exception propia
 		} catch (Exception e) {
-			throw new DAOException("Error al insertar un usuario"+".codigo U100"+e);
+			throw new DAOException("Error al insertar un usuario"+".codigo U100"+e.getMessage());
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
