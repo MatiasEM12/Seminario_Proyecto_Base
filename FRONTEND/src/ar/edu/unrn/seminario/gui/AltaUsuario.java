@@ -20,6 +20,7 @@ import ar.edu.unrn.seminario.dto.RolDTO;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataExistsException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
@@ -88,12 +89,13 @@ public class AltaUsuario extends JFrame {
 					try {
 						api.registrarUsuario(usuarioTextField.getText(), contrasenaTextField.getText(),
 								 emailTextField.getText(),nombreTextField.getText(), rol.getCodigo(),false);
-					} catch (DAOException e) {
+						JOptionPane.showMessageDialog(null, "Usuario registrado con exito!", "Info", JOptionPane.INFORMATION_MESSAGE);
+						setVisible(false);
+						dispose();
+					} catch (DAOException | DataExistsException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 					}
-					JOptionPane.showMessageDialog(null, "Usuario registrado con exito!", "Info", JOptionPane.INFORMATION_MESSAGE);
-					setVisible(false);
-					dispose();
+
 					
 				} catch (DataEmptyException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
