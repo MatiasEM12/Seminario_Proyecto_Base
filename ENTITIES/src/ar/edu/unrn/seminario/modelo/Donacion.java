@@ -79,5 +79,7 @@ public class Donacion {
 	private void crearCodigo() {
 		this.codigo = String.format("DN%05d", contadorDonacion++);
 	}
-
+	public static void setContadorDonacion(int contador) {
+		Donacion.contadorDonacion = contador;
+	}
 }

@@ -165,8 +165,8 @@ public class Donante extends Persona  {
 	}
 
 
-	public static void setContadorDonante(int contadorDonante) {
-		Donante.contadorDonante = contadorDonante;
+	public static void setContadorDonante(int contador) {
+		Donante.contadorDonante = contador;
 	}
 	
 	

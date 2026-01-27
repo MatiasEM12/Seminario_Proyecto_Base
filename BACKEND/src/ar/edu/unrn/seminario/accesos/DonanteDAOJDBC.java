@@ -275,7 +275,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		
 	}
 	
-	public int obtenerCantidadUsuarios() throws SQLException {
+	public int obtenerCantidadDonantes() throws SQLException {
 	    String sql = "SELECT COUNT(*) FROM donante";
 
 	    try (Connection conn = ConnectionManager.getConnection();

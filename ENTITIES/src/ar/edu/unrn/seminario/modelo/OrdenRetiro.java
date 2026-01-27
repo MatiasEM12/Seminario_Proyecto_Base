@@ -247,4 +247,8 @@ public class OrdenRetiro extends Orden{
 	public int getCantBienes() {
 		return (recolectados == null) ? 0 : recolectados.size();
 	}
+	
+	public static void setContadorOrdenRetiro(int contador) {
+		OrdenRetiro.contadorOrdenRetiro = contador;
+	}
 }

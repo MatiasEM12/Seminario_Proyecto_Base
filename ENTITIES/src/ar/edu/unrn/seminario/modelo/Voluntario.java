@@ -138,4 +138,8 @@ public class Voluntario extends Persona{
 		}
 	}
 	
+	public static void setContadorVoluntario(int contador) {
+		Voluntario.contadorVoluntario = contador;
+	}
+	
 }

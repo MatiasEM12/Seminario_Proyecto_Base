@@ -73,7 +73,9 @@ public class Coordenada {
 		  contadorCoordenada++;
 		  this.codigo = "C" + String.format("%05d", contadorCoordenada);
 	}
-	
+	public static void setContadorCoordenada(int contador) {
+		Coordenada.contadorCoordenada = contador;
+	}
 	
 	private void validarCampoNull( Double nombreCampo) throws DataNullException {
 		if (nombreCampo==null) {

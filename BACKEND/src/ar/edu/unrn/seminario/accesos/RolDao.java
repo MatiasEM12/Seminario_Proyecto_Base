@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -20,6 +21,7 @@ public interface RolDao {
 
 	List<Rol> findAll() throws DataNullException, DAOException;
 	
+	int obtenerCantidadRoles() throws SQLException;
 	
 
 }

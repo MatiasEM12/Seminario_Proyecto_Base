@@ -48,10 +48,13 @@ import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
+import ar.edu.unrn.seminario.modelo.Beneficiario;
 import ar.edu.unrn.seminario.modelo.Bien;
+import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Orden;
+import ar.edu.unrn.seminario.modelo.OrdenEntrega;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
 import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 import ar.edu.unrn.seminario.modelo.Visita;
@@ -93,6 +96,22 @@ public class PersistenceApi implements IApi {
         this.ubicacionDao  = new UbicacionDAOJDBC();
     }
    
+    //Iniciaizar
+    public void InicializarContadores() throws SQLException {
+    	//Beneficiario.setContadorDonante(0);
+    	Bien.setContadorBien(bienDao.obtenerCantidadBienes());
+    	Coordenada.setContadorCoordenada(coordenadaDAO.obtenerCantidadCoordenadas());
+    	Donacion.setContadorDonacion(donacionDao.obtenerCantidadDonaciones());
+    	Donante.setContadorDonante(donanteDao.obtenerCantidadDonantes());
+    	//OrdenEntrega.setContadorCoordenada(0)
+    	OrdenPedido.setContadorPedido(ordenPedidoDao.obtenerCantidadOP());
+    	OrdenRetiro.setContadorOrdenRetiro(ordenRetiroDao.obtenerCantidadOR());
+    	//Rol
+    	Ubicacion.setContadorUbicacion(ubicacionDao.obtenerCantidadUbicaciones());
+    	Usuario.setContadorUsuario(usuarioDao.obtenerCantidadUsuarios());
+    	Voluntario.setContadorVoluntario(voluntarioDao.obtenerCantidadVoluntarios());
+    }
+    
     // --- Usuario / Rol ---
     @Override
     public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)

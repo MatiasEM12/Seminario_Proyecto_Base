@@ -185,6 +185,10 @@ public class Visita {
 		  contadorVisita++;
 		  this.codigo = "VI" + String.format("%05d", contadorVisita);
 	}
+	
+	public static void setContadorVisita(int contador) {
+		Visita.contadorVisita = contador;
+	}
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;

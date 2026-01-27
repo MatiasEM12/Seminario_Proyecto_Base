@@ -173,8 +173,8 @@ public class Usuario {
 				+ ", rol=" + rol + ", activo=" + activo + "]";
 	}
 
-	public static void setContadorUsuario(int contadorUsuario) {
-		Usuario.contadorUsuario = contadorUsuario;
+	public static void setContadorUsuario(int contador) {
+		Usuario.contadorUsuario = contador;
 	}
 	
 	

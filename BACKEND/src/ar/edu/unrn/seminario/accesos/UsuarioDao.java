@@ -19,5 +19,5 @@ public interface UsuarioDao {
 	Usuario find(String username)throws DAOException;
 
 	List<Usuario> findAll() throws DataNullException, DAOException;
-   int obtenerCantidadUsuarios() throws SQLException;
+    int obtenerCantidadUsuarios() throws SQLException;
 }

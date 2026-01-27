@@ -123,6 +123,8 @@ public class OrdenPedido extends Orden {
 			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
 		}
 	}
-	
+	public static void setContadorPedido(int contador) {
+		OrdenPedido.contadorOrdenPedido = contador;
+	}
 	
 }
