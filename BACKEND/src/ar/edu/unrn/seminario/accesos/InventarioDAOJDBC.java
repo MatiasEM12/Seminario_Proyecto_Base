@@ -295,7 +295,6 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	public List<Bien> findALLTipo(String tipo) throws DAOException {
 	    List<Bien> bienes = new ArrayList<>();
 	    try {
-	        //rebisa si la busqueda no fue por bienes vencidos
 	    	//se realisa el filtro de busqueda del bien
 	        //rebisa si la busqueda fue por bienes vencidos
 	    	PreparedStatement sent;
