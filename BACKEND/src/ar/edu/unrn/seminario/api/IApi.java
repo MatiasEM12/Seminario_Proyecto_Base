@@ -15,7 +15,7 @@ public interface IApi {
 	  public void InicializarContadores() throws SQLException;
 	//Usuario
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException, DAOException ;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo)  throws DataEmptyException, DataObjectException, DataNullException, DataDateException, SQLException, DAOException, DataExistsException ;
 	
 	 
 	UsuarioDTO obtenerUsuario(String username) throws DAOException;
@@ -106,7 +106,7 @@ public interface IApi {
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException;
 
-	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException, DAOException;
+	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException, DAOException, DataExistsException;
 
 	//Visitas
 	public void registrarVisita(Visita visita);
