@@ -1,6 +1,7 @@
 package ar.edu.unrn.seminario.accesos;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,22 +20,24 @@ import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Visita;
 
 public class VisitaDAOJDBC implements VisitaDao{
-BienDAO biendao;
+BienDAO biendao= new BienDAOJDBC();
 	@Override
 	public void create(Visita visita) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO Visitas (fechaVisita,observaciones, tipo, codOrdenRetiro,codigo)"
-							+ " VALUES (?, ?, ?, ?, ?, ?)");
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(visita.getFechaVisita());
-			
-			statement.setDate(1, fechaSQL);
-			statement.setString(2, visita.getObservaciones());
-			statement.setString(3, visita.getTipo());
-			statement.setObject(4, visita.getRetiro());
-			statement.setObject(5, visita.getCodigo());
+			PreparedStatement statement = conn.prepareStatement(
+				    "INSERT INTO visitas (codigo, tipo, observaciones, estado, FechaVisita, codOrdenRetiro) " +
+				    "VALUES (?, ?, ?, ?, ?, ?)"
+				);
+
+				statement.setString(1, visita.getCodigo());
+				statement.setString(2, visita.getTipo());
+				statement.setString(3, visita.getObservaciones());
+				statement.setString(4, visita.getEstado()); 
+				statement.setDate(5, Date.valueOf(visita.getFechaVisita()));
+				statement.setString(6, visita.getCodOrdenRetiro());
+
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -56,9 +59,10 @@ BienDAO biendao;
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("UPDATE visita SET fechaVisita=?, observaciones=?, "
-							+ "tipo=?, ordenRetiro=? WHERE codigo=?)");
+			PreparedStatement statement = conn.prepareStatement(
+				    "UPDATE visitas SET FechaVisita=?, observaciones=?, tipo=?, codOrdenRetiro=? WHERE codigo=?"
+				);
+
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(visita.getFechaVisita());
 			
 			statement.setDate(1, fechaSQL);
@@ -140,15 +144,16 @@ BienDAO biendao;
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT v.codigo, v.fechaVisita, v.observaciones, v.tipo, "
-					+ "v.ordenRetiro " +
-			        "FROM Visita v WHERE v.codigo = ?");
+			PreparedStatement sent = conn.prepareStatement(
+				    "SELECT codigo, FechaVisita, observaciones, tipo, codOrdenRetiro " +
+				    "FROM visitas WHERE codigo = ?"
+				);
+
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
-				java.sql.Date sqlDate = rs.getDate("v.fechaVisita");
-				   java.time.LocalDate localDate = sqlDate.toLocalDate();
 				
+				LocalDate localDate = rs.getDate("FechaVisita").toLocalDate();
 				visita=new Visita(localDate,rs.getString("v.observaciones"),rs.getString("v.tipo"),rs.getString("v.ordenRetiro")
 						,biendao.findBienVisita("v.codigo"),rs.getString("v.codigo"));
 				
@@ -183,7 +188,9 @@ BienDAO biendao;
 	         ResultSet rs = stVisitas.executeQuery()) {
 	        while (rs.next()) {
 	
-	            Visita v = this.find("v.codigo"); 
+	        	String codigo = rs.getString("codigo");
+	        	Visita v = this.find(codigo);
+
 	            visitas.add(v);
 	           
 	        }
@@ -199,34 +206,37 @@ BienDAO biendao;
 	}
 
 	@Override
-	public ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException {
-	    ArrayList<Visita> visitas = new ArrayList<>() ;
+	public ArrayList<Visita> findAll(String codOrdenRetiro)
+	        throws DataNullException, DataLengthException, DAOException {
 
+	    ArrayList<Visita> visitas = new ArrayList<>();
 
 	    try {
-	    	Connection conn = ConnectionManager.getConnection();
-	         PreparedStatement stVisitas = conn.prepareStatement(  "SELECT v.codigo, v.fechaVisita, v.observaciones, v.tipo, v.ordenRetiro " +
-	     	        "FROM Visita v OrdneRetiro or WHERE or.codigo =  ? AND	  or.codigo=v.codOrdenPedido" );
-	    		stVisitas.setString(1,codOrdenRetiro);
-	    		
-	         ResultSet rs = stVisitas.executeQuery();
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigo FROM visitas WHERE codOrdenRetiro = ?"
+	        );
+	        st.setString(1, codOrdenRetiro);
+
+	        ResultSet rs = st.executeQuery();
+
 	        while (rs.next()) {
-	
-	            Visita v = this.find("v.codigo"); 
+	            String codigoVisita = rs.getString("codigo");
+	            Visita v = this.find(codigoVisita);
 	            visitas.add(v);
-	           
 	        }
 
 	    } catch (SQLException e) {
-	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+".codigo VT700");
-	        // TODO: lanzar tu excepción propia (DataAccessException, etc.)
+	        throw new DAOException(
+	            "Error al procesar consulta: " + e.getMessage() + ".codigo VT700"
+	        );
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
 
 	    return visitas;
 	}
-	
+
 	public int obtenerCantidadVisitas() throws SQLException {
 	    String sql = "SELECT COUNT(*) FROM visitas";
 

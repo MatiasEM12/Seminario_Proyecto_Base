@@ -97,8 +97,10 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT bv.codBien  "
-					+ "FROM Bien_Visita bv, donacion d WHERE bv.codDonacion=? AND d.codigo=? AND  bv.codDonacion=d.codigo");
+			PreparedStatement sent = conn.prepareStatement("SELECT bv.codBien\r\n"
+					+ "FROM Bien_Visita bv\r\n"
+					+ "WHERE bv.codVisita = ?\r\n"
+					+ "");
 			
 			sent.setString(1, codVisita);
 			sent.setString(2, codVisita);
