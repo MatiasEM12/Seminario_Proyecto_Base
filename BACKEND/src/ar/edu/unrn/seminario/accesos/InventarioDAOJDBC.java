@@ -296,54 +296,50 @@ ArrayList<Bien> bienes = new ArrayList<>();
 	    List<Bien> bienes = new ArrayList<>();
 	    try {
 	        //rebisa si la busqueda no fue por bienes vencidos
+	    	//se realisa el filtro de busqueda del bien
+	        //rebisa si la busqueda fue por bienes vencidos
+	    	PreparedStatement sent;
+	    	Connection conn = ConnectionManager.getConnection();
 	        if (tipo.equals("Bienes vencidos")) {
-	            Connection conn = ConnectionManager.getConnection();
-	            PreparedStatement sent = conn.prepareStatement(
+	            sent = conn.prepareStatement(
 	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
 	                "FROM inventario WHERE fechaVencimiento < ?");  //comparara la fecha con la actual
 	            sent.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
-	            ResultSet rs = sent.executeQuery();
-	            while (rs.next()) {
-	                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-	                java.time.LocalDate fecha = sqlDate.toLocalDate();
-	                Bien bien = new Bien(
-	                    rs.getString("codigo"),
-	                    rs.getString("tipo"),
-	                    rs.getDouble("peso"),
-	                    rs.getString("nombre"),
-	                    rs.getString("descripcion"),
-	                    rs.getInt("nivelNecesidad"),
-	                    fecha,
-	                    rs.getDouble("talle"),
-	                    rs.getString("material")
-	                );
-	                bienes.add(bien);
-	            }
-	        }else{ // recupera todos los que sean iguales al tipo.
-	            Connection conn = ConnectionManager.getConnection();
-	            PreparedStatement sent = conn.prepareStatement(
-	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-	                "FROM inventario WHERE tipo = ?");
-	            sent.setString(1, tipo);
-	            ResultSet rs = sent.executeQuery();
 	            
-	            while (rs.next()) {
-	                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-	                java.time.LocalDate fecha = sqlDate.toLocalDate();
-	                Bien bien = new Bien(
-	                    rs.getString("codigo"),
-	                    rs.getString("tipo"),
-	                    rs.getDouble("peso"),
-	                    rs.getString("nombre"),
-	                    rs.getString("descripcion"),
-	                    rs.getInt("nivelNecesidad"),
-	                    fecha,
-	                    rs.getDouble("talle"),
-	                    rs.getString("material")
-	                );
-	                bienes.add(bien);
-	            }
+	        }else{ 
+	        	// recupera todos los bienes entregados
+	        	if (tipo.equals("Entregados")) {
+	        		sent = conn.prepareStatement(
+	                    "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
+	                    "FROM inventario WHERE entregado = 1");
+	        	}
+	        	
+	        	else {
+	        		// recupera los bienes por tipo.
+		            sent = conn.prepareStatement(
+		                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
+		                "FROM inventario WHERE tipo = ?");
+		            sent.setString(1, tipo);
+	        	}
 	        }
+	        // recore el archivo y almacena los bienes en la lista. 
+	        ResultSet rs = sent.executeQuery();
+    		while (rs.next()) {
+                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+                java.time.LocalDate fecha = sqlDate.toLocalDate();
+                Bien bien = new Bien(
+                    rs.getString("codigo"),
+                    rs.getString("tipo"),
+                    rs.getDouble("peso"),
+                    rs.getString("nombre"),
+                    rs.getString("descripcion"),
+                    rs.getInt("nivelNecesidad"),
+                    fecha,
+                    rs.getDouble("talle"),
+                    rs.getString("material")
+                );
+                bienes.add(bien);
+            }
 	    } catch (SQLException e) {
 	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+". codigo error I900");
 	    } catch (Exception e) {
