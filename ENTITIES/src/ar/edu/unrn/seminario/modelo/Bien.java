@@ -1,3 +1,4 @@
+
 package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDate;

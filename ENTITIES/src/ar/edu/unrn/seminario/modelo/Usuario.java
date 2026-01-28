@@ -11,18 +11,25 @@ public class Usuario {
 	private boolean activo=false;
 	private String estado;
 
-	public Usuario(String usuario, String contrasena, String nombre, String contacto, Rol rol,boolean activo,String codigo) throws DataEmptyException {
+	public Usuario(String usuario, String contrasena, String nombre, String contacto, Rol rol,boolean activo,String codigo) throws DataEmptyException, DataNullException, DataObjectException, DataLengthException {
 
-		if (usuario == null) {
-			System.out.println("usuario no puede ser nulo");
-			//TODO: disparar exception propia
-		}
+	
 		
 		validarCampoVacio(usuario, "usuario");
 		validarCampoVacio(contrasena, "contraseña");
 		validarCampoVacio(nombre, "nombre");
 		validarCampoVacio(contacto, "contacto");
 		
+		validarRol(rol,"rol");
+		validarCampoNull(usuario, "usuario");
+		validarCampoNull(contrasena, "contraseña");
+		validarCampoNull(nombre, "nombre");
+		validarCampoNull(contacto, "contacto");
+		
+		validarLongitudCampo20(usuario, "usuario");
+		validarLongitudCampo20(contrasena, "contraseña");
+		
+		validarContacto(contacto);
 		this.usuario = usuario;
 		this.contrasena = contrasena;
 		this.nombre = nombre;
@@ -150,9 +157,65 @@ public class Usuario {
 			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
 		}
 	}
-	private void validarCampoNull( String nombreCampo) throws DataEmptyException {
-		if (nombreCampo==null) {
-			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser nulo");
+	private void validarCampoNull( String campo,String nombreCampo) throws DataNullException {
+		if (campo==null) {
+			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
+		}
+	}
+	
+	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
+	
+		if(nombreCampo=="usuario") {
+			if (campo.length()>20 || campo.length()<3) {
+				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+			}
+		}else if(nombreCampo=="contraseña") {
+			if (campo.length()>20 || campo.length()<8) {
+				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+			}
+			
+		}
+	}
+	
+	private void validarContacto(String contacto) throws DataLengthException {
+       
+
+        if (esEmail(contacto)) {
+        	if (contacto.length()>30 || contacto.length()<17) {
+    			throw new DataLengthException("el correo debe tener como minimo 17 caracteres incluyendo "+"@tipo_corre.com");
+    		}
+            return; // válido como email
+        }
+
+        if (esTelefono(contacto)) {
+        	
+        	if (contacto.length()>13 || contacto.length()<10) {
+    			throw new DataLengthException("el telefono debe tener como minimo 10 caracteres y como maximo 13");
+    		}
+            return; // válido como teléfono
+        }
+
+        throw new IllegalArgumentException("El contacto no es ni un teléfono ni un email válido");
+    }
+	
+	 private boolean esEmail(String valor) {
+	        return valor.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+	    }
+
+	    private boolean esTelefono(String valor) {
+	        return valor.matches("^\\+?[0-9]{8,15}$");
+	    }
+	
+	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
+		if (campo.length()>50 || campo.length()<8) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+		}
+	}
+	
+	
+	private void validarRol(Rol rol, String nombreCampo) throws DataObjectException {
+		if (rol==null) {
+			throw new DataObjectException("el campo " + nombreCampo + " no puede ser vacio");
 		}
 	}
 	private void crearCodigo() {
