@@ -182,7 +182,7 @@ public class Usuario {
 
         if (esEmail(contacto)) {
         	if (contacto.length()>30 || contacto.length()<17) {
-    			throw new DataLengthException("el correo debe tener como minimo 17 caracteres incluyendo "+"@tipo_corre.com");
+    			throw new DataLengthException("el correo debe tener como minimo 17 caracteres incluyendo "+"@tipo_correo.com");
     		}
             return; // válido como email
         }
