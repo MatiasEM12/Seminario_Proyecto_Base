@@ -3,6 +3,7 @@ package ar.edu.unrn.seminario.gui;
 
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -11,7 +12,8 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
-
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
@@ -99,21 +101,26 @@ public class ListadoBienes extends JFrame {
 				
 	              for (int filaVista : filasSeleccionadas) {
 	                  
-	            	  int filaModelo=table.convertColumnIndexToModel(filaVista);
-	            	  
-	            	  //obtenemos el codigo
-	            	  String codigo=(String) modelo.getValueAt(filaModelo, 0);
-	            	  
-	            	  //lamada a la api para recuperar el bienDTO
-	            	  BienDTO bien= api.obtenerBien(codigo);//
-	            	  
-	            	  if(bien!=null) {
-	            		  seleccionados.add(bien);
-	            	  }
-	                }
-	              
-	              //para el callback
-	              if (onSeleccion != null) {
+	            	int filaModelo=table.convertColumnIndexToModel(filaVista);
+	            	
+	            	//obtenemos el codigo
+	            	String codigo=(String) modelo.getValueAt(filaModelo, 0);
+	            	
+	            	//lamada a la api para recuperar el bienDTO
+	            	BienDTO bien = null;
+					try {
+						bien = api.obtenerBien(codigo);
+					} catch (DataNullException | DAOException e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+					}//
+	            	
+	            	if(bien!=null) {
+	            		seleccionados.add(bien);
+	            	}
+	             }
+	             
+	             //para el callback
+	             if (onSeleccion != null) {
 						onSeleccion.accept(seleccionados);
 					}    
 	          	setVisible(false);
