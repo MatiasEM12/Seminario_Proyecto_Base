@@ -152,7 +152,7 @@ public class ListadoUsuario extends JFrame {
 	                try {
 	                    api.activarUsuario(username);
 	                    filtrar(lUsuarioBox, textField);
-	                } catch (StateChangeException | DataNullException eS) {
+	                } catch (StateChangeException | DataNullException | DAOException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
 	            }
@@ -173,7 +173,7 @@ public class ListadoUsuario extends JFrame {
 	                try {
 	                    api.desactivarUsuario(username);
 	                    filtrar(lUsuarioBox, textField);
-	                } catch (StateChangeException | DataNullException eS) {
+	                } catch (StateChangeException | DataNullException | DAOException eS) {
 	                    JOptionPane.showMessageDialog(null, eS.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	                }
 	            }
@@ -197,8 +197,7 @@ public class ListadoUsuario extends JFrame {
 		    try {
 				filtrar(lUsuarioBox, textField);
 			} catch (DataNullException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}   
 		});
 
@@ -224,7 +223,11 @@ public class ListadoUsuario extends JFrame {
 		//Solo Donante 
 		if(filtro.equals("Donantes")) {
 			
-			usuarios = api.obtenerUserDonantes();
+			try {
+				usuarios = api.obtenerUserDonantes();
+			} catch (DataNullException | DAOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 			for (UsuarioDTO u : usuarios) {
 				modelo.addRow(new Object[] { u.getCodigo(), u.getRol(),u.getUsername(), u.getNombre(),u.getEmail(),u.getEstado() });
 			}
@@ -232,13 +235,21 @@ public class ListadoUsuario extends JFrame {
 			
 		}else if(filtro.equals("Voluntarios")) {	//Solo Voluntario
 			
-			usuarios = api.obtenerUserVoluntarios();
+			try {
+				usuarios = api.obtenerUserVoluntarios();
+			} catch (DataNullException | DAOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 			for (UsuarioDTO u : usuarios) {
 				modelo.addRow(new Object[] { u.getCodigo(), u.getRol(),u.getUsername(), u.getNombre(),u.getEmail(),u.getEstado() });
 			}
 			
 		}else if(filtro.equals("Administradores")) {//Solo ADM
-			usuarios = api.obtenerUserAdministrador();
+			try {
+				usuarios = api.obtenerUserAdministrador();
+			} catch (DataNullException | DAOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 			for (UsuarioDTO u : usuarios) {
 				modelo.addRow(new Object[] { u.getCodigo(), u.getRol(),u.getUsername(), u.getNombre(),u.getEmail(),u.getEstado() });
 			}
