@@ -7,6 +7,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -87,7 +89,11 @@ public class VentanaOrdenPedido extends JFrame {
 
     private void cargarOrdenes() {
         // traer todas las ordenes desde la API
-        ordenes = api.obtenerOrdenesPedido();
+        try {
+			ordenes = api.obtenerOrdenesPedido();
+		} catch (DAOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
 
         if (ordenes == null) {
             ordenes = java.util.Collections.emptyList();
@@ -100,7 +106,7 @@ public class VentanaOrdenPedido extends JFrame {
         		    .collect(Collectors.toList());
 
         } catch (Exception ex) {
-            
+        	JOptionPane.showMessageDialog(null, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
 
         modelo.setRowCount(0);
