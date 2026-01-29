@@ -1,6 +1,5 @@
 package ar.edu.unrn.seminario.accesos;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
@@ -20,9 +19,5 @@ public interface BeneficiarioDAO {
 
 	List<Beneficiario> findAll()throws DAOException;
 
-	ArrayList<Beneficiario> findBienDonacion(String codDonacion)throws DataNullException,DAOException;
 
-	ArrayList<Beneficiario> findBienVisita(String codVisita)throws DataNullException,DAOException;
-	
-	List<Beneficiario> findALLTipo(String tipo)throws DataNullException,DAOException;
 }

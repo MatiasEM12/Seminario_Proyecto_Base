@@ -80,7 +80,13 @@ public class Beneficiario extends Persona{
 		contadorBeneficiarios++;
 		  this.codigo = "B" + String.format("%05d", contadorBeneficiarios);
 	}
-
+	
+	public void setCodigoDesdeBD(String codigo)
+	        throws DataNullException, DataEmptyException {
+	    if (codigo == null) throw new DataNullException("Código nulo");
+	    if (codigo.trim().isEmpty()) throw new DataEmptyException("Código vacío");
+	    this.codigo = codigo;
+	}
 
 	@Override
 	public String toString() {
