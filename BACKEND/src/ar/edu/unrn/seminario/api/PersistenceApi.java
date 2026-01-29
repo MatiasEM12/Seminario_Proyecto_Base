@@ -115,47 +115,29 @@ public class PersistenceApi implements IApi {
     
     // --- Usuario / Rol ---
     @Override
-    public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol)
-            throws DataEmptyException, SQLException, DAOException, DataExistsException {
+    public void registrarUsuario(String username, String password, String contacto, String nombre, Integer codigoRol) 
+    		throws SQLException, DAOException, DataEmptyException, DataNullException, DataObjectException, DataLengthException, DataExistsException{
     	
     	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rol = rolDao.find(codigoRol);
         Usuario usuario = new Usuario(username, password, nombre, contacto, rol,false,null);
-        try {
-			this.usuarioDao.create(usuario);
-		} catch (DAOException e) {
-			throw new DAOException(e.getMessage()); 
-		} catch (DataExistsException e) {
-			throw new DataExistsException(e.getMessage()); 
-		}
+		this.usuarioDao.create(usuario);
     }
 
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo)
-            throws DataEmptyException, SQLException, DAOException, DataExistsException {
-    	
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo) 
+    		throws SQLException, DAOException, DataEmptyException, DataNullException, DataObjectException, DataLengthException, DataExistsException{
     	Usuario.setContadorUsuario(  this.usuarioDao.obtenerCantidadUsuarios());
         Rol rolN = rolDao.find(rol);
         Usuario usuario = new Usuario(username, password, nombre, email, rolN, activo,null);
-        try {
-			this.usuarioDao.create(usuario);
-		} catch (DAOException e) {
-			throw new DAOException(e.getMessage()); 
-		} catch (DataExistsException e) {
-			throw new DataExistsException(e.getMessage()); 
-		}
+		this.usuarioDao.create(usuario);
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuarios() throws DataNullException {
+    public List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException {
         List<UsuarioDTO> dtos = new ArrayList<>();
         List<Usuario> usuarios = null;
-		try {
-			usuarios = usuarioDao.findAll();
-		} catch (DataNullException | DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		usuarios = usuarioDao.findAll();
         if (usuarios != null) {
             for (Usuario u : usuarios) {
                 dtos.add(this.toUsuarioDTO(u));
@@ -165,47 +147,27 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public UsuarioDTO obtenerUsuario(String username) {
+    public UsuarioDTO obtenerUsuario(String username) throws DAOException {
         Usuario u = null;
-		try {
-			u = usuarioDao.find(username);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        u = usuarioDao.find(username);
         if (u == null) return null;
         return new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
                 u.getRol().getNombre(), u.isActivo(), u.obtenerEstado());
     }
 
     @Override
-    public void eliminarUsuario(String username) {
+    public void eliminarUsuario(String username) throws DAOException {
         Usuario user = null;
-		try {
-			user = this.usuarioDao.find(username);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		user = this.usuarioDao.find(username);
         if (user != null)
-			try {
-				this.usuarioDao.remove(user);
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			this.usuarioDao.remove(user);
     }
     
 
     @Override
-    public List<RolDTO> obtenerRoles() throws StateChangeException {
+    public List<RolDTO> obtenerRoles() throws StateChangeException, DataNullException, DAOException {
         List<Rol> roles = null;
-		try {
-			roles = rolDao.findAll();
-		} catch (DataNullException | DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        roles = rolDao.findAll();
         List<RolDTO> rolesDTO = new ArrayList<>();
         for (Rol rol : roles) {
             rolesDTO.add(new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo()));
@@ -223,113 +185,65 @@ public class PersistenceApi implements IApi {
     
     //opcion 1
     
-    public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
+    public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException, DAOException {
         Rol rol = new Rol(codigo, nombre, estado);
-        try {
-			this.rolDao.create(rol);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        this.rolDao.create(rol);
     }
 
     @Override
-    public RolDTO obtenerRolPorCodigo(Integer codigo) {
+    public RolDTO obtenerRolPorCodigo(Integer codigo) throws DAOException {
         Rol rol = null;
-		try {
-			rol = rolDao.find(codigo);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		rol = rolDao.find(codigo);
         if (rol == null) return null;
         return new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo());
     }
 
 
     @Override
-    public void activarRol(Integer codigo) throws StateChangeException{
+    public void activarRol(Integer codigo) throws StateChangeException, DAOException{
     	Rol rol = null;
-		try {
-			rol = rolDao.find(codigo);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		rol = rolDao.find(codigo);
         if(rol== null) {
         	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
         }
         rol.activar();
-        try {
-			rolDao.update(rol);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        rolDao.update(rol);
     }
 
     @Override
     //funciona
-    public void desactivarRol(Integer codigo) throws StateChangeException{
+    public void desactivarRol(Integer codigo) throws StateChangeException, DAOException{
     	Rol rol = null;
-		try {
-			rol = rolDao.find(codigo);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		rol = rolDao.find(codigo);
         if(rol== null) {
         	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
         }
         rol.desactivar();
-        try {
-			rolDao.update(rol);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        rolDao.update(rol);
+		
     }
 
     @Override
-    public void activarUsuario(String username) throws StateChangeException{
+    public void activarUsuario(String username) throws StateChangeException, DAOException{
     	Usuario usuario = null;
-		try {
-			usuario = usuarioDao.find(username);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		usuario = usuarioDao.find(username);
+		
         if(usuario== null) {
         	throw new StateChangeException("no se pudo encontrar un usuario con ese nombre");
         }
         usuario.activar();
-        try {
-			usuarioDao.update(usuario);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        usuarioDao.update(usuario);
     }
 
     @Override
-    public void desactivarUsuario(String username) throws StateChangeException{
+    public void desactivarUsuario(String username) throws StateChangeException, DAOException{
     	Usuario usuario = null;
-		try {
-			usuario = usuarioDao.find(username);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		usuario = usuarioDao.find(username);
         if(usuario== null) {
         	throw new StateChangeException("no se pudo encontrar un rol con ese codigo");
         }
         usuario.desactivar();
-        try {
-			usuarioDao.update(usuario);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        usuarioDao.update(usuario);
     }
 
     @Override
@@ -340,60 +254,43 @@ public class PersistenceApi implements IApi {
     @Override
     //opcion 2
     
-    public void guardarRol(RolDTO rol) throws DataNullException {
+    public void guardarRol(RolDTO rol) throws DataNullException, DAOException {
         Rol rolN = new Rol(rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
-        try {
-			this.rolDao.create(rolN);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        this.rolDao.create(rolN);
     }
 
     @Override
-    public void modificarContraseña(String usuario, String passWord) throws DataNullException {
+    public void modificarContraseña(String usuario, String passWord) throws DataNullException, DAOException {
         if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
         if (passWord == null || passWord.trim().isEmpty()) {
             throw new DataNullException("La contraseña no puede estar vacía.");
         }
         Usuario us_contraseña = null;
-		try {
-			us_contraseña = usuarioDao.find(usuario);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		us_contraseña = usuarioDao.find(usuario);
+		
         if (us_contraseña == null) throw new DataNullException("No existe un usuario con el nombre: " + usuario);
         us_contraseña.setContrasena(passWord);
-        try {
-			usuarioDao.update(us_contraseña);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        usuarioDao.update(us_contraseña);
+		
     }
 
 
     @Override
-    public Boolean autenticar(String username, String password) throws DataNullException{
+    public Boolean autenticar(String username, String password) throws DataNullException, DAOException{
         if (username == null || username.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
         if (password == null || password.trim().isEmpty()) {
             throw new DataNullException("La contraseña no puede estar vacía.");
         }
         Usuario us_autentificado = null;
-		try {
-			us_autentificado = usuarioDao.find(username);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		us_autentificado = usuarioDao.find(username);
+		
         if (us_autentificado == null) throw new DataNullException("No existe un usuario con el username: " + username);
         return us_autentificado.getContrasena().equals(password);
     }        // pendiente: delegar a usuarioDao.autenticar si existe
 
     // --- Órdenes ---
     @Override
-    public List<OrdenDTO> obtenerOrdenes() {
+    public List<OrdenDTO> obtenerOrdenes() throws DAOException {
         List<OrdenDTO> todas = new ArrayList<>();
         List<OrdenPedidoDTO> pedidos = obtenerOrdenesPedido();
         if (pedidos != null) todas.addAll(pedidos);
@@ -403,15 +300,11 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() {
+    public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() throws DAOException {
         ArrayList<OrdenPedidoDTO> ordenesDTO = new ArrayList<>();
         List<OrdenPedido> ordenes = null;
-		try {
-			ordenes = ordenPedidoDao.findAll();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ordenes = ordenPedidoDao.findAll();
+		
         if (ordenes == null) return ordenesDTO;
         for (OrdenPedido orden : ordenes) {
             
@@ -424,14 +317,9 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() {
+    public ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() throws DAOException {
         List<OrdenRetiro> ordenesRetiro = null;
-		try {
-			ordenesRetiro = ordenRetiroDao.findAll();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ordenesRetiro = ordenRetiroDao.findAll();
         ArrayList<OrdenRetiroDTO> ordenesRetiroDTO = new ArrayList<>();
         if (ordenesRetiro == null) return ordenesRetiroDTO;
 
@@ -461,7 +349,7 @@ public class PersistenceApi implements IApi {
     
     @Override
     public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException {
     	
         // validaciones básicas
         if (retiro == null) {
@@ -471,14 +359,9 @@ public class PersistenceApi implements IApi {
         // Buscar voluntario (puede ser null si no se asignó)
         Voluntario v = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
-            try {
-				v = voluntarioDao.find(retiro.getCodVoluntario());
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            v = voluntarioDao.find(retiro.getCodVoluntario());
            
-             if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
+            if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
         }
 
         // Buscar pedido (obligatorio)
@@ -486,12 +369,7 @@ public class PersistenceApi implements IApi {
             throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
         }
         OrdenPedido pedido = null;
-		try {
-			pedido = ordenPedidoDao.find(retiro.getPedido());
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		pedido = ordenPedidoDao.find(retiro.getPedido());
         if (pedido == null) {
             throw new DataNullException("No existe la OrdenPedido: " + retiro.getPedido());
         }
@@ -503,18 +381,8 @@ public class PersistenceApi implements IApi {
             for (String codVis : codVisitasArr) {
                 if (codVis == null || codVis.trim().isEmpty()) continue;
                 Visita vFound = null;
-				try {
-					vFound = visitaDao.find(codVis);
-				} catch (DataNullException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DataLengthException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DAOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} // requiere que visitaDao tenga find(String)
+				vFound = visitaDao.find(codVis);
+				// requiere que visitaDao tenga find(String)
                 if (vFound != null) {
                     visitas.add(vFound);
                 }
@@ -539,12 +407,8 @@ public class PersistenceApi implements IApi {
         );
 
         // Persistir
-        try {
-			ordenRetiroDao.create(orden);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        ordenRetiroDao.create(orden);
+		
     }
 
     private OrdenRetiroDTO toOrdenRetiroDTO(OrdenRetiro ordenRetiro) {
@@ -571,37 +435,22 @@ public class PersistenceApi implements IApi {
         );
     }
     @Override
-    public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
+    public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException {
         if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
         OrdenPedido pedido = null;
-		try {
-			pedido = ordenPedidoDao.find(codPedido);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		pedido = ordenPedidoDao.find(codPedido);
         if (pedido == null) throw new DataNullException("No existe OrdenPedido con código: " + codPedido);
    
         String codigoRetiro = "OR_" + codPedido;
         OrdenRetiro orden = new OrdenRetiro(codigoRetiro, "PENDIENTE", LocalDate.now(), null, pedido, new ArrayList<Visita>());
-        try {
-			ordenRetiroDao.create(orden);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        ordenRetiroDao.create(orden);
     }
 
     // --- Donaciones / Donantes ---
 	    @Override
-	    public void registrarDonante(Donante donante) {
+	    public void registrarDonante(Donante donante) throws DAOException {
 	        if (donante == null) return;
-	        try {
-				donanteDao.create(donante);
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	        donanteDao.create(donante);
 	    }
 
     @Override
@@ -612,15 +461,9 @@ public class PersistenceApi implements IApi {
     }
     
     @Override
-    public List<DonanteDTO> obtenerDonantes() {
+    public List<DonanteDTO> obtenerDonantes() throws DAOException {
      
-        List<Donante> list = null;
-		try {
-			list = donanteDao.findAll();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        List<Donante> list = donanteDao.findAll();
         if (list == null) return new ArrayList<>();
         return list.stream().filter(Objects::nonNull).map(d -> new DonanteDTO(d.getNombre(), d.getCodigo(), d.getApellido(), d.getContacto(), null,
                 d.getUbicacion() != null ? d.getUbicacion().getCodigo() : null, null)).filter(Objects::nonNull).collect(Collectors.toList());
@@ -628,18 +471,10 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException {
+    public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException, DAOException {
        
-    	 List<Usuario> donantes = null;
-		try {
-			donantes = this.usuarioDao.findAll();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	 List<Usuario> donantes = this.usuarioDao.findAll();
+		
          donantes=donantes.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Donante")).collect(Collectors.toList());
           List<UsuarioDTO>donantesDTO= donantes.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
         		  
@@ -657,18 +492,10 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException {
+    public List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException {
            
-          List<Usuario> voluntarios = null;
-		try {
-			voluntarios = this.usuarioDao.findAll();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+          List<Usuario> voluntarios = this.usuarioDao.findAll();
+		
          voluntarios=voluntarios.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Voluntario")).collect(Collectors.toList());
           
           List<UsuarioDTO>voluntariosDTO= voluntarios.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
@@ -678,17 +505,9 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException {
-    	  List<Usuario> administradores = null;
-		try {
-			administradores = this.usuarioDao.findAll();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException {
+    	  List<Usuario> administradores = this.usuarioDao.findAll();
+		
           administradores=administradores.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Admin")).collect(Collectors.toList());
            List<UsuarioDTO>administradoresDTO= administradores.stream().map(usuario ->toUsuarioDTO(usuario)).collect(Collectors.toList());
          		  
@@ -697,7 +516,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException {
+    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException {
     	
     	
     	 if (don == null) return;      
@@ -709,32 +528,14 @@ public class PersistenceApi implements IApi {
     
     private Donacion toDonacion(DonacionDTO dto)
             throws DataNullException, DataDoubleException, DataEmptyException,
-                   DataObjectException, DataDateException {
+                   DataObjectException, DataDateException, DAOException {
 
         if (dto == null) {
             throw new DataNullException("DonacionDTO es null");
         }
 
         // Donante obligatorio
-        Donante donante = null;
-		try {
-			donante = donanteDao.find(dto.getCodDonante());
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataDateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        Donante donante = donanteDao.find(dto.getCodDonante());
         if (donante == null) {
             throw new DataNullException("No se encontró Donante con código: " + dto.getCodDonante());
         }
@@ -742,12 +543,7 @@ public class PersistenceApi implements IApi {
         // Pedido opcional
         OrdenPedido pedido = null;
         if (dto.getCodPedido() != null && !dto.getCodPedido().trim().isEmpty()) {
-            try {
-				pedido = ordenPedidoDao.find(dto.getCodPedido());
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            pedido = ordenPedidoDao.find(dto.getCodPedido());
             if (pedido == null) {
                 throw new DataNullException("No se encontró OrdenPedido con código: " + dto.getCodPedido());
             }
@@ -767,26 +563,8 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-        List<Donacion> list = null;
-		try {
-			list = donacionDao.findAll();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataDateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
+        List<Donacion> list = donacionDao.findAll();
         ArrayList<DonacionDTO> res = new ArrayList<>();
         if (list == null) return res;
         for (Donacion d : list) {
@@ -797,19 +575,11 @@ public class PersistenceApi implements IApi {
 
     // --- Bienes ---
     @Override
-    public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
+    public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) throws DataNullException, DAOException {
         ArrayList<BienDTO> resultado = new ArrayList<>();
         if (codVisita == null || codVisita.trim().isEmpty()) return resultado;
-        ArrayList<Bien> bienes = null;
-		try {
-			bienes = bienDao.findBienVisita(codVisita);
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        ArrayList<Bien> bienes = bienDao.findBienVisita(codVisita);
+		
         if (bienes == null) return resultado;
         for (Bien b : bienes) {
             resultado.add(toBienDTO(b));
@@ -818,17 +588,11 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
+    public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException {
         // delegamos a OrdenRetiro DAO: buscar la orden y mapear sus bienes
         ArrayList<BienDTO> resultado = new ArrayList<>();
         if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
-        List<OrdenRetiro> ordenes = null;
-		try {
-			ordenes = ordenRetiroDao.findAll();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        List<OrdenRetiro> ordenes = ordenRetiroDao.findAll();
         if (ordenes == null) return resultado;
         for (OrdenRetiro o : ordenes) {
             if (o != null && codOrdenRetiro.equalsIgnoreCase(o.getCodigo()) && o.getRecolectados() != null) {
@@ -840,28 +604,10 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException  {
         ArrayList<BienDTO> retirar = new ArrayList<>();
         if (codOP == null || codOP.trim().isEmpty()) return retirar;
-        List<Donacion> donaciones = null;
-		try {
-			donaciones = donacionDao.findAll();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataDateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        List<Donacion> donaciones = donacionDao.findAll();
         if (donaciones == null) return retirar;
         for (Donacion don : donaciones) {
             if (don != null && don.getPedido() != null && codOP.equalsIgnoreCase(don.getPedido().getCodigo())) {
@@ -924,13 +670,8 @@ public class PersistenceApi implements IApi {
                 null, donante.getUbicacion() != null ? donante.getUbicacion().getCodigo() : null, null);
     }
     @Override
-    public void registrarVoluntario(Voluntario voluntario) {
-         try {
-			voluntarioDao.create(voluntario);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public void registrarVoluntario(Voluntario voluntario) throws DAOException {
+        voluntarioDao.create(voluntario);
     }
     @Override
     public List<VoluntarioDTO> obtenerVoluntarios() {
@@ -939,22 +680,12 @@ public class PersistenceApi implements IApi {
 
     @Override
     // aca pondria que cuando cre la visita que comprue si la visita fue exitosa y si lo fue que agregue tambien el bien en inventariodao
-    public void registrarVisita(Visita visita) {
-        try {
-			visitaDao.create(visita);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public void registrarVisita(Visita visita) throws DAOException {
+        visitaDao.create(visita);
     }   
     
-    public void registrarOrdenPedido(OrdenPedido orden) {
-    	try {
-			ordenPedidoDao.create(orden);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public void registrarOrdenPedido(OrdenPedido orden) throws DAOException {
+    	ordenPedidoDao.create(orden);
     }
     public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException{
     	if (orden==null) {
@@ -986,32 +717,17 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException {
         
     	Visita visita= toVisita(visitaDTO);
     
-    	OrdenRetiro oR = null;
-		try {
-			oR = this.ordenRetiroDao.find(visita.getCodOrdenRetiro());
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	OrdenRetiro oR = this.ordenRetiroDao.find(visita.getCodOrdenRetiro());
     	
     	oR.agregarVisita(visita);
     	this.crearBienVisita(visita);
-    	try {
-			this.visitaDao.update(visita);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	try {
-			this.ordenRetiroDao.update(oR);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	this.visitaDao.update(visita);
+		
+    	this.ordenRetiroDao.update(oR);
     	
     	
     
@@ -1019,32 +735,22 @@ public class PersistenceApi implements IApi {
     	
     	
     }
-    private void crearBienDonacion(Donacion donacion) {
+    private void crearBienDonacion(Donacion donacion) throws DAOException {
     	
     	ArrayList<Bien> bienes= donacion.getBienes();
     	
     	for(Bien b :  bienes) {
-    		try {
-				this.bienDonacionDao.create(b.getCodigo(), donacion.getCodigo());
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		this.bienDonacionDao.create(b.getCodigo(), donacion.getCodigo());
     	}
     	
     }
     
-    private void crearBienVisita(Visita visita) {
+    private void crearBienVisita(Visita visita) throws DAOException {
     	
     	ArrayList<Bien> bienes= visita.getBienesRecolectados();
     	
     	for(Bien b :  bienes) {
-    		try {
-				this.bienVisitaDao.create(b.getCodigo(), visita.getCodigo());
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+    		this.bienVisitaDao.create(b.getCodigo(), visita.getCodigo());
     	}
     	
     }
@@ -1070,32 +776,19 @@ public class PersistenceApi implements IApi {
     	return bienes;
     }
     
-    public void registrarUbicacion(Ubicacion ubicacion) {
+    public void registrarUbicacion(Ubicacion ubicacion) throws DAOException {
         if (ubicacion == null) return;
-        try {
-			coordenadaDAO.create(ubicacion.getCoordenada());
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  // crea o ignora si ya existe
-        try {
-			ubicacionDao.create(ubicacion);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}                   // crea o ignora si ya existe
+        coordenadaDAO.create(ubicacion.getCoordenada());
+		// crea o ignora si ya existe
+        ubicacionDao.create(ubicacion);
     }
 
 
     //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
-	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
+	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException, DAOException {
         Rol rol = new Rol(codigo, nombre, descripcion, estado);
-        try {
-			this.rolDao.create(rol);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        this.rolDao.create(rol);
+		
 		
 		
 	}
@@ -1148,14 +841,8 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) {
-	      OrdenRetiro orden = null;
-		try {
-			orden = this.ordenRetiroDao.find(codOrdenRetiro);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) throws DAOException {
+	      OrdenRetiro orden = this.ordenRetiroDao.find(codOrdenRetiro);
 	      
 	     
 	      return   toOrdenRetiroDTO(orden);
@@ -1247,27 +934,9 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
 		
-		List<Donacion> donaciones = null;
-		try {
-			donaciones = this.donacionDao.findAllPendiente();
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DataDateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		List<Donacion> donaciones = this.donacionDao.findAllPendiente();
 		
 		
 		return this.toDonacionDTO(donaciones) ;
@@ -1293,17 +962,8 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public BienDTO obtenerBien(String codigo) {
-		Bien bien = null;
-		try {
-			bien = this.bienDao.find(codigo);
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public BienDTO obtenerBien(String codigo) throws DataNullException, DAOException {
+		Bien bien = this.bienDao.find(codigo);
 		return this.toBienDTO(bien);
 	}
 	
@@ -1317,35 +977,16 @@ public class PersistenceApi implements IApi {
 	//inventario
 
 	//revisar esas eliminando el bien lo que tendrias que eliminar es el inventario
-	public void eliminarBineInventario(String codigo) {
-	    Bien bien = null;
-		try {
-			bien = this.bienDao.find(codigo);
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    if (bien != null)
-			try {
-				this.bienDao.remove(bien);
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
+	    Bien bien = this.bienDao.find(codigo);
+	    if (bien != null) {
+	    	this.bienDao.remove(bien);
+	    }
 	}
 
 
-	public List<BienDTO> obtenerTodosLosBienes(){
-		List<Bien> bienes = null;
-		try {
-			bienes = bienDao.findAll();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public List<BienDTO> obtenerTodosLosBienes() throws DAOException{
+		List<Bien> bienes = bienDao.findAll();
 		List<BienDTO> bienesDTO= new ArrayList<>();
 		for (Bien bien : bienes) {
 			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
@@ -1354,17 +995,8 @@ public class PersistenceApi implements IApi {
 		return bienesDTO;
 	}
 	
-	public List<BienDTO> obtenerBienesPorTipo(String tipo){
-		List<Bien> bienes = null;
-		try {
-			bienes = bienDao.findALLTipo(tipo);
-		} catch (DataNullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException{
+		List<Bien> bienes = bienDao.findALLTipo(tipo);
 		List<BienDTO> bienesDTO= new ArrayList<>();
 		for (Bien bien : bienes) {
 			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
@@ -1374,13 +1006,8 @@ public class PersistenceApi implements IApi {
 	}
 	
 
-	public void ModificarBienInventario(Bien bien) {
-		try {
-			this.bienDao.update(bien);
-		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void ModificarBienInventario(Bien bien) throws DAOException {
+		this.bienDao.update(bien);
 	}
 	
 	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException {
