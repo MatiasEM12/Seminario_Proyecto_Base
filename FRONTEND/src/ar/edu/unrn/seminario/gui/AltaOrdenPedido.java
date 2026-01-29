@@ -47,6 +47,7 @@ public class AltaOrdenPedido extends JFrame {
                 frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
