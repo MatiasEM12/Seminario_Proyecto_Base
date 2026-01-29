@@ -19,6 +19,7 @@ import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 
@@ -43,7 +44,11 @@ public class AltaVisita extends JFrame {
     
     public AltaVisita(IApi api, String codOrdenRetiro) throws DataNullException {
         this.api = api;
-        orden = api.obtenerOrdenRetiro(codOrdenRetiro);
+        try {
+			orden = api.obtenerOrdenRetiro(codOrdenRetiro);
+		} catch (DAOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
         String ordenP= orden.getPedido();
         
         DonacionDTO donacion;
