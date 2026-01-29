@@ -1,6 +1,7 @@
 package ar.edu.unrn.seminario.modelo;
 
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 
@@ -37,7 +38,7 @@ public class Ubicacion {
 	
 	
 
-	public Ubicacion(String codigo, String zona, String barrio, String direccion,Coordenada coordenada) throws DataNullException, DataEmptyException, DataObjectException {
+	public Ubicacion(String codigo, String zona, String barrio, String direccion,Coordenada coordenada) throws DataNullException, DataEmptyException, DataObjectException, DataLengthException {
 		super();
 		
 		
@@ -58,6 +59,10 @@ public class Ubicacion {
 
 		this.validarCampoNull(codigo);
 		this.validarCampoVacio(codigo, this.codigo);
+		
+		this.validarLongitudCampo50(barrio, "barrio");
+		this.validarLongitudCampo50(zona, "zona");
+		this.validarLongitudCampo50(direccion, "direccion");
 		
 		this.codigo = codigo;
 		this.zona = zona;
@@ -153,6 +158,18 @@ public class Ubicacion {
 			throw new DataObjectException("Contiene instancia nula ");
 		}
 	}
+	
+	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
+		if(nombreCampo=="direccion" ||  campo.length()<10) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 50, formato NombreCalle_Num");
+		}
+		if (campo.length()>50 || campo.length()<3) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
+		
+		}
+	
+	}
+	
 	
 	private void crearCodigo() {
 		  contadorUbicacion++;
