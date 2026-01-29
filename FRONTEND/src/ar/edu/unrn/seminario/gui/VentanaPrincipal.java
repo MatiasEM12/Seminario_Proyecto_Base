@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -31,7 +32,7 @@ public class VentanaPrincipal extends JFrame {
 		try {
 			api.InicializarContadores();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 		getContentPane().setLayout(null);
@@ -58,8 +59,7 @@ public class VentanaPrincipal extends JFrame {
 				try {
 					alta = new AltaUsuario(api);
 				} catch (StateChangeException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 				alta.setLocationRelativeTo(null);
 				alta.setVisible(true);
@@ -76,8 +76,7 @@ public class VentanaPrincipal extends JFrame {
 				try {
 					listado = new ListadoUsuario(api);
 				} catch (DataNullException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 				listado.setLocationRelativeTo(null);
 				listado.setVisible(true);
@@ -119,8 +118,7 @@ public class VentanaPrincipal extends JFrame {
 					listado.setLocationRelativeTo(null);
 					listado.setVisible(true);
 				} catch (StateChangeException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 				
 			}
