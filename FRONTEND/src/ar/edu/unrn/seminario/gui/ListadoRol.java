@@ -18,6 +18,8 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public class ListadoRol extends JFrame {
@@ -32,7 +34,11 @@ public class ListadoRol extends JFrame {
 	 */
 	public ListadoRol(IApi api) throws StateChangeException {
 		
-		this.roles= api.obtenerRoles();
+		try {
+			this.roles= api.obtenerRoles();
+		} catch (StateChangeException | DAOException | DataNullException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -101,7 +107,7 @@ public class ListadoRol extends JFrame {
 						try {
 							api.activarRol(codigo);
 							JOptionPane.showMessageDialog(null, "Estado actualizado", "Estado", JOptionPane.INFORMATION_MESSAGE);
-						} catch (StateChangeException e1) {
+						} catch (StateChangeException | DAOException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.INFORMATION_MESSAGE);
 							e1.printStackTrace();
 						}
@@ -109,7 +115,7 @@ public class ListadoRol extends JFrame {
 						try {
 							api.desactivarRol(codigo);
 							JOptionPane.showMessageDialog(null, "Estado actualizado", "Estado", JOptionPane.INFORMATION_MESSAGE);
-						} catch (StateChangeException e1) {
+						} catch (StateChangeException | DAOException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.INFORMATION_MESSAGE);
 							e1.printStackTrace();
 						}
@@ -117,9 +123,8 @@ public class ListadoRol extends JFrame {
 	    	        // refrescar tabla
 	    	        try {
 						roles = api.obtenerRoles();
-					} catch (StateChangeException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} catch (StateChangeException | DAOException | DataNullException e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 					}
 	    	        for (int i = 0; i < roles.size(); i++) {
 	    	            table.setValueAt(roles.get(i).isActivo(), i, 2);
