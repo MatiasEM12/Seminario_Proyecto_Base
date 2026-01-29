@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.*;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
@@ -74,20 +75,18 @@ public class ListadoOrdenes extends JFrame {
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
                   
-                  if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
+                  if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 
                       	ListadoVisitas visitas = null;
 						try {
 							visitas = new ListadoVisitas(api,(String) tabla.getValueAt(filaSeleccionada, 0) );
-						} catch (DataNullException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (DataLengthException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} catch (DataNullException | DataLengthException e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
-      	        		visitas.setLocationRelativeTo(null);
-      	        		visitas.setVisible(true);
+						if (visitas != null) {
+							visitas.setLocationRelativeTo(null);
+	      	        		visitas.setVisible(true);
+						}
                 	  
                   } 
                    
@@ -113,9 +112,7 @@ public class ListadoOrdenes extends JFrame {
 							av.setLocationRelativeTo(null);
 							av.setVisible(true);
 						} catch (DataNullException e1) {
-							
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
 					
 					}else {
@@ -140,7 +137,12 @@ public class ListadoOrdenes extends JFrame {
 					if("ORDEN_RETIRO".equalsIgnoreCase(tipo)) {
 						
 						String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);
-	                    ArrayList<BienDTO> lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
+	                    ArrayList<BienDTO> lista = null;
+						try {
+							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
+						} catch (DAOException e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+						}
 	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
@@ -149,22 +151,12 @@ public class ListadoOrdenes extends JFrame {
 						String codOP = (String) tabla.getValueAt(filaSeleccionada, 0);
 	                    ArrayList<BienDTO> lista = null;
 						try {
-							try {
-								lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
-							} catch (DataEmptyException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DataObjectException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DataDateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						} catch (DataNullException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
+							} catch (DataEmptyException | DataObjectException | DataDateException
+								| DAOException | DataNullException e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
+						
 	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
@@ -193,7 +185,12 @@ public class ListadoOrdenes extends JFrame {
 
     private void actualizarTabla(String filtro, String busqueda) {
 
-        List<OrdenDTO> ordenes = api.obtenerOrdenes();   
+        List<OrdenDTO> ordenes = null;
+		try {
+			ordenes = api.obtenerOrdenes();
+		} catch (DAOException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}   
         modelo.setRowCount(0); // Limpia la tabla antes de cargar
 
         if ("OrdenRetiro".equals(filtro)) {
