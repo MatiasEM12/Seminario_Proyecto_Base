@@ -92,7 +92,11 @@ public class VentanaInventario extends JFrame {
 	                int filaSeleccionada = table.getSelectedRow();
 	                if (filaSeleccionada >= 0) {
 	                    String codigo = (String) table.getValueAt(filaSeleccionada, 0);
-	                    api.eliminarBineInventario(codigo);
+	                    try {
+							api.eliminarBineInventario(codigo);
+						} catch (DataNullException | DAOException e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+						}
 	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	                    model.removeRow(filaSeleccionada);
 						JOptionPane.showMessageDialog(null, "se eliminaron correctamente. un total de 1 bien", "Inventario", JOptionPane.INFORMATION_MESSAGE);
@@ -159,7 +163,7 @@ public class VentanaInventario extends JFrame {
             try {
                 filtrar((String) comboBox.getSelectedItem());  // Filtra usando el valor seleccionado
             } catch (DataNullException e1) {
-                e1.printStackTrace();
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
             }
         });
     }
@@ -188,10 +192,19 @@ public class VentanaInventario extends JFrame {
 	
 	private List<BienDTO> obtenerBienesPorTipo(String tipo) {
 	    if (tipo.equals("Todos")) {
-	        return api.obtenerTodosLosBienes();
+	        try {
+				return api.obtenerTodosLosBienes();
+			} catch (DAOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 	    } else {
-	        return api.obtenerBienesPorTipo(tipo);
+	        try {
+				return api.obtenerBienesPorTipo(tipo);
+			} catch (DataNullException | DAOException e1) {
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 	    }
+	    return List.of();
 	}
 	// poner como condicion que el almacendao de bien se true para que sea que esta almacenado, false el bien aun no esta almacenado
 }
