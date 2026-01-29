@@ -15,11 +15,8 @@ public class Coordenada {
 		super();
 		
 		this.validarCampoNull(latitud);
-	
-		
 		this.validarCampoNull(longitud);
-	
-		
+	   
 		this.latitud = latitud;
 		this.longitud = longitud;
 		
@@ -30,8 +27,6 @@ public class Coordenada {
 	public Coordenada(double latitud, double longitud,String codigo) throws DataNullException, DataEmptyException {
 		super();
 		this.validarCampoNull(latitud);
-	
-		
 		this.validarCampoNull(longitud);
 	
 		this.validarCampoNull(codigo);

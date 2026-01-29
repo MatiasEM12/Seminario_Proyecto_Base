@@ -17,7 +17,7 @@ public class Donante extends Persona  {
 	
 	
 	
-	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, Contacto);
 		
 		this.validarObjectNull(ubicacion);
@@ -29,7 +29,7 @@ public class Donante extends Persona  {
 	}
 	
 	
-	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 		
 		this.validarObjectNull(ubicacion);
@@ -43,7 +43,7 @@ public class Donante extends Persona  {
 	}
 
 
-	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username,String codigo) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException{
+	public Donante(String nombre, String apellido,LocalDate fecha_nac, String dni, String contacto,Ubicacion ubicacion,String username,String codigo) throws DataEmptyException ,DataObjectException, DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 		
 		

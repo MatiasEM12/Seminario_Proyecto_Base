@@ -208,7 +208,7 @@ public class Usuario {
 	    }
 	
 	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
-		if (campo.length()>50 || campo.length()<2) {
+		if (campo.length()>50 || campo.length()<3) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
 		}
 	}

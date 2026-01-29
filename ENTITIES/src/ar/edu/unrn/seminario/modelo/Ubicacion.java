@@ -160,7 +160,7 @@ public class Ubicacion {
 	}
 	
 	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
-		if(nombreCampo=="direccion" ||  campo.length()<10) {
+		if(nombreCampo=="direccion" && campo.length()<10) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 50, formato NombreCalle_Num");
 		}
 		if (campo.length()>50 || campo.length()<3) {

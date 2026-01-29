@@ -24,7 +24,7 @@ public class Bien {
 	
 	
 	public Bien(String codigo, String tipo, double peso, String nombre, String descripcion, int nivelNecesidad,
-			LocalDate fechaVencimiento, double talle, String material) throws DataNullException, DataDoubleException {
+			LocalDate fechaVencimiento, double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException  {
 		
 		if(codigo==null) {
 			crearCodigo();
@@ -35,18 +35,18 @@ public class Bien {
 		
 		if(tipo.equalsIgnoreCase("Mueble") ||tipo.equalsIgnoreCase("Electrodomestico"))   {
 			
-			try {
+			
 				validarDoubleBien(peso,"peso"); 
-			}catch(StateChangeException e){
-				throw new DataDoubleException(e.getMessage());
-			}
-			try {
+			
 				validarStringsBien(nombre,"Nombre");
+				validarLongitudCampo50(nombre,"nombre");
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
-			}catch(StateChangeException e) {
-				throw new DataNullException(e.getMessage());
-			}
+				validarStringsBien(material,"material");
+				validarLongitudCampo50(material,"material");
+				validarLongitudCampo255(descripcion,"Descripcion");
+		
+			
 			this.tipo=tipo;
 			this.peso = peso;
 			this.nombre = nombre;
@@ -56,17 +56,13 @@ public class Bien {
 		}else if(tipo.equalsIgnoreCase("Alimento") ||tipo.equalsIgnoreCase("Medicamento")){
 			
 			
-			try {
+		
 				validarStringsBien(nombre,"Nombre");
+				validarLongitudCampo50(nombre,"nombre");
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
-			}catch(StateChangeException e) {
-				throw new DataNullException(e.getMessage());
-			}
-			if(fechaVencimiento==null) {
-				throw new DataNullException("Fecha de vencimiento invalida");
-			}
-			
+				validarLongitudCampo255(descripcion,"Descripcion");
+	
 			this.tipo=tipo;
 			this.nombre = nombre;
 			this.descripcion = descripcion;
@@ -77,14 +73,13 @@ public class Bien {
 			
 		}else if(tipo.equalsIgnoreCase("Ropa")) {
 			
-			try {
+		
 				validarStringsBien(nombre,"Nombre");
+				validarLongitudCampo50(nombre,"nombre");
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
-			}catch(StateChangeException e) {
-				throw new DataNullException(e.getMessage());
-			}
-			
+				validarLongitudCampo255(descripcion,"Descripcion");
+		
 			this.tipo=tipo;
 			this.nombre = nombre;
 			this.descripcion = descripcion;
@@ -95,13 +90,13 @@ public class Bien {
 			
 			
 		}else {
-			try {
+			
 				validarStringsBien(nombre,"Nombre");
+				validarLongitudCampo50(nombre,"nombre");
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
-			}catch(StateChangeException e) {
-				throw new DataNullException(e.getMessage());
-			}
+				validarLongitudCampo255(descripcion,"Descripcion");
+		
 			this.tipo=tipo;
 			this.peso = peso;
 			this.nombre = nombre;
@@ -130,7 +125,7 @@ public class Bien {
 	public double getPeso() {
 		return peso;
 	}
-	public void setPeso(double peso) throws StateChangeException {
+	public void setPeso(double peso) throws  DataDoubleException {
 		validarDoubleBien(peso,"Peso");
 		this.peso = peso;
 	}
@@ -169,7 +164,7 @@ public class Bien {
 	public double getTalle() {
 		return talle;
 	}
-	public void setTalle(double talle) throws StateChangeException {
+	public void setTalle(double talle) throws  DataDoubleException {
 		validarDoubleBien(talle,"Talle");
 		this.talle = talle;
 	}
@@ -193,12 +188,32 @@ public class Bien {
 	}
 	private void validarStringsBien(String campo,String nombreCampo) throws StateChangeException{
 		if (campo == null||campo.isEmpty()) {
-			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
+			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio o null");
 		}
 	}
-	private void validarDoubleBien(double campo,String nombreCampo) throws StateChangeException{
+	private void validarDoubleBien(double campo,String nombreCampo) throws DataDoubleException{
 		if (campo<=0) {
-			 throw new StateChangeException("El campo "+nombreCampo+" es invalido: no puede ser 0 ni negativo");
+			 throw new DataDoubleException("El campo "+nombreCampo+" es invalido: no puede ser 0 ni negativo");
+			 
 		}
 	}
+	
+	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
+		if(nombreCampo=="nombre" || campo.length()<3) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
+		}
+		
+		if (campo.length()>50 || campo.length()<4) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 4 caracteres y como maximo 50 ");
+		}
+	}
+	
+	private void validarLongitudCampo255( String campo,String nombreCampo) throws DataLengthException {
+		
+		if (campo.length()>255 || campo.length()<10) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 255 ");
+		}
+
+	}
+	
 }

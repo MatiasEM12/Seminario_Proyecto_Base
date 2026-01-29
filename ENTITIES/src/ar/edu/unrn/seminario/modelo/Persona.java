@@ -9,7 +9,7 @@ public class Persona {
 	protected LocalDate fecha_nac;
 	protected String  dni;
 	
-	protected Persona(String nombre, String apellido, String dni, LocalDate fecha_nac ,String contacto) throws DataEmptyException,DataNullException, DataDateException{
+	protected Persona(String nombre, String apellido, String dni, LocalDate fecha_nac ,String contacto) throws DataEmptyException,DataNullException, DataDateException, DataLengthException{
 		
 		this.validarCampoNull(nombre);
 		this.validarCampoNull(apellido);
@@ -17,11 +17,17 @@ public class Persona {
 		this.validarDate(fecha_nac);
 		this.validarCampoNull(dni);
 		
+		
 		this.validarCampoVacio(dni,this.dni);
 		this.validarCampoVacio(nombre,this.nombre);
 		this.validarCampoVacio (apellido,this.apellido);
 		this.validarCampoVacio( contacto,this.contacto);
 		
+		this.validarMayorEdad(fecha_nac);
+		this.validarLongitudCampo20(dni,"dni");
+		this.validarContacto(contacto);
+		this.validarLongitudCampo50(nombre, "nombre");
+		this.validarLongitudCampo50(apellido, "apellido");
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.contacto = contacto;
@@ -91,5 +97,53 @@ public class Persona {
 			throw new DataDateException("La fecha no puede ser nula");
 		
 		}
+	}
+	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
+		if (campo.length()>50 || campo.length()<3) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
+		}
+	}
+	
+	private void validarContacto(String contacto) throws DataLengthException {
+	       
+
+        if (esEmail(contacto)) {
+        	if (contacto.length()>30 || contacto.length()<17) {
+    			throw new DataLengthException("el correo debe tener como minimo 17 caracteres incluyendo "+"@tipo_correo.com");
+    		}
+            return; // válido como email
+        }
+
+        if (esTelefono(contacto)) {
+        	
+        	if (contacto.length()>13 || contacto.length()<10) {
+    			throw new DataLengthException("el telefono debe tener como minimo 10 caracteres y como maximo 13");
+    		}
+            return; // válido como teléfono
+        }
+
+        throw new IllegalArgumentException("El contacto no es ni un teléfono ni un email válido");
+    }
+	
+	private boolean esEmail(String valor) {
+	        return valor.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+	}
+
+	private boolean esTelefono(String valor) {
+	        return valor.matches("^\\+?[0-9]{8,15}$");
+	}
+	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
+		
+			if (campo.length()>20 || campo.length()<8) {
+				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
+			}
+		
+	}
+	
+	private void validarMayorEdad(LocalDate fechaNac) throws DataDateException{
+		
+		if (fechaNac.plusYears(18).isAfter(LocalDate.now())) {
+	        throw new DataDateException("Inválido, debe ser mayor de edad");
+	    }
 	}
 }
