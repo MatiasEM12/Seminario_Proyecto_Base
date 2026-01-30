@@ -132,15 +132,17 @@ public class Bien {
 	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre(String nombre) throws StateChangeException {
+	public void setNombre(String nombre) throws StateChangeException, DataLengthException {
 		validarStringsBien(nombre,"Nombre");
+		validarLongitudCampo50(nombre,"nombre");
 		this.nombre = nombre;
 	}
 	public String getDescripcion() {
 		return descripcion;
 	}
-	public void setDescripcion(String descripcion) throws StateChangeException {
+	public void setDescripcion(String descripcion) throws StateChangeException, DataLengthException {
 		validarStringsBien(descripcion,"Descripcion");
+		validarLongitudCampo255(descripcion,"Descripcion");
 		this.descripcion = descripcion;
 	}
 	public int getNivelNecesidad() {
@@ -173,8 +175,9 @@ public class Bien {
 		return material;
 	}
 
-	public void setMaterial(String material) throws StateChangeException {
+	public void setMaterial(String material) throws StateChangeException, DataLengthException {
 		validarStringsBien(material,"Material");
+		validarLongitudCampo50(material,"material");
 		this.material = material;
 	}
 	
