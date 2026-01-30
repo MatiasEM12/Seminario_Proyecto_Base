@@ -34,7 +34,8 @@ public class Donante extends Persona  {
 		
 		this.validarObjectNull(ubicacion);
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
+		this.validarLongitudCampo20(username, "usuario");
+		this.validarCampoVacio( username,"usuario");
 		this.ubicacion=ubicacion;
 		this.username=username;
 		ordenesPedido= new ArrayList<>();
@@ -50,9 +51,10 @@ public class Donante extends Persona  {
 		
 		this.validarObjectNull(ubicacion);
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
+		this.validarCampoVacio( username,"usuario");
+		this.validarLongitudCampo20(username, "usuario");
 		this.validarCampoNull(codigo);
-		this.validarCampoVacio( codigo,this.codigo);
+		this.validarCampoVacio( codigo,"codigo");
 		this.ubicacion=ubicacion;
 		this.username=username;
 		ordenesPedido= new ArrayList<>();
@@ -86,9 +88,10 @@ public class Donante extends Persona  {
 		return username;
 	}
 
-	public void setUsername(String username) throws DataNullException, DataEmptyException {
+	public void setUsername(String username) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(username);
 		this.validarCampoVacio( username,this.username);
+		this.validarLongitudCampo20(username, "usuario");
 		this.username = username;
 	}
 	
@@ -151,7 +154,14 @@ public class Donante extends Persona  {
 		}
 	}
 	
+	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
 	
+		if (campo.length()>20 || campo.length()<3) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+		}
+			
+		
+	}
 	private void validarListDonacion( ArrayList<Donacion> donaciones2) throws DataListException {
 		if (donaciones2==null) {
 			throw new DataListException("List invalida");

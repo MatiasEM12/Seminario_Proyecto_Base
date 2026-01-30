@@ -63,7 +63,10 @@ public class Usuario {
 		return usuario;
 	}
 
-	public void setUsuario(String usuario) {
+	public void setUsuario(String usuario) throws DataEmptyException, DataLengthException, DataNullException {
+		validarCampoVacio(usuario, "usuario");
+		validarLongitudCampo20(usuario, "usuario");
+		validarCampoNull(usuario, "usuario");
 		this.usuario = usuario;
 	}
 
@@ -71,7 +74,10 @@ public class Usuario {
 		return contrasena;
 	}
 
-	public void setContrasena(String contrasena) {
+	public void setContrasena(String contrasena) throws DataEmptyException, DataNullException, DataLengthException {
+		validarCampoVacio(contrasena, "contraseña");
+		validarCampoNull(contrasena, "contraseña");
+		validarLongitudCampo20(contrasena, "contraseña");
 		this.contrasena = contrasena;
 	}
 
@@ -79,7 +85,10 @@ public class Usuario {
 		return nombre;
 	}
 
-	public void setNombre(String nombre) {
+	public void setNombre(String nombre) throws DataEmptyException, DataNullException, DataLengthException {
+		validarCampoVacio(nombre, "nombre");
+		validarCampoNull(nombre, "nombre");
+		validarLongitudCampo50(nombre,"nombre");
 		this.nombre = nombre;
 	}
 
@@ -87,7 +96,8 @@ public class Usuario {
 		return contacto;
 	}
 
-	public void setContacto(String contacto) {
+	public void setContacto(String contacto) throws DataEmptyException {
+		validarCampoVacio(contacto, "contacto");
 		this.contacto= contacto;
 	}
 
@@ -99,7 +109,8 @@ public class Usuario {
 		return rol.getNombre();
 	}
 
-	public void setRol(Rol rol) {
+	public void setRol(Rol rol) throws DataObjectException {
+		validarRol(rol,"rol");
 		this.rol = rol;
 	}
 
@@ -172,7 +183,7 @@ public class Usuario {
 			}
 		}else if(nombreCampo=="contraseña") {
 			if (campo.length()>20 || campo.length()<8) {
-				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
 			}
 			
 		}
