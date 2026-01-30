@@ -59,9 +59,10 @@ public class Persona {
 		return contacto;
 	}
 
-	public void setContacto(String contacto) throws DataNullException, DataEmptyException {
+	public void setContacto(String contacto) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(contacto);
-		this.validarCampoVacio( contacto,this.contacto);
+		this.validarCampoVacio( contacto,"Contacto");
+		validarContacto(contacto);
 		this.contacto = contacto;
 	}
 

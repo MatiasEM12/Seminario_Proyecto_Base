@@ -13,21 +13,24 @@ public class Ubicacion {
 	private String barrio;
 	private String direccion;
 	private Coordenada coordenada;
-	public Ubicacion(String zona, String barrio, String direccion,Coordenada coordenada) throws DataEmptyException, DataNullException, DataObjectException {
+	public Ubicacion(String zona, String barrio, String direccion,Coordenada coordenada) throws DataEmptyException, DataNullException, DataObjectException, DataLengthException {
 		super();
 		
 		this.validarCampoNull(direccion);
-		this.validarCampoVacio(direccion, this.direccion);
+		this.validarCampoVacio(direccion, "Direccion");
 		
 
 		this.validarCampoNull(zona);
-		this.validarCampoVacio(zona, this.zona);
+		this.validarCampoVacio(zona, "Zona");
 		
 
 		this.validarCampoNull(barrio);
-		this.validarCampoVacio(barrio, this.barrio);
+		this.validarCampoVacio(barrio,"Barrio");
 		
 		this.validarObjectNull(coordenada);
+		this.validarLongitudCampo50(barrio, "barrio");
+		this.validarLongitudCampo50(zona, "zona");
+		this.validarLongitudCampo50(direccion, "direccion");
 		
 		this.zona = zona;
 		this.barrio = barrio;
@@ -44,21 +47,21 @@ public class Ubicacion {
 		
 		
 		this.validarCampoNull(direccion);
-		this.validarCampoVacio(direccion, this.direccion);
+		this.validarCampoVacio(direccion,"Direccion");
 		
 
 		this.validarCampoNull(zona);
-		this.validarCampoVacio(zona, this.zona);
+		this.validarCampoVacio(zona, "Zona");
 		
 
 		this.validarCampoNull(barrio);
-		this.validarCampoVacio(barrio, this.barrio);
+		this.validarCampoVacio(barrio, "Barrio");
 		
 		this.validarObjectNull(coordenada);
 		
 
 		this.validarCampoNull(codigo);
-		this.validarCampoVacio(codigo, this.codigo);
+		this.validarCampoVacio(codigo, "codigo");
 		
 		this.validarLongitudCampo50(barrio, "barrio");
 		this.validarLongitudCampo50(zona, "zona");
@@ -78,13 +81,13 @@ public class Ubicacion {
 	public Ubicacion(String codigo, String zona, String barrio, String direccion) throws DataNullException, DataEmptyException, DataObjectException {
 		super();
 		this.validarCampoNull(codigo);
-		this.validarCampoVacio(codigo, this.codigo);
+		this.validarCampoVacio(codigo, "codigo");
 		this.validarCampoNull(zona);
-		this.validarCampoVacio(zona, this.zona);
+		this.validarCampoVacio(zona, "zona");
 		this.validarCampoNull(direccion);
-		this.validarCampoVacio(direccion, this.direccion);
+		this.validarCampoVacio(direccion, "direccion");
 		this.validarCampoNull(barrio);
-		this.validarCampoVacio(barrio, this.barrio);
+		this.validarCampoVacio(barrio, "barrio");
 		
 		if(codigo==null) {
 			crearCodigo();
@@ -102,25 +105,28 @@ public class Ubicacion {
 	public String getZona() {
 		return zona;
 	}
-	public void setZona(String zona) throws DataEmptyException, DataNullException {
+	public void setZona(String zona) throws DataEmptyException, DataNullException, DataLengthException {
 		this.validarCampoNull(zona);
-		this.validarCampoVacio(zona, this.zona);
+		this.validarCampoVacio(zona, "zona");
+		this.validarLongitudCampo50(zona, "zona");
 		this.zona = zona;
 	}
 	public String getBarrio() {
 		return barrio;
 	}
-	public void setBarrio(String barrio) throws DataNullException, DataEmptyException {
+	public void setBarrio(String barrio) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(barrio);
-		this.validarCampoVacio(barrio, this.barrio);
+		this.validarCampoVacio(barrio, "barrio");
+		this.validarLongitudCampo50(barrio, "barrio");
 		this.barrio = barrio;
 	}
 	public String getDireccion() {
 		return direccion;
 	}
-	public void setDireccion(String direccion) throws DataNullException, DataEmptyException {
+	public void setDireccion(String direccion) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(direccion);
-		this.validarCampoVacio(direccion, this.direccion);
+		this.validarCampoVacio(direccion,"direccion");
+		this.validarLongitudCampo50(direccion, "direccion");
 		this.direccion = direccion;
 	}
 
