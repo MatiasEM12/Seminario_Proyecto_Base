@@ -18,16 +18,16 @@ public class Persona {
 		this.validarCampoNull(dni);
 		
 		
-		this.validarCampoVacio(dni,this.dni);
-		this.validarCampoVacio(nombre,this.nombre);
-		this.validarCampoVacio (apellido,this.apellido);
-		this.validarCampoVacio( contacto,this.contacto);
+		this.validarCampoVacio(dni,"DNI");
+		this.validarCampoVacio(nombre,"Nombre");
+		this.validarCampoVacio (apellido,"Apellido");
+		this.validarCampoVacio( contacto,"Contacto");
 		
 		this.validarMayorEdad(fecha_nac);
 		this.validarLongitudCampo20(dni,"dni");
 		this.validarContacto(contacto);
-		this.validarLongitudCampo50(nombre, "nombre");
-		this.validarLongitudCampo50(apellido, "apellido");
+		this.validarLongitudCampo20(nombre, "nombre");
+		this.validarLongitudCampo20(apellido, "apellido");
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.contacto = contacto;
@@ -38,17 +38,19 @@ public class Persona {
 	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre(String nombre) throws DataNullException, DataEmptyException {
+	public void setNombre(String nombre) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(nombre);
-		this.validarCampoVacio(this.nombre, nombre);
+		this.validarCampoVacio(nombre,"nombre");
+		this.validarLongitudCampo20(nombre, "nombre");
 		this.nombre = nombre;
 	}
 	public String getApellido() {
 		return apellido;
 	}
-	public void setApellido(String apellido) throws DataNullException, DataEmptyException {
+	public void setApellido(String apellido) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(apellido);
-		this.validarCampoVacio(apellido,this.apellido);
+		this.validarCampoVacio(apellido,"Apellido");
+		this.validarLongitudCampo20(apellido, "apellido");
 		this.apellido = apellido;
 	}
 
@@ -69,6 +71,7 @@ public class Persona {
 
 	public void setFecha_nac(LocalDate fecha_nac) throws DataDateException {
 		this.validarDate(fecha_nac);
+		this.validarMayorEdad(fecha_nac);
 		this.fecha_nac = fecha_nac;
 	}
 
@@ -98,11 +101,7 @@ public class Persona {
 		
 		}
 	}
-	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
-		if (campo.length()>50 || campo.length()<3) {
-			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
-		}
-	}
+	
 	
 	private void validarContacto(String contacto) throws DataLengthException {
 	       
@@ -134,6 +133,12 @@ public class Persona {
 	}
 	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
 		
+			if(nombreCampo=="nombre" || nombreCampo=="apellido") {
+				
+				if (campo.length()>20 || campo.length()<3) {
+					throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+				}
+			}
 			if (campo.length()>20 || campo.length()<8) {
 				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
 			}

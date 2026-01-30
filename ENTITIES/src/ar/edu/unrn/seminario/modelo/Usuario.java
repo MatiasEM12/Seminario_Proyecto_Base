@@ -96,8 +96,9 @@ public class Usuario {
 		return contacto;
 	}
 
-	public void setContacto(String contacto) throws DataEmptyException {
+	public void setContacto(String contacto) throws DataEmptyException, DataLengthException {
 		validarCampoVacio(contacto, "contacto");
+		validarContacto(contacto);
 		this.contacto= contacto;
 	}
 

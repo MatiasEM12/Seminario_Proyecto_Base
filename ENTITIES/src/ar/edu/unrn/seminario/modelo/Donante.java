@@ -90,7 +90,7 @@ public class Donante extends Persona  {
 
 	public void setUsername(String username) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
+		this.validarCampoVacio( username,"usuario");
 		this.validarLongitudCampo20(username, "usuario");
 		this.username = username;
 	}
