@@ -50,7 +50,7 @@ public interface IApi {
 
 	
 	// API
-	void modificarContraseña(String usuario, String passWord) throws DataNullException, DAOException;
+	void modificarContraseña(String usuario, String passWord) throws DataNullException, DAOException, DataEmptyException, DataLengthException;
 	
 	public Boolean autenticar(String username, String password) throws DataNullException, DAOException;
 	
@@ -88,7 +88,7 @@ public interface IApi {
 	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException;
 	
 	//Donacion
-	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException;
+	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException;
 	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
 	
 	
@@ -110,7 +110,7 @@ public interface IApi {
 
 	//Visitas
 	public void registrarVisita(Visita visita) throws DAOException;
-	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException;
+	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException;
 	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException ;
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 
