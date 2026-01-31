@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
@@ -20,23 +21,24 @@ public class Voluntario extends Persona{
 	private ArrayList<OrdenRetiro> ordenesRetiro;
 	
 	
-	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 	
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
-		
+		this.validarCampoVacio( username,"Usuario");
+		this.validarLongitudCampo20(username, "Usuario");
 		this.username = username;
 		crearCodigo();
 	}
 
-	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,String codigo) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,String codigo) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 	
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
-		this.validarCampoNull(codigo);
-		this.validarCampoVacio( codigo,this.codigo);
+		this.validarCampoVacio( username,"Usuario");
+		this.validarLongitudCampo20(username, "Usuario");
+		
+		this.validarCampoVacio( codigo,"Codigo");
 		
 		
 		this.username = username;
@@ -47,12 +49,13 @@ public class Voluntario extends Persona{
 		}
 	}
 
-	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,boolean disponible) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,boolean disponible) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 		
 		
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
+		this.validarCampoVacio( username,"Usuario");
+		this.validarLongitudCampo20(username, "Usuario");
 		
 		
 		this.disponible=disponible;
@@ -71,7 +74,7 @@ public class Voluntario extends Persona{
 
 	public void setTarea(String tarea) throws DataNullException, DataEmptyException {
 		this.validarCampoNull(tarea);
-		this.validarCampoVacio( tarea,this.tarea);
+		this.validarCampoVacio( tarea,"tarea");
 		this.tarea = tarea;
 	}
 
@@ -87,9 +90,10 @@ public class Voluntario extends Persona{
 		return username;
 	}
 
-	public void setUsername(String username) throws DataNullException, DataEmptyException {
+	public void setUsername(String username) throws DataNullException, DataEmptyException, DataLengthException {
 		this.validarCampoNull(username);
-		this.validarCampoVacio( username,this.username);
+		this.validarCampoVacio( username,"Usuario");
+		this.validarLongitudCampo20(username, "Usuario");
 		this.username = username;
 	}
 
@@ -130,7 +134,14 @@ public class Voluntario extends Persona{
 		}
 	}
 	
-
+	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
+		
+		if (campo.length()>20 || campo.length()<3) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
+		}
+			
+		
+	}
 	
 	private void validarListPedido( ArrayList<OrdenRetiro> ordenesRetiro2) throws DataListException {
 		if (ordenesRetiro2==null) {
