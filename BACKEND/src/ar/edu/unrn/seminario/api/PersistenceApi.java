@@ -260,7 +260,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void modificarContraseña(String usuario, String passWord) throws DataNullException, DAOException {
+    public void modificarContraseña(String usuario, String passWord) throws DataNullException, DAOException, DataEmptyException, DataLengthException {
         if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("nombre de usuario vacío");
         if (passWord == null || passWord.trim().isEmpty()) {
             throw new DataNullException("La contraseña no puede estar vacía.");
@@ -516,7 +516,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException {
+    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException {
     	
     	
     	 if (don == null) return;      
@@ -528,7 +528,7 @@ public class PersistenceApi implements IApi {
     
     private Donacion toDonacion(DonacionDTO dto)
             throws DataNullException, DataDoubleException, DataEmptyException,
-                   DataObjectException, DataDateException, DAOException {
+                   DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException {
 
         if (dto == null) {
             throw new DataNullException("DonacionDTO es null");
@@ -717,7 +717,7 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException {
+    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException {
         
     	Visita visita= toVisita(visitaDTO);
     
@@ -754,7 +754,7 @@ public class PersistenceApi implements IApi {
     	}
     	
     }
-    private Visita toVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException {
+    private Visita toVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataDateException {
     	
     	Visita visita = new Visita (visitaDTO.getFechaVisita(), visitaDTO.getObservaciones(), visitaDTO.getTipo(), visitaDTO.getCodOrdenRetiro(),
     			 toBienesList(visitaDTO.getBienesRecolectados()),visitaDTO.isEsFinal());
@@ -763,7 +763,7 @@ public class PersistenceApi implements IApi {
     	return visita ;
     }
     
-    private ArrayList<Bien> toBienesList(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException{
+    private ArrayList<Bien> toBienesList(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException{
     	
     	ArrayList<Bien>bienes= new ArrayList<>();
     	
@@ -903,7 +903,7 @@ public class PersistenceApi implements IApi {
 		return dtos;
 		
 	}
-	private ArrayList<Bien> listBien(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException{
+	private ArrayList<Bien> listBien(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException{
 		
 		ArrayList<Bien> bienes= new ArrayList<>();
 		
@@ -917,7 +917,7 @@ public class PersistenceApi implements IApi {
 		
 	}
 	
-	private Bien toBien(BienDTO bien) throws DataNullException, DataDoubleException {
+	private Bien toBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
 		
 		
 		 return new Bien(
