@@ -152,4 +152,6 @@ public class Persona {
 	        throw new DataDateException("Inválido, debe ser mayor de edad");
 	    }
 	}
+
+
 }

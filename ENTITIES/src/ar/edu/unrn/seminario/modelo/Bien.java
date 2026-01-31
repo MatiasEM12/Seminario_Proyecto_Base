@@ -24,7 +24,7 @@ public class Bien {
 	
 	
 	public Bien(String codigo, String tipo, double peso, String nombre, String descripcion, int nivelNecesidad,
-			LocalDate fechaVencimiento, double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException  {
+			LocalDate fechaVencimiento, double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException  {
 		
 		if(codigo==null) {
 			crearCodigo();
@@ -62,7 +62,8 @@ public class Bien {
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
 				validarLongitudCampo255(descripcion,"Descripcion");
-	
+				validarVencimiento(fechaVencimiento);
+				validarDate(fechaVencimiento);
 			this.tipo=tipo;
 			this.nombre = nombre;
 			this.descripcion = descripcion;
@@ -157,10 +158,9 @@ public class Bien {
 	public LocalDate getFechaVencimiento() {
 		return fechaVencimiento;
 	}
-	public void setFechaVencimiento(LocalDate fechaVencimiento) throws StateChangeException {
-		if(fechaVencimiento==null) {
-			throw new StateChangeException("La fecha es invalida");
-		}
+	public void setFechaVencimiento(LocalDate fechaVencimiento) throws  DataDateException {
+		validarVencimiento(fechaVencimiento);
+		validarDate(fechaVencimiento);
 		this.fechaVencimiento = fechaVencimiento;
 	}
 	public double getTalle() {
@@ -219,4 +219,17 @@ public class Bien {
 
 	}
 	
+	private void validarVencimiento(LocalDate fechaVencimiento) throws DataDateException {
+		   
+	    if (fechaVencimiento.isBefore(LocalDate.now())) {
+	        throw new DataDateException("Inválido, el producto está vencido");
+	    }
+	}
+	
+	private void validarDate(LocalDate fecha) throws DataDateException {
+		if (fecha==null) {
+			throw new DataDateException("La fecha no puede ser nula");
+		
+		}
+	}
 }
