@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
@@ -21,7 +22,7 @@ public class Beneficiario extends Persona{
 	//no estoy seguro si el lo nesesita ya que orden de entrega ya tiene beneficiario pero puede servir para el mostrar usuarios y poder ver si este tiene una orden
 	private ArrayList<OrdenEntrega> ordenesEntrega;
 	
-	public Beneficiario(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException{
+	public Beneficiario(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, Contacto);
 		
 		this.validarObjectNull(ubicacion);

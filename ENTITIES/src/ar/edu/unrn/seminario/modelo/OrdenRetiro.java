@@ -161,9 +161,6 @@ public class OrdenRetiro extends Orden{
 			this.ordenEstadoCompleta();
 		}
 		
-	
-		
-		
 	}
 	public void agregarBien(Bien bien) {
 		this.recolectados.add(bien);
@@ -206,11 +203,6 @@ public class OrdenRetiro extends Orden{
 		return recolectados;
 	}
 
-
-
-	
-
-
 	public Voluntario getVoluntario() {
 		return voluntario;
 	}
@@ -225,18 +217,9 @@ public class OrdenRetiro extends Orden{
 		this.recolectados = recolectados;
 	}
 
-
-
-
-
-
 	public void setVisitas(ArrayList<Visita> visitas) {
 		this.visitas = visitas;
 	}
-
-
-
-
 
 
 	public static String getTipo() {
@@ -251,4 +234,30 @@ public class OrdenRetiro extends Orden{
 	public static void setContadorOrdenRetiro(int contador) {
 		OrdenRetiro.contadorOrdenRetiro = contador;
 	}
+	
+
+	private void validarCampoVacio(String valorCampo, String nombreCampo) throws DataEmptyException {
+		if (valorCampo.equals("")) {
+			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
+		}
+	}
+	private void validarCampoNull( String nombreCampo) throws DataNullException {
+		if (nombreCampo==null) {
+			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
+		}
+	}
+	private void validarObjectNull( Object ob) throws DataObjectException {
+		if (ob==null) {
+			throw new DataObjectException("Contiene instancia nula ");
+		}
+	}
+	
+	private void validarList( ArrayList<Bien> Bienes) throws DataListException {
+		if (Bienes==null) {
+			throw new DataListException("List invalida");
+		}
+	}
+	
+
+
 }
