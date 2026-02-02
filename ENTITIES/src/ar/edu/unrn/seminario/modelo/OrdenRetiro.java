@@ -22,7 +22,7 @@ public class OrdenRetiro extends Orden{
 	private ArrayList<Bien> recolectados;
 	
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas)throws DataNullException, DataObjectException, DataListException, DataDateException{
+			ArrayList<Visita> visitas)throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		
 		this.validarObjectNull(pedido);
@@ -38,7 +38,7 @@ public class OrdenRetiro extends Orden{
 
 
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException, DataObjectException, DataListException, DataDateException{
+			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 	
 		this.validarObjectNull(pedido);
@@ -54,7 +54,7 @@ public class OrdenRetiro extends Orden{
 		}
 		
 
-		public OrdenRetiro( String codigo ,String estado,LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido,ArrayList <Visita> visitas) throws DataObjectException, DataListException, DataDateException{
+		public OrdenRetiro( String codigo ,String estado,LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido,ArrayList <Visita> visitas) throws DataObjectException, DataListException, DataDateException, DataNullException, DataEmptyException{
 			
 		
 			super(fechaEmision,estado,tipo);

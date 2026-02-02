@@ -2,8 +2,11 @@ package ar.edu.unrn.seminario.modelo;
 
 import java.time.LocalDate;
 
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
 
 
@@ -21,18 +24,21 @@ public class OrdenPedido extends Orden {
 	
 
 	public OrdenPedido(LocalDate fechaEmision, boolean cargaPesada,
-			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException{
+			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
-		try {
-			validarStringsPedido(observaciones,"Observaciones");
-			validarStringsPedido(codDonante,"Codigo de donante");
-			validarStringsPedido(codDonacion,"Codigo de donacion");
-		}catch(StateChangeException e) {
-			throw new DataNullException(e.getMessage());			
-		}
-		if (observaciones.length()>300) {
-			throw new DataLengthException("El campo observaciones no puede exceder los 300 caracteres"); 
-		}
+		
+			this.validarCampoNull(observaciones);
+			this.validarCampoVacio(observaciones,"Observaciones");
+			this.validarLongitudCampo255(observaciones, "Observaciones");
+		
+			this.validarCampoNull(codDonacion);
+			this.validarCampoVacio(codDonacion, "Codigo Donacion");
+			
+			this.validarCampoNull(codDonante);
+			this.validarCampoVacio(codDonante, "Codigo Donante");
+		
+	
+		
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
 		this.codDonante = codDonante;
@@ -40,19 +46,25 @@ public class OrdenPedido extends Orden {
 		crearCodigo();
 	}
 	public OrdenPedido(String codigo,LocalDate fechaEmision,
-			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException{
+			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException, DataEmptyException, DataDateException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
-		try {
-			validarStringsPedido(observaciones,"Observaciones");
-			validarStringsPedido(codDonante,"Codigo de donante");
-			validarStringsPedido(codDonacion,"Codigo de donacion");
-		}catch(StateChangeException e) {
-			throw new DataNullException(e.getMessage());			
+		
+		this.validarCampoNull(observaciones);
+		this.validarCampoVacio(observaciones,"Observaciones");
+		this.validarLongitudCampo255(observaciones, "Observaciones");
+	
+		this.validarCampoNull(codDonacion);
+		this.validarCampoVacio(codDonacion, "Codigo Donacion");
+		
+		this.validarCampoNull(codDonante);
+		this.validarCampoVacio(codDonante, "Codigo Donante");
+	
+		if(codigo==null) {
+			this.crearCodigo();
+		}else {
+			this.codigo=codigo;
 		}
-		if (observaciones.length()>300) {
-			throw new DataLengthException("El campo observaciones no puede exceder los 300 caracteres"); 
-		}
-		this.codigo=codigo;
+
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
 		this.codDonante = codDonante;
@@ -62,8 +74,9 @@ public class OrdenPedido extends Orden {
 		return codigo;
 	}
 	
-	public void setCodigo(String codigo) throws StateChangeException {
-		validarStringsPedido(codigo,"Codigo de ordene de pedido");
+	public void setCodigo(String codigo) throws StateChangeException, DataEmptyException, DataNullException {
+		this.validarCampoNull(codigo);
+		this.validarCampoVacio(codigo, "codigo");
 		this.codigo = codigo;
 	}
 	public boolean isCargaPesada() {
@@ -83,8 +96,12 @@ public class OrdenPedido extends Orden {
 	public String getObservaciones() {
 		return observaciones;
 	}
-	public void setObservaciones(String observaciones) throws StateChangeException {
-		validarStringsPedido(observaciones,"Observaciones");
+	public void setObservaciones(String observaciones) throws StateChangeException, DataNullException, DataEmptyException, DataLengthException {
+
+		this.validarCampoNull(observaciones);
+		this.validarCampoVacio(observaciones,"Observaciones");
+		this.validarLongitudCampo255(observaciones, "Observaciones");
+	
 		this.observaciones = observaciones;
 	}
 
@@ -93,8 +110,9 @@ public class OrdenPedido extends Orden {
 		return codDonante;
 	}
 
-	public void setCodDonante(String codDonante) throws StateChangeException {
-		validarStringsPedido(codDonante,"Codigo donante");
+	public void setCodDonante(String codDonante) throws StateChangeException, DataNullException, DataEmptyException {
+		this.validarCampoNull(codDonante);
+		this.validarCampoVacio(codDonante, "Codigo Donante");
 		this.codDonante = codDonante;
 	}
 
@@ -102,8 +120,10 @@ public class OrdenPedido extends Orden {
 		return codDonacion;
 	}
 
-	public void setCodDonacion(String codDonacion) throws StateChangeException {
-		validarStringsPedido(codDonacion,"Codigo donacion");
+	public void setCodDonacion(String codDonacion) throws StateChangeException, DataNullException, DataEmptyException {
+		this.validarCampoNull(codDonacion);
+		this.validarCampoVacio(codDonacion, "Codigo Donacion");
+		
 		this.codDonacion = codDonacion;
 	}
 	
@@ -115,16 +135,34 @@ public class OrdenPedido extends Orden {
 		return tipo;
 	}
 	public static void setTipo(String tipo) throws StateChangeException {
-		validarStringsPedido(tipo,"Tipo");
+		
 		OrdenPedido.tipo = tipo;
 	}
-	private static void validarStringsPedido(String campo,String nombreCampo) throws StateChangeException{
-		if (campo == null||campo.isEmpty()) {
-			 throw new StateChangeException("El campo "+nombreCampo+" es invalido, no puede estar vacio");
-		}
-	}
+	
 	public static void setContadorPedido(int contador) {
 		OrdenPedido.contadorOrdenPedido = contador;
 	}
-	
+	private void validarCampoVacio(String valorCampo, String nombreCampo) throws DataEmptyException {
+		if (valorCampo.equals("")) {
+			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
+		}
+	}
+	private void validarCampoNull( String nombreCampo) throws DataNullException {
+		if (nombreCampo==null) {
+			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
+		}
+	}
+	private void validarObjectNull( Object ob) throws DataObjectException {
+		if (ob==null) {
+			throw new DataObjectException("Contiene instancia nula ");
+		}
+	}
+	private void validarLongitudCampo255( String campo,String nombreCampo) throws DataLengthException {
+		
+		if (campo.length()>255 || campo.length()<10) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 255 ");
+		}
+
+	}
+
 }
