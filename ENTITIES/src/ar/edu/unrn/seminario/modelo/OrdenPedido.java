@@ -24,7 +24,7 @@ public class OrdenPedido extends Orden {
 	
 
 	public OrdenPedido(LocalDate fechaEmision, boolean cargaPesada,
-			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException{
+			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException, DataObjectException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		
 			this.validarCampoNull(observaciones);
@@ -46,7 +46,7 @@ public class OrdenPedido extends Orden {
 		crearCodigo();
 	}
 	public OrdenPedido(String codigo,LocalDate fechaEmision,
-			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException, DataEmptyException, DataDateException{
+			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException, DataEmptyException, DataDateException, DataObjectException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		
 		this.validarCampoNull(observaciones);
@@ -134,8 +134,8 @@ public class OrdenPedido extends Orden {
 	public static String getTipo() {
 		return tipo;
 	}
-	public static void setTipo(String tipo) throws StateChangeException {
-		
+	public static void setTipo(String tipo) throws DataNullException, DataEmptyException {
+	
 		OrdenPedido.tipo = tipo;
 	}
 	
