@@ -148,8 +148,8 @@ public class Persona {
 	
 	private void validarMayorEdad(LocalDate fechaNac) throws DataDateException{
 		
-		if (fechaNac.plusYears(18).isAfter(LocalDate.now())) {
-	        throw new DataDateException("Inválido, debe ser mayor de edad");
+		if (fechaNac.plusYears(16).isAfter(LocalDate.now())) {
+	        throw new DataDateException("Inválido, debe ser mayor de 16 años");
 	    }
 	}
 

@@ -225,7 +225,7 @@ public class Visita {
 
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {
 		   
-	    if (fechaVisita.isBefore(LocalDate.now())) {
+	    if (fechaVisita.isBefore(LocalDate.now()) || fechaVisita.isAfter(LocalDate.now())) {
 	        throw new DataDateException("Fecha invalida");
 	    }
 	}
