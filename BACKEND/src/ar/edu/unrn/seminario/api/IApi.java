@@ -88,7 +88,7 @@ public interface IApi {
 	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException;
 	
 	//Donacion
-	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException;
+	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException, DataListException;
 	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
 	
 	
@@ -100,7 +100,7 @@ public interface IApi {
 	public BienDTO obtenerBien (String codigo) throws DataNullException, DAOException;
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException ;
 	
-	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException;
+	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
 
@@ -110,7 +110,7 @@ public interface IApi {
 
 	//Visitas
 	public void registrarVisita(Visita visita) throws DAOException;
-	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException;
+	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException;
 	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException ;
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 
@@ -125,7 +125,7 @@ public interface IApi {
 
 
 	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException;
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 
 	
 	public void registrarUbicacion(Ubicacion ubicacion) throws DAOException;

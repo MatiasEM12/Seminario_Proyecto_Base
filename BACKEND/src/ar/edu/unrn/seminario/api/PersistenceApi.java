@@ -350,7 +350,7 @@ public class PersistenceApi implements IApi {
     
     @Override
     public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException {
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {
     	
         // validaciones básicas
         if (retiro == null) {
@@ -436,7 +436,7 @@ public class PersistenceApi implements IApi {
         );
     }
     @Override
-    public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException {
+    public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {
         if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
         OrdenPedido pedido = null;
 		pedido = ordenPedidoDao.find(codPedido);
@@ -517,7 +517,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException {
+    public void registrarDonacion(DonacionDTO don) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException, DataListException {
     	
     	
     	 if (don == null) return;      
@@ -529,7 +529,7 @@ public class PersistenceApi implements IApi {
     
     private Donacion toDonacion(DonacionDTO dto)
             throws DataNullException, DataDoubleException, DataEmptyException,
-                   DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException {
+                   DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException, DataListException {
 
         if (dto == null) {
             throw new DataNullException("DonacionDTO es null");
@@ -718,7 +718,7 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException {
+    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
         
     	Visita visita= toVisita(visitaDTO);
     
