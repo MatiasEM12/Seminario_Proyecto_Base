@@ -5,7 +5,9 @@ import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataExistsException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
 public interface UsuarioDao {
@@ -19,6 +21,6 @@ public interface UsuarioDao {
 
 	Usuario find(String username)throws DAOException;
 
-	List<Usuario> findAll() throws DataNullException, DAOException;
+	List<Usuario> findAll() throws DataNullException, DAOException, DataObjectException, DataLengthException;
     int obtenerCantidadUsuarios() throws SQLException;
 }

@@ -61,7 +61,7 @@ public interface IApi {
 	
 	//OrdenRetiro
 	
-	public void registrarOrdenRetiro(OrdenRetiroDTO retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
+	public void registrarOrdenRetiro(OrdenRetiroDTO retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() throws DAOException;
 

@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 
@@ -84,7 +87,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
     }
 
     @Override
-    public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException, DAOException{
+    public List<Bien> findDonacion(String codDonacion) throws DataNullException, DataDoubleException, DAOException, StateChangeException, DataLengthException, DataDateException{
         ArrayList<Bien> resultado = new ArrayList<>();
         if (codDonacion == null || codDonacion.trim().isEmpty()) return resultado;
 

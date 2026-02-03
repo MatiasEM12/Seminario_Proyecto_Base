@@ -8,6 +8,7 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
@@ -120,7 +121,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public Beneficiario find(String codigo) throws DAOException {
+    public Beneficiario find(String codigo) throws DAOException, DataLengthException {
         if (codigo == null || codigo.trim().isEmpty()) return null;
 
         final String SQL =
@@ -168,7 +169,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public List<Beneficiario> findAll() throws DAOException {
+    public List<Beneficiario> findAll() throws DAOException, DataLengthException {
         final String SQL = "SELECT codigo FROM beneficiario";
         List<Beneficiario> lista = new ArrayList<>();
 

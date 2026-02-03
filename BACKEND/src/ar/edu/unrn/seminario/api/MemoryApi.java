@@ -79,7 +79,7 @@ public class MemoryApi implements IApi {
     }
 
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException, DataObjectException, DataNullException, DataDateException {
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException {
 
    
         if (!existeUsuario(username)) {
@@ -274,7 +274,7 @@ public class MemoryApi implements IApi {
     // API
 
     @Override
-    public void modificarContraseña(String usuario, String passWord) {
+    public void modificarContraseña(String usuario, String passWord) throws DataEmptyException, DataNullException, DataLengthException {
 
         Usuario user = this.buscarUsuario(usuario);
         if (user != null) {
@@ -323,7 +323,7 @@ public class MemoryApi implements IApi {
     }
 
   //pre-carfa OrdenRetiro
-  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException {
+  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException {
   		if (codPedido == null || codPedido.trim().isEmpty()) {
   	        return;
   	    }
@@ -655,7 +655,7 @@ public class MemoryApi implements IApi {
 	}
 
 
-	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException {
 		
 		OrdenRetiro oR= new OrdenRetiro(orden.getFechaEmision(),this.obtenerOrdenPedidoPorCodigo(orden.getPedido()),null);
 		  ordenesRetiro.add(oR);

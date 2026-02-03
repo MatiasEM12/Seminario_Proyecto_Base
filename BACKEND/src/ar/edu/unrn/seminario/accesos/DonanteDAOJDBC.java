@@ -12,6 +12,7 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
@@ -177,7 +178,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 		}
 	}
 	public Donante find(String codigo)
-	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
+	        throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException {
 
 	    Donante donante = null;
 
