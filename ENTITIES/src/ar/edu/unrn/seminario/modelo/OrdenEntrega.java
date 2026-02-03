@@ -1,9 +1,13 @@
 package ar.edu.unrn.seminario.modelo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 public class OrdenEntrega extends Orden{
 	
@@ -11,23 +15,21 @@ public class OrdenEntrega extends Orden{
 	
 	public static String tipo="ORDEN_ENTREGA";
 	private String codigo=null;
-	private LocalDateTime fechaHoraProgramada=null;
-	// comienza siempre como pendiente que es true
+	private LocalDateTime fechaHoraProgramada;
+	
 	private boolean entregaEstado = true;
 	//esto podriamos usuarlo para saber si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
 	private boolean confimacionRecepcion=false;
 	private Bien Entrega[];
 	private Beneficiario beneficiario;
 
-	public OrdenEntrega(Bien Entrega[],Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException {
-		//cambiaria lo de fecha de emision por un now
-		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
-		if(Entrega.length==0) {
-			throw new DataNullException("no puede crearse una Entrega sin bienes");
-		}
-		if(beneficiario==null) {
-			throw new DataNullException("no puede crearse una Entrega sin beneficiario");
-		}
+	public OrdenEntrega(Bien Entrega[],Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException, DataDateException, DataEmptyException, DataObjectException, DataListException {
+				super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
+				
+				
+	    this.validarListBien(Entrega);
+		this.validarObjectNull(beneficiario);
+		
 		if(codigo==null) {
 			crearCodigo();
 		}
@@ -38,25 +40,19 @@ public class OrdenEntrega extends Orden{
 	}
 	
 	
-	private void setFecha(LocalDateTime fechaHoraProgramada) {
+	private void setFecha(LocalDateTime fechaHoraProgramada) throws DataDateException {
+		this.validarDateTime(fechaHoraProgramada);
+		this.validarDateTimeProgramacion(fechaHoraProgramada);
 		this.fechaHoraProgramada=fechaHoraProgramada;	
 	}
-	private void cambiarEstado() {
-		if(entregaEstado==true) {
-			entregaEstado=false;
-		}
-		else {
-			entregaEstado=true;
-		}
-	}
 	
-	private void cambiarConfirmacion() {
-		//este tengo mi duda de si no deveria ser que si ya se confirmo no se puede desconfirmar sino que solo se puede cancelar
+	
+	private void cambiarConfirmacion() throws DataEmptyException {
+		
 		if(confimacionRecepcion==true) {
 			confimacionRecepcion=false;
-		}
-		else {
-			confimacionRecepcion=true;
+		}else {
+			throw new DataEmptyException("la recepcion ya ah sido conformada");
 		}
 	}
 	
@@ -79,15 +75,51 @@ public class OrdenEntrega extends Orden{
 		return beneficiario;
 	}
 	
-	// lo saque de bien
+	
+
+	private void validarCampoVacio(String valorCampo, String nombreCampo) throws DataEmptyException {
+		if (valorCampo.equals("")) {
+			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");
+		}
+	}
+	private void validarCampoNull( String nombreCampo) throws DataNullException {
+		if (nombreCampo==null) {
+			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
+		}
+	}
+	private void validarObjectNull( Object ob) throws DataObjectException {
+		if (ob==null) {
+			throw new DataObjectException("Contiene instancia nula ");
+		}
+	}
+	private void validarListBien( Bien [] bienes) throws DataListException {
+		if (bienes==null) {
+			throw new DataListException("Array invalido");
+		}
+	}
+
+	
 	private void crearCodigo() {
 		contadorEntrega++;
-		  this.codigo = "E" + String.format("%05d", contadorEntrega);
+		  this.codigo = "OE" + String.format("%05d", contadorEntrega);
 	}
 	
 	public static void setContadorCoordenada(int contador) {
 		OrdenEntrega.contadorEntrega = contador;
 	}
+	
+	private void validarDateTime(LocalDateTime fecha) throws DataDateException {
+		if (fecha==null) {
+			throw new DataDateException("La fecha no puede ser nula");
+		
+		}
 	}
+	private void validarDateTimeProgramacion(LocalDateTime fecha) throws DataDateException {
+		if (fecha.isBefore(LocalDateTime.now())) {
+			throw new DataDateException("Fecha invalida, anterior a la actual");
+		
+		}
+	}
+}
 
 

@@ -81,7 +81,7 @@ public class OrdenRetiro extends Orden{
 	}
 
 	
-	public void ordenEstadoCompleta() throws StateChangeException {
+	public void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
 		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
 			
@@ -92,7 +92,7 @@ public class OrdenRetiro extends Orden{
 		
 	}
 	
-	public void ordenEstadoProceso() throws StateChangeException {
+	public void ordenEstadoProceso() throws StateChangeException, DataObjectException {
 		
 	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
 			
@@ -104,7 +104,7 @@ public class OrdenRetiro extends Orden{
 		
 	}
 	
-	public void ordenEstadoCancelada() throws StateChangeException {
+	public void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
 		
 		
 		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
