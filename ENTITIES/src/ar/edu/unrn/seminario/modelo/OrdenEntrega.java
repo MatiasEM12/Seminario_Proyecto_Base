@@ -8,6 +8,7 @@ import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 public class OrdenEntrega extends Orden{
 	
@@ -20,21 +21,21 @@ public class OrdenEntrega extends Orden{
 	private boolean entregaEstado = true;
 	//esto podriamos usuarlo para saber si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
 	private boolean confimacionRecepcion=false;
-	private Bien Entrega[];
+	private ArrayList<Visita> visitas;
+	private ArrayList<Bien> entregados;
 	private Beneficiario beneficiario;
 
-	public OrdenEntrega(Bien Entrega[],Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException, DataDateException, DataEmptyException, DataObjectException, DataListException {
+	public OrdenEntrega(ArrayList<Bien> bienes,Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException, DataDateException, DataEmptyException, DataObjectException, DataListException {
 				super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 				
 				
-	    this.validarListBien(Entrega);
+		this.validarListBien(bienes);
+		visitas=new ArrayList<Visita> ();
 		this.validarObjectNull(beneficiario);
-		
 		if(codigo==null) {
 			crearCodigo();
-		}
-		for (int i=0;i<Entrega.length;i++) {
-		    this.Entrega[i]=Entrega[i];
+		}else {
+			this.codigo=codigo;
 		}
 		this.beneficiario=beneficiario;
 	}
@@ -56,6 +57,11 @@ public class OrdenEntrega extends Orden{
 		}
 	}
 	
+	public void setVisitas(ArrayList<Visita> visitas) throws DataListException {
+		this.validarListVisita(visitas);
+		this.visitas = visitas;
+	}
+
 	private String getCodigo() {
 		return codigo;
 	}
@@ -68,9 +74,7 @@ public class OrdenEntrega extends Orden{
 	private boolean getConfimacionRecepcion() {
 		return confimacionRecepcion;
 	}
-	private Bien[] getEntrega() {
-		return Entrega;
-	}
+
 	private Beneficiario getBeneficiario() {
 		return beneficiario;
 	}
@@ -92,13 +96,17 @@ public class OrdenEntrega extends Orden{
 			throw new DataObjectException("Contiene instancia nula ");
 		}
 	}
-	private void validarListBien( Bien [] bienes) throws DataListException {
+	private void validarListBien( ArrayList<Bien> bienes) throws DataListException {
 		if (bienes==null) {
-			throw new DataListException("Array invalido");
+			throw new DataListException("List invalida");
 		}
 	}
 
-	
+	private void validarListVisita( ArrayList<Visita> visitas) throws DataListException {
+		if (visitas==null) {
+			throw new DataListException("List invalida");
+		}
+	}
 	private void crearCodigo() {
 		contadorEntrega++;
 		  this.codigo = "OE" + String.format("%05d", contadorEntrega);
@@ -120,6 +128,97 @@ public class OrdenEntrega extends Orden{
 		
 		}
 	}
+public void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
+		
+		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
+			
+			super.setEstado(EstadoOrden.COMPLETADA);
+		}else {
+			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
+		}
+		
+	}
+	
+	public void ordenEstadoProceso() throws StateChangeException, DataObjectException {
+		
+	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
+			
+			super.setEstado(EstadoOrden.EN_PROCESO);
+		}else {
+			
+			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
+		}
+		
+	}
+	
+	public void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
+		
+		
+		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
+			
+			super.setEstado(EstadoOrden.CANCELADA);
+		}else {
+
+			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
+		}
+		
+		
+	}
+	public void setRecolectados(ArrayList<Bien> entregados) throws DataListException {
+		this.validarListBien(entregados);
+		this.entregados = entregados;
+	}
+	public void agregarVisita(Visita visita) throws StateChangeException, DataObjectException, DataListException {
+		this.validarObjectNull(visita);
+		
+		this.visitas.add(visita);
+		if(visita.getBienesRecolectados()!=null) {
+			
+			this.setRecolectados(visita.getBienesRecolectados());
+		}
+		
+		
+		if(visita.isEsFinal()==true ) {
+			this.ordenEstadoCompleta();
+		}
+		
+	}
+	public void agregarBien(Bien bien) throws DataObjectException {
+		this.validarObjectNull(bien);
+		this.entregados.add(bien);
+	}
+
+
+	
+
+	public ArrayList<Bien> getEntregados() {
+		return entregados;
+	}
+
+
+	public void setEntregados(ArrayList<Bien> entregados) throws DataListException {
+		this.validarListBien(entregados);
+		this.entregados = entregados;
+	}
+
+
+	public ArrayList<Visita> getVisitas() {
+		return visitas;
+	}
+
+
+	public void setFechaHoraProgramada(LocalDateTime fechaHoraProgramada) throws DataDateException {
+		this.validarDateTimeProgramacion(fechaHoraProgramada);
+		this.fechaHoraProgramada = fechaHoraProgramada;
+	}
+
+
+	public void setConfimacionRecepcion(boolean confimacionRecepcion) {
+		this.confimacionRecepcion = confimacionRecepcion;
+	}
+	
+
+
 }
 
 
