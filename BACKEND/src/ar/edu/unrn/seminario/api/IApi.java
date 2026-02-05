@@ -22,7 +22,7 @@ public interface IApi {
 
 	void eliminarUsuario(String username) throws DAOException;
 	
-	List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException; // recuperar todos los usuarios
+	List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException, DataObjectException, DataLengthException; // recuperar todos los usuarios
 
 	void activarUsuario(String username) throws StateChangeException, DAOException ; // recuperar el objeto Usuario, implementar el comportamiento de estado.
 
@@ -77,22 +77,22 @@ public interface IApi {
 	//Donante
 	public void registrarDonante(Donante donante) throws DAOException;
 	List<DonanteDTO> obtenerDonantes(String userSolicitante);
-	List<UsuarioDTO> obtenerUserDonantes() throws DataNullException, DAOException;
+	List<UsuarioDTO> obtenerUserDonantes() throws DataNullException, DAOException, DataObjectException, DataLengthException;
 
 	//Voluntario 
 	public void registrarVoluntario(Voluntario voluntario) throws DAOException;
 	List<VoluntarioDTO> obtenerVoluntarios();
-	List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException;
+	List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException, DataObjectException, DataLengthException;
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro);
 	//Administrador 
-	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException;
+	List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException, DataObjectException, DataLengthException;
 	
 	//Donacion
 	public void registrarDonacion(DonacionDTO donacion) throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException, DataListException;
-	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
+	ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 	
 	
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 	
 	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
 	
@@ -102,7 +102,7 @@ public interface IApi {
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 
-	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException;
+	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 
 	void guardarRol(Integer codigo, String descripcion, boolean estado) throws DataNullException, DAOException;
 
