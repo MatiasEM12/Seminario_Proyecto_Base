@@ -1,5 +1,6 @@
 package ar.edu.unrn.seminario.api;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -22,6 +23,7 @@ public class MemoryApi implements IApi {
     private Map<String, Usuario> usuariosByUsername = new HashMap<>();
     private Map<String, Donante> donantesByUser = new HashMap<>();
     private Map<String, Voluntario> voluntariosByUser = new HashMap<>();
+    private Map<String, Ubicacion> ubicacionesByCodigo = new HashMap<>();
     
   
     private ArrayList<BienDTO> bienes = new ArrayList<>();
@@ -32,7 +34,7 @@ public class MemoryApi implements IApi {
     private List<Voluntario> voluntarios = new ArrayList<>();
     private List<Visita> visitass = new ArrayList<>();
 
-    public MemoryApi() throws DataNullException, StateChangeException, DataEmptyException, DataObjectException, DataDateException {
+    public MemoryApi() throws DataNullException, StateChangeException, DataEmptyException, DataObjectException, DataDateException, DataLengthException {
         // datos iniciales
     	
     	
@@ -411,12 +413,6 @@ public class MemoryApi implements IApi {
 	
     // OrdenRetiro
 
-	public void registrarOrdenRetiro(OrdenRetiro oR) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataListException, DataDateException, DataEmptyException {
-	       ordenesRetiro.add(oR);
-	       
-	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
-	       inicializarVisitas(oR);
-	}
 	
 
     
@@ -851,9 +847,22 @@ public class MemoryApi implements IApi {
 
 	@Override
 	public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol)
-			throws DataEmptyException {
-		// TODO Auto-generated method stub
+			throws DataEmptyException, DataNullException, DataExistsException, DataObjectException, DataLengthException {
 		
+			// En MemoryApi no persistimos en BD: validamos y delegamos al método principal.
+			if (username == null) {
+				throw new DataNullException("username nulo");
+			}
+			if (existeUsuario(username)) {
+				throw new DataExistsException("Ya existe el usuario: " + username);
+			}
+			// Por defecto, el usuario queda activo (igual que en una alta típica)
+			try {
+				registrarUsuario(username, password, email, nombre, codigoRol, true);
+			} catch (DataDateException e) {
+				// No debería ocurrir en el alta simple; re-lanzamos como objeto inválido
+				throw new DataObjectException(e.getMessage());
+			}
 	}
 
 	@Override
