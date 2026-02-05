@@ -66,7 +66,11 @@ public class SolicitudesEntrega extends JFrame {
         contentPane.add(btnCerrar);
 
         // cargar inicialmente
-        cargarSolicitudes();
+        try {
+			cargarSolicitudes();
+		} catch (DataNullException | DataEmptyException | DataObjectException | DataDateException e1) {
+			JOptionPane.showMessageDialog(this, "Error al refrescar donaciones: " + e1.getMessage());
+		}
 
         // listeners
         btnVer.addActionListener(e -> {
