@@ -10,6 +10,7 @@ import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 
@@ -153,7 +154,7 @@ public class ListadoOrdenes extends JFrame {
 						try {
 							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
 							} catch (DataEmptyException | DataObjectException | DataDateException
-								| DAOException | DataNullException e1) {
+								| DAOException | DataNullException | DataLengthException | DataListException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
 						
