@@ -17,10 +17,6 @@ public class OrdenEntrega extends Orden{
 	public static String tipo="ORDEN_ENTREGA";
 	private String codigo=null;
 	private LocalDateTime fechaHoraProgramada;
-	
-	private boolean entregaEstado = true;
-	//esto podriamos usuarlo para saber si ya esta definida para una ruta o usar directamente la fecha, si es null es que no esta en marcha
-	private boolean confimacionRecepcion=false;
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> entregados;
 	private Beneficiario beneficiario;
@@ -48,14 +44,7 @@ public class OrdenEntrega extends Orden{
 	}
 	
 	
-	private void cambiarConfirmacion() throws DataEmptyException {
-		
-		if(confimacionRecepcion==true) {
-			confimacionRecepcion=false;
-		}else {
-			throw new DataEmptyException("la recepcion ya ah sido conformada");
-		}
-	}
+	
 	
 	public void setVisitas(ArrayList<Visita> visitas) throws DataListException {
 		this.validarListVisita(visitas);
@@ -68,12 +57,7 @@ public class OrdenEntrega extends Orden{
 	private LocalDateTime getFechaHoraProgramada() {
 		return fechaHoraProgramada;
 	}
-	private boolean getEntregaEstado() {
-		return entregaEstado;
-	}
-	private boolean getConfimacionRecepcion() {
-		return confimacionRecepcion;
-	}
+	
 
 	private Beneficiario getBeneficiario() {
 		return beneficiario;
@@ -213,10 +197,6 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	}
 
 
-	public void setConfimacionRecepcion(boolean confimacionRecepcion) {
-		this.confimacionRecepcion = confimacionRecepcion;
-	}
-	
 
 
 }

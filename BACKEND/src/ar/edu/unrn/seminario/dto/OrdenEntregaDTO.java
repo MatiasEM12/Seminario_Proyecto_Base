@@ -13,8 +13,6 @@ public class OrdenEntregaDTO extends OrdenDTO{
 	
 	private String codigo;
 	private LocalDateTime fechaHoraProgramada;
-	private boolean entregaEstado;
-	private boolean confimacionRecepcion;
 	private String[] codBienes;
 	private String[] codVisitas;
 	private String codBeneficiario;
@@ -24,25 +22,17 @@ public class OrdenEntregaDTO extends OrdenDTO{
 	
 
 	public OrdenEntregaDTO(LocalDate fechaEmision, EstadoOrden estado, String tipo, String codigo,
-			LocalDateTime fechaHoraProgramada, boolean entregaEstado, boolean confimacionRecepcion, String[] codBienes,
+			LocalDateTime fechaHoraProgramada, String[] codBienes,
 			String[] codVisitas, String codBeneficiario) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
 		this.fechaHoraProgramada = fechaHoraProgramada;
-		this.entregaEstado = entregaEstado;
-		this.confimacionRecepcion = confimacionRecepcion;
 		this.codBienes = codBienes;
 		this.codVisitas = codVisitas;
 		this.codBeneficiario = codBeneficiario;
 	}
 
-	public boolean isEntregaEstado() {
-		return entregaEstado;
-	}
 
-	public boolean isConfimacionRecepcion() {
-		return confimacionRecepcion;
-	}
 
 	public String getCodigo() {
 		return codigo;
@@ -82,14 +72,6 @@ public class OrdenEntregaDTO extends OrdenDTO{
 
 	public void setCodBeneficiario(String codBeneficiario) {
 		this.codBeneficiario = codBeneficiario;
-	}
-
-	public void setEntregaEstado(boolean entregaEstado) {
-		this.entregaEstado = entregaEstado;
-	}
-
-	public void setConfimacionRecepcion(boolean confimacionRecepcion) {
-		this.confimacionRecepcion = confimacionRecepcion;
 	}
 
 

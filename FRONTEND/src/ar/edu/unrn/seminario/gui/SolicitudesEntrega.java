@@ -130,6 +130,6 @@ public class SolicitudesEntrega extends JFrame {
         setVisible(false);
         dispose();
     }
-	}
-
 }
+
+
