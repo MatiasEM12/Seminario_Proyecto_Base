@@ -742,14 +742,6 @@ public class MemoryApi implements IApi {
 	            .orElseGet(ArrayList::new); // Si no se encontró la orden o la lista es nula, devuelve una lista vacía
 	}
 
-
-	public void registrarOrdenRetiro(OrdenRetiroDTO orden) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException {
-		
-		OrdenRetiro oR= new OrdenRetiro(orden.getFechaEmision(),this.obtenerOrdenPedidoPorCodigo(orden.getPedido()),null);
-		  ordenesRetiro.add(oR);
-		  inicializarVisitas(oR);
-		
-	}
 	
 	public OrdenRetiro obtenerOrdenRetiroPorPedido(String codPedido) {
 	    if (codPedido == null || codPedido.trim().isEmpty()) {
@@ -945,8 +937,8 @@ public class MemoryApi implements IApi {
 
 
 	@Override
-	public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {
+	public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException {
 
 		if (retiro == null) {
 			throw new DataNullException("OrdenRetiroDTO es nula");
@@ -1295,6 +1287,62 @@ public class MemoryApi implements IApi {
 			}
 		}
 		return null;
+	}
+
+	public void registrarOrdenRetiro(OrdenRetiro retiroO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
+	       ordenesRetiro.add(retiroO);
+	       
+	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
+	       try {
+	           inicializarVisitas(retiroO);
+	       } catch (Exception e) {
+	           // si falla la carga de visitas de prueba, continuamos
+	       }
+	}
+
+	@Override
+	public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {
+
+		if (retiro == null) {
+			throw new DataNullException("OrdenRetiroDTO es nula");
+		}
+
+		OrdenPedido pedido = findOrdenPedidoByCodigo(retiro.getPedido());
+		if (pedido == null) {
+			throw new DataNullException("No existe OrdenPedido con código: " + retiro.getPedido());
+		}
+
+		Voluntario voluntario = null;
+		if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
+			voluntario = findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
+		}
+
+		ArrayList<Visita> visitasOR = new ArrayList<>();
+		if (retiro.getCodVisitas() != null) {
+			for (String codV : retiro.getCodVisitas()) {
+				if (codV == null) continue;
+				for (Visita v : visitass) {
+					if (v != null && codV.equalsIgnoreCase(v.getCodigo())) {
+						visitasOR.add(v);
+						break;
+					}
+				}
+			}
+		}
+
+		String estado = (retiro.getEstado() != null) ? retiro.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
+		String codigo = retiro.getCodigo(); // si es null el modelo generará uno
+
+		OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
+
+		// Evitar duplicados por código
+		for (OrdenRetiro existente : ordenesRetiro) {
+			if (existente != null && or.getCodigo() != null && or.getCodigo().equalsIgnoreCase(existente.getCodigo())) {
+				return;
+			}
+		}
+		ordenesRetiro.add(or);
 	}
 
 
