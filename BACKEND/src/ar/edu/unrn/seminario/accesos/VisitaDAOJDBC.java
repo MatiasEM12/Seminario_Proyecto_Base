@@ -154,8 +154,8 @@ BienDAO biendao= new BienDAOJDBC();
 			if (rs.next()) {
 				
 				LocalDate localDate = rs.getDate("FechaVisita").toLocalDate();
-				visita=new Visita(localDate,rs.getString("v.observaciones"),rs.getString("v.tipo"),rs.getString("v.ordenRetiro")
-						,biendao.findBienVisita("v.codigo"),rs.getString("v.codigo"));
+				visita=new Visita(localDate,rs.getString("observaciones"),rs.getString("tipo"),rs.getString("ordenRetiro")
+						,biendao.findBienVisita("codigo"),rs.getString("codigo"));
 				
 			}
 		}

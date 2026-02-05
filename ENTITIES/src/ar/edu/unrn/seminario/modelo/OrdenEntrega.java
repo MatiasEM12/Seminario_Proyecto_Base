@@ -20,6 +20,7 @@ public class OrdenEntrega extends Orden{
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> entregados;
 	private Beneficiario beneficiario;
+	private Voluntario voluntario;
 
 	public OrdenEntrega(ArrayList<Bien> bienes,Beneficiario beneficiario, LocalDate fechaEmision)throws DataNullException, DataDateException, DataEmptyException, DataObjectException, DataListException {
 				super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
@@ -51,10 +52,10 @@ public class OrdenEntrega extends Orden{
 		this.visitas = visitas;
 	}
 
-	private String getCodigo() {
+	public String getCodigo() {
 		return codigo;
 	}
-	private LocalDateTime getFechaHoraProgramada() {
+	public LocalDateTime getFechaHoraProgramada() {
 		return fechaHoraProgramada;
 	}
 	
@@ -194,6 +195,17 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	public void setFechaHoraProgramada(LocalDateTime fechaHoraProgramada) throws DataDateException {
 		this.validarDateTimeProgramacion(fechaHoraProgramada);
 		this.fechaHoraProgramada = fechaHoraProgramada;
+	}
+
+
+	public Voluntario getVoluntario() {
+		return this.voluntario;
+	}
+
+
+	public OrdenPedido getPedido() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
