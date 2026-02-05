@@ -135,7 +135,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException {
+    public List<UsuarioDTO> obtenerUsuarios() throws DataNullException, DAOException, DataObjectException, DataLengthException {
         List<UsuarioDTO> dtos = new ArrayList<>();
         List<Usuario> usuarios = null;
 		usuarios = usuarioDao.findAll();
@@ -472,7 +472,7 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException, DAOException {
+    public List<UsuarioDTO> obtenerUserDonantes() throws DataNullException, DAOException, DataObjectException, DataLengthException {
        
     	 List<Usuario> donantes = this.usuarioDao.findAll();
 		
@@ -493,7 +493,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException {
+    public List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException, DataObjectException, DataLengthException {
            
           List<Usuario> voluntarios = this.usuarioDao.findAll();
 		
@@ -506,7 +506,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException {
+    public List<UsuarioDTO> obtenerUserAdministrador() throws DataNullException, DAOException, DataObjectException, DataLengthException {
     	  List<Usuario> administradores = this.usuarioDao.findAll();
 		
           administradores=administradores.stream().filter(o->o.getRol().getNombre().equalsIgnoreCase("Admin")).collect(Collectors.toList());
@@ -564,7 +564,7 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
+    public ArrayList<DonacionDTO> obtenerDonaciones() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
         List<Donacion> list = donacionDao.findAll();
         ArrayList<DonacionDTO> res = new ArrayList<>();
         if (list == null) return res;
@@ -605,7 +605,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException  {
+    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException  {
         ArrayList<BienDTO> retirar = new ArrayList<>();
         if (codOP == null || codOP.trim().isEmpty()) return retirar;
         List<Donacion> donaciones = donacionDao.findAll();
@@ -935,7 +935,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException {
+	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
 		
 		List<Donacion> donaciones = this.donacionDao.findAllPendiente();
 		
