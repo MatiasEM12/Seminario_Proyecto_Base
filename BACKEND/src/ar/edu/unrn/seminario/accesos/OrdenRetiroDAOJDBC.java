@@ -164,7 +164,7 @@ OrdenPedidoDao op;
 				
 				orden=new OrdenRetiro(rs.getString("codigo"), rs.getString("estado"),fecha,
 						voluntario.find(rs.getString("codVoluntario")) ,op.find(rs.getString("codOrdenPedido")),
-						visita.findAll(rs.getString(codigo)));
+						visita.findAllOrdenRetiro(rs.getString(codigo)));
 				
 				
 			}

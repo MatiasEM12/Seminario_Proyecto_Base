@@ -22,7 +22,10 @@ public interface VisitaDao {
 
 	List<Visita> findAll() throws DataNullException, DataLengthException, DAOException;
 
-	ArrayList<Visita> findAll(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException;
+	ArrayList<Visita> findAllOrdenRetiro(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException;
 
 	 int obtenerCantidadVisitas() throws SQLException;
+
+	 ArrayList<Visita> findAllOrdenEntrega(String codOrdenEntrega)
+			throws DataNullException, DataLengthException, DAOException;
 }

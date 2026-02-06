@@ -115,7 +115,7 @@ OrdenPedidoDao op;
 	    try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT estado, FechaCreacion, FechaProgramada, codVoluntario, codOrdenPedido " +
+	            "SELECT estado, FechaCreacion, FechaProgramada, codVoluntario " +
 	            "FROM ordenEntrega WHERE codigo = ?"
 	        );
 	        st.setString(1, codigo);
@@ -123,25 +123,33 @@ OrdenPedidoDao op;
 	        ResultSet rs = st.executeQuery();
 	        if (rs.next()) {
 
-	            LocalDate fechaCreacion = rs.getDate("FechaCreacion").toLocalDate();
-	            LocalDateTime fechaProg = rs.getTimestamp("FechaProgramada").toLocalDateTime();
+	            LocalDate fechaCreacion =
+	                rs.getDate("FechaCreacion").toLocalDate();
 
-	            OrdenPedido pedido = op.find(rs.getString("codOrdenPedido"));
+	            LocalDateTime fechaProg =
+	                rs.getTimestamp("FechaProgramada").toLocalDateTime();
 
 	            orden = new OrdenEntrega(
-	                pedido.getBienes(),
-	                pedido.getBeneficiario(),
+	                new ArrayList<>(), // bienes se cargan desde visitas
+	                null,              // beneficiario viene indirecto
 	                fechaCreacion
 	            );
 
 	            orden.setFechaHoraProgramada(fechaProg);
-	            orden.setEstado(EstadoOrden.valueOf(rs.getString("estado")));
+	            orden.setEstado(
+	                EstadoOrden.valueOf(rs.getString("estado"))
+	            );
 
-	            orden.setVisitas(visita.findAllPorEntrega(codigo));
+	            // visitas SOLO por OrdenEntrega
+	            orden.setVisitas(
+	                visita.findAllPorEntrega(codigo)
+	            );
 	        }
 
 	    } catch (Exception e) {
-	        throw new DAOException("Error FIND OrdenEntrega: " + e.getMessage() + ".OE400");
+	        throw new DAOException(
+	            "Error FIND OrdenEntrega: " + e.getMessage() + ".OE400"
+	        );
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -150,10 +158,52 @@ OrdenPedidoDao op;
 	}
 
 
-	
-	
-	public int obtenerCantidadOE() throws SQLException {
-	 
+
+	@Override
+	public List<OrdenEntrega> findAll() throws DAOException {
+	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigo FROM ordenEntrega"
+	        );
+
+	        ResultSet rs = st.executeQuery();
+	        while (rs.next()) {
+	            ordenes.add(this.find(rs.getString("codigo")));
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error al procesar consulta FIND ALL OrdenEntrega: " +
+	            e.getMessage() + ".OE600"
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ordenes;
 	}
+
+	
+	@Override
+	public int obtenerCantidadOE() throws SQLException {
+	    String sql = "SELECT COUNT(*) FROM ordenEntrega";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            return rs.getInt(1);
+	        }
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return 0;
+	}
+
 
 }
