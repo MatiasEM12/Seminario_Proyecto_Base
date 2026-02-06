@@ -21,12 +21,13 @@ public class Visita {
 	private String observaciones;
 	private String tipo;
 	private String codOrdenRetiro;
+	private String codOrdenEntrega;
 	private ArrayList<Bien> bienesRecolectados;
 	private boolean esFinal;
 	private String estado;
  	//posibles estados realizada o fallida;
 	
-	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
+	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
 			ArrayList<Bien> bienesRecolectados, boolean esFinal) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException{
 		super();
 		
@@ -42,15 +43,21 @@ public class Visita {
 		this.validarCampoVacio(tipo, "tipo");
 		this.validarCampoNull(tipo);
 		
-		this.validarCampoVacio(codOrdenRetiro, "codOrdenRetiro");
-		this.validarCampoNull(codOrdenRetiro);
+		this.validarCampoVacio(codOrden, "codOrden");
+		this.validarCampoNull(codOrden);
 		
 		this.validarList(bienesRecolectados);
 
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.codOrdenRetiro = codOrdenRetiro;
+		
+		if(this.esOrdenEntrega(codOrden)) {
+			this.codOrdenEntrega=codOrden;
+		}else {
+			this.codOrdenRetiro = codOrden;
+		}
+		
 		this.bienesRecolectados = bienesRecolectados;
 		this.esFinal=esFinal;
 		
@@ -60,19 +67,11 @@ public class Visita {
 	
 	}
 	
-	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
-			Bien bien) {
-		super();
-		this.fechaVisita = fechaVisita;
-		this.observaciones = observaciones;
-		this.tipo = tipo;
-		this.codOrdenRetiro = codOrdenRetiro;
-		this.bienesRecolectados = new ArrayList<>();
-		this.bienesRecolectados.add(bien);
-		crearCodigo();
-	}
 	
-	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
+	
+	
+	
+	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
 			ArrayList<Bien> bienesRecolectados,String codigo) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException{
 		super();
 	
@@ -87,13 +86,18 @@ public class Visita {
 		this.validarCampoVacio(tipo, "tipo");
 		this.validarCampoNull(tipo);
 		
-		this.validarCampoVacio(codOrdenRetiro, "codOrdenRetiro");
-		this.validarCampoNull(codOrdenRetiro);
+		this.validarCampoVacio(codOrden, "codOrden");
+		this.validarCampoNull(codOrden);
 		this.validarList(bienesRecolectados);
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.codOrdenRetiro = codOrdenRetiro;
+		if(this.esOrdenEntrega(codOrden)) {
+			this.codOrdenEntrega=codOrden;
+		}else {
+			this.codOrdenRetiro = codOrden;
+		}
+		
 		this.bienesRecolectados = bienesRecolectados;
 		if(codigo==null) {
 			crearCodigo();
@@ -102,7 +106,7 @@ public class Visita {
 		}
 	}
 	
-	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrdenRetiro,
+	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
 			Bien bien,String codigo) throws DataDateException, DataEmptyException, DataLengthException, DataNullException, DataObjectException {
 		super();
 		
@@ -117,14 +121,19 @@ public class Visita {
 		this.validarCampoVacio(tipo, "tipo");
 		this.validarCampoNull(tipo);
 		
-		this.validarCampoVacio(codOrdenRetiro, "codOrdenRetiro");
-		this.validarCampoNull(codOrdenRetiro);
+		this.validarCampoVacio(codOrden, "codOrden");
+		this.validarCampoNull(codOrden);
 		this.validarObjectNull(bien);
 		
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
-		this.codOrdenRetiro = codOrdenRetiro;
+		if(this.esOrdenEntrega(codOrden)) {
+			this.codOrdenEntrega=codOrden;
+		}else {
+			this.codOrdenRetiro = codOrden;
+		}
+		
 		this.bienesRecolectados = new ArrayList<>();
 		this.bienesRecolectados.add(bien);
 		if(codigo==null) {
@@ -189,19 +198,24 @@ public class Visita {
 	public String getEstado() {
 		return estado;
 	}
-
-
-	
-	
 	
 	public String getCodOrdenRetiro() {
 		return codOrdenRetiro;
+	}
+	public String getCodOrdenEntrega() {
+		return codOrdenEntrega;
 	}
 
 	public void setCodOrdenRetiro(String codOrdenRetiro) throws DataEmptyException, DataNullException {
 		this.validarCampoVacio(codOrdenRetiro, "codOrdenRetiro");
 		this.validarCampoNull(codOrdenRetiro);
 		this.codOrdenRetiro = codOrdenRetiro;
+	}
+
+	public void setCodOrdenEntrega(String codOrden) throws DataEmptyException, DataNullException {
+		this.validarCampoVacio(codOrden, "codOrdenEngrega");
+		this.validarCampoNull(codOrden);
+		this.codOrdenEntrega = codOrden;
 	}
 
 	public boolean isEsFinal() {
@@ -277,5 +291,16 @@ public class Visita {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
+	}
+	
+	private Boolean esOrdenRetiro(String codOrden) {
+		
+		String primerosDos = codOrden.substring(0, 2); 
+		return primerosDos.equals("OR");
+	}
+	private Boolean esOrdenEntrega(String codOrden) {
+		
+		String primerosDos = codOrden.substring(0, 2); 
+		return primerosDos.equals("OE");
 	}
 }
