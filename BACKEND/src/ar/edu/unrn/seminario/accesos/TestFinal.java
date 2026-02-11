@@ -2,8 +2,13 @@ package ar.edu.unrn.seminario.accesos;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.api.PersistenceApi;
+import ar.edu.unrn.seminario.modelo.Beneficiario;
+import ar.edu.unrn.seminario.modelo.Coordenada;
+import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Rol;
+import ar.edu.unrn.seminario.modelo.Ubicacion;
 import ar.edu.unrn.seminario.modelo.Usuario;
+import ar.edu.unrn.seminario.modelo.Voluntario;
 
 public class TestFinal {
 	
@@ -17,6 +22,11 @@ public class TestFinal {
 			
 			RolDao rolDAO = new RolDAOJDBC();
 			UsuarioDAOJDBC usuarioDAO = new UsuarioDAOJDBC();
+			CoordenadaDAOJDBC coordenadaDAO= new CoordenadaDAOJDBC();
+			UbicacionDAOJDBC ubicacionDAO= new UbicacionDAOJDBC();
+			BeneficiarioDAOJDBC beneficiarioDAO= new BeneficiarioDAOJDBC();
+			DonanteDAOJDBC donanteDAO=new DonanteDAOJDBC();
+			VoluntarioDAOJDBC voluntarioDAO= new VoluntarioDAOJDBC();
 			//roles
 			//crea los roles base
 			Rol rol1 = new Rol(1,"Admin", true);
@@ -48,6 +58,22 @@ public class TestFinal {
 			
 			Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias.M", "matias_Ben12@mail.com", rol4, true, null);//beneficiario
 			usuarioDAO.create(usuario_4);
+			
+			//coordenada
+			Coordenada.setContadorCoordenada(coordenadaDAO.obtenerCantidadCoordenadas());
+			
+			//ubicacion
+			Ubicacion.setContadorUbicacion(ubicacionDAO.obtenerCantidadUbicaciones());
+			
+			//Beneficiario
+			Beneficiario.setContadorDonante(beneficiarioDAO.obtenerCantidadBeneficiarios());
+			
+			//Donante
+			Donante.setContadorDonante(donanteDAO.obtenerCantidadDonantes());
+			
+			//Voluntario
+			Voluntario.setContadorVoluntario(voluntarioDAO.obtenerCantidadVoluntarios());
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
