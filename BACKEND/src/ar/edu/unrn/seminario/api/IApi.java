@@ -109,7 +109,7 @@ public interface IApi {
 	void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol) throws DataEmptyException, SQLException, DAOException, DataExistsException, DataNullException, DataObjectException, DataLengthException;
 
 	//Visitas
-	public void registrarVisita(Visita visita) throws DAOException;
+	public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException;
 	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException;
 	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException ;
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;

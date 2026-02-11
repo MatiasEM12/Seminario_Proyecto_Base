@@ -1,5 +1,7 @@
 package ar.edu.unrn.seminario.accesos;
 
+import java.time.LocalDate;
+
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.api.PersistenceApi;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
@@ -51,28 +53,52 @@ public class TestFinal {
 			Usuario usuario_1 = new Usuario("perry_AD", "87654321", "Jeff", "perry_AD12@mail.com", rol1, true, null);//admin
 			usuarioDAO.create(usuario_1);
 			
-			Usuario usuario_2 = new Usuario("pedro_Vol", "12345678", "Pedro.P", "pedro_Vol12@mail.com", rol2, true, null);//voluntario
+			Usuario usuario_2 = new Usuario("pedro_Vol", "12345678", "Pedro", "pedro_Vol12@mail.com", rol2, true, null);//voluntario
 			usuarioDAO.create(usuario_2);
-			Usuario usuario_3 = new Usuario("ian_Don", "12121212", "Ian.H", "ian_Don12@mail.com", rol3, true, null);//donante
+			Usuario usuario_3 = new Usuario("ian_Don", "12121212", "Ian", "ian_Don12@mail.com", rol3, true, null);//donante
 			usuarioDAO.create(usuario_3);
 			
-			Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias.M", "matias_Ben12@mail.com", rol4, true, null);//beneficiario
+			Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias", "matias_Ben12@mail.com", rol4, true, null);//beneficiario
 			usuarioDAO.create(usuario_4);
 			
 			//coordenada
 			Coordenada.setContadorCoordenada(coordenadaDAO.obtenerCantidadCoordenadas());
 			
+			Coordenada coordenadaBeneficiario = new Coordenada(11.233,12.333);
+			Coordenada coordenadaDonante=new Coordenada(23.333,12.3333);
+			
+			coordenadaDAO.create(coordenadaBeneficiario);
+			coordenadaDAO.create(coordenadaDonante);
+			
 			//ubicacion
 			Ubicacion.setContadorUbicacion(ubicacionDAO.obtenerCantidadUbicaciones());
+			Ubicacion ubicacionBeneficiario = new Ubicacion("Este","San Juan","123",coordenadaBeneficiario);
+			Ubicacion ubicacionDonante=new Ubicacion("Norte","Flores","456",coordenadaDonante);
+			
+			ubicacionDAO.create(ubicacionBeneficiario);
+			ubicacionDAO.create(ubicacionDonante);
 			
 			//Beneficiario
 			Beneficiario.setContadorDonante(beneficiarioDAO.obtenerCantidadBeneficiarios());
+			Beneficiario beneficiarioTest = new Beneficiario( "Matias","Ben",LocalDate.of(2000, 1, 10),"11111111","matias_Ben12@mail.com",ubicacionBeneficiario,"matias_Ben");
+			
+			beneficiarioDAO.create(beneficiarioTest);
+			
 			
 			//Donante
 			Donante.setContadorDonante(donanteDAO.obtenerCantidadDonantes());
 			
+			Donante donanteTest = new Donante("Ian","Don",LocalDate.of(1999,3, 20),"22222222","ian_Don12@mail.com",ubicacionDonante,"ian_Don");
+			
+			donanteDAO.create(donanteTest);
+			
 			//Voluntario
 			Voluntario.setContadorVoluntario(voluntarioDAO.obtenerCantidadVoluntarios());
+			Voluntario voluntatioTest = new Voluntario("Pedro","Contrera",LocalDate.of(2003, 10, 21),"pedro_Vol12@mail.com","33333333","pedro_Vol");
+			
+			voluntarioDAO.create(voluntatioTest);
+			
+			
 			
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -681,7 +681,7 @@ public class PersistenceApi implements IApi {
 
     @Override
     // aca pondria que cuando cre la visita que comprue si la visita fue exitosa y si lo fue que agregue tambien el bien en inventariodao
-    public void registrarVisita(Visita visita) throws DAOException {
+    public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException {
         visitaDao.create(visita);
     }   
     
