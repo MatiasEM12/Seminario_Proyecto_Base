@@ -40,6 +40,7 @@ public class AltaBienes extends JFrame {
     }
 	public AltaBienes() { //Borrar solo lo hice porque no le hice la logica
 		initialize(null);
+		configurarBloqueosPorTipo();
 	}
 	 private void initialize(IApi api) {
 		 this.api = api;
@@ -156,6 +157,69 @@ public class AltaBienes extends JFrame {
 				}
 			});
 		}
-	
+	// Agregá esto dentro de tu clase AltaBienes (misma clase que ya tenés)
+
+	 private void configurarBloqueosPorTipo() {
+
+	 	// 1) Cuando cambia el tipo, actualizo qué campos se habilitan
+	 	tipoComboBox.addActionListener(new ActionListener() {
+	 		public void actionPerformed(ActionEvent e) {
+	 			aplicarReglasPorTipo();
+	 		}
+	 	});
+
+	 	// 2) Estado inicial (por si arranca ya con un tipo seleccionado)
+	 	aplicarReglasPorTipo();
+	 }
+
+	 private void aplicarReglasPorTipo() {
+
+	 	String tipo = (String) tipoComboBox.getSelectedItem();
+
+	 	// Defaults: habilito todo
+	 	habilitarCampo(vencimientoTextField, true);
+	 	habilitarCampo(talleTextField, true);
+	 	habilitarCampo(pesoTextField, true);
+	 	habilitarCampo(materialTextField, true);
+
+	 	// Reglas por tipo (ajustá lo que te pidan)
+	 	if ("Mueble".equalsIgnoreCase(tipo)) {
+	 		// Un mueble no vence
+	 		habilitarCampo(vencimientoTextField, false);
+
+	 	} else if ("Electrodoméstico".equalsIgnoreCase(tipo)) {
+	 		// Electrodoméstico: no tiene talle, pero sí peso/material (según tu criterio)
+	 		habilitarCampo(talleTextField, false);
+
+	 	} else if ("Vestimenta".equalsIgnoreCase(tipo)) {
+	 		// Ropa: normalmente tiene talle, pero no peso/material (a tu gusto)
+	 		habilitarCampo(pesoTextField, false);
+	 		habilitarCampo(materialTextField, true); // ropa suele tener material
+	 		// vencimiento normalmente no aplica (si querés bloquearlo también)
+	 		habilitarCampo(vencimientoTextField, false);
+
+	 	} else if ("Alimento".equalsIgnoreCase(tipo)) {
+	 		// Alimento: vence, no talle, peso sí, material no
+	 		habilitarCampo(talleTextField, false);
+	 		habilitarCampo(materialTextField, false);
+
+	 	} else if ("Medicamento".equalsIgnoreCase(tipo)) {
+	 		// Medicamento: vence, no talle, peso/material no (ajustable)
+	 		habilitarCampo(talleTextField, false);
+	 		habilitarCampo(pesoTextField, false);
+	 		habilitarCampo(materialTextField, false);
+
+	 	} else if ("Otro".equalsIgnoreCase(tipo)) {
+	 		// Otro: dejá todo habilitado (o lo que quieras)
+	 	}
+	 }
+
+	 private void habilitarCampo(JTextField field, boolean habilitar) {
+	 	field.setEnabled(habilitar);
+	 	if (!habilitar) {
+	 		field.setText("");
+	 	}
+	 }
+
 }
 
