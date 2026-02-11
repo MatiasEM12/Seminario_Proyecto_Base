@@ -12,19 +12,19 @@ public class Bien {
 	
 	private String codigo;
 	private String tipo;
-	private double peso;
+	private Double peso;
 	private String nombre;
 	private String descripcion;
 	private int nivelNecesidad;
 	private LocalDate fechaVencimiento;
-	private double talle;
+	private Double talle;
 	private String material;
 	
 	
 	
 	
-	public Bien(String codigo, String tipo, double peso, String nombre, String descripcion, int nivelNecesidad,
-			LocalDate fechaVencimiento, double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException  {
+	public Bien(String codigo, String tipo, Double peso, String nombre, String descripcion, int nivelNecesidad,
+			LocalDate fechaVencimiento, Double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException  {
 		
 		if(codigo==null) {
 			crearCodigo();

@@ -48,7 +48,28 @@ public class Donacion {
 	
 	}
 	
-
+	public Donacion( LocalDate fechaDonacion, String observacion, ArrayList<Bien> bienes, Donante donante,String codigo) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
+		super();
+		
+		this.validarCampoNull(observacion);
+		this.validarLongitudCampo255(observacion,"observacion");
+	    this.validarDate(fechaDonacion);
+	    this.validarDatePeriodo(fechaDonacion);
+		this.validarCampoVacio(observacion,"observacion");
+		this.validarObjectNull(donante);
+		this.validarList(bienes);
+		this.fechaDonacion = fechaDonacion;
+		this.observacion = observacion;
+		this.bienes = bienes;
+		this.donante = donante;
+		
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
+	
+	}
 	
 	public String getCodigo() {
 		return this.codigo;

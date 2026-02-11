@@ -1,11 +1,14 @@
 package ar.edu.unrn.seminario.accesos;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.api.PersistenceApi;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
+import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
+import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Rol;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
@@ -29,6 +32,9 @@ public class TestFinal {
 			BeneficiarioDAOJDBC beneficiarioDAO= new BeneficiarioDAOJDBC();
 			DonanteDAOJDBC donanteDAO=new DonanteDAOJDBC();
 			VoluntarioDAOJDBC voluntarioDAO= new VoluntarioDAOJDBC();
+			BienDAOJDBC bienDAO = new BienDAOJDBC();
+			DonacionDAOJDBC donacionDAO= new DonacionDAOJDBC();
+			Bien_DonacionJDBC bienDonacionDAO = new Bien_DonacionJDBC();
 			//roles
 			//crea los roles base
 			Rol rol1 = new Rol(1,"Admin", true);
@@ -99,9 +105,33 @@ public class TestFinal {
 			voluntarioDAO.create(voluntatioTest);
 			
 			
+			//Bien
+			Bien.setContadorBien(bienDAO.obtenerCantidadBienes());
+			Bien alimentoTest = Bien(null,"Alimento",0.0,"Manteca","Manteca marca 'YYYY'",1,LocalDate.of(2026, 4, 11),0.0,null);
+			Bien ropaTest = Bien(null,"Ropa",0.0,"Camisa","Camisa usada, con botones cambiados",2,null,0.0,"algodon");
+			
+			bienDAO.create(alimentoTest);
+			bienDAO.create(ropaTest);
+			
+			ArrayList <Bien> bienesTest= new ArrayList();
+			bienesTest.add(ropaTest);
+			bienesTest.add(alimentoTest);
+			//Donacion
+			Donacion.setContadorDonacion(donacionDAO.obtenerCantidadDonaciones());
+			
+			Donacion donacionTest = new Donacion(LocalDate.now(),"Donacion de una camisa y una manteca",bienesTest,donanteTest,null);
+			
+			bienDonacionDAO.create(ropaTest.getCodigo(), donacionTest.getCodigo());
+			bienDonacionDAO.create(alimentoTest.getCodigo(), donacionTest.getCodigo());
 			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Bien Bien(Object object, String string, double d, String string2, String string3, int i,
+			LocalDate of, double e, Object object2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
