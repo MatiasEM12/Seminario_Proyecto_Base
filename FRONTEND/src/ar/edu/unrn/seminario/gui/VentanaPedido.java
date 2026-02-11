@@ -96,7 +96,7 @@ public class VentanaPedido extends JFrame {
 		cerrarButton.setBounds(570, 320, 150, 28);
 		contentPane.add(cerrarButton);
 
-		// Acciones (mínimas, sin lógica real)
+		
 		cerrarButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
