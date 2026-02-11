@@ -104,7 +104,7 @@ public class VentanaPedido extends JFrame {
 			}
 		});
 
-		// Este simula el popup "Hay Stock / no hay Stock"
+		// stock
 		ActionListener mostrarResultadoStock = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new DialogoStock(VentanaPedido.this, "Hay Stock / no hay Stock").setVisible(true);
@@ -115,7 +115,7 @@ public class VentanaPedido extends JFrame {
 		checkButton.addActionListener(mostrarResultadoStock);
 	}
 
-	// Dialogo simple como el de la imagen
+	// Dialogo 
 	private static class DialogoStock extends JFrame {
 
 		private static final long serialVersionUID = 1L;
@@ -149,18 +149,13 @@ public class VentanaPedido extends JFrame {
 		}
 	}
 
-	// Getters por si después lo conectás con el controlador (opcional)
+	
 	public JTextField getBeneficiarioTextField() { return beneficiarioTextField; }
 	public JTable getBienesTable() { return bienesTable; }
 	public DefaultTableModel getTableModel() { return tableModel; }
 
-	public JButton getVerificarStockButton() { return verificarStockButton; }
-	public JButton getCheckButton() { return checkButton; }
-	public JButton getNotificarBeneficiarioButton() { return notificarBeneficiarioButton; }
-	public JButton getCrearOrdenEntregaButton() { return crearOrdenEntregaButton; }
-	public JButton getCerrarButton() { return cerrarButton; }
-
-	// main para probarla
+	
+	// prueba
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -180,4 +175,5 @@ public class VentanaPedido extends JFrame {
 		});
 	}
 }
+
 
