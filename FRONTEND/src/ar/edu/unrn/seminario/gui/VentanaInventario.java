@@ -74,8 +74,8 @@ public class VentanaInventario extends JFrame {
         btnNewButton.setBounds(362, 10, 100, 30);
         contentPane.add(btnNewButton);
         
-        JLabel lblNewLabel = new JLabel("Tipo de Donacion");
-        lblNewLabel.setBounds(129, 10, 90, 30);
+        JLabel lblNewLabel = new JLabel("Tipo de Bien:");
+        lblNewLabel.setBounds(94, 10, 90, 30);
         contentPane.add(lblNewLabel);
         
         JComboBox comboBox = new JComboBox();

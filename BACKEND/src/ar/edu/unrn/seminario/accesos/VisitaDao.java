@@ -10,7 +10,7 @@ import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Visita;
 
 public interface VisitaDao {
-	void create(Visita visita)throws DAOException;
+	void create(Visita visita)throws DAOException, DataNullException, DataLengthException;
 
 	void update(Visita visita)throws DAOException;
 

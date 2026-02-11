@@ -38,15 +38,15 @@ public class TestFinal {
 			// se puede cambiar en el costructor en ves de pasarle el tipo de rol que lo busque por codigo, ej: Rol rolx = rolDAO.find(1);
 			// o directamente en el costructor ("perry_AD","87654321","Jeff","perry_AD12@mail.com",rolDAO.find(1),true,null);
 			
-			Usuario usuario_1 = new Usuario("perry_AD", "87654321", "Jeff", "perry_AD12@mail.com", rol1, true, null);
+			Usuario usuario_1 = new Usuario("perry_AD", "87654321", "Jeff", "perry_AD12@mail.com", rol1, true, null);//admin
 			usuarioDAO.create(usuario_1);
 			
-			Usuario usuario_2 = new Usuario("pedro_Vol", "12345678", "Pedro.P", "pedro_Vol12@mail.com", rol2, true, null);
+			Usuario usuario_2 = new Usuario("pedro_Vol", "12345678", "Pedro.P", "pedro_Vol12@mail.com", rol2, true, null);//voluntario
 			usuarioDAO.create(usuario_2);
-			Usuario usuario_3 = new Usuario("ian_Don", "12121212", "Ian.H", "ian_Don12@mail.com", rol3, true, null);
+			Usuario usuario_3 = new Usuario("ian_Don", "12121212", "Ian.H", "ian_Don12@mail.com", rol3, true, null);//donante
 			usuarioDAO.create(usuario_3);
 			
-			Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias.M", "matias_Ben12@mail.com", rol4, true, null);
+			Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias.M", "matias_Ben12@mail.com", rol4, true, null);//beneficiario
 			usuarioDAO.create(usuario_4);
 		}catch(Exception e) {
 			e.printStackTrace();
