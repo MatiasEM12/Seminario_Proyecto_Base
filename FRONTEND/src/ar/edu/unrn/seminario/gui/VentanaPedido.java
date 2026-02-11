@@ -162,7 +162,7 @@ public class VentanaPedido extends JFrame {
 				try {
 					VentanaPedido frame = new VentanaPedido();
 
-					// Cargamos algo de ejemplo para que no se vea vacía (podés borrar)
+					
 					frame.getBeneficiarioTextField().setText("Juan Perez");
 					frame.getTableModel().addRow(new Object[] { "Alimento", "Leche", "Entera 1L", 2, "Pendiente" });
 					frame.getTableModel().addRow(new Object[] { "Vestimenta", "Campera", "Talle M", 1, "Pendiente" });
