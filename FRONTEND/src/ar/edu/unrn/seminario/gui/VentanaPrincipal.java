@@ -133,6 +133,13 @@ public class VentanaPrincipal extends JFrame {
 		//Menu Inventario
 		JMenu menuInventario=new JMenu("Inventario");
 		JMenuItem itemABien=new JMenuItem("Agregar Bien");
+		itemABien.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			//	AgregarBien modBien= new AgregarBien(api);
+			//	modBien.setLocationRelativeTo(null);
+			//	modBien.setVisible(true);
+			}
+		});
 		JMenuItem itemListarInventario=new JMenuItem("Listado");
 		itemListarInventario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
