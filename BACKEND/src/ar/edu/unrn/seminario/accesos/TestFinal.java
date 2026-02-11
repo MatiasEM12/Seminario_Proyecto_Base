@@ -124,6 +124,7 @@ public class TestFinal {
 			bienDonacionDAO.create(ropaTest.getCodigo(), donacionTest.getCodigo());
 			bienDonacionDAO.create(alimentoTest.getCodigo(), donacionTest.getCodigo());
 			
+			donacionDAO.create(donacionTest);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
