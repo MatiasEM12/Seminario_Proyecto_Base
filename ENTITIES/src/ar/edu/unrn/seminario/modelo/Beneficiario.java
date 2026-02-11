@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -19,16 +20,21 @@ public class Beneficiario extends Persona{
 	private Ubicacion ubicacion;
 	private String username;
 	private String codigo;
-	//no estoy seguro si el lo nesesita ya que orden de entrega ya tiene beneficiario pero puede servir para el mostrar usuarios y poder ver si este tiene una orden
 	private ArrayList<OrdenEntrega> ordenesEntrega;
+	private int cantAcargo;
+	private int prioridad;
 	
-	public Beneficiario(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
+	public Beneficiario(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,Ubicacion ubicacion,String username,int prioridad, int cantAcargo) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException, DataIntException{
 		super(nombre, apellido, dni, fecha_nac, Contacto);
 		
 		this.validarObjectNull(ubicacion);
 		this.validarCampoVacio(username, "nombre usuario");
+		this.validarCantidadCargo(cantAcargo);
+		this.validarRangoPrioridad(prioridad);
 		this.ubicacion=ubicacion;
 		this.username=username;
+		this.cantAcargo=cantAcargo;
+		this.prioridad=prioridad;
 		crearCodigo();
 		
 	}
@@ -66,6 +72,36 @@ public class Beneficiario extends Persona{
 	
 	
 	
+	public static int getContadorBeneficiarios() {
+		return contadorBeneficiarios;
+	}
+
+	public static void setContadorBeneficiarios(int contadorBeneficiarios) {
+		Beneficiario.contadorBeneficiarios = contadorBeneficiarios;
+	}
+
+	public int getCantAcargo() {
+		return cantAcargo;
+	}
+
+	public void setCantAcargo(int cantAcargo) throws DataIntException {
+		this.validarCantidadCargo(cantAcargo);
+		this.cantAcargo = cantAcargo;
+	}
+
+	public int getPrioridad() {
+		return prioridad;
+	}
+
+	public void setPrioridad(int prioridad) throws DataIntException {
+		this.validarRangoPrioridad(prioridad);
+		this.prioridad = prioridad;
+	}
+
+	public ArrayList<OrdenEntrega> getOrdenesEntrega() {
+		return ordenesEntrega;
+	}
+
 	public ArrayList<OrdenEntrega> getOrdenEntrega() {
 		return ordenesEntrega;
 	}
@@ -122,5 +158,17 @@ public class Beneficiario extends Persona{
 		Beneficiario.contadorBeneficiarios = contador;
 	}
 	
+	private void validarCantidadCargo( int cantidadCargo) throws DataIntException {
+		if (cantidadCargo<0) {
+			throw new DataIntException("Cantidad a Cargo invalido ");
+		}
+	}
+	
+	
+	private void validarRangoPrioridad( int prioridad) throws DataIntException {
+		if (prioridad<0 || prioridad>5) {
+			throw new DataIntException("Rango de prioridad invalido");
+		}
+	}
 	
 }
