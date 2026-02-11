@@ -142,7 +142,7 @@ OrdenPedidoDao op;
 
 	            // visitas SOLO por OrdenEntrega
 	            orden.setVisitas(
-	                visita.findAllPorEntrega(codigo)
+	                visita.findAllOrdenEntrega(codigo)
 	            );
 	        }
 
