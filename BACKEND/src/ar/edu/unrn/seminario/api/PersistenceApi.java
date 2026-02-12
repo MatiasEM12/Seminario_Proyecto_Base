@@ -69,17 +69,18 @@ public class PersistenceApi implements IApi {
 
     private RolDAOJDBC rolDao;
     private UsuarioDAOJDBC usuarioDao;
-    private OrdenRetiroDao ordenRetiroDao;
-    private OrdenPedidoDao ordenPedidoDao;
+    private OrdenRetiroDAOJDBC ordenRetiroDao;
+    private OrdenPedidoDAOJDBC ordenPedidoDao;
     private VisitaDAOJDBC visitaDao;
     private BienDAO bienDao;
-    private Bien_VisitaDAO bienVisitaDao;
-    private Bien_DonacionDAO bienDonacionDao;
-    private DonacionDAO donacionDao;
+    private Bien_VisitaJDBC bienVisitaDao;
+    private Bien_DonacionJDBC bienDonacionDao;
+    private DonacionDAOJDBC donacionDao;
     private VoluntarioDAOJDBC voluntarioDao;
-    private DonanteDao donanteDao;
-    private UbicacionDAO ubicacionDao;
-    private CoordenadaDAO coordenadaDAO; 
+    private DonanteDAOJDBC donanteDao;
+    private UbicacionDAOJDBC ubicacionDao;
+    private CoordenadaDAOJDBC coordenadaDAO; 
+    //private BeneficiarioDAOJDBC beneficiarioDAO;
     public PersistenceApi() {
         // inicializar DAOs JDBC
         this.rolDao = new RolDAOJDBC();
@@ -101,17 +102,16 @@ public class PersistenceApi implements IApi {
     //Iniciaizar
     public void InicializarContadores() throws SQLException {
     	//Beneficiario.setContadorDonante(0);
-    	Bien.setContadorBien(bienDao.obtenerCantidadBienes());
-    	Coordenada.setContadorCoordenada(coordenadaDAO.obtenerCantidadCoordenadas());
-    	Donacion.setContadorDonacion(donacionDao.obtenerCantidadDonaciones());
-    	Donante.setContadorDonante(donanteDao.obtenerCantidadDonantes());
+    	Bien.setContadorBien(bienDao.obtenerMaximoBienes());
+    	Coordenada.setContadorCoordenada(coordenadaDAO.obtenerMaximoCoordenadas());
+    	Donacion.setContadorDonacion(donacionDao.obtenerMaximoDonaciones());
+    	Donante.setContadorDonante(donanteDao.obtenerMaximoDonantes());
     	//OrdenEntrega.setContadorCoordenada(0)
-    	OrdenPedido.setContadorPedido(ordenPedidoDao.obtenerCantidadOP());
-    	OrdenRetiro.setContadorOrdenRetiro(ordenRetiroDao.obtenerCantidadOR());
-    	//Rol
-    	Ubicacion.setContadorUbicacion(ubicacionDao.obtenerCantidadUbicaciones());
-    	Usuario.setContadorUsuario(usuarioDao.obtenerCantidadUsuarios());
-    	Voluntario.setContadorVoluntario(voluntarioDao.obtenerCantidadVoluntarios());
+    	OrdenPedido.setContadorPedido(ordenPedidoDao.obtenerMaximoOrdenPedido());
+    	OrdenRetiro.setContadorOrdenRetiro(ordenRetiroDao.obtenerMaximoOrdenRetiro());
+    	Ubicacion.setContadorUbicacion(ubicacionDao.obtenerMaximoUbicaciones());
+    	Usuario.setContadorUsuario(usuarioDao.obtenerMaximoUsuarios());
+    	Voluntario.setContadorVoluntario(voluntarioDao.obtenerMaximoVoluntarios());
     }
     
     // --- Usuario / Rol ---
