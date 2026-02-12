@@ -18,9 +18,6 @@ import ar.edu.unrn.seminario.modelo.Voluntario;
 public class TestFinal {
 	
 	
-	
-	
-	
 	public static void main(String[] args) {
 		try {
 			IApi api = new PersistenceApi();
@@ -78,7 +75,7 @@ public class TestFinal {
 			
 			//ubicacion
 			Ubicacion.setContadorUbicacion(ubicacionDAO.obtenerCantidadUbicaciones());
-			Ubicacion ubicacionBeneficiario = new Ubicacion("Este","San Juan","123",coordenadaBeneficiario);
+			Ubicacion ubicacionBeneficiario = new Ubicacion("Este","SanJuan","123",coordenadaBeneficiario);
 			Ubicacion ubicacionDonante=new Ubicacion("Norte","Flores","456",coordenadaDonante);
 			
 			ubicacionDAO.create(ubicacionBeneficiario);
@@ -86,7 +83,7 @@ public class TestFinal {
 			
 			//Beneficiario
 			Beneficiario.setContadorDonante(beneficiarioDAO.obtenerCantidadBeneficiarios());
-			Beneficiario beneficiarioTest = new Beneficiario( "Matias","Ben",LocalDate.of(2000, 1, 10),"11111111","matias_Ben12@mail.com",ubicacionBeneficiario,"matias_Ben");
+			Beneficiario beneficiarioTest = new Beneficiario( "Matias","Ben",LocalDate.of(2000, 1, 10),"11111111","matias_Ben12@mail.com",ubicacionBeneficiario,"matias_Ben",1,0);
 			
 			beneficiarioDAO.create(beneficiarioTest);
 			

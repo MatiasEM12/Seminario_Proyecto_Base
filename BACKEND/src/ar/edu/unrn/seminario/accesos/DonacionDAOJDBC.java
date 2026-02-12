@@ -387,5 +387,26 @@ BienDAO  b = new BienDAOJDBC();
 		}
 	    return 0;
 	}
+	public int obtenerMaximoDonaciones() throws SQLException {
+	    String sql = "SELECT MAX(codigo) FROM donacion";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            String maxCodigo = rs.getString(1);
+
+	            if (maxCodigo != null) {
+	            
+	                return Integer.parseInt(maxCodigo.substring(1));
+	            }
+	        }
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	    return 0;
+	}
+
 
 }

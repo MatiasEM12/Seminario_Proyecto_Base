@@ -28,4 +28,6 @@ public interface VisitaDao {
 
 	 ArrayList<Visita> findAllOrdenEntrega(String codOrdenEntrega)
 			throws DataNullException, DataLengthException, DAOException;
+	 
+	 int obtenerMaximoVisitas() throws SQLException;
 }

@@ -28,7 +28,7 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
+				System.out.println("Modificando " + cantidad + " registros");
 			} else {
 				throw new DAOException("Error al actualizar. codigo error C100");
 				// TODO: disparar Exception propia
@@ -203,4 +203,25 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 		}
 	    return 0;
 	}
+	public int obtenerMaximoCoordenadas() throws SQLException {
+	    String sql = "SELECT MAX(codigo) FROM coordenada";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            String maxCodigo = rs.getString(1);
+
+	            if (maxCodigo != null) {
+	                
+	                return Integer.parseInt(maxCodigo.substring(1));
+	            }
+	        }
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	    return 0;
+	}
+
 }

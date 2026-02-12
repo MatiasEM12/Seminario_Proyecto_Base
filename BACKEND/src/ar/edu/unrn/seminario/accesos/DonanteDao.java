@@ -28,6 +28,6 @@ public interface DonanteDao {
 	List<Donante> findAll() throws DAOException;
 	public int obtenerCantidadDonantes() throws SQLException ;
 	
-
+	int obtenerMaximoDonantes() throws SQLException;
 
 }

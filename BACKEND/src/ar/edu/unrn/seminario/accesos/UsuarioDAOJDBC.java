@@ -197,8 +197,7 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 
 		return usuarios;
 	}
-//Metodo Helper, al cargar usuaios desde la base de datos, cuando se crean Usuarion desde el programa puede generar claves repetidas
-	//esta cantdad se utiliza para que sea la base del contador de la clase Usuario. 
+
 	public int obtenerCantidadUsuarios() throws SQLException {
 	    String sql = "SELECT COUNT(*) FROM usuarios";
 
@@ -214,5 +213,27 @@ public class UsuarioDAOJDBC implements UsuarioDao {
 		}
 	    return 0;
 	}
+	
+	public int obtenerMaximoUsuarios() throws SQLException {
+	    String sql = "SELECT MAX(codigo) FROM usuarios";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            String maxCodigo = rs.getString(1);
+
+	            if (maxCodigo != null) {
+	      
+	                return Integer.parseInt(maxCodigo.substring(1));
+	            }
+	        }
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	    return 0;
+	}
+
 }
 

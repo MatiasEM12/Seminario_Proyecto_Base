@@ -31,4 +31,5 @@ public interface BienDAO {
 	List<Bien> findALLTipo(String tipo)throws DataNullException,DAOException;
 	
 	int obtenerCantidadBienes() throws SQLException;
+	int obtenerMaximoBienes() throws SQLException;
 }

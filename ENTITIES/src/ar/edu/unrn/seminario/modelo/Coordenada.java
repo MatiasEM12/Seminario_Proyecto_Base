@@ -5,8 +5,8 @@ import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 
 public class Coordenada {
-	private double latitud;
-	private double longitud;
+	private Double latitud;
+	private Double longitud;
 	private String codigo;
 	
 	private static int contadorCoordenada= 0;
@@ -24,13 +24,13 @@ public class Coordenada {
 	}
 
 	
-	public Coordenada(double latitud, double longitud,String codigo) throws DataNullException, DataEmptyException {
+	public Coordenada(Double latitud, Double longitud,String codigo) throws DataNullException, DataEmptyException {
 		super();
 		this.validarCampoNull(latitud);
 		this.validarCampoNull(longitud);
 	
 		this.validarCampoNull(codigo);
-		this.validarCampoVacio( codigo,this.codigo);
+		this.validarCampoVacio( codigo,"codigo");
 		
 		this.latitud = latitud;
 		this.longitud = longitud;
@@ -50,7 +50,7 @@ public class Coordenada {
 	}
 
 
-	public void setLatitud(double latitud) throws DataNullException {
+	public void setLatitud(Double latitud) throws DataNullException {
 		this.validarCampoNull(latitud);
 
 		this.latitud = latitud;
@@ -58,7 +58,7 @@ public class Coordenada {
 	public double getLongitud() {
 		return longitud;
 	}
-	public void setLongitud(double longitud) throws DataNullException {
+	public void setLongitud(Double longitud) throws DataNullException {
 		this.validarCampoNull(longitud);
 	
 		this.longitud = longitud;

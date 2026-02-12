@@ -23,4 +23,6 @@ public interface UsuarioDao {
 
 	List<Usuario> findAll() throws DataNullException, DAOException, DataObjectException, DataLengthException;
     int obtenerCantidadUsuarios() throws SQLException;
+    
+    int obtenerMaximoUsuarios() throws SQLException;
 }

@@ -25,5 +25,5 @@ public interface OrdenEntregaDAO {
 		
 		int obtenerCantidadOE() throws SQLException;
 	
-
+		int obtenerMaximoOrdenEntrega() throws SQLException;
 }

@@ -222,4 +222,25 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		}
 	    return 0;
 	}
+	public int obtenerMaximoOrdenPedido() throws SQLException {
+	    String sql = "SELECT MAX(codigo) FROM ordenpedido";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        if (rs.next()) {
+	            String maxCodigo = rs.getString(1);
+
+	            if (maxCodigo != null) {
+	                
+	                return Integer.parseInt(maxCodigo.substring(1));
+	            }
+	        }
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	    return 0;
+	}
+
 }

@@ -24,4 +24,6 @@ public interface CoordenadaDAO {
 	List<Coordenada> findAll()throws DAOException;
 	
 	 int obtenerCantidadCoordenadas() throws SQLException;
+	 
+	 int obtenerMaximoCoordenadas() throws SQLException;
 }

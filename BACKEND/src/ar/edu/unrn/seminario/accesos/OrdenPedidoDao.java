@@ -20,4 +20,6 @@ public interface OrdenPedidoDao {
 	List<OrdenPedido> findAll() throws DAOException;
 
 	int obtenerCantidadOP() throws SQLException;
+	
+	int obtenerMaximoOrdenPedido() throws SQLException;
 }

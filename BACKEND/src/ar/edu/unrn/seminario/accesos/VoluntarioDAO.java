@@ -23,4 +23,5 @@ public interface VoluntarioDAO {
 	List<Voluntario> findAll()throws DAOException;
 	
 	int obtenerCantidadVoluntarios() throws SQLException;
+	int obtenerMaximoVoluntarios() throws SQLException;
 }

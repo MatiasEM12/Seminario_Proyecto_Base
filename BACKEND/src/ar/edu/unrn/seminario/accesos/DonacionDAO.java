@@ -32,5 +32,7 @@ public interface DonacionDAO {
 	List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 	 
 	int obtenerCantidadDonaciones() throws SQLException;
+	
+	int obtenerMaximoDonaciones() throws SQLException;
 
 }

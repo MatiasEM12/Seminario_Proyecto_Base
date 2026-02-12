@@ -20,4 +20,5 @@ public interface VehiculoDAO {
 	List<Vehiculo> findAll()throws DAOException;
 	
 	int obtenerCantidadVehiculos() throws SQLException;
+	int obtenerMaximoVehiculos() throws SQLException;
 }

@@ -22,5 +22,5 @@ public interface BeneficiarioDAO {
 	List<Beneficiario> findAll()throws DAOException, DataLengthException;
 	
 	int obtenerCantidadBeneficiarios() throws SQLException;
-
+	int obtenerMaximoBeneficiarios() throws SQLException;
 }

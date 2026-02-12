@@ -26,4 +26,6 @@ public interface UbicacionDAO {
 	List<Ubicacion> findAll()throws DAOException;
 	
 	int obtenerCantidadUbicaciones() throws SQLException;
+	
+	int obtenerMaximoUbicaciones() throws SQLException;
 }
