@@ -35,8 +35,8 @@ public class CoordenadaDAOJDBC implements CoordenadaDAO{
 			}
 
 		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta. codigo error C101");
-			// TODO: disparar Exception propia
+			throw new DAOException("Error al procesar consulta. codigo error C101"+ e.getMessage());
+			
 		} finally {
 			ConnectionManager.disconnect();
 		}

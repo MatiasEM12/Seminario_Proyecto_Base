@@ -16,61 +16,58 @@ import ar.edu.unrn.seminario.modelo.Ubicacion;
 public class UbicacionDAOJDBC  implements UbicacionDAO{
 	CoordenadaDAO coordenada = new CoordenadaDAOJDBC();
 
-	
 	@Override
 	public void create(Ubicacion ubicacion) throws DAOException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
 
-        try {
-            conn = ConnectionManager.getConnection();
-            coordenada.create(ubicacion.getCoordenada());
-            // 1) Verificar si ya existe la ubicación con ese código
-            String sqlExiste = "SELECT codigo FROM ubicacion WHERE codigo = ?";
-            ps = conn.prepareStatement(sqlExiste);
-            ps.setString(1, ubicacion.getCodigo());
-            rs = ps.executeQuery();
+	    if (ubicacion == null) {
+	        throw new DAOException("Ubicacion nula");
+	    }
+	    if (ubicacion.getCoordenada() == null) {
+	        throw new DAOException("La ubicacion no tiene coordenada asociada");
+	    }
 
-            if (rs.next()) {
-                
-                System.out.println("Ubicacion ya existente: " + ubicacion.getCodigo()+".codigo UB100");
-                return;
-            }
+	    try (Connection conn = ConnectionManager.getConnection()) {
 
-            rs.close();
-            ps.close();
+	        // 1) Verificar si ya existe la ubicación
+	        String sqlExiste = "SELECT codigo FROM ubicacion WHERE codigo = ?";
+	        try (PreparedStatement ps = conn.prepareStatement(sqlExiste)) {
+	            ps.setString(1, ubicacion.getCodigo());
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                    System.out.println("Ubicacion ya existente: " + ubicacion.getCodigo());
+	                    return;
+	                }
+	            }
+	        }
 
-            // 2) Insertar la ubicación
-            String sqlInsert = "INSERT INTO ubicacion (codigo, zona, barrio, direccion, codCoordenada, activo) "
-                             + "VALUES (?, ?, ?, ?, ?, ?)";
+	        // 2) Insertar ubicación (SIN crear coordenada)
+	        String sqlInsert =
+	            "INSERT INTO ubicacion (codigo, zona, barrio, direccion, codCoordenada, activo) " +
+	            "VALUES (?, ?, ?, ?, ?, ?)";
 
-            ps = conn.prepareStatement(sqlInsert);
-            ps.setString(1, ubicacion.getCodigo());
-            ps.setString(2, ubicacion.getZona());
-            ps.setString(3, ubicacion.getBarrio());
-            ps.setString(4, ubicacion.getDireccion());
-            ps.setString(5, ubicacion.getCoordenada().getCodigo());
-            ps.setBoolean(6, true); // activo = true
+	        try (PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
+	            ps.setString(1, ubicacion.getCodigo());
+	            ps.setString(2, ubicacion.getZona());
+	            ps.setString(3, ubicacion.getBarrio());
+	            ps.setString(4, ubicacion.getDireccion());
+	            ps.setString(5, ubicacion.getCoordenada().getCodigo());
+	            ps.setBoolean(6, true);
 
-            int cantidad = ps.executeUpdate();
-            if (cantidad > 0) {
-                System.out.println("Ubicacion insertada: " + ubicacion.getCodigo());
-            } else {
-            	throw new DAOException("No se insertó la ubicacion (executeUpdate devolvió 0)");
-            }
+	            int filas = ps.executeUpdate();
+	            if (filas == 0) {
+	                throw new DAOException("No se insertó la ubicacion");
+	            }
+	        }
 
-        } catch (SQLException e) {
-            
-        	throw new DAOException("Error al procesar consulta (create Ubicacion): " + e.getMessage()+".codigo UB200");
-        } finally {
-            try { if (rs != null) rs.close(); } catch (SQLException ex) {}
-            try { if (ps != null) ps.close(); } catch (SQLException ex) {}
-            ConnectionManager.disconnect();
-        }
-    }
+	        System.out.println("Ubicacion insertada: " + ubicacion.getCodigo());
 
-	
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error SQL al crear Ubicacion: " + e.getMessage() + " (UB200)"+ e
+	        );
+	    }
+	}
+
 
 	@Override
 	public void update(Ubicacion ubicacion) throws DAOException{

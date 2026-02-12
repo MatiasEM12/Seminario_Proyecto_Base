@@ -134,13 +134,13 @@ public class Persona {
 	}
 	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
 		
-			if(nombreCampo=="nombre" || nombreCampo=="apellido") {
+			if(nombreCampo.equalsIgnoreCase("nombre") || nombreCampo.equalsIgnoreCase("apellido")) {
 				
 				if (campo.length()>20 || campo.length()<3) {
 					throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
 				}
 			}
-			if (campo.length()>20 || campo.length()<8) {
+			if (campo.length()>20 || campo.length()<3) {
 				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
 			}
 		

@@ -23,9 +23,11 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
         this.ubicacionDAO = new UbicacionDAOJDBC(); // ajustá si se llama distinto
     }
 
-    @Override
-    public void create(Beneficiario b) {
-        if (b == null) return;
+    public void create(Beneficiario b) throws DAOException {
+
+        if (b == null) {
+            throw new DAOException("Beneficiario nulo");
+        }
 
         final String SQL =
             "INSERT INTO beneficiario " +
@@ -35,32 +37,35 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement st = conn.prepareStatement(SQL)) {
 
-      
-            String codUbic = b.getUbicacion().getCodigo();
-
             st.setString(1, b.getCodigo());
             st.setString(2, b.getNombre());
             st.setString(3, b.getApellido());
             st.setString(4, b.getDni());
             st.setString(5, b.getContacto());
-            st.setDate(6, Date.valueOf(b.getFecha_nac())); 
+            st.setDate(6, Date.valueOf(b.getFecha_nac()));
             st.setString(7, b.getUsername());
 
-           
-            st.setInt(9, b.getCantAcargo());     
-            st.setInt(10, b.getPrioridad());         
-            st.setString(11, codUbic);
-            st.setInt(12, 1);         // activo
+            // 🔥 ESTOS DOS ESTABAN MAL
+            st.setInt(8, b.getCantAcargo());
+            st.setInt(9, b.getPrioridad());
+
+            st.setString(10, b.getUbicacion().getCodigo());
+            st.setInt(11, 1); // activo
 
             st.executeUpdate();
 
+            System.out.println("Beneficiario insertado: " + b.getCodigo());
+
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (INSERT beneficiario): " + e.getMessage());
-            e.printStackTrace();
+            throw new DAOException(
+                "Error al procesar INSERT Beneficiario: " + e.getMessage()+
+                e
+            );
         } finally {
             ConnectionManager.disconnect();
         }
     }
+
 
     @Override
     public void update(Beneficiario b) {
