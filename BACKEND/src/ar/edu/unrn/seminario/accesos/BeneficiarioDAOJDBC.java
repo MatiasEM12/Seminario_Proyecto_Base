@@ -8,6 +8,7 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
@@ -28,13 +29,13 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
 
         final String SQL =
             "INSERT INTO beneficiario " +
-            "(codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, tipo, aCargo, prioridad, coUbicacion, activo) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, aCargo, prioridad, coUbicacion, activo) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement st = conn.prepareStatement(SQL)) {
 
-            // BD exige NOT NULL en todo
+      
             String codUbic = b.getUbicacion().getCodigo();
 
             st.setString(1, b.getCodigo());
@@ -42,14 +43,12 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
             st.setString(3, b.getApellido());
             st.setString(4, b.getDni());
             st.setString(5, b.getContacto());
-            st.setDate(6, Date.valueOf(b.getFecha_nac())); // si en Persona se llama distinto, ajustá getter
+            st.setDate(6, Date.valueOf(b.getFecha_nac())); 
             st.setString(7, b.getUsername());
 
-            // Estos campos existen en la tabla pero NO están en tu modelo Beneficiario.
-            // Ponemos defaults razonables:
-            st.setString(8, "BENE");  // tipo (ajustá si usás otra convención)
-            st.setInt(9, 0);          // aCargo (0/1)
-            st.setInt(10, 1);         // prioridad (1..n)
+           
+            st.setInt(9, b.getCantAcargo());     
+            st.setInt(10, b.getPrioridad());         
             st.setString(11, codUbic);
             st.setInt(12, 1);         // activo
 
@@ -69,21 +68,23 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
 
         final String SQL =
             "UPDATE beneficiario SET " +
-            "nombre = ?, apellido = ?, dni = ?, contacto = ?, Fecha_Nacimiento = ?, username = ?, coUbicacion = ? " +
+            "nombre = ?, apellido = ?, dni = ?, contacto = ?, Fecha_Nacimiento = ?, username = ?, aCargo = ?, prioridad = ?,coUbicacion = ? " +
             "WHERE codigo = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement st = conn.prepareStatement(SQL)) {
 
-            st.setString(1, b.getNombre());
-            st.setString(2, b.getApellido());
-            st.setString(3, b.getDni());
-            st.setString(4, b.getContacto());
-            st.setDate(5, Date.valueOf(b.getFecha_nac())); // ajustar getter si difiere
-            st.setString(6, b.getUsername());
-            st.setString(7, b.getUbicacion().getCodigo());
-            st.setString(8, b.getCodigo());
-
+        	 st.setString(1, b.getCodigo());
+             st.setString(2, b.getNombre());
+             st.setString(3, b.getApellido());
+             st.setString(4, b.getDni());
+             st.setString(5, b.getContacto());
+             st.setDate(6, Date.valueOf(b.getFecha_nac())); 
+             st.setString(7, b.getUsername());
+             st.setInt(9, b.getCantAcargo());     
+             st.setInt(10, b.getPrioridad());         
+             st.setString(11, b.getUbicacion().getCodigo());
+             st.setInt(12, 1);         // activo
             st.executeUpdate();
 
         } catch (SQLException e) {
@@ -121,11 +122,11 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public Beneficiario find(String codigo) throws DAOException, DataLengthException {
+    public Beneficiario find(String codigo) throws DAOException, DataLengthException, DataIntException {
         if (codigo == null || codigo.trim().isEmpty()) return null;
 
         final String SQL =
-            "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, coUbicacion " +
+            "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, coUbicacion,aCargo,prioridad " +
             "FROM beneficiario WHERE codigo = ?";
 
         try (Connection conn = ConnectionManager.getConnection();
@@ -144,12 +145,14 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
                 LocalDate fechaNac = rs.getDate("Fecha_Nacimiento").toLocalDate();
                 String username = rs.getString("username");
                 String codUbic = rs.getString("coUbicacion");
+                int aCargo = Integer.parseInt("aCargo");
+                int prioridad= Integer.parseInt("prioridad");
 
                 Ubicacion ubic = (ubicacionDAO != null) ? ubicacionDAO.find(codUbic) : null;
 
-                Beneficiario bene = new Beneficiario(nombre, apellido, fechaNac, dni, contacto, ubic, username);
+                Beneficiario bene = new Beneficiario(nombre, apellido, fechaNac, dni, contacto, ubic, username,prioridad,aCargo);
 
-                // ✅ Para conservar el código real de BD:
+            
                 bene.setCodigoDesdeBD(cod);
 
                 return bene;
@@ -169,7 +172,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public List<Beneficiario> findAll() throws DAOException, DataLengthException {
+    public List<Beneficiario> findAll() throws DAOException, DataLengthException, DataIntException {
         final String SQL = "SELECT codigo FROM beneficiario";
         List<Beneficiario> lista = new ArrayList<>();
 
