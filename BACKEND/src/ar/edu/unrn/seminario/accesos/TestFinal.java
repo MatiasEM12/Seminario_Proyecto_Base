@@ -48,7 +48,7 @@ public class TestFinal {
 			
 			//usuarios
 			
-			Usuario.setContadorUsuario(usuarioDAO.obtenerCantidadUsuarios());
+			Usuario.setContadorUsuario(usuarioDAO.obtenerMaximoUsuarios());
 			
 			// se puede cambiar en el costructor en ves de pasarle el tipo de rol que lo busque por codigo, ej: Rol rolx = rolDAO.find(1);
 			// o directamente en el costructor ("perry_AD","87654321","Jeff","perry_AD12@mail.com",rolDAO.find(1),true,null);
@@ -65,7 +65,7 @@ public class TestFinal {
 			usuarioDAO.create(usuario_4);
 			
 			//coordenada
-			Coordenada.setContadorCoordenada(coordenadaDAO.obtenerCantidadCoordenadas());
+			Coordenada.setContadorCoordenada(coordenadaDAO.obtenerMaximoCoordenadas());
 			
 			Coordenada coordenadaBeneficiario = new Coordenada(11.233,12.333);
 			Coordenada coordenadaDonante=new Coordenada(23.333,12.3333);
@@ -74,7 +74,7 @@ public class TestFinal {
 			coordenadaDAO.create(coordenadaDonante);
 			
 			//ubicacion
-			Ubicacion.setContadorUbicacion(ubicacionDAO.obtenerCantidadUbicaciones());
+			Ubicacion.setContadorUbicacion(ubicacionDAO.obtenerMaximoUbicaciones());
 			Ubicacion ubicacionBeneficiario = new Ubicacion("Este","SanJuan","123",coordenadaBeneficiario);
 			Ubicacion ubicacionDonante=new Ubicacion("Norte","Flores","456",coordenadaDonante);
 			
@@ -82,28 +82,28 @@ public class TestFinal {
 			ubicacionDAO.create(ubicacionDonante);
 			
 			//Beneficiario
-			Beneficiario.setContadorDonante(beneficiarioDAO.obtenerCantidadBeneficiarios());
+			Beneficiario.setContadorDonante(beneficiarioDAO.obtenerMaximoBeneficiarios());
 			Beneficiario beneficiarioTest = new Beneficiario( "Matias","Ben",LocalDate.of(2000, 1, 10),"11111111","matias_Ben12@mail.com",ubicacionBeneficiario,"matias_Ben",1,0);
 			
 			beneficiarioDAO.create(beneficiarioTest);
 			
 			
 			//Donante
-			Donante.setContadorDonante(donanteDAO.obtenerCantidadDonantes());
+			Donante.setContadorDonante(donanteDAO.obtenerMaximoDonante());
 			
 			Donante donanteTest = new Donante("Ian","Don",LocalDate.of(1999,3, 20),"22222222","ian_Don12@mail.com",ubicacionDonante,"ian_Don");
 			
 			donanteDAO.create(donanteTest);
 			
 			//Voluntario
-			Voluntario.setContadorVoluntario(voluntarioDAO.obtenerCantidadVoluntarios());
+			Voluntario.setContadorVoluntario(voluntarioDAO.obtenerMaximoVoluntarios());
 			Voluntario voluntatioTest = new Voluntario("Pedro","Contrera",LocalDate.of(2003, 10, 21),"pedro_Vol12@mail.com","33333333","pedro_Vol");
 			
 			voluntarioDAO.create(voluntatioTest);
 			
 			
 			//Bien
-			Bien.setContadorBien(bienDAO.obtenerCantidadBienes());
+			Bien.setContadorBien(bienDAO.obtenerMaximoBienes());
 			Bien alimentoTest = Bien(null,"Alimento",0.0,"Manteca","Manteca marca 'YYYY'",1,LocalDate.of(2026, 4, 11),0.0,null);
 			Bien ropaTest = Bien(null,"Ropa",0.0,"Camisa","Camisa usada, con botones cambiados",2,null,0.0,"algodon");
 			
@@ -114,7 +114,7 @@ public class TestFinal {
 			bienesTest.add(ropaTest);
 			bienesTest.add(alimentoTest);
 			//Donacion
-			Donacion.setContadorDonacion(donacionDAO.obtenerCantidadDonaciones());
+			Donacion.setContadorDonacion(donacionDAO.obtenerMaximoDonaciones());
 			
 			Donacion donacionTest = new Donacion(LocalDate.now(),"Donacion de una camisa y una manteca",bienesTest,donanteTest,null);
 			
