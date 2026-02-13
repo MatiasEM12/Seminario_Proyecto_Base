@@ -290,25 +290,27 @@ public class DonanteDAOJDBC implements DonanteDao{
 	    return 0;
 	}
 	
-	public int obtenerMaximoDonante() throws SQLException {
-	    String sql = "SELECT MAX(codigo) FROM donante";
+	
+	@Override
+	public int obtenerMaximoDonantes() throws SQLException {
+		  String sql = "SELECT MAX(codigo) FROM donante";
 
-	    try (Connection conn = ConnectionManager.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql);
-	         ResultSet rs = ps.executeQuery()) {
+		    try (Connection conn = ConnectionManager.getConnection();
+		         PreparedStatement ps = conn.prepareStatement(sql);
+		         ResultSet rs = ps.executeQuery()) {
 
-	        if (rs.next()) {
-	            String maxCodigo = rs.getString(1);
+		        if (rs.next()) {
+		            String maxCodigo = rs.getString(1);
 
-	            if (maxCodigo != null) {
-	        
-	                return Integer.parseInt(maxCodigo.substring(1));
-	            }
-	        }
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-	    return 0;
+		            if (maxCodigo != null) {
+		        
+		                return Integer.parseInt(maxCodigo.substring(1));
+		            }
+		        }
+		    } finally {
+		        ConnectionManager.disconnect();
+		    }
+		    return 0;
 	}
 
 

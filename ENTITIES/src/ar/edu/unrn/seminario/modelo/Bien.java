@@ -202,9 +202,6 @@ public class Bien {
 	}
 	
 	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
-		if(nombreCampo.equalsIgnoreCase("nombre") || campo.length()<3) {
-			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
-		}
 		
 		if (campo.length()>50 || campo.length()<4) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 4 caracteres y como maximo 50 ");

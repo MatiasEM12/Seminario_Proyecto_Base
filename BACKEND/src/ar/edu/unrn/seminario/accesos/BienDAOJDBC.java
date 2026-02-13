@@ -32,8 +32,13 @@ public class BienDAOJDBC  implements BienDAO{
 			statement.setString(2, bien.getTipo());
 			statement.setString(3, bien.getNombre());
 			
-			statement.setDouble(4, bien.getPeso());
-			
+			// peso (puede ser NULL)
+            if (bien.getPeso() != null) {
+                statement.setDouble(4,
+                  bien.getPeso());
+            } else {
+                statement.setNull(4, Types.DOUBLE);
+            }
 			statement.setString(5, bien.getDescripcion());
 			statement.setInt(6, bien.getNivelNecesidad());
 			
@@ -44,6 +49,14 @@ public class BienDAOJDBC  implements BienDAO{
                     java.sql.Date.valueOf(bien.getFechaVencimiento()));
             } else {
                 statement.setNull(7, Types.DATE);
+            }
+            
+         // talle (puede ser NULL)
+            if (bien.getTalle() != null) {
+                statement.setDouble(8,
+                  bien.getTalle());
+            } else {
+                statement.setNull(8, Types.DOUBLE);
             }
 
             // material (puede ser NULL)

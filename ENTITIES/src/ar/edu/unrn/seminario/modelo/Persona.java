@@ -139,11 +139,11 @@ public class Persona {
 				if (campo.length()>20 || campo.length()<3) {
 					throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 20 ");
 				}
+			}else {
+				if (campo.length()>20 || campo.length()<8) {
+					throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
+				}
 			}
-			if (campo.length()>20 || campo.length()<3) {
-				throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 8 caracteres y como maximo 20 ");
-			}
-		
 	}
 	
 	private void validarMayorEdad(LocalDate fechaNac) throws DataDateException{

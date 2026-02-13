@@ -90,7 +90,7 @@ public class TestFinal {
 			
 			
 			//Donante
-			Donante.setContadorDonante(donanteDAO.obtenerMaximoDonante());
+			Donante.setContadorDonante(donanteDAO.obtenerMaximoDonantes());
 			
 			Donante donanteTest = new Donante("Ian","Don",LocalDate.of(1999,3, 20),"22222222","ian_Don12@mail.com",ubicacionDonante,"ian_Don");
 			
@@ -105,8 +105,8 @@ public class TestFinal {
 			
 			//Bien
 			Bien.setContadorBien(bienDAO.obtenerMaximoBienes());
-			Bien alimentoTest = Bien(null,"Alimento",0.0,"Manteca","Manteca marca 'YYYY'",1,LocalDate.of(2026, 4, 11),0.0,null);
-			Bien ropaTest = Bien(null,"Ropa",0.0,"Camisa","Camisa usada, con botones cambiados",2,null,0.0,"algodon");
+			Bien alimentoTest = new Bien(null,"Alimento",null,"Manteca","Manteca marca 'YYYY'",1,LocalDate.of(2026, 4, 11),null,null);
+			Bien ropaTest = new Bien(null,"Ropa",null,"Camisa","Camisa usada, con botones cambiados",2,null,4.0,"algodon");
 			
 			bienDAO.create(alimentoTest);
 			bienDAO.create(ropaTest);
@@ -128,9 +128,4 @@ public class TestFinal {
 		}
 	}
 
-	private static Bien Bien(Object object, String string, double d, String string2, String string3, int i,
-			LocalDate of, double e, Object object2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
