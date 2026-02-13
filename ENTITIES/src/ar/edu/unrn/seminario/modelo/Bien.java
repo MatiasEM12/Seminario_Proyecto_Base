@@ -123,10 +123,10 @@ public class Bien {
 		validarStringsBien(tipo,"Tipo");
 		this.tipo = tipo;
 	}
-	public double getPeso() {
+	public Double getPeso() {
 		return peso;
 	}
-	public void setPeso(double peso) throws  DataDoubleException {
+	public void setPeso(Double peso) throws  DataDoubleException {
 		validarDoubleBien(peso,"Peso");
 		this.peso = peso;
 	}
@@ -163,10 +163,10 @@ public class Bien {
 		validarDate(fechaVencimiento);
 		this.fechaVencimiento = fechaVencimiento;
 	}
-	public double getTalle() {
+	public Double getTalle() {
 		return talle;
 	}
-	public void setTalle(double talle) throws  DataDoubleException {
+	public void setTalle(Double talle) throws  DataDoubleException {
 		validarDoubleBien(talle,"Talle");
 		this.talle = talle;
 	}

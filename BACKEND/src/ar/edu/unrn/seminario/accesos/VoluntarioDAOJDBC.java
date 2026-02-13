@@ -23,21 +23,20 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO donante(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username)"
-							+ " VALUES (?, ?, ?, ?, ?, ?,?)");
+					.prepareStatement("INSERT INTO voluntario(codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username,activo)"
+							+ " VALUES (?, ?, ?, ?, ?, ?,?,?)");
 			
+		
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(voluntario.getFecha_nac());
-			
-			statement.setDate(1, fechaSQL);
-			
+
 			statement.setString(1, voluntario.getCodigo());
 			statement.setString(2, voluntario.getNombre());
 			statement.setString(3, voluntario.getApellido());
 			statement.setString(4, voluntario.getDni());
 			statement.setString(5, voluntario.getContacto());
-			statement.setDate(6,fechaSQL);
+			statement.setDate(6, fechaSQL);
 			statement.setString(7, voluntario.getUsername());
-
+			statement.setBoolean(8, true); // activo
 		
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
@@ -48,7 +47,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 			}
 
 		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta.codigo V101");
+			throw new DAOException("Error al procesar consulta.codigo V101" + e.getMessage());
 			// TODO: disparar Exception propia
 		} finally {
 			ConnectionManager.disconnect();
@@ -62,7 +61,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE donante SET codigo ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? "
+					.prepareStatement("UPDATE voluntario SET codigo ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? "
 							+ "WHERE codigo = ?");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(voluntario.getFecha_nac());
 			

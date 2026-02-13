@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +27,31 @@ public class BienDAOJDBC  implements BienDAO{
 					.prepareStatement("INSERT INTO bien(codigo,tipo,nombre,peso,descripcion,nivelNecesidad,fechaVencimiento,talle,material)"
 							+ " VALUES (?, ?, ?,?,?,?,?,?,?)");
 			
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
+			
 			statement.setString(1, bien.getCodigo());
 			statement.setString(2, bien.getTipo());
 			statement.setString(3, bien.getNombre());
+			
 			statement.setDouble(4, bien.getPeso());
+			
 			statement.setString(5, bien.getDescripcion());
 			statement.setInt(6, bien.getNivelNecesidad());
-			statement.setDate(7, fechaSQL);
-			statement.setDouble(8, bien.getTalle());
-			statement.setString(9, bien.getMaterial());
+			
+			
+			// fecha vencimiento (puede ser NULL)
+            if (bien.getFechaVencimiento() != null) {
+                statement.setDate(7,
+                    java.sql.Date.valueOf(bien.getFechaVencimiento()));
+            } else {
+                statement.setNull(7, Types.DATE);
+            }
+
+            // material (puede ser NULL)
+            if (bien.getMaterial() != null) {
+                statement.setString(9, bien.getMaterial());
+            } else {
+                statement.setNull(9, Types.VARCHAR);
+            }
 		
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {

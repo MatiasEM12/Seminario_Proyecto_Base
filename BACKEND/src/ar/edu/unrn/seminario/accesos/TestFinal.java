@@ -88,6 +88,7 @@ public class TestFinal {
 			beneficiarioDAO.create(beneficiarioTest);
 			
 			
+			
 			//Donante
 			Donante.setContadorDonante(donanteDAO.obtenerMaximoDonante());
 			
