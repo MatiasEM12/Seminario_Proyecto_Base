@@ -202,7 +202,7 @@ public class Bien {
 	}
 	
 	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
-		if(nombreCampo=="nombre" || campo.length()<3) {
+		if(nombreCampo.equalsIgnoreCase("nombre") || campo.length()<3) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 3 caracteres y como maximo 50 ");
 		}
 		
@@ -220,7 +220,7 @@ public class Bien {
 	}
 	
 	private void validarVencimiento(LocalDate fechaVencimiento) throws DataDateException {
-		   
+		this.validarDate(fechaVencimiento);
 	    if (fechaVencimiento.isBefore(LocalDate.now())) {
 	        throw new DataDateException("Inválido, el producto está vencido");
 	    }

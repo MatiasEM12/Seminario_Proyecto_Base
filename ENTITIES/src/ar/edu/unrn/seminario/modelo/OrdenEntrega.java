@@ -29,11 +29,9 @@ public class OrdenEntrega extends Orden{
 		this.validarListBien(bienes);
 		visitas=new ArrayList<Visita> ();
 		this.validarObjectNull(beneficiario);
-		if(codigo==null) {
-			crearCodigo();
-		}else {
-			this.codigo=codigo;
-		}
+		
+	 crearCodigo();
+	
 		this.beneficiario=beneficiario;
 	}
 	

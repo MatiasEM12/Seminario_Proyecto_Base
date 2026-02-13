@@ -25,7 +25,7 @@ public class Visita {
 	private ArrayList<Bien> bienesRecolectados;
 	private boolean esFinal;
 	private String estado;
- 	//posibles estados realizada o fallida;
+
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
 			ArrayList<Bien> bienesRecolectados, boolean esFinal) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException{
@@ -267,7 +267,7 @@ public class Visita {
 	}
 	private void validarLongitudCampo255( String campo,String nombreCampo) throws DataLengthException {
 		
-		if (campo.length()>255 || campo.length()<10) {
+		if (campo.length()>255 || campo.length()<4) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 255 ");
 		}
 
