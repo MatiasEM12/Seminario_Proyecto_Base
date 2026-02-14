@@ -201,10 +201,6 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	}
 
 
-	public OrdenPedido getPedido() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 

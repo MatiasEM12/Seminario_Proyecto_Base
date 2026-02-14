@@ -53,7 +53,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE orden SET fechaEmision = ?, cargaPesada = ?, observaciones = ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
+					.prepareStatement("UPDATE ordenPedido SET fechaEmision = ?, cargaPesada = ?, observaciones = ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
 			 // Conversión de LocalDate a java.sql.Date
 	        java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 
@@ -173,8 +173,11 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		List<OrdenPedido> ordenes = new ArrayList<>();
 		try {
 			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("SELECT o.codigo, o.fechaEmision, o.cargaPesada ,o.observaciones, o.codDonante, o.codDonacion" + " FROM OrdenPedido o " + " WHERE o.codigo = ?");
+		
+			PreparedStatement statement = conn.prepareStatement(
+						    "SELECT o.codigo, o.fechaEmision, o.cargaPesada, o.observaciones, o.codDonante, o.codDonacion FROM OrdenPedido o"
+						);
+
 
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
@@ -234,7 +237,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 	            if (maxCodigo != null) {
 	                
-	                return Integer.parseInt(maxCodigo.substring(1));
+	                return Integer.parseInt(maxCodigo.substring(2));
 	            }
 	        }
 	    } finally {

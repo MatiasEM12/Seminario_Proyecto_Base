@@ -53,8 +53,7 @@ public class OrdenPedido extends Orden {
 		this.validarCampoVacio(observaciones,"Observaciones");
 		this.validarLongitudCampo255(observaciones, "Observaciones");
 	
-		this.validarCampoNull(codDonacion);
-		this.validarCampoVacio(codDonacion, "Codigo Donacion");
+	
 		
 		this.validarCampoNull(codDonante);
 		this.validarCampoVacio(codDonante, "Codigo Donante");

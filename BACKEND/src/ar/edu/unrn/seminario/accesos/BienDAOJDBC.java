@@ -192,9 +192,13 @@ public class BienDAOJDBC  implements BienDAO{
 			if (rs.next()) {
 				
 				
-					
-					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-					 java.time.LocalDate fecha = sqlDate.toLocalDate();
+				java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
+				LocalDate fecha = null;
+
+				if (sqlDate != null) {
+				    fecha = sqlDate.toLocalDate();
+				}
+
 					bien=new Bien(rs.getString("codigo"),rs.getString("tipo"),rs.getDouble("peso"),rs.getString("nombre"),
 							rs.getString("descripcion"),rs.getInt("nivelNecesidad"),fecha,rs.getDouble("talle"),rs.getString("material"));
 			
@@ -283,7 +287,8 @@ List<Bien> bienes = new ArrayList<>();
 		}
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("FROM bien b\r\n"
+			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo\r\n"
+					+ "FROM bien b\r\n"
 					+ "JOIN Bien_Donacion bd ON b.codigo = bd.codBien\r\n"
 					+ "WHERE bd.codDonacion = ?\r\n"
 					+ "");

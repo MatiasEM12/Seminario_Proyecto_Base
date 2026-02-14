@@ -46,6 +46,17 @@ public class DonacionDTO {
 		this.codPedido = codPedido;
 	}
 
+	public DonacionDTO(String codigo, LocalDate fechaDonacion, String observacion, ArrayList<BienDTO> bienes,
+			String codDonante) {
+		super();
+		this.codigo = codigo;
+		this.fechaDonacion = fechaDonacion;
+		this.observacion = observacion;
+		this.bienes = bienes;
+		this.codDonante = codDonante;
+		
+	}
+
 
 
 	public String getCodigo() {

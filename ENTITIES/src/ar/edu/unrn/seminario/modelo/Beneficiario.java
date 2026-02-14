@@ -115,7 +115,7 @@ public class Beneficiario extends Persona{
 
 	private void crearCodigo() {
 		contadorBeneficiarios++;
-		  this.codigo = "B" + String.format("%05d", contadorBeneficiarios);
+		  this.codigo = "BN" + String.format("%05d", contadorBeneficiarios);
 	}
 	
 	public void setCodigoDesdeBD(String codigo)

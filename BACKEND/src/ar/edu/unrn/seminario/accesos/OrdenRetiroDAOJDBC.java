@@ -227,7 +227,10 @@ OrdenPedidoDao op;
 		}
 	    return 0;
 	}
-	public int obtenerMaximoOrdenRetriro() throws SQLException {
+
+
+	@Override
+	public int obtenerMaximoOrdenRetiro() throws SQLException {
 	    String sql = "SELECT MAX(codigo) FROM ordenretiro";
 
 	    try (Connection conn = ConnectionManager.getConnection();
@@ -239,7 +242,7 @@ OrdenPedidoDao op;
 
 	            if (maxCodigo != null) {
 	                
-	                return Integer.parseInt(maxCodigo.substring(1));
+	                return Integer.parseInt(maxCodigo.substring(2));
 	            }
 	        }
 	    } finally {

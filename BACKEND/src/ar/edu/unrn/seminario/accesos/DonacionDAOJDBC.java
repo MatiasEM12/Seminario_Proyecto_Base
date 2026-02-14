@@ -293,9 +293,9 @@ BienDAO  b = new BienDAOJDBC();
 			            String codigoDonante = resultado.getString("codigoDonante");
 			            String codigoOrdenPedido = resultado.getString("codigoOrdenPedido"); // será null
 			            Donante donante = (codigoDonante != null) ? d.find(codigoDonante) : null;
-			            OrdenPedido pedido = (codigoOrdenPedido != null) ? op.find(codigoOrdenPedido) : null;
+			           
 			            ArrayList<Bien> bienes = b.findBienDonacion(codigo);
-			            Donacion donacion = new Donacion(fecha, observacion, bienes, donante, pedido, codigo);
+			            Donacion donacion = new Donacion(fecha, observacion, bienes, donante, codigo);
 			            listado.add(donacion);
 			        }
 			    } catch (SQLException e) {
@@ -399,7 +399,7 @@ BienDAO  b = new BienDAOJDBC();
 
 	            if (maxCodigo != null) {
 	            
-	                return Integer.parseInt(maxCodigo.substring(1));
+	                return Integer.parseInt(maxCodigo.substring(2));
 	            }
 	        }
 	    } finally {

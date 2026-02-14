@@ -357,7 +357,7 @@ public class UbicacionDAOJDBC  implements UbicacionDAO{
 
 	            if (maxCodigo != null) {
 	             
-	                return Integer.parseInt(maxCodigo.substring(1));
+	                return Integer.parseInt(maxCodigo.substring(3));
 	            }
 	        }
 	    } finally {
