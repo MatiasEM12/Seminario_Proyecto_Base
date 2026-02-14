@@ -34,20 +34,13 @@ public abstract class Orden {
     }
 
     static public EstadoOrden recuperarEstado(String estado) {
-    	
-    	if(estado.equalsIgnoreCase(EstadoOrden.CANCELADA.toString())) {
-    		return EstadoOrden.CANCELADA;
-    	}else if(estado.equalsIgnoreCase(EstadoOrden.PENDIENTE.toString())) {
-    		return EstadoOrden.PENDIENTE;
-    		
-    	}else if(estado.equalsIgnoreCase(EstadoOrden.COMPLETADA.toString())) {
-    		return EstadoOrden.COMPLETADA;
-    	}else {
-    		return EstadoOrden.EN_PROCESO;
-    	}
-    	
-    	
+        if (estado == null || estado.isBlank()) {
+            throw new IllegalArgumentException("Estado vacío");
+        }
+        return EstadoOrden.valueOf(estado.toUpperCase());
     }
+
+
     public enum EstadoOrden {
         PENDIENTE("Pendiente"),
         EN_PROCESO("En proceso"),

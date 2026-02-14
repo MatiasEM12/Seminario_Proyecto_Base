@@ -32,7 +32,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		
 			statement.setString(4, orden.getCodDonacion());
 			statement.setString(5, orden.getCodigo());
-			statement.setString(6, orden.getEstadoString());
+			statement.setString(6, orden.getEstado().name());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -61,10 +61,10 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 	        // Asignación de parámetros
 	        statement.setDate(1, fechaSQL);
-			statement.setBoolean(2, orden.isCargaPesada());
-			statement.setString(3, orden.getObservaciones());
-			statement.setString(4, orden.getCodigo());
-			statement.setString(5, orden.getEstadoString());
+	        statement.setBoolean(2, orden.isCargaPesada());
+	        statement.setString(3, orden.getObservaciones());
+	        statement.setString(4, orden.getEstado().name());
+	        statement.setString(5, orden.getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("La orden se ha actualizado correctamente");
@@ -141,17 +141,18 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			statement.setString(1, codigo);
 			 try (ResultSet rs = statement.executeQuery()) {
 		            if (rs.next()) {
-		                // Si la columna es DATE:
-		                LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
+		        
+		            	LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
 
-		                orden = new OrdenPedido(
-		                	rs.getString("codigo"),
-		                    fecha,
-		                    rs.getBoolean("cargaPesada"),
-		                    Orden.recuperarEstado(rs.getString("estado")),
-		                    rs.getString("observaciones"),
-		                    rs.getString("codDonacion")
-		                );
+		            	orden = new OrdenPedido(
+		            	    rs.getString("codigo"),
+		            	    fecha,
+		            	    rs.getBoolean("cargaPesada"),
+		            	    Orden.recuperarEstado(rs.getString("estado")),
+		            	    rs.getString("observaciones"),
+		            	    rs.getString("codDonacion")
+		            	);
+
 		        
 		            }
 		        }
@@ -184,19 +185,19 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
-				LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
-				
-		
-                OrdenPedido orden = new OrdenPedido(
-                	rs.getString("codigo"),
-                    fecha,
-                    rs.getBoolean("cargaPesada"),
-                    Orden.recuperarEstado(rs.getString("estado")),
-                    rs.getString("observaciones"),
-                    rs.getString("codDonacion")
-                );
-				ordenes.add(orden);
+			    LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
+
+			    OrdenPedido orden = new OrdenPedido(
+			        rs.getString("codigo"),
+			        fecha,
+			        rs.getBoolean("cargaPesada"),
+			        Orden.recuperarEstado(rs.getString("estado")),
+			        rs.getString("observaciones"),
+			        rs.getString("codDonacion")
+			    );
+			    ordenes.add(orden);
 			}
+
 			
 
 		} catch (SQLException e) {
