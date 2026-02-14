@@ -311,7 +311,7 @@ public class PersistenceApi implements IApi {
             
             String tipo = OrdenPedido.getTipo();
             ordenesDTO.add(new OrdenPedidoDTO(orden.getFechaEmision(), orden.getEstado().toString(), tipo,
-                    orden.getCodigo(), orden.isCargaPesada(), orden.getObservaciones(), orden.getCodDonante(),
+                    orden.getCodigo(), orden.isCargaPesada(), orden.getObservaciones(),
                     orden.getCodDonacion()));
         }
         return ordenesDTO;
@@ -685,35 +685,52 @@ public class PersistenceApi implements IApi {
         visitaDao.create(visita);
     }   
     
-    public void registrarOrdenPedido(OrdenPedido orden) throws DAOException {
+    public void registrarOrdenPedido(OrdenPedido orden) throws DAOException, DataObjectException {
     	ordenPedidoDao.create(orden);
+    	this.actualizarDonacionConPedido(this.obtenerDonacion(orden.getCodDonacion()), orden);
     }
     public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException{
     	if (orden==null) {
     		throw new DataNullException("la orden de pedido invalida");
     	}
     	try {
-    		Donante donante=null;
-	        if (orden.getCodDonante() != null && !orden.getCodDonante().trim().isEmpty()) {
-	            donante = donanteDao.find(orden.getCodDonante());
-	        }
-	        if (donante == null) {
-                throw new DataNullException("No existe un donante con el codigo: "+orden.getCodDonante());
-            }
+    		
     		OrdenPedido pedido= new OrdenPedido(
 	                orden.getCodigo(),
 	                orden.getFechaEmision(),
+	                orden.isCargaPesada(), 
 	                orden.getObservaciones(),
-	                orden.isCargaPesada(),
-	                donante.getCodigo()
+	                orden.getCodDonacion()
     				);
             ordenPedidoDao.create(pedido);
+            actualizarDonacionConPedido(this.obtenerDonacion(orden.getCodDonacion()), pedido);
     	}catch(Exception e) {
     		System.err.println("Error al registrar la orden de pedido: " + e.getMessage());
             e.printStackTrace();
     	}
     }
 
+    
+    public void actualizarDonacionConPedido(Donacion donacion, OrdenPedido pedido)
+            throws DataObjectException {
+
+        if (donacion == null) {
+            throw new DataObjectException("No se encontró la donación para asociar el pedido");
+        }
+
+        donacion.setPedido(pedido);
+        this.donacionDao.update(donacion);
+    }
+
+   
+   public Donacion obtenerDonacion(String codDonacion) throws DataObjectException {
+	   Donacion donacion = this.donacionDao.find(codDonacion);
+
+	    if (donacion == null) {
+	        throw new DataObjectException("Donación inexistente: " + codDonacion);
+	    }
+	    return donacion;
+   }
    
 
 
@@ -827,12 +844,10 @@ public class PersistenceApi implements IApi {
 	    try {
 	        // Buscar el donante por código si existe
 	        Donante donante = null;
-	        if (dto.getCodDonante() != null && !dto.getCodDonante().trim().isEmpty()) {
-	            donante = donanteDao.find(dto.getCodDonante());
-	        }
+	       
 //LocalDate fechaEmision, boolean cargaPesada,String observaciones, String codDonante, String codDonacion
 	        // Crear el objeto del modelo
-	        OrdenPedido pedido = new OrdenPedido(dto.getFechaEmision(),dto.isCargaPesada(),dto.getObservaciones(),dto.getCodDonante(),dto.getCodDonacion() );
+	        OrdenPedido pedido = new OrdenPedido(dto.getFechaEmision(),dto.isCargaPesada(),dto.getObservaciones(),dto.getCodDonacion() );
 
 	        return pedido;
 	    } catch (Exception e) {
@@ -850,7 +865,7 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException {
+	public DonacionDTO obtenerDonacionPorPedido(String ordenP) throws DataNullException, DAOException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
 	
 		Donacion donacion = this.donacionDao.findPorOrdenPedido(ordenP);
 		

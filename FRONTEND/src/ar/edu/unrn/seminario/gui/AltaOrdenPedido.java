@@ -156,17 +156,16 @@ public class AltaOrdenPedido extends JFrame {
 
                 // Usamos el codigo de la donacion seleccionada
                 String codDonacion = donacionSeleccionada.getCodigo();
-                String observaciones = "";
+                String observaciones = "Sin observaciones";
                 // Construir DTO 
                 OrdenPedidoDTO ordenPedido = new OrdenPedidoDTO(
                         fecha,
                         estado,
-                        null,               // tipo (puede ser null según tu DTO)
-                        codDonacion,        // lo pasamos en el campo codigo (tu código previo usaba txtCodigo aquí)
+                        null,               
+                        null,
                         chckbxPesada.isSelected(), // cargaPesada
                         observaciones,
-                        donacionSeleccionada.getCodDonante(), // codDonante
-                        codDonacion        // codDonacion (duplica por seguridad si tu DTO lo requiere)
+                        codDonacion       
                 );
 
                 api.registrarOrdenPedido(ordenPedido);

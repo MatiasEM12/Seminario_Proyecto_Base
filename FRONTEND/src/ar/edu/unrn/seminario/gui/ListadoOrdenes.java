@@ -209,12 +209,12 @@ public class ListadoOrdenes extends JFrame {
             }
         } else if ("OrdenPedido".equals(filtro)) {    // Si el filtro seleccionado es "OrdenPedido"
         	List<OrdenDTO> ordenesOP= ordenes.stream().filter(o->o.getTipo().equals("ORDEN_PEDIDO")).collect(Collectors.toList());
-            modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Observaciones", "Fecha", "Estado", "Donante", "Donacion" });
+            modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Observaciones", "Fecha", "Estado", "Donacion" });
 
             for (OrdenDTO o : ordenesOP) {
                 OrdenPedidoDTO op = (OrdenPedidoDTO) o;
                
-                    modelo.addRow(new Object[] { op.getCodigo(), op.getTipo(), op.getObservaciones(), op.getFechaEmision(), op.getEstado(), op.getCodDonante(), op.getCodDonacion() });
+                    modelo.addRow(new Object[] { op.getCodigo(), op.getTipo(), op.getObservaciones(), op.getFechaEmision(), op.getEstado(), op.getCodDonacion() });
                 
             }
         } else {

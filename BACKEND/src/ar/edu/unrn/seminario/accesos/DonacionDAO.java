@@ -26,7 +26,7 @@ public interface DonacionDAO {
 	void remove(Donacion donacion);
 
 	Donacion find(String codigo);
-	Donacion  findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException;
+	Donacion  findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException, DAOException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException;
 
 	List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 	List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;

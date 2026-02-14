@@ -18,13 +18,12 @@ public class OrdenPedido extends Orden {
 	private String codigo;
 	private boolean cargaPesada;
 	private String observaciones;
-	private String codDonante;
 	private String codDonacion;
 	
 	
 
 	public OrdenPedido(LocalDate fechaEmision, boolean cargaPesada,
-			String observaciones, String codDonante, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException, DataObjectException{
+			String observaciones, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException, DataObjectException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		
 			this.validarCampoNull(observaciones);
@@ -34,41 +33,58 @@ public class OrdenPedido extends Orden {
 			this.validarCampoNull(codDonacion);
 			this.validarCampoVacio(codDonacion, "Codigo Donacion");
 			
-			this.validarCampoNull(codDonante);
-			this.validarCampoVacio(codDonante, "Codigo Donante");
-		
-	
 		
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
-		this.codDonante = codDonante;
+		
 		this.codDonacion = codDonacion;
 		crearCodigo();
 	}
-	public OrdenPedido(String codigo,LocalDate fechaEmision,
-			String observaciones, boolean cargaPesada, String codDonante) throws DataNullException, DataLengthException, DataEmptyException, DataDateException, DataObjectException{
+
+	public OrdenPedido(String codigo,LocalDate fechaEmision, boolean cargaPesada,
+			String observaciones, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException, DataObjectException{
 		super(fechaEmision, EstadoOrden.PENDIENTE,tipo);
 		
-		this.validarCampoNull(observaciones);
-		this.validarCampoVacio(observaciones,"Observaciones");
-		this.validarLongitudCampo255(observaciones, "Observaciones");
-	
-	
+			this.validarCampoNull(observaciones);
+			this.validarCampoVacio(observaciones,"Observaciones");
+			this.validarLongitudCampo255(observaciones, "Observaciones");
 		
-		this.validarCampoNull(codDonante);
-		this.validarCampoVacio(codDonante, "Codigo Donante");
-	
+			this.validarCampoNull(codDonacion);
+			this.validarCampoVacio(codDonacion, "Codigo Donacion");
+			
+		
+		this.cargaPesada = cargaPesada;
+		this.observaciones = observaciones;
+		
+		this.codDonacion = codDonacion;
 		if(codigo==null) {
-			this.crearCodigo();
+			crearCodigo();
 		}else {
 			this.codigo=codigo;
 		}
-
+	}
+	public OrdenPedido(String codigo,LocalDate fechaEmision, boolean cargaPesada,EstadoOrden estado,
+			String observaciones, String codDonacion) throws DataNullException, DataLengthException,DataEmptyException, DataDateException, DataObjectException{
+		super(fechaEmision, estado,tipo);
+		
+			this.validarCampoNull(observaciones);
+			this.validarCampoVacio(observaciones,"Observaciones");
+			this.validarLongitudCampo255(observaciones, "Observaciones");
+		
+			this.validarCampoNull(codDonacion);
+			this.validarCampoVacio(codDonacion, "Codigo Donacion");
+			
+		
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
-		this.codDonante = codDonante;
+		
+		this.codDonacion = codDonacion;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
 	}
-	
 	public String getCodigo() {
 		return codigo;
 	}
@@ -105,15 +121,9 @@ public class OrdenPedido extends Orden {
 	}
 
 
-	public String getCodDonante() {
-		return codDonante;
-	}
+	
 
-	public void setCodDonante(String codDonante) throws StateChangeException, DataNullException, DataEmptyException {
-		this.validarCampoNull(codDonante);
-		this.validarCampoVacio(codDonante, "Codigo Donante");
-		this.codDonante = codDonante;
-	}
+
 
 	public String getCodDonacion() {
 		return codDonacion;
@@ -151,11 +161,7 @@ public class OrdenPedido extends Orden {
 			throw new DataNullException("el campo " + nombreCampo + " no puede ser nulo");
 		}
 	}
-	private void validarObjectNull( Object ob) throws DataObjectException {
-		if (ob==null) {
-			throw new DataObjectException("Contiene instancia nula ");
-		}
-	}
+	
 	private void validarLongitudCampo255( String campo,String nombreCampo) throws DataLengthException {
 		
 		if (campo.length()>255 || campo.length()<10) {

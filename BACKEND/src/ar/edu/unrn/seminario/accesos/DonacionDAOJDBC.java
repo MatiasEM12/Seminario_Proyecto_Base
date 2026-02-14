@@ -118,22 +118,22 @@ BienDAO  b = new BienDAOJDBC();
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE coordenada SET codigo=?,observacion=?,Fecha_Donacion=?,codigoDonante=?,codigoOrdenPedido=? "
+					.prepareStatement("UPDATE donacion SET observacion=?,Fecha_Donacion=?,codigoDonante=?,codigoOrdenPedido=? "
 							+ "WHERE codigo = ?");
 
 			LocalDate fecha = donacion.getFechaDonacion();
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha);
 			
-			statement.setString(1, donacion.getCodigo());
-			statement.setString(2, donacion.getObservacion());
-			statement.setDate(3, fechaSQL);
-			statement.setString(4, donacion.getDonante() != null ? donacion.getDonante().getCodigo() : null);
-			statement.setString(5,  donacion.getPedido() != null ? donacion.getPedido().getCodigo() : null);
-			statement.setString(6, donacion.getCodigo());
+			
+			statement.setString(1, donacion.getObservacion());
+			statement.setDate(2, fechaSQL);
+			statement.setString(3, donacion.getDonante() != null ? donacion.getDonante().getCodigo() : null);
+			statement.setString(4,  donacion.getPedido() != null ? donacion.getPedido().getCodigo() : null);
+			statement.setString(5, donacion.getCodigo());
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
-				 System.out.println("La coordenada se ha actualizado correctamente");
+				 System.out.println("La Donacion se ha actualizado correctamente");
 			} else {
 				System.out.println("Error al actualizar. codigo error D200");
 				// TODO: disparar Exception propia
@@ -206,142 +206,222 @@ BienDAO  b = new BienDAOJDBC();
 
 	@Override
 	public Donacion find(String codigo) {
-		Donacion donacion= null;
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido "
-			+ "FROM donacion "+ "WHERE codigo = ?");
-			sent.setString(1, codigo);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
-				   java.time.LocalDate localDate = sqlDate.toLocalDate();
-				   
-				   
-				donacion =new Donacion (localDate,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
-						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
-				
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error D500");
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error D501");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return donacion;
+	    Donacion donacion = null;
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido " +
+	            "FROM donacion WHERE codigo = ?"
+	        );
+
+	        sent.setString(1, codigo);
+	        ResultSet rs = sent.executeQuery();
+
+	        if (rs.next()) {
+
+	            LocalDate fecha = rs.getDate("Fecha_Donacion").toLocalDate();
+
+	            String codOrdenPedido = rs.getString("codigoOrdenPedido");
+
+	           
+	            OrdenPedido ordenPedido = null;
+	            if (codOrdenPedido != null) {
+	            	  donacion = new Donacion(
+	      	                fecha,
+	      	                rs.getString("observacion"),
+	      	                b.findBienDonacion(rs.getString("codigo")),
+	      	                d.find(rs.getString("codigoDonante")),
+	      	                this.op.find(codOrdenPedido),                   
+	      	                rs.getString("codigo")
+	      	            );
+	            }else {
+	            	 donacion = new Donacion(
+		      	                fecha,
+		      	                rs.getString("observacion"),
+		      	                b.findBienDonacion(rs.getString("codigo")),
+		      	                d.find(rs.getString("codigoDonante")),                
+		      	                rs.getString("codigo")
+		      	                );
+	            }
+
+	          
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error al procesar consulta " + e.getMessage() + ". codigo error D500");
+	    } catch (Exception e) {
+	        System.out.println("Error al construir Donacion " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return donacion;
 	}
+
 
 	
 	@Override
-	public List<Donacion> findAll() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException{
-		List<Donacion> listado = new ArrayList<>();
-	    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido FROM donacion d ";
+	public List<Donacion> findAll() throws DataNullException, DataEmptyException,
+	        DataObjectException, DataDateException, DAOException,
+	        DataLengthException, DataListException {
+
+	    List<Donacion> listado = new ArrayList<>();
+
+	    String sql = "SELECT codigo, observacion, Fecha_Donacion, codigoDonante, codigoOrdenPedido FROM donacion";
 
 	    try (Connection conn = ConnectionManager.getConnection();
-	         Statement sentencia = conn.createStatement();
-	         ResultSet resultado = sentencia.executeQuery(sql)) {
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
 
-	        while (resultado.next()) {
-	            String codigo = resultado.getString("codigo");
-	            String observacion = resultado.getString("observacion");
-	            Date Fecha_Donacion = resultado.getDate("Fecha_Donacion");
-	            LocalDate fecha = Fecha_Donacion.toLocalDate();
-	            String codigoDonante = resultado.getString("codigoDonante");
-	            String codigoOrdenPedido = resultado.getString("codigoOrdenPedido");
-	            Donante donante = d.find(codigoDonante);
-	            OrdenPedido pedido = op.find(codigoOrdenPedido);
-	            ArrayList<Bien> bienes = b.findBienDonacion(codigo);
-	            // Usamos el constructor que ya tenés:
-	            Donacion donacion = new Donacion(fecha,observacion,bienes,donante,pedido,codigo);
+	        while (rs.next()) {
+
+	            String codigo = rs.getString("codigo");
+	            String observacion = rs.getString("observacion");
+	            LocalDate fecha = rs.getDate("Fecha_Donacion").toLocalDate();
+
+	            String codDonante = rs.getString("codigoDonante");
+	            String codOrdenPedido = rs.getString("codigoOrdenPedido");
+
+	            Donante donante = (codDonante != null) ? d.find(codDonante) : null;
+	            OrdenPedido pedido = (codOrdenPedido != null) ? op.find(codOrdenPedido) : null;
+
+	            ArrayList<Bien> bienes;
+	            try {
+	                bienes = b.findBienDonacion(rs.getString("codigo"));
+	            } catch (Exception e) {
+	                bienes = new ArrayList<>();
+	            }
+	            OrdenPedido ordenPedido = null;
+	            Donacion donacion = null;
+	            if (codOrdenPedido != null) {
+	            	  donacion = new Donacion(
+	      	                fecha,
+	      	                rs.getString("observacion"),
+	      	                b.findBienDonacion(rs.getString("codigo")),
+	      	                d.find(rs.getString("codigoDonante")),
+	      	                this.op.find(codOrdenPedido),                   
+	      	                rs.getString("codigo")
+	      	            );
+	            }else {
+	            	 donacion = new Donacion(
+		      	                fecha,
+		      	                rs.getString("observacion"),
+		      	                b.findBienDonacion(rs.getString("codigo")),
+		      	                d.find(rs.getString("codigoDonante")),                
+		      	                rs.getString("codigo")
+		      	                );
+	            }
 	            listado.add(donacion);
 	        }
+
 	    } catch (SQLException e) {
-			System.out.println("Error de mySql\n" + e.toString()+". codigo error D600");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
+	        throw new DAOException("Error MySQL. codigo error D600" + e);
+	    }
 
 	    return listado;
 	}
-	
-
-		public List<Donacion> findAllPendiente() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
-			 List<Donacion> listado = new ArrayList<>();
-			    // Seleccionamos donaciones cuya columna codigoOrdenPedido es NULL (sin orden asignada)
-			    String sql = "SELECT d.codigo, d.observacion, d.Fecha_Donacion, d.codigoDonante, d.codigoOrdenPedido "
-			               + "FROM donacion d "
-			               + "WHERE d.codigoOrdenPedido IS NULL";
-
-			    Connection conn = null;
-			    Statement sentencia = null;
-			    ResultSet resultado = null;
-			    try {
-			        conn = ConnectionManager.getConnection();
-			        sentencia = conn.createStatement();
-			        resultado = sentencia.executeQuery(sql);
-
-			        while (resultado.next()) {
-			            String codigo = resultado.getString("codigo");
-			            String observacion = resultado.getString("observacion");
-			            Date Fecha_Donacion = resultado.getDate("Fecha_Donacion");
-			            LocalDate fecha = Fecha_Donacion != null ? Fecha_Donacion.toLocalDate() : null;
-			            String codigoDonante = resultado.getString("codigoDonante");
-			            String codigoOrdenPedido = resultado.getString("codigoOrdenPedido"); // será null
-			            Donante donante = (codigoDonante != null) ? d.find(codigoDonante) : null;
-			           
-			            ArrayList<Bien> bienes = b.findBienDonacion(codigo);
-			            Donacion donacion = new Donacion(fecha, observacion, bienes, donante, codigo);
-			            listado.add(donacion);
-			        }
-			    } catch (SQLException e) {
-			        System.out.println("Error de mySql\n" + e.toString()+". codigo error D700");
-			    } finally {
-			        try { if (resultado != null) resultado.close(); } catch (SQLException ex) {}
-			        try { if (sentencia != null) sentencia.close(); } catch (SQLException ex) {}
-			        ConnectionManager.disconnect();
-			    }
-			    return listado;
-		}
 
 	
 
 	@Override
-	public Donacion findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException {
+	public List<Donacion> findAllPendiente() throws DataNullException,
+	        DataEmptyException, DataObjectException, DataDateException,
+	        DAOException, DataLengthException, DataListException {
 
-		
-		Donacion donacion= null;
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo,observacion,Fecha_Donacion,codigoDonante,codigoOrdenPedido "
-			+ "FROM donacion "+ "WHERE codigoOrdenPedido codigo = ?");
-			sent.setString(1, codigoOrdenPedido);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				   java.sql.Date sqlDate = rs.getDate("Fecha_DOnacion");
-				   java.time.LocalDate localDate = sqlDate.toLocalDate();
-				   
-				   
-				donacion =new Donacion (localDate,rs.getString("observacion"),b.findBienDonacion(rs.getString("codigo")),d.find(rs.getString("codigoDonante")) , 
-						op.find(rs.getString("codigoPedido")),rs.getString("codigo") );
-				
-			}
-		}
-		catch(SQLException e){
-			System.out.println("Error al procesar consulta"+ e.getMessage()+". codigo error D800");
-		}
-		catch (Exception e) {
-			System.out.println("Error inesperado: " + e.getMessage()+". codigo error D801");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return donacion;
+	    List<Donacion> listado = new ArrayList<>();
+
+	    String sql = "SELECT codigo, observacion, Fecha_Donacion, codigoDonante  FROM donacion WHERE codigoOrdenPedido IS NULL";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql);
+	         ResultSet rs = ps.executeQuery()) {
+
+	        while (rs.next()) {
+
+	            String codigo = rs.getString("codigo");
+	            String observacion = rs.getString("observacion");
+	            LocalDate fecha = rs.getDate("Fecha_Donacion").toLocalDate();
+
+	            String codDonante = rs.getString("codigoDonante");
+	            Donante donante = (codDonante != null) ? d.find(codDonante) : null;
+
+	            ArrayList<Bien> bienes;
+	            try {
+	                bienes = b.findBienDonacion(rs.getString("codigo"));
+	            } catch (Exception e) {
+	                bienes = new ArrayList<>();
+	            }
+	            Donacion donacion = new Donacion(
+	                    fecha,
+	                    observacion,
+	                    bienes,
+	                    donante,
+	                    codigo
+	            );
+
+	            listado.add(donacion);
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error MySQL. codigo error D700" + e);
+	    }
+
+	    return listado;
 	}
+
+
+	
+	@Override
+	public Donacion findPorOrdenPedido(String codigoOrdenPedido) throws DataNullException, DAOException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
+
+	    if (codigoOrdenPedido == null || codigoOrdenPedido.isBlank()) {
+	        throw new DataNullException("Código de orden pedido inválido");
+	    }
+
+	    Donacion donacion = null;
+
+	    String sql = "SELECT codigo, observacion, Fecha_Donacion, codigoDonante FROM donacion WHERE codigoOrdenPedido = ?";
+
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setString(1, codigoOrdenPedido);
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+
+	            String codigo = rs.getString("codigo");
+	            LocalDate fecha = rs.getDate("Fecha_Donacion").toLocalDate();
+
+	            String codDonante = rs.getString("codigoDonante");
+
+	            Donante donante = (codDonante != null) ? d.find(codDonante) : null;
+	            OrdenPedido pedido = op.find(codigoOrdenPedido);
+
+	            ArrayList<Bien> bienes;
+	            try {
+	                bienes = b.findBienDonacion(rs.getString("codigo"));
+	            } catch (Exception e) {
+	                bienes = new ArrayList<>();
+	            }
+	            donacion = new Donacion(
+	                    fecha,
+	                    rs.getString("observacion"),
+	                    bienes,
+	                    donante,
+	                    pedido,
+	                    codigo
+	            );
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error MySQL. codigo error D800" + e);
+	    }
+
+	    return donacion;
+	}
+
 	
 	private String generarNuevoCodigo(Connection conn) throws SQLException {
 	    String ultimoCodigo = null;

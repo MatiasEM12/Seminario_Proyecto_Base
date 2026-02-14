@@ -9,7 +9,6 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 	private String codigo;
 	private boolean cargaPesada;
 	private String observaciones;
-	private String codDonante;
 	private String codDonacion;
 	
 
@@ -17,15 +16,14 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 	
 
 	public OrdenPedidoDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, boolean cargaPesada,
-			String observaciones, String codDonante, String codDonacion) {
+			String observaciones, String codDonacion) {
 		super(fechaEmision, estado, tipo);
 		this.codigo = codigo;
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;
-		this.codDonante = codDonante;
 		this.codDonacion = codDonacion;
 	}
-
+	
 
 
 
@@ -40,6 +38,22 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 
 	public void setCargaPesada(boolean cargaPesada) {
 		this.cargaPesada = cargaPesada;
+	}
+
+
+
+
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+
+
+
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 
 
@@ -62,22 +76,6 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 
 
 
-	public String getCodDonante() {
-		return codDonante;
-	}
-
-
-
-
-
-	public void setCodDonante(String codDonante) {
-		this.codDonante = codDonante;
-	}
-
-
-
-
-
 	public String getCodDonacion() {
 		return codDonacion;
 	}
@@ -93,10 +91,6 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 
 
 
-
-	public String getCodigo() {
-		return codigo;
-	}
 
 
 

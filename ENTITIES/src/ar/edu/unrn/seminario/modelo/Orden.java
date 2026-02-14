@@ -33,7 +33,7 @@ public abstract class Orden {
         this.tipo=tipo;
     }
 
-    private EstadoOrden recuperarEstado(String estado) {
+    static public EstadoOrden recuperarEstado(String estado) {
     	
     	if(estado.equalsIgnoreCase(EstadoOrden.CANCELADA.toString())) {
     		return EstadoOrden.CANCELADA;

@@ -118,7 +118,7 @@ public class VentanaOrdenPedido extends JFrame {
                 o.getObservaciones(),            // OBSERVACIONES
                 o.getFechaEmision(),             // FECHA EMISIÓN
                 o.getEstado(),                   // ESTADO
-                o.getCodDonante(),               // DONANTE
+                                                 // DONANTE
                 o.getCodDonacion()               // DONACIÓN
             });
         }

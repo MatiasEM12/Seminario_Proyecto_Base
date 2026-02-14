@@ -94,7 +94,7 @@ public interface IApi {
 	
 	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 	
-	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException;
+	public DonacionDTO obtenerDonacionPorPedido(String ordenP) throws DataNullException, DAOException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException;
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) throws DataNullException, DAOException;
 	public BienDTO obtenerBien (String codigo) throws DataNullException, DAOException;
@@ -111,7 +111,7 @@ public interface IApi {
 	//Visitas
 	public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException;
 	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException;
-	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException ;
+	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException, DataObjectException ;
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 
 	public String obtenerEstadoOrdenPedido(String codOrdenPedido) ;

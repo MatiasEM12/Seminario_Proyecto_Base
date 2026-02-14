@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.modelo.Orden;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
 
 
@@ -21,16 +22,17 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenPedido (fechaCreacion, cargaPesada, observaciones, codDonante, codDonacion,codigo)"
-							+ " VALUES (?, ?, ?, ?, ?,?)");
+					.prepareStatement("INSERT INTO ordenPedido (fechaCreacion, cargaPesada, observaciones, codDonacion,codigo,estado)"
+							+ " VALUES (?, ?, ?, ?,?,?)");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 			
 			statement.setDate(1, fechaSQL);
 			statement.setBoolean(2, orden.isCargaPesada());
 			statement.setString(3, orden.getObservaciones());
-			statement.setString(4, orden.getCodDonante());
-			statement.setString(5, orden.getCodDonacion());
-			statement.setString(6, orden.getCodigo());
+		
+			statement.setString(4, orden.getCodDonacion());
+			statement.setString(5, orden.getCodigo());
+			statement.setString(6, orden.getEstadoString());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
@@ -53,7 +55,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE ordenPedido SET fechaEmision = ?, cargaPesada = ?, observaciones = ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
+					.prepareStatement("UPDATE ordenPedido SET fechaCreacion = ?, cargaPesada = ?, observaciones = ?, estado =  ? WHERE codigo = ?"); //elimine descripcion para probar tabla base
 			 // Conversión de LocalDate a java.sql.Date
 	        java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
 
@@ -62,6 +64,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			statement.setBoolean(2, orden.isCargaPesada());
 			statement.setString(3, orden.getObservaciones());
 			statement.setString(4, orden.getCodigo());
+			statement.setString(5, orden.getEstadoString());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("La orden se ha actualizado correctamente");
@@ -132,24 +135,24 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		try {
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("SELECT o.codigo, o.fechaEmision, o.cargaPesada, o.observaciones, o.codDonante, o.codDonacion " +
+					.prepareStatement("SELECT o.codigo, o.fechaCreacion, o.cargaPesada,o.estado, o.observaciones, o.codDonacion " +
 			                 "FROM OrdenPedido o WHERE o.codigo = ?");
 
 			statement.setString(1, codigo);
 			 try (ResultSet rs = statement.executeQuery()) {
 		            if (rs.next()) {
 		                // Si la columna es DATE:
-		                LocalDate fecha = rs.getDate("fechaEmision").toLocalDate();
+		                LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
 
 		                orden = new OrdenPedido(
+		                	rs.getString("codigo"),
 		                    fecha,
 		                    rs.getBoolean("cargaPesada"),
+		                    Orden.recuperarEstado(rs.getString("estado")),
 		                    rs.getString("observaciones"),
-		                    rs.getString("codDonante"),
 		                    rs.getString("codDonacion")
 		                );
-		                // Seteamos el código que viene de BD (puede coincidir con el parámetro, pero es lo correcto).
-		                orden.setCodigo(rs.getString("codigo"));
+		        
 		            }
 		        }
 
@@ -175,19 +178,21 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			Connection conn = ConnectionManager.getConnection();
 		
 			PreparedStatement statement = conn.prepareStatement(
-						    "SELECT o.codigo, o.fechaEmision, o.cargaPesada, o.observaciones, o.codDonante, o.codDonacion FROM OrdenPedido o"
+						    "SELECT o.codigo, o.fechaCreacion, o.cargaPesada,o.estado, o.observaciones, o.codDonacion FROM OrdenPedido o"
 						);
 
 
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
-				LocalDate fecha = rs.getDate("fechaEmision").toLocalDate();
-
+				LocalDate fecha = rs.getDate("fechaCreacion").toLocalDate();
+				
+		
                 OrdenPedido orden = new OrdenPedido(
+                	rs.getString("codigo"),
                     fecha,
                     rs.getBoolean("cargaPesada"),
+                    Orden.recuperarEstado(rs.getString("estado")),
                     rs.getString("observaciones"),
-                    rs.getString("codDonante"),
                     rs.getString("codDonacion")
                 );
 				ordenes.add(orden);
@@ -195,12 +200,10 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 			
 
 		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta. codigo error OP600");
-			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getSQLState(), e.getMessage());
+			throw new DAOException("Error al procesar consulta. codigo error OP600"+e);
+		
 		} catch (Exception e) {
-			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
+
 			throw new DAOException("Error al procesar consulta. codigo error OP601"+e);
 		} finally {
 			ConnectionManager.disconnect();
