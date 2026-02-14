@@ -61,7 +61,7 @@ public interface IApi {
 	
 	//OrdenRetiro
 	
-	public void registrarOrdenRetiro(OrdenRetiroDTO retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException;
+	public void registrarOrdenRetiro(OrdenRetiroDTO retiro) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException, DAOException;
 
 	ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() throws DAOException;
 
@@ -117,17 +117,10 @@ public interface IApi {
 	public String obtenerEstadoOrdenPedido(String codOrdenPedido) ;
 
 
-	void registrarOrdenRetiro(OrdenRetiro retiroO)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException;
-
-	
 	void completarOrdenRetiro(String codOrdenRetiro) throws Exception;
 
 
-	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 
-	
 	public void registrarUbicacion(Ubicacion ubicacion) throws DAOException;
 
 

@@ -31,7 +31,7 @@ OrdenPedidoDao op;
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenRetiro (codigo, Fecha_Emision,estado, codVoluntario,codOrdenPedido)"
+					.prepareStatement("INSERT INTO ordenRetiro (codigo, FechaCreacion,estado, codVoluntario,codOrdenPedido)"
 							+ " VALUES (?, ?,?, ?,?)");
 			
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
@@ -41,7 +41,11 @@ OrdenPedidoDao op;
 			statement.setString(1,orden.getCodigo());
 			statement.setDate(2, fechaSQL);
 			statement.setString(3,orden.getEstadoString());
-			statement.setString(4, orden.getVoluntario().getCodigo());
+			if (orden.getVoluntario() != null) {
+			    statement.setString(4, orden.getVoluntario().getCodigo());
+			} else {
+			    statement.setNull(4, java.sql.Types.VARCHAR);
+			}
 			statement.setString(5, orden.getPedido().getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {

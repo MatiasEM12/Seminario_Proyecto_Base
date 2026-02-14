@@ -59,7 +59,7 @@ public class OrdenRetiro extends Orden{
 		
 			super(fechaEmision,estado,tipo);
 	
-			this.validarObjectNull(pedido);
+			this.validarObjectNull(ordenPedido);
 			this.validarListVisita(visitas);
 			this.validarObjectNull(voluntario);
 			this.validarDate(fechaEmision);
