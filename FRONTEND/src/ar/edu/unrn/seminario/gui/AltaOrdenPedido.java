@@ -161,7 +161,7 @@ public class AltaOrdenPedido extends JFrame {
                 OrdenPedidoDTO ordenPedido = new OrdenPedidoDTO(
                         fecha,
                         estado,
-                        null,               
+                                      
                         null,
                         chckbxPesada.isSelected(), // cargaPesada
                         observaciones,

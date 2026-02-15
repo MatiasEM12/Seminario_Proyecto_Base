@@ -291,14 +291,44 @@ public class PersistenceApi implements IApi {
 
     // --- Órdenes ---
     @Override
+
     public List<OrdenDTO> obtenerOrdenes() throws DAOException {
-        List<OrdenDTO> todas = new ArrayList<>();
 
-        todas.addAll(obtenerOrdenesPedido());
-        todas.addAll(obtenerOrdenesRetiro());
+        List<OrdenDTO> resultado = new ArrayList<>();
 
-        return todas;
+        // ORDENES PEDIDO
+        List<OrdenPedido> pedidos = ordenPedidoDao.findAll();
+        if (pedidos != null) {
+            for (OrdenPedido op : pedidos) {
+                resultado.add(toOrdenPedidoDTO(op));
+            }
+        }
+
+        // ORDENES RETIRO
+        List<OrdenRetiro> retiros = ordenRetiroDao.findAll();
+        if (retiros != null) {
+            for (OrdenRetiro or : retiros) {
+                resultado.add(toOrdenRetiroDTO(or));
+            }
+        }
+
+        return resultado;
     }
+    private OrdenPedidoDTO toOrdenPedidoDTO(OrdenPedido op) {
+
+        if (op == null) return null;
+
+        return new OrdenPedidoDTO(
+            op.getFechaEmision(),
+            op.getEstado().toString(),
+            op.getCodigo(),
+            op.isCargaPesada(),
+            op.getObservaciones(),
+            op.getCodDonacion()
+        );
+    }
+
+
     @Override
     public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() throws DAOException {
 
@@ -338,31 +368,30 @@ public class PersistenceApi implements IApi {
         return dtos;
     }
 
-  
-    private OrdenRetiroDTO toOrdenRetiroDTO(OrdenRetiro orden) {
+    private OrdenRetiroDTO toOrdenRetiroDTO(OrdenRetiro or) {
 
-        if (orden == null) return null;
+        if (or == null) return null;
 
-        String codPedido = (orden.getPedido() != null)
-                ? orden.getPedido().getCodigo()
+        String codPedido = (or.getPedido() != null)
+                ? or.getPedido().getCodigo()
                 : null;
 
-        String codVoluntario = (orden.getVoluntario() != null)
-                ? orden.getVoluntario().getCodigo()
+        String codVoluntario = (or.getVoluntario() != null)
+                ? or.getVoluntario().getCodigo()
                 : null;
 
-        String[] codVisitas = orden.getCodVisitas(); // nunca null
+        String[] codVisitas = or.getCodVisitas(); // ya devuelve String[]
 
         return new OrdenRetiroDTO(
-            orden.getFechaEmision(),
-            orden.getEstado().toString(),
-        
-            orden.getCodigo(),
+            or.getFechaEmision(),
+            or.getEstado().toString(),
+            or.getCodigo(),
             codPedido,
             codVoluntario,
             codVisitas
         );
     }
+
 
     @Override
     public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {

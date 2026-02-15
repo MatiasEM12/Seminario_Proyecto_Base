@@ -22,16 +22,16 @@ import ar.edu.unrn.seminario.modelo.Voluntario;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 
 public class OrdenRetiroDAOJDBC implements OrdenRetiroDao{
-VisitaDao visita;
-VoluntarioDAO voluntario;
-OrdenPedidoDao op;
+VisitaDao visita= new VisitaDAOJDBC();
+VoluntarioDAO voluntario= new VoluntarioDAOJDBC();
+OrdenPedidoDao op = new OrdenPedidoDAOJDBC();
 	@Override
 	public void create(OrdenRetiro orden) throws DAOException{
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("INSERT INTO ordenRetiro (codigo, FechaCreacion,estado, codVoluntario,codOrdenPedido)"
+					.prepareStatement("INSERT INTO ordenretiro (codigo, FechaCreacion,estado, codVoluntario,codOrdenPedido)"
 							+ " VALUES (?, ?,?, ?,?)");
 			
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(orden.getFechaEmision());
@@ -69,7 +69,7 @@ OrdenPedidoDao op;
 		try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement statement = conn.prepareStatement(
-	            "UPDATE OrdenRetiro SET estado = ?, Fecha_Emision = ?, codVoluntario = ?, codOrdenPedido = ? WHERE codigo = ?"
+	            "UPDATE ordenretiro SET estado = ?, Fecha_Emision = ?, codVoluntario = ?, codOrdenPedido = ? WHERE codigo = ?"
 	        );
 
 	        // Fecha
@@ -110,7 +110,7 @@ OrdenPedidoDao op;
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM OrdenRetiro WHERE codigo = ?"
+		            "DELETE FROM rrdenretiro WHERE codigo = ?"
 		        );
 
 		        statement.setString(1, orden.getCodigo());
@@ -135,7 +135,7 @@ OrdenPedidoDao op;
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM OrdenRetiro WHERE codigo = ?"
+		            "DELETE FROM ordenretiro WHERE codigo = ?"
 		        );
 
 		        statement.setString(1,codigo);
@@ -155,70 +155,89 @@ OrdenPedidoDao op;
 		
 	}
 
-	public OrdenRetiro find(String codigo) throws DAOException{
-		OrdenRetiro orden= null;
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement(
-				    "SELECT codigo, estado, Fecha_Emision, codVoluntario, codOrdenPedido "
-				  + "FROM OrdenRetiro "
-				  + "WHERE codigo = ?"
-				);
+	@Override
+	public OrdenRetiro find(String codigo) throws DAOException {
 
-			sent.setString(1, codigo);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				LocalDate fecha = rs.getDate("Fecha_Emision").toLocalDate();
-				
-				orden=new OrdenRetiro(rs.getString("codigo"), rs.getString("estado"),fecha,
-						voluntario.find(rs.getString("codVoluntario")) ,op.find(rs.getString("codOrdenPedido")),
-						visita.findAllOrdenRetiro(rs.getString(codigo)));
-				
-				
-			}
-		}
-		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo OR500");
-		}
-		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo OR501");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return orden;
+	    OrdenRetiro orden = null;
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT orr.codigo, orr.FechaCreacion, orr.estado, " +
+	            "       orr.codOrdenPedido, orr.codVoluntario " +
+	            "FROM ordenretiro orr " +
+	            "WHERE orr.codigo = ?"
+	        );
+
+	        sent.setString(1, codigo);
+
+	        ResultSet rs = sent.executeQuery();
+
+	        if (rs.next()) {
+
+	            LocalDate fecha = rs.getDate("FechaCreacion").toLocalDate();
+
+	            OrdenPedido pedido = op.find(rs.getString("codOrdenPedido"));
+	            Voluntario volunt = null;
+
+	            if (rs.getString("codVoluntario") != null) {
+	                volunt = voluntario.find(rs.getString("codVoluntario"));
+	            }
+
+	            orden = new OrdenRetiro(
+	                rs.getString("codigo"),
+	                rs.getString("estado"),
+	                fecha,
+	                volunt,
+	                pedido,
+	                visita.findAllOrdenRetiro(rs.getString("codigo"))
+	            );
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error al procesar consulta OR500"+ e);
+	    } catch (Exception e) {
+	        throw new DAOException("Error inesperado OR501"+ e);
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return orden;
 	}
+
 
 	@Override
-	public List<OrdenRetiro> findAll() throws DAOException{
-		ArrayList <OrdenRetiro> ordenes = new ArrayList<>();
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo "
-			+ "FROM OrdenRetiro");
-			
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				
-				while (rs.next()) {
-					
-					ordenes.add(this.find(rs.getString("codigo")));
-				}
+	public List<OrdenRetiro> findAll() throws DAOException {
+	    ArrayList<OrdenRetiro> ordenes = new ArrayList<>();
 
-			
-			}
-		}
-		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo OR600");
-		}
-		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo OR601");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return ordenes;
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT codigo FROM ordenretiro"
+	        );
+
+	        ResultSet rs = sent.executeQuery();
+
+	        while (rs.next()) {
+	            ordenes.add(this.find(rs.getString("codigo")));
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error al procesar consulta " + e.getMessage() + " .codigo OR600"
+	        );
+	    } catch (Exception e) {
+	        throw new DAOException(
+	            "Error inesperado: " + e.getMessage() + " .codigo OR601"
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ordenes;
 	}
+
 	
 	public int obtenerCantidadOR() throws SQLException {
 	    String sql = "SELECT COUNT(*) FROM ordenretiro";

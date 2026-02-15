@@ -142,7 +142,7 @@ public class AltaOrdenRetiro extends JFrame {
 
 		    	    	    ordenSeleccionada.getEstado().toString(),                    // estado
 
-		    	    	    ordenSeleccionada.getTipo(),            // tipo de la orden
+		    	    	   
 		    	    	    txtCodigo.getText(),                     // código de la orden de retiro
 		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido
 		    	    	    voluntario.getCodigo(),codVisitas
