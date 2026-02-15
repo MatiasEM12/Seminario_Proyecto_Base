@@ -159,8 +159,12 @@ OrdenPedidoDao op;
 		OrdenRetiro orden= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo, estado,Fecha_Emision, codVoluntario,codOrdenPedido "
-			+ "FROM OrdenRetiro"+ "WHERE codigo = ?");
+			PreparedStatement sent = conn.prepareStatement(
+				    "SELECT codigo, estado, Fecha_Emision, codVoluntario, codOrdenPedido "
+				  + "FROM OrdenRetiro "
+				  + "WHERE codigo = ?"
+				);
+
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {

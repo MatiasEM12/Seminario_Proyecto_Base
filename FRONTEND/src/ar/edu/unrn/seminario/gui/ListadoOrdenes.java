@@ -105,7 +105,7 @@ public class ListadoOrdenes extends JFrame {
 				if (filaSeleccionada >= 0) {
                     String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
                 	String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);	
-					if((String) tabla.getValueAt(filaSeleccionada, 1)=="ORDEN_RETIRO") {
+					if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 					
 						AltaVisita av;
 						try {
@@ -194,7 +194,7 @@ public class ListadoOrdenes extends JFrame {
 		}   
         modelo.setRowCount(0); // Limpia la tabla antes de cargar
 
-        if ("OrdenRetiro".equals(filtro)) {
+        if ("ORDEN_RETIRO".equals(filtro)) {
            
         	// ordenes = api.obtenerOrdenesRetiro(ordenes);   // Filtra la lista de órdenes para quedarse solo con las órdenes de retiro
         	List<OrdenDTO> ordenesOR= ordenes.stream().filter(o->o.getTipo().equals("ORDEN_RETIRO")).collect(Collectors.toList());
@@ -207,7 +207,7 @@ public class ListadoOrdenes extends JFrame {
                 modelo.addRow(new Object[] { or.getCodigo(), or.getTipo(), or.getFechaEmision(), or.getEstado(), or.getPedido(), or.getCodVoluntario(), visitas });
                 
             }
-        } else if ("OrdenPedido".equals(filtro)) {    // Si el filtro seleccionado es "OrdenPedido"
+        } else if ("ORDEN_PEDIDO".equals(filtro)) {    // Si el filtro seleccionado es "OrdenPedido"
         	List<OrdenDTO> ordenesOP= ordenes.stream().filter(o->o.getTipo().equals("ORDEN_PEDIDO")).collect(Collectors.toList());
             modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Observaciones", "Fecha", "Estado", "Donacion" });
 

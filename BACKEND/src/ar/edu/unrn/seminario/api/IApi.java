@@ -81,7 +81,7 @@ public interface IApi {
 
 	//Voluntario 
 	public void registrarVoluntario(Voluntario voluntario) throws DAOException;
-	List<VoluntarioDTO> obtenerVoluntarios();
+	List<VoluntarioDTO> obtenerVoluntarios() throws DAOException;
 	List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException, DataObjectException, DataLengthException;
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro);
 	//Administrador 

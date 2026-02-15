@@ -338,7 +338,7 @@ public class PersistenceApi implements IApi {
             ordenesRetiroDTO.add(new OrdenRetiroDTO(
                     ordenRetiro.getFechaEmision(),
                     ordenRetiro.getEstado().toString(),
-                    null,
+                    OrdenRetiro.getTipo(),
                     ordenRetiro.getCodigo(),
                     ordenRetiro.getPedido().getCodigo(),
                     voluntarioCodigo,
@@ -612,8 +612,12 @@ public class PersistenceApi implements IApi {
         voluntarioDao.create(voluntario);
     }
     @Override
-    public List<VoluntarioDTO> obtenerVoluntarios() {
-        return new ArrayList<>();
+    public List<VoluntarioDTO> obtenerVoluntarios() throws DAOException {
+    	List<Voluntario> voluntarios= this.voluntarioDao.findAll();
+    	
+    	 return voluntarios.stream()
+    	            .map(this::toVoluntarioDTO)
+    	            .collect(Collectors.toList());
     }
 
     @Override
@@ -1019,7 +1023,23 @@ public class PersistenceApi implements IApi {
         ordenRetiroDao.create(orden);
 	}
 
-	
+	public  VoluntarioDTO toVoluntarioDTO(Voluntario v) {
+      
+		if (v == null) return null;
+
+        return new VoluntarioDTO(
+            v.getNombre(),
+            v.getApellido(),
+            v.getContacto(),
+            v.getDni(),
+            v.getFecha_nac(),
+            v.getCodigo(),
+            v.getTarea(),
+            v.isDisponible(),
+            v.getUsername(),
+            null
+        );
+    }
 
 }
 

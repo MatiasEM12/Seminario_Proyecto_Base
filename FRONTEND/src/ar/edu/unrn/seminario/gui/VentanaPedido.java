@@ -155,25 +155,6 @@ public class VentanaPedido extends JFrame {
 	public DefaultTableModel getTableModel() { return tableModel; }
 
 	
-	// prueba
-	public static void main(String[] args) {
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VentanaPedido frame = new VentanaPedido();
-
-					
-					frame.getBeneficiarioTextField().setText("Juan Perez");
-					frame.getTableModel().addRow(new Object[] { "Alimento", "Leche", "Entera 1L", 2, "Pendiente" });
-					frame.getTableModel().addRow(new Object[] { "Vestimenta", "Campera", "Talle M", 1, "Pendiente" });
-
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 }
 
 

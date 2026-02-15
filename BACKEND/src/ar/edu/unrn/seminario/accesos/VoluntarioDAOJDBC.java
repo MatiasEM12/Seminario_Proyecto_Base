@@ -61,7 +61,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE voluntario SET codigo ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? "
+					.prepareStatement("UPDATE voluntario SET codigo= ?, nombre = ?,apellido =?,dni= ?, contacto= ?,Fecha_Nacimiento=? , ,username=? "
 							+ "WHERE codigo = ?");
 			java.sql.Date fechaSQL = java.sql.Date.valueOf(voluntario.getFecha_nac());
 			
@@ -160,15 +160,23 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 		Voluntario voluntario= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo, nombre,apellido, dni,contacto,Fecha_Nacimiento, username "
-			+ "FROM voluntario"+ "WHERE codigo = ?");
+			PreparedStatement sent = conn.prepareStatement(  "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username " +
+				    "FROM voluntario WHERE codigo = ?");
 			sent.setString(1, codigo);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
-				Date sqlDate = rs.getDate("D.Fecha_Nacimiento");
-				LocalDate fecha = sqlDate.toLocalDate(); 
-				voluntario=new Voluntario(rs.getString("nombre"),rs.getString("apellido"),  fecha  ,rs.getString("contacto"), rs.getString("dni"),rs.getString("username"),rs.getString("codigo"));
-				
+				Date sqlDate = rs.getDate("Fecha_Nacimiento");
+				LocalDate fecha = sqlDate.toLocalDate();
+
+				voluntario = new Voluntario(
+				    rs.getString("nombre"),
+				    rs.getString("apellido"),
+				    fecha,
+				    rs.getString("contacto"),
+				    rs.getString("dni"),
+				    rs.getString("username"),
+				    rs.getString("codigo")
+				);
 			}
 		}
 		catch(SQLException e){
@@ -188,7 +196,7 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 		List<Voluntario> voluntarios = new ArrayList<>();
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo"+ "FROM voluntario ");
+			PreparedStatement sent = conn.prepareStatement("SELECT codigo "+ "FROM voluntario ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				

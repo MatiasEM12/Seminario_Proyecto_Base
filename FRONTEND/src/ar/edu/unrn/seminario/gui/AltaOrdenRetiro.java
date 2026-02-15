@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,6 +18,8 @@ import javax.swing.border.EmptyBorder;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
+import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.modelo.Visita;
 
 import javax.swing.JButton;
 
@@ -29,48 +32,49 @@ public class AltaOrdenRetiro extends JFrame {
 
 	private JPanel contentPane;
 	private OrdenPedidoDTO ordenSeleccionada;
-
+    private VoluntarioDTO voluntario;
 
 	private JTextField txtFecha;
 	private JTextField txtEstado;
 	private JTextField txtCodigo;
 	IApi api;
+	private JTextField txtCodVoluntario;
 
 	
 	AltaOrdenRetiro(IApi api) {
 		this.api=api;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 381, 227);
+		setBounds(100, 100, 381, 310);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Seleccionar:");
-		lblNewLabel.setBounds(10, 10, 133, 13);
-		contentPane.add(lblNewLabel);
+		JLabel seleccionarPedido = new JLabel("Seleccionar:");
+		seleccionarPedido.setBounds(10, 10, 133, 13);
+		contentPane.add(seleccionarPedido);
 		
-		JLabel lblNewLabel_1 = new JLabel("Codigo Pedido:");
-		lblNewLabel_1.setBounds(10, 33, 133, 13);
-		contentPane.add(lblNewLabel_1);
+		JLabel codPedido = new JLabel("Codigo Pedido:");
+		codPedido.setBounds(10, 33, 133, 13);
+		contentPane.add(codPedido);
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Estado:");
-		lblNewLabel_1_1.setBounds(10, 78, 102, 13);
+		lblNewLabel_1_1.setBounds(10, 137, 102, 13);
 		contentPane.add(lblNewLabel_1_1);
 		
 		JLabel lblNewLabel_2 = new JLabel("Fecha Emision:");
-		lblNewLabel_2.setBounds(10, 102, 96, 13);
+		lblNewLabel_2.setBounds(16, 177, 96, 13);
 		contentPane.add(lblNewLabel_2);
 		
 		txtFecha = new JTextField();
-		txtFecha.setBounds(140, 100, 96, 19);
+		txtFecha.setBounds(140, 173, 96, 19);
 		contentPane.add(txtFecha);
 		txtFecha.setColumns(10);
 		
 		txtEstado = new JTextField();
 		txtEstado.setEditable(false);
 		txtEstado.setColumns(10);
-		txtEstado.setBounds(140, 74, 96, 19);
+		txtEstado.setBounds(140, 133, 96, 19);
 		contentPane.add(txtEstado);
 		
 		txtCodigo = new JTextField();
@@ -80,16 +84,41 @@ public class AltaOrdenRetiro extends JFrame {
 		contentPane.add(txtCodigo);
 		
 		JButton btnGuardar = new JButton("Guardar");
-		btnGuardar.setBounds(30, 159, 85, 21);
+		btnGuardar.setBounds(27, 239, 85, 21);
 		contentPane.add(btnGuardar);
 		
 		JButton btnNewButton_1 = new JButton("Cerrar");
-		btnNewButton_1.setBounds(232, 159, 85, 21);
+		btnNewButton_1.setBounds(233, 239, 85, 21);
 		contentPane.add(btnNewButton_1);
 		 btnNewButton_1.addActionListener(e -> dispose());
 		JButton btnOrdenesPedido = new JButton("Ordenes Pedido");
 		btnOrdenesPedido.setBounds(140, 6, 151, 21);
 		contentPane.add(btnOrdenesPedido);
+		
+		JLabel seleccionarVoluntario = new JLabel("Seleccionar:");
+		seleccionarVoluntario.setBounds(10, 61, 133, 13);
+		contentPane.add(seleccionarVoluntario);
+		
+		JButton btnVoluntarios = new JButton("Ordenes Pedido");
+		btnVoluntarios.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListadoVoluntarios ventanaVoluntarios = new ListadoVoluntarios(AltaOrdenRetiro.this, api);
+				ventanaVoluntarios.setLocationRelativeTo(AltaOrdenRetiro.this);
+				ventanaVoluntarios.setVisible(true);
+			}
+		});
+		btnVoluntarios.setBounds(140, 57, 151, 21);
+		contentPane.add(btnVoluntarios);
+		
+		txtCodVoluntario = new JTextField();
+		txtCodVoluntario.setEditable(false);
+		txtCodVoluntario.setColumns(10);
+		txtCodVoluntario.setBounds(140, 85, 96, 19);
+		contentPane.add(txtCodVoluntario);
+		
+		JLabel codVoluntario = new JLabel("Codigo Pedido:");
+		codVoluntario.setBounds(10, 88, 133, 13);
+		contentPane.add(codVoluntario);
 		btnOrdenesPedido.addActionListener(e -> {
 					VentanaOrdenPedido ventanaOrdenPedido = new VentanaOrdenPedido(this, api);
 					ventanaOrdenPedido.setLocationRelativeTo(this);
@@ -105,7 +134,7 @@ public class AltaOrdenRetiro extends JFrame {
 		    	try {
 		    	    // Convertir texto a LocalDate
 		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
-
+		    	    String[] codVisitas = {};
 		    	    // Crear DTO (no entidad)
 		    	    OrdenRetiroDTO retiro = new OrdenRetiroDTO(
 
@@ -116,13 +145,11 @@ public class AltaOrdenRetiro extends JFrame {
 		    	    	    ordenSeleccionada.getTipo(),            // tipo de la orden
 		    	    	    txtCodigo.getText(),                     // código de la orden de retiro
 		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido
-		    	    	    null, null
+		    	    	    voluntario.getCodigo(),codVisitas
 		    	    	);
 		    	    api.registrarOrdenRetiro(retiro);
 
-                    //memoryApi
-                    //api.inicializarOrdenesRetiro(ordenSeleccionada.getCodigo());
-
+                  
                     // Limpieza
                     ordenSeleccionada = null;
                     txtCodigo.setText("");
@@ -150,5 +177,9 @@ public class AltaOrdenRetiro extends JFrame {
         txtCodigo.setText(orden.getCodigo());
         txtEstado.setText(orden.getEstado().toString());             
         txtFecha.setText(orden.getFechaEmision().toString());
+    }
+    void recibirVoluntario(VoluntarioDTO voluntario) {
+       this.voluntario=voluntario;
+       txtCodVoluntario.setText(voluntario.getCodigo());
     }
 }
