@@ -47,8 +47,8 @@ public class ListadoOrdenes extends JFrame {
 
         listadoBox = new JComboBox<>();
         listadoBox.addItem("Todos");
-        listadoBox.addItem("OrdenRetiro");
-        listadoBox.addItem("OrdenPedido");
+        listadoBox.addItem("ORDEN_RETIRO");
+        listadoBox.addItem("ORDEN_PEDIDO");
         listadoBox.setBounds(94, 19, 150, 21);
         contentPane.add(listadoBox);
 
@@ -186,50 +186,85 @@ public class ListadoOrdenes extends JFrame {
 
     private void actualizarTabla(String filtro, String busqueda) {
 
-        List<OrdenDTO> ordenes = null;
-		try {
-			ordenes = api.obtenerOrdenes();
-		} catch (DAOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-		}   
-        modelo.setRowCount(0); // Limpia la tabla antes de cargar
+        List<OrdenDTO> ordenes;
+        try {
+            ordenes = api.obtenerOrdenes();
+        } catch (DAOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
+        modelo.setRowCount(0);
+
+        // ================= ORDEN RETIRO =================
         if ("ORDEN_RETIRO".equals(filtro)) {
-           
-        	// ordenes = api.obtenerOrdenesRetiro(ordenes);   // Filtra la lista de órdenes para quedarse solo con las órdenes de retiro
-        	List<OrdenDTO> ordenesOR= ordenes.stream().filter(o->o.getTipo().equals("ORDEN_RETIRO")).collect(Collectors.toList());
-            modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Fecha", "Estado", "Codigo Pedido", "Voluntario", "Visitas" });
 
-            // Recorre todas las órdenes de retiro obtenidas
-            for (OrdenDTO o : ordenesOR) {
-                OrdenRetiroDTO or = (OrdenRetiroDTO) o;
-                String visitas = or.getCodVisitas() != null ? String.join(", ", or.getCodVisitas()) : "";   // Convierte la lista de códigos de visitas en una cadena separada por comas
-                modelo.addRow(new Object[] { or.getCodigo(), or.getTipo(), or.getFechaEmision(), or.getEstado(), or.getPedido(), or.getCodVoluntario(), visitas });
-                
-            }
-        } else if ("ORDEN_PEDIDO".equals(filtro)) {    // Si el filtro seleccionado es "OrdenPedido"
-        	List<OrdenDTO> ordenesOP= ordenes.stream().filter(o->o.getTipo().equals("ORDEN_PEDIDO")).collect(Collectors.toList());
-            modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Observaciones", "Fecha", "Estado", "Donacion" });
+            List<OrdenRetiroDTO> retiros = ordenes.stream()
+                .filter(o -> "ORDEN_RETIRO".equals(o.getTipo()))
+                .map(o -> (OrdenRetiroDTO) o)
+                .collect(Collectors.toList());
 
-            for (OrdenDTO o : ordenesOP) {
-                OrdenPedidoDTO op = (OrdenPedidoDTO) o;
-               
-                    modelo.addRow(new Object[] { op.getCodigo(), op.getTipo(), op.getObservaciones(), op.getFechaEmision(), op.getEstado(), op.getCodDonacion() });
-                
+            modelo.setColumnIdentifiers(new String[]{
+                "Codigo", "Tipo", "Fecha", "Estado", "Codigo Pedido", "Voluntario", "Visitas"
+            });
+
+            for (OrdenRetiroDTO or : retiros) {
+                String visitas = String.join(", ", or.getCodVisitas());
+                modelo.addRow(new Object[]{
+                    or.getCodigo(),
+                    or.getTipo(),
+                    or.getFechaEmision(),
+                    or.getEstado(),
+                    or.getPedido(),
+                    or.getCodVoluntario(),
+                    visitas
+                });
             }
+
+        // ================= ORDEN PEDIDO =================
+        } else if ("ORDEN_PEDIDO".equals(filtro)) {
+
+            List<OrdenPedidoDTO> pedidos = ordenes.stream()
+                .filter(o -> "ORDEN_PEDIDO".equals(o.getTipo()))
+                .map(o -> (OrdenPedidoDTO) o)
+                .collect(Collectors.toList());
+
+            modelo.setColumnIdentifiers(new String[]{
+                "Codigo", "Tipo", "Observaciones", "Fecha", "Estado", "Donacion"
+            });
+
+            for (OrdenPedidoDTO op : pedidos) {
+                modelo.addRow(new Object[]{
+                    op.getCodigo(),
+                    op.getTipo(),
+                    op.getObservaciones(),
+                    op.getFechaEmision(),
+                    op.getEstado(),
+                    op.getCodDonacion()
+                });
+            }
+
+        // ================= TODOS =================
         } else {
-        	 // Recorre todas las órdenes (tanto pedido como retiro)
-        	
-            modelo.setColumnIdentifiers(new String[] { "Codigo", "Tipo", "Fecha", "Estado" });
+
+            modelo.setColumnIdentifiers(new String[]{
+                "Codigo", "Tipo", "Fecha", "Estado"
+            });
+
             for (OrdenDTO o : ordenes) {
-                String codigo = "";   // Determina el código según el tipo de orden
-                if (o instanceof OrdenPedidoDTO) {
-                    codigo = ((OrdenPedidoDTO) o).getCodigo();
-                } else if (o instanceof OrdenRetiroDTO) {
-                    codigo = ((OrdenRetiroDTO) o).getCodigo();
-                }
-                modelo.addRow(new Object[] { codigo, o.getTipo(), o.getFechaEmision(), o.getEstado() });
+                String codigo = (o instanceof OrdenPedidoDTO)
+                        ? ((OrdenPedidoDTO) o).getCodigo()
+                        : ((OrdenRetiroDTO) o).getCodigo();
+
+                modelo.addRow(new Object[]{
+                    codigo,
+                    o.getTipo(),
+                    o.getFechaEmision(),
+                    o.getEstado()
+                });
             }
         }
     }
+
+
 }

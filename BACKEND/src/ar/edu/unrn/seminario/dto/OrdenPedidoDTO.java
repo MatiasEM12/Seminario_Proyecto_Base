@@ -15,9 +15,9 @@ public class OrdenPedidoDTO  extends OrdenDTO{
 	
 	
 
-	public OrdenPedidoDTO(LocalDate fechaEmision, String estado, String tipo, String codigo, boolean cargaPesada,
+	public OrdenPedidoDTO(LocalDate fechaEmision, String estado, String codigo, boolean cargaPesada,
 			String observaciones, String codDonacion) {
-		super(fechaEmision, estado, tipo);
+		super(fechaEmision, estado, "ORDEN_PEDIDO");
 		this.codigo = codigo;
 		this.cargaPesada = cargaPesada;
 		this.observaciones = observaciones;

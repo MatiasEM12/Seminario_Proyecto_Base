@@ -55,6 +55,8 @@ public abstract class OrdenDTO {
 	public String getTipo() {
 		return this.tipo;
 	}
+	
+	
 
 	
 
