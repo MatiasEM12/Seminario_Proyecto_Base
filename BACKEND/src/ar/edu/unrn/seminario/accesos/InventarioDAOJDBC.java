@@ -13,38 +13,33 @@ import ar.edu.unrn.seminario.modelo.Bien;
 
 public class InventarioDAOJDBC implements InventarioDAO{
 
+	private BienDAOJDBC bienDao= new BienDAOJDBC();
 	
-public void create(Bien bien) throws DAOException {
+public void create(String codBien,String tipoBien, boolean disponible) throws DAOException {
 		
 		try {
 			
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					// tienen otro atributo llamado entregado para saber si el bien fue entregado. 0 = no entregao, 1 = entregado, esta en default como 0.
-					.prepareStatement("INSERT INTO inventario(codigo,tipo,nombre,peso,descripcion,nivelNecesidad,fechaVencimiento,talle,material)"
-							+ " VALUES (?, ?, ?,?,?,?,?,?,?,?)");
+				
+					.prepareStatement("INSERT INTO inventario(codBien,tipoBien,disponible)"
+							+ " VALUES (?, ?, ?)");
 			
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
-			statement.setString(1, bien.getCodigo());
-			statement.setString(2, bien.getTipo());
-			statement.setString(3, bien.getNombre());
-			statement.setDouble(4, bien.getPeso());
-			statement.setString(5, bien.getDescripcion());
-			statement.setInt(6, bien.getNivelNecesidad());
-			statement.setDate(7, fechaSQL);
-			statement.setDouble(8, bien.getTalle());
-			statement.setString(9, bien.getMaterial());
-		
+
+			statement.setString(1, codBien);
+			statement.setString(2, tipoBien);
+			statement.setBoolean(3, disponible);
+	
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				// System.out.println("Modificando " + cantidad + " registros");
 			} else {
 				throw new DAOException("Error al actualizar. codigo error I100");
-				// TODO: disparar Exception propia
+				
 			}
 
 		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta (INSERT Bien): " + e.getMessage() + ". codigo error I101");
+			throw new DAOException("Error al procesar consulta (INSERT INVENTARIO): " + e.getMessage() + ". codigo error I101");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
@@ -52,29 +47,25 @@ public void create(Bien bien) throws DAOException {
 	}
 
 	@Override
-	public void update(Bien bien) throws DAOException {
+	public void update(String codBien,String tipoBien, boolean disponible) throws DAOException {
 		try {
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE inventario SET tipo=?,nombre=?,peso=?,descripcion=?,nivelNecesidad=?,fechaVencimiento=?,talle=?,material=? WHERE codigo = ?");
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
-			statement.setString(1, bien.getTipo());
-			statement.setString(2, bien.getNombre());
-			statement.setDouble(3, bien.getPeso());
-			statement.setString(4, bien.getDescripcion());
-			statement.setInt(5, bien.getNivelNecesidad());
-			statement.setDate(6, fechaSQL);
-			statement.setDouble(7, bien.getTalle());
-			statement.setString(8, bien.getMaterial());
-			statement.setString(9, bien.getCodigo()); 
+					.prepareStatement("UPDATE inventario SET codBien=? , tipoBien= ?, disponible = ?WHERE codBien = ?");
+	
+
+			statement.setString(1, codBien);
+			statement.setString(2, tipoBien);
+			statement.setBoolean(3, disponible);
+			statement.setString(4, codBien);
 			
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
 				 System.out.println("El inventario se ha actualizado correctamente");
 			} else {
 				throw new DAOException("Error al actualizar. codigo error I200");
-				// TODO: disparar Exception propia
+				
 			}
 
 		} catch (SQLException e) {
@@ -85,49 +76,20 @@ public void create(Bien bien) throws DAOException {
 		}
 		
 	}
-	public void cambiarEntrega(String codigo) throws DAOException {
-		try {
+	
+	
 
-			Connection conn = ConnectionManager.getConnection();
-			//el NOT estregado ase que de 0->1,1->0 del bien que coincida el codigo.
-			PreparedStatement statement = conn
-					.prepareStatement("UPDATE inventario SET entregado=NOT entregado WHERE codigo = ?");
-			
-			statement.setString(1, codigo);
-			
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				 System.out.println("El estado se ha actualizado correctamente");
-			} else {
-				throw new DAOException("Error no se encontro el bien. codigo error i250");
-				// TODO: disparar Exception propia
-			}
-
-		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta."+ e.getMessage() +" codigo error I251");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
-		
-	}
 	
 
 	@Override
-	public void remove(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void remove(String codigo) throws DAOException {
+	public void remove(String codBien) throws DAOException {
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM inventario WHERE codigo = ? "
+		            "DELETE FROM inventario WHERE codBien= ? "
 		        );
 
-		        statement.setString(1, codigo);
+		        statement.setString(1, codBien);
 
 		        int cantidad = statement.executeUpdate();
 		        if (cantidad > 0) {
@@ -144,50 +106,22 @@ public void create(Bien bien) throws DAOException {
 		
 	}
 
-	@Override
-	public void remove(Bien bien) throws DAOException {
-		try {
-			 Connection conn = ConnectionManager.getConnection();
-		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM inventario WHERE codigo = ? "
-		        );
 
-		        statement.setString(1, bien.getCodigo());
-
-		        int cantidad = statement.executeUpdate();
-		        if (cantidad > 0) {
-		            System.out.println("bien eliminado correctamente.");
-		        } else {
-		        	throw new DAOException("No se encontró el bien en el inventario. codigo error I400");
-		        }
-			
-		}catch(SQLException e) {
-			throw new DAOException("Error al Eliminar bien del inventario."+ e.getMessage() +" codigo error I401");
-		}finally {
-			ConnectionManager.disconnect();
-		}
-		
-		
-	}
 
 	@Override
-	public Bien find(String codigo) throws DAOException {
+	public Bien findBien(String codBien) throws DAOException {
 		Bien bien= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo,tipo,nombre,peso,descripcion,nivelNecesidad,fechaVencimiento,talle,material "
-			+ "FROM inventario "+ "WHERE codigo = ?");
-			sent.setString(1, codigo);
+			PreparedStatement sent = conn.prepareStatement("SELECT codBien "
+			+ "FROM inventario "+ "WHERE codBien = ?");
+			sent.setString(1, codBien);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
 				
 				
 					
-					 java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-					 java.time.LocalDate fecha = sqlDate.toLocalDate();
-					bien=new Bien(rs.getString("codigo"),rs.getString("tipo"),rs.getDouble("peso"),rs.getString("nombre"),
-							rs.getString("descripcion"),rs.getInt("nivelNecesidad"),fecha,rs.getDouble("talle"),rs.getString("material"));
-			
+					bien= this.bienDao.find(codBien);
 				
 			}
 		}
@@ -205,16 +139,16 @@ public void create(Bien bien) throws DAOException {
 
 	@Override
 	public List<Bien> findAll() throws DAOException {
-List<Bien> bienes = new ArrayList<>();
+		List<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo  "
+			PreparedStatement sent = conn.prepareStatement("SELECT codBien  "
 					+ "FROM inventario ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				bienes.add(this.find(rs.getString("codigo")));
+				bienes.add(this.findBien(rs.getString("codBien")));
 			}
 		}
 		catch(SQLException e){
@@ -229,183 +163,53 @@ List<Bien> bienes = new ArrayList<>();
 		return bienes;
 	}
 	@Override
-	public ArrayList<Bien> findBienVisita(String codVisita) throws DAOException {
-ArrayList<Bien> bienes = new ArrayList<>();
+	public List<Bien> findBienesDisponibles() throws DAOException {
+	List<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
-					+ "FROM inventario b , bien_visita bv WHERE b.codigo = bv.codBien AND bv.codVisita = ?");
-		
-			sent.setString(1, codVisita);
+			PreparedStatement sent = conn.prepareStatement(  "SELECT codigoBien FROM inventario WHERE disponible = 1");
 			ResultSet rs = sent.executeQuery();
-			
 			while (rs.next()) {
 				
-				bienes.add(this.find(rs.getString("codigo")));
+				bienes.add(this.findBien(rs.getString("codigo")));
 			}
 		}
 		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error I700");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error I600");
 		}
 		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I701");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
 		}	 
 		return bienes;
 	}
-	
 	@Override
-	public ArrayList<Bien> findBienDonacion(String codDonacion) throws DAOException {
-		ArrayList<Bien> bienes = new ArrayList<>();
+	public List<Bien> findBienesNoDisponibles() throws DAOException {
+	List<Bien> bienes = new ArrayList<>();
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT b.codigo  "
-					+ "FROM inventario b , bien_donacion bd WHERE b.codigo = bd.codBien AND bd.codDonacion = ?");
-		
-			sent.setString(1, codDonacion);
+			PreparedStatement sent = conn.prepareStatement(  "SELECT codigoBien FROM inventario WHERE disponible = 0");
 			ResultSet rs = sent.executeQuery();
-			
 			while (rs.next()) {
 				
-				bienes.add(this.find(rs.getString("codigo")));
+				bienes.add(this.findBien(rs.getString("codigo")));
 			}
 		}
 		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error I801");
+			throw new DAOException("Error al procesar consulta"+ e.getMessage()+". codigo error I600");
 		}
 		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I801");
+			throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I601");
 		} 
 		finally {
 			ConnectionManager.disconnect();
 		}	 
 		return bienes;
-
 	}
 	
 	
-	
-	// para iventario
-	
-	
-	public List<Bien> findALLTipo(String tipo) throws DAOException {
-	    List<Bien> bienes = new ArrayList<>();
-	    try {
-	    	//se realisa el filtro de busqueda del bien
-	        //rebisa si la busqueda fue por bienes vencidos
-	    	PreparedStatement sent;
-	    	Connection conn = ConnectionManager.getConnection();
-	        if (tipo.equals("Bienes vencidos")) {
-	            sent = conn.prepareStatement(
-	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-	                "FROM inventario WHERE fechaVencimiento < ?");  //comparara la fecha con la actual
-	            sent.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
-	            
-	        }else{ 
-	        	// recupera todos los bienes entregados
-	        	if (tipo.equals("Entregados")) {
-	        		sent = conn.prepareStatement(
-	                    "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-	                    "FROM inventario WHERE entregado = 1");
-	        	}
-	        	
-	        	else {
-	        		// recupera los bienes por tipo.
-		            sent = conn.prepareStatement(
-		                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-		                "FROM inventario WHERE tipo = ?");
-		            sent.setString(1, tipo);
-	        	}
-	        }
-	        // recore el archivo y almacena los bienes en la lista. 
-	        ResultSet rs = sent.executeQuery();
-    		while (rs.next()) {
-                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-                java.time.LocalDate fecha = sqlDate.toLocalDate();
-                Bien bien = new Bien(
-                    rs.getString("codigo"),
-                    rs.getString("tipo"),
-                    rs.getDouble("peso"),
-                    rs.getString("nombre"),
-                    rs.getString("descripcion"),
-                    rs.getInt("nivelNecesidad"),
-                    fecha,
-                    rs.getDouble("talle"),
-                    rs.getString("material")
-                );
-                bienes.add(bien);
-            }
-	    } catch (SQLException e) {
-	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+". codigo error I900");
-	    } catch (Exception e) {
-	    	throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I901");
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-
-	    return bienes;
-	}
-	
-	/* Es el mismo findALLTipo, solo que a diferencia del otro, este cuando se busca por tipo de bien devuelve solo los no entregados
-	public List<Bien> findALLTipo(String tipo) throws DAOException {
-	    List<Bien> bienes = new ArrayList<>();
-	    try {
-	    	//se realisa el filtro de busqueda del bien
-	        //rebisa si la busqueda fue por bienes vencidos
-	    	PreparedStatement sent;
-	    	Connection conn = ConnectionManager.getConnection();
-	        if (tipo.equals("Bienes vencidos")) {
-	            sent = conn.prepareStatement(
-	                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-	                "FROM inventario WHERE fechaVencimiento < ?");  //comparara la fecha con la actual
-	            sent.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
-	            
-	        }else{ 
-	        	// recupera todos los bienes entregados
-	        	if (tipo.equals("Entregados")) {
-	        		sent = conn.prepareStatement(
-	                    "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-	                    "FROM inventario WHERE entregado = 1");
-	        	}
-	        	
-	        	else {
-	        		// recupera los bienes por tipo.
-		            sent = conn.prepareStatement(
-		                "SELECT codigo, tipo, nombre, peso, descripcion, nivelNecesidad, fechaVencimiento, talle, material " +
-		                "FROM inventario WHERE tipo = ? AND entregado = 0");
-		            sent.setString(1, tipo);
-	        	}
-	        }
-	        // recore el archivo y almacena los bienes en la lista. 
-	        ResultSet rs = sent.executeQuery();
-    		while (rs.next()) {
-                java.sql.Date sqlDate = rs.getDate("fechaVencimiento");
-                java.time.LocalDate fecha = sqlDate.toLocalDate();
-                Bien bien = new Bien(
-                    rs.getString("codigo"),
-                    rs.getString("tipo"),
-                    rs.getDouble("peso"),
-                    rs.getString("nombre"),
-                    rs.getString("descripcion"),
-                    rs.getInt("nivelNecesidad"),
-                    fecha,
-                    rs.getDouble("talle"),
-                    rs.getString("material")
-                );
-                bienes.add(bien);
-            }
-	    } catch (SQLException e) {
-	    	throw new DAOException("Error al procesar consulta: " + e.getMessage()+". codigo error I900");
-	    } catch (Exception e) {
-	    	throw new DAOException("Error inesperado: " + e.getMessage()+". codigo error I901");
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-
-	    return bienes;
-	}*/
 }

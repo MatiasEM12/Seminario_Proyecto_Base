@@ -8,25 +8,20 @@ import ar.edu.unrn.seminario.modelo.Bien;
 
 
 public interface InventarioDAO {
-	void create(Bien bien) throws DAOException;
-
-	void update(Bien bien) throws DAOException;
-
-	public void cambiarEntrega(String codigo) throws DAOException;
-
-	void remove(Long id);
 	
-	void remove(String codigo) throws DAOException;
+	 void create(String codBien,String tipoBien, boolean disponible) throws DAOException;
 
-	void remove(Bien bien) throws DAOException;
+	void update(String codBien, String tipoBien, boolean disponible) throws DAOException;
 
-	Bien find(String codigo)throws DAOException;
+	void remove(String codBien) throws DAOException;
 
-	List<Bien> findAll()throws DAOException;
+	Bien findBien(String codBien) throws DAOException;
 
-	ArrayList<Bien> findBienDonacion(String codDonacion) throws DAOException;
+	List<Bien> findAll() throws DAOException;
 
-	ArrayList<Bien> findBienVisita(String codVisita) throws DAOException;
+	List<Bien> findBienesDisponibles() throws DAOException;
+
+	List<Bien> findBienesNoDisponibles() throws DAOException;
 	
-	List<Bien> findALLTipo(String tipo) throws DAOException;
+
 }

@@ -130,22 +130,21 @@ public interface IApi {
 
 	 
 	 
-	// nuevo
-	// Inventario
-	public void eliminarBineInventario(String username) throws DataNullException, DAOException;
-	
-	
-	
-	public List<BienDTO> obtenerTodosLosBienes() throws DAOException;
-	
-	public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException;
-	
-	public void ModificarBienInventario(Bien bien) throws DAOException;
-	
-	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException;
-	
-	
-	
+	 	public List<BienDTO> obtenerBienesInventario() throws DAOException;
+		
+		public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException;
+		
+		public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException;
+		
+		public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException;
+		
+		public void eliminarBienInventario(String codBien) throws DAOException ;
+		
+		public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException;
+		
+		public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException;
+		
+		
 	
 	
 	

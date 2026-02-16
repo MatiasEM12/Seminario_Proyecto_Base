@@ -19,6 +19,7 @@ import ar.edu.unrn.seminario.accesos.CoordenadaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonacionDAO;
 import ar.edu.unrn.seminario.accesos.DonacionDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonanteDao;
+import ar.edu.unrn.seminario.accesos.InventarioDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonanteDAOJDBC;
 import ar.edu.unrn.seminario.accesos.OrdenPedidoDao;
 import ar.edu.unrn.seminario.accesos.OrdenPedidoDAOJDBC;
@@ -80,6 +81,7 @@ public class PersistenceApi implements IApi {
     private DonanteDAOJDBC donanteDao;
     private UbicacionDAOJDBC ubicacionDao;
     private CoordenadaDAOJDBC coordenadaDAO; 
+    private InventarioDAOJDBC inventarioDAO;
     //private BeneficiarioDAOJDBC beneficiarioDAO;
     public PersistenceApi() {
         // inicializar DAOs JDBC
@@ -97,6 +99,7 @@ public class PersistenceApi implements IApi {
         this.ubicacionDao=new UbicacionDAOJDBC();
         this.coordenadaDAO = new CoordenadaDAOJDBC();
         this.ubicacionDao  = new UbicacionDAOJDBC();
+        this.inventarioDAO = new InventarioDAOJDBC();
     }
    
     //Iniciaizar
@@ -856,32 +859,30 @@ public class PersistenceApi implements IApi {
 		    );
 	}
 	
-	private ArrayList<BienDTO> listBienDTO(ArrayList<Bien> bienes){
-		
-		ArrayList<BienDTO> dtos= new ArrayList<>();
-		
-		for(Bien b : bienes) {
-			
-			BienDTO dt = toBienDTO(b);
-			dtos.add(dt);
-		}
-		
-		return dtos;
-		
+	private ArrayList<BienDTO> listBienDTO(List<Bien> bienes) {
+
+	    ArrayList<BienDTO> dtos = new ArrayList<>();
+
+	    for (Bien b : bienes) {
+	        dtos.add(toBienDTO(b));
+	    }
+
+	    return dtos;
 	}
-	private ArrayList<Bien> listBien(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException{
-		
-		ArrayList<Bien> bienes= new ArrayList<>();
-		
-		for(BienDTO dt : bienesDTO) {
-			
-			Bien b = this.toBien(dt);
-			bienes.add(b);
-		}
-		
-		return bienes;
-		
+
+	private ArrayList<Bien> listBien(List<BienDTO> bienesDTO)
+	        throws DataNullException, DataDoubleException,
+	               StateChangeException, DataLengthException, DataDateException {
+
+	    ArrayList<Bien> bienes = new ArrayList<>();
+
+	    for (BienDTO dt : bienesDTO) {
+	        bienes.add(this.toBien(dt));
+	    }
+
+	    return bienes;
 	}
+
 	
 	private Bien toBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
 		
@@ -939,42 +940,6 @@ public class PersistenceApi implements IApi {
 
 
 
-	//nuevo
-	//inventario
-
-	//revisar esas eliminando el bien lo que tendrias que eliminar es el inventario
-	public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
-	    Bien bien = this.bienDao.find(codigo);
-	    if (bien != null) {
-	    	this.bienDao.remove(bien);
-	    }
-	}
-
-
-	public List<BienDTO> obtenerTodosLosBienes() throws DAOException{
-		List<Bien> bienes = bienDao.findAll();
-		List<BienDTO> bienesDTO= new ArrayList<>();
-		for (Bien bien : bienes) {
-			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
-				    bien.getNombre(),bien.getDescripcion(),bien.getNivelNecesidad(),bien.getFechaVencimiento(),bien.getTalle(),bien.getMaterial() ));
-        }
-		return bienesDTO;
-	}
-	
-	public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException{
-		List<Bien> bienes = bienDao.findALLTipo(tipo);
-		List<BienDTO> bienesDTO= new ArrayList<>();
-		for (Bien bien : bienes) {
-			bienesDTO.add(new BienDTO(	bien.getCodigo(),bien.getTipo(),bien.getPeso(),
-				    bien.getNombre(),bien.getDescripcion(),bien.getNivelNecesidad(),bien.getFechaVencimiento(),bien.getTalle(),bien.getMaterial() ));
-        }
-		return bienesDTO;
-	}
-	
-
-	public void ModificarBienInventario(Bien bien) throws DAOException {
-		this.bienDao.update(bien);
-	}
 	
 	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException {
 		return this.bienDao.find(codigo);
@@ -1061,6 +1026,66 @@ public class PersistenceApi implements IApi {
             null
         );
     }
+	
+	
+	//INVENTARIO
+
+	@Override
+	public List<BienDTO> obtenerBienesInventario() throws DAOException {
+		
+		List<Bien> bienes= this.inventarioDAO.findAll();
+		ArrayList<BienDTO> bienesDTO= this.listBienDTO(bienes);
+		return bienesDTO;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException {
+		
+		List<Bien> bienes= this.inventarioDAO.findAll();
+		
+		List<Bien> filtrados = bienes.stream()
+		        .filter(b -> tipo.equals(b.getTipo()))
+		        .collect(Collectors.toList());
+
+		ArrayList<BienDTO> bienesDTO= this.listBienDTO(filtrados);
+		return bienesDTO;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException {
+		
+		List<Bien> bienes= this.inventarioDAO.findBienesDisponibles();
+		
+	
+		ArrayList<BienDTO> bienesDTO= this.listBienDTO(bienes);
+		return bienesDTO;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException {
+		List<Bien> bienes= this.inventarioDAO.findBienesNoDisponibles();
+		ArrayList<BienDTO> bienesDTO= this.listBienDTO(bienes);
+		return bienesDTO;
+	}
+
+	@Override
+	public void eliminarBienInventario(String codBien) throws DAOException {
+
+		this.inventarioDAO.remove(codBien);
+		
+	}
+
+	@Override
+	public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		this.inventarioDAO.create(codBien, tipoBien, disponible);
+		
+	}
+
+	@Override
+	public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		this.inventarioDAO.update(codBien, tipoBien, disponible);
+		
+	}
 
 }
 
