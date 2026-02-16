@@ -147,6 +147,12 @@ public interface IApi {
 		
 	
 	
+	public void registrarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
+	
+	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
+	
+	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
+	
 	
 	
 	

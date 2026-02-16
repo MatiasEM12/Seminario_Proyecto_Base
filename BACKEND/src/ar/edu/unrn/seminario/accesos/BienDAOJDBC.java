@@ -200,7 +200,7 @@ public class BienDAOJDBC  implements BienDAO{
 				}
 
 					bien=new Bien(rs.getString("codigo"),rs.getString("tipo"),rs.getDouble("peso"),rs.getString("nombre"),
-							rs.getString("descripcion"),rs.getInt("nivelNecesidad"),fecha,rs.getDouble("talle"),rs.getString("material"));
+							rs.getString("descripcion"),fecha,rs.getDouble("talle"),rs.getString("material"));
 			
 				
 			}
@@ -342,7 +342,6 @@ List<Bien> bienes = new ArrayList<>();
 	                    rs.getDouble("peso"),
 	                    rs.getString("nombre"),
 	                    rs.getString("descripcion"),
-	                    rs.getInt("nivelNecesidad"),
 	                    fecha,
 	                    rs.getDouble("talle"),
 	                    rs.getString("material")
@@ -366,7 +365,6 @@ List<Bien> bienes = new ArrayList<>();
 	                    rs.getDouble("peso"),
 	                    rs.getString("nombre"),
 	                    rs.getString("descripcion"),
-	                    rs.getInt("nivelNecesidad"),
 	                    fecha,
 	                    rs.getDouble("talle"),
 	                    rs.getString("material")

@@ -1,224 +1,256 @@
 package ar.edu.unrn.seminario.gui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.api.PersistenceApi;
+import ar.edu.unrn.seminario.dto.BienDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDoubleException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
+import ar.edu.unrn.seminario.exception.*;
+
+import com.toedter.calendar.JCalendar;
 
 public class AltaBienes extends JFrame {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private JPanel contentPane;
+    private JPanel contentPane;
 
-	private JComboBox<String> tipoComboBox;
-	private JTextField nombreTextField;
-	private JTextArea descripcionTextArea;
-	private JTextField vencimientoTextField;
-	private JTextField talleTextField;
-	private JTextField pesoTextField;
-	private JTextField materialTextField;
-	IApi api;
-	/**
-	 * Create the frame.
-	 */
-	public AltaBienes(IApi api) {
-        initialize(api);
+    private JComboBox<String> tipoComboBox;
+    private JTextField nombreTextField;
+    private JTextArea descripcionTextArea;
+    private JTextField talleTextField;
+    private JTextField pesoTextField;
+    private JTextField materialTextField;
+
+    private JCalendar calendar;
+
+    private IApi api;
+
+    public AltaBienes(IApi api) {
+        this.api = api;
+        initialize();
+        configurarBloqueosPorTipo();
     }
-	public AltaBienes() { //Borrar solo lo hice porque no le hice la logica
-		initialize(null);
-		configurarBloqueosPorTipo();
-	}
-	 private void initialize(IApi api) {
-		 this.api = api;
-		setTitle("Registrar ingreso de bienes");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 520, 420);
 
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-		contentPane.setLayout(null);
-		setContentPane(contentPane);
+    // Constructor solo para pruebas
+    public AltaBienes() {
+        initialize();
+        configurarBloqueosPorTipo();
+    }
 
-		JLabel tipoLabel = new JLabel("Seleccionar tipo:");
-		tipoLabel.setBounds(40, 25, 120, 16);
-		contentPane.add(tipoLabel);
+    private void initialize() {
 
-		tipoComboBox = new JComboBox();
-		tipoComboBox.setBounds(170, 22, 200, 22);
-		contentPane.add(tipoComboBox);
+        setTitle("Registrar ingreso de bienes");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 520, 540);
 
-		tipoComboBox.addItem("Alimento");
-		tipoComboBox.addItem("Medicamento");
-		tipoComboBox.addItem("Mueble");
-		tipoComboBox.addItem("Electrodoméstico");
-		tipoComboBox.addItem("Vestimenta");
-		tipoComboBox.addItem("Otro");
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentPane.setLayout(null);
+        setContentPane(contentPane);
 
-		JLabel nombreLabel = new JLabel("Nombre:");
-		nombreLabel.setBounds(40, 65, 80, 16);
-		contentPane.add(nombreLabel);
+        JLabel tipoLabel = new JLabel("Seleccionar tipo:");
+        tipoLabel.setBounds(40, 25, 120, 16);
+        contentPane.add(tipoLabel);
 
-		nombreTextField = new JTextField();
-		nombreTextField.setBounds(170, 62, 200, 22);
-		contentPane.add(nombreTextField);
-		nombreTextField.setColumns(10);
+        tipoComboBox = new JComboBox<>();
+        tipoComboBox.setBounds(170, 22, 200, 22);
+        contentPane.add(tipoComboBox);
 
-		JLabel descripcionLabel = new JLabel("Descripción:");
-		descripcionLabel.setBounds(40, 105, 80, 16);
-		contentPane.add(descripcionLabel);
+        tipoComboBox.addItem("alimento");
+        tipoComboBox.addItem("medicamento");
+        tipoComboBox.addItem("mueble");
+        tipoComboBox.addItem("electrodoméstico");
+        tipoComboBox.addItem("ropa");
+        
 
-		descripcionTextArea = new JTextArea();
-		descripcionTextArea.setLineWrap(true);
-		descripcionTextArea.setWrapStyleWord(true);
+        JLabel nombreLabel = new JLabel("Nombre:");
+        nombreLabel.setBounds(40, 65, 80, 16);
+        contentPane.add(nombreLabel);
 
-		JScrollPane scrollDescripcion = new JScrollPane(descripcionTextArea);
-		scrollDescripcion.setBounds(170, 102, 280, 110);
-		contentPane.add(scrollDescripcion);
+        nombreTextField = new JTextField();
+        nombreTextField.setBounds(170, 62, 200, 22);
+        contentPane.add(nombreTextField);
 
-		JLabel vencimientoLabel = new JLabel("Vencimiento:");
-		vencimientoLabel.setBounds(40, 235, 100, 16);
-		contentPane.add(vencimientoLabel);
+        JLabel descripcionLabel = new JLabel("Descripción:");
+        descripcionLabel.setBounds(40, 105, 100, 16);
+        contentPane.add(descripcionLabel);
 
-		vencimientoTextField = new JTextField();
-		vencimientoTextField.setBounds(170, 232, 200, 22);
-		contentPane.add(vencimientoTextField);
-		vencimientoTextField.setColumns(10);
+        descripcionTextArea = new JTextArea();
+        descripcionTextArea.setLineWrap(true);
+        descripcionTextArea.setWrapStyleWord(true);
 
-		JLabel talleLabel = new JLabel("Talle:");
-		talleLabel.setBounds(40, 270, 80, 16);
-		contentPane.add(talleLabel);
+        JScrollPane scrollDescripcion = new JScrollPane(descripcionTextArea);
+        scrollDescripcion.setBounds(170, 102, 280, 110);
+        contentPane.add(scrollDescripcion);
 
-		talleTextField = new JTextField();
-		talleTextField.setBounds(170, 267, 200, 22);
-		contentPane.add(talleTextField);
-		talleTextField.setColumns(10);
+        JLabel vencimientoLabel = new JLabel("Vencimiento:");
+        vencimientoLabel.setBounds(40, 235, 100, 16);
+        contentPane.add(vencimientoLabel);
 
-		JLabel pesoLabel = new JLabel("Peso:");
-		pesoLabel.setBounds(40, 305, 80, 16);
-		contentPane.add(pesoLabel);
+        calendar = new JCalendar();
+        calendar.setBounds(170, 235, 184, 153);
+        contentPane.add(calendar);
 
-		pesoTextField = new JTextField();
-		pesoTextField.setBounds(170, 302, 200, 22);
-		contentPane.add(pesoTextField);
-		pesoTextField.setColumns(10);
+        JLabel pesoLabel = new JLabel("Peso:");
+        pesoLabel.setBounds(40, 404, 80, 16);
+        contentPane.add(pesoLabel);
 
-		JLabel materialLabel = new JLabel("Material:");
-		materialLabel.setBounds(40, 340, 80, 16);
-		contentPane.add(materialLabel);
+        pesoTextField = new JTextField();
+        pesoTextField.setBounds(170, 401, 200, 22);
+        contentPane.add(pesoTextField);
 
-		materialTextField = new JTextField();
-		materialTextField.setBounds(170, 337, 200, 22);
-		contentPane.add(materialTextField);
-		materialTextField.setColumns(10);
+        JLabel materialLabel = new JLabel("Material:");
+        materialLabel.setBounds(40, 440, 80, 16);
+        contentPane.add(materialTextField = new JTextField());
+        materialTextField.setBounds(170, 437, 200, 22);
 
-		JButton guardarButton = new JButton("Guardar");
-		guardarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		guardarButton.setBounds(250, 370, 95, 25);
-		contentPane.add(guardarButton);
+        JLabel talleLabel = new JLabel("Talle:");
+        talleLabel.setBounds(40, 471, 80, 16);
+        contentPane.add(talleLabel);
 
-		JButton cancelarButton = new JButton("Cancelar");
-		cancelarButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				dispose();
-			}
-		});
-		cancelarButton.setBounds(355, 370, 95, 25);
-		contentPane.add(cancelarButton);
-	}
-	 
-	 public static void main(String[] args) { //borrar
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						AltaBienes frame = new AltaBienes(); // usa el constructor de prueba
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		}
-	
+        talleTextField = new JTextField();
+        talleTextField.setBounds(170, 468, 200, 22);
+        contentPane.add(talleTextField);
 
-	 private void configurarBloqueosPorTipo() {
+        JButton guardarButton = new JButton("Guardar");
+        guardarButton.setBounds(399, 436, 95, 25);
+        guardarButton.addActionListener(this::guardarBien);
+        contentPane.add(guardarButton);
 
-	 	tipoComboBox.addActionListener(new ActionListener() {
-	 		public void actionPerformed(ActionEvent e) {
-	 			aplicarReglasPorTipo();
-	 		}
-	 	});
+        JButton cancelarButton = new JButton("Cancelar");
+        cancelarButton.setBounds(399, 404, 95, 25);
+        cancelarButton.addActionListener(e -> dispose());
+        contentPane.add(cancelarButton);
+        
+        JLabel lblMaterial = new JLabel("Material");
+        lblMaterial.setBounds(40, 441, 80, 16);
+        contentPane.add(lblMaterial);
+    }
 
-	 	// 2) Estado inicial (por si arranca ya con un tipo seleccionado)
-	 	aplicarReglasPorTipo();
-	 }
 
-	 private void aplicarReglasPorTipo() {
 
-	 	String tipo = (String) tipoComboBox.getSelectedItem();
+    private void guardarBien(ActionEvent e) {
+        try {
+            BienDTO dto = crearBienDTO();
 
-	 	// habilito todo
-	 	habilitarCampo(vencimientoTextField, true);
-	 	habilitarCampo(talleTextField, true);
-	 	habilitarCampo(pesoTextField, true);
-	 	habilitarCampo(materialTextField, true);
+            api.registrarBien(dto);
+            api.registrarBienInventario(dto.getCodigo(), dto.getTipo(), true);
 
-	 	// Reglas por tipo
-	 	if ("Mueble".equalsIgnoreCase(tipo)) {
-	 		
-	 		habilitarCampo(vencimientoTextField, false);
+            JOptionPane.showMessageDialog(this, "Bien registrado correctamente");
+            dispose();
 
-	 	} else if ("Electrodoméstico".equalsIgnoreCase(tipo)) {
-	 		
-	 		habilitarCampo(talleTextField, false);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                this,
+                ex.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
 
-	 	} else if ("Vestimenta".equalsIgnoreCase(tipo)) {
-	 		
-	 		habilitarCampo(pesoTextField, false);
-	 		habilitarCampo(materialTextField, true); // ropa suele tener material
-	 		
-	 		habilitarCampo(vencimientoTextField, false);
 
-	 	} else if ("Alimento".equalsIgnoreCase(tipo)) {
-	 		
-	 		habilitarCampo(talleTextField, false);
-	 		habilitarCampo(materialTextField, false);
+    private BienDTO crearBienDTO() {
 
-	 	} else if ("Medicamento".equalsIgnoreCase(tipo)) {
-	 		
-	 		habilitarCampo(talleTextField, false);
-	 		habilitarCampo(pesoTextField, false);
-	 		habilitarCampo(materialTextField, false);
+        String codigo = null;
+        String tipo = (String) tipoComboBox.getSelectedItem();
+        String nombre = nombreTextField.getText();
+        String descripcion = descripcionTextArea.getText();
 
-	 	} else if ("Otro".equalsIgnoreCase(tipo)) {
-	 		//  todo habilitado 
-	 	}
-	 }
+        int nivelNecesidad = 1;
 
-	 private void habilitarCampo(JTextField field, boolean habilitar) {
-	 	field.setEnabled(habilitar);
-	 	if (!habilitar) {
-	 		field.setText("");
-	 	}
-	 }
+        LocalDate fechaVencimiento = null;
 
+        if ("Alimento".equalsIgnoreCase(tipo) || "Medicamento".equalsIgnoreCase(tipo)) {
+            fechaVencimiento = calendar.getDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        }
+    
+
+        Double peso = pesoTextField.getText().isEmpty()
+                ? null
+                : Double.valueOf(pesoTextField.getText());
+
+        Double talle = talleTextField.getText().isEmpty()
+                ? null
+                : Double.valueOf(talleTextField.getText());
+
+        String material = materialTextField.getText().isEmpty()
+                ? null
+                : materialTextField.getText();
+        
+        
+
+        return new BienDTO(
+                codigo,
+                tipo,
+                peso,
+                nombre,
+                descripcion,
+                nivelNecesidad,
+                fechaVencimiento,
+                talle,
+                material
+        );
+    }
+
+    private void configurarBloqueosPorTipo() {
+
+        tipoComboBox.addActionListener(e -> aplicarReglasPorTipo());
+        aplicarReglasPorTipo();
+    }
+
+    private void aplicarReglasPorTipo() {
+
+        String tipo = (String) tipoComboBox.getSelectedItem();
+
+        habilitarCampo(talleTextField, true);
+        habilitarCampo(pesoTextField, true);
+        habilitarCampo(materialTextField, true);
+
+        if ("Mueble".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+
+        } else if ("Electrodoméstico".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+
+        } else if ("Vestimenta".equalsIgnoreCase(tipo)) {
+            habilitarCampo(pesoTextField, false);
+
+        } else if ("Alimento".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+            habilitarCampo(materialTextField, false);
+
+        } else if ("Medicamento".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+            habilitarCampo(pesoTextField, false);
+            habilitarCampo(materialTextField, false);
+        }
+    }
+
+    private void habilitarCampo(JTextField field, boolean habilitar) {
+        field.setEnabled(habilitar);
+        if (!habilitar) {
+            field.setText("");
+        }
+    }
+
+    // ========= MAIN DE PRUEBA =========
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new AltaBienes(new PersistenceApi()).setVisible(true));
+    }
 }
 

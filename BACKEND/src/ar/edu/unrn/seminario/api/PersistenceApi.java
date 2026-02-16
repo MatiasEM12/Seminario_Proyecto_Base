@@ -484,6 +484,7 @@ public class PersistenceApi implements IApi {
     	 if (don == null) return;      
     	    Donacion donacion = this.toDonacion(don);   
     	    donacionDao.create(donacion);
+    	    this.cargarBienesDonacion(don.getBienes());
     	    this.crearBienDonacion(donacion);
     }
     
@@ -752,7 +753,7 @@ public class PersistenceApi implements IApi {
     	
     	for(BienDTO dt : bienesDTO) {
     		
-    		Bien bien = new Bien( dt.getCodigo(),dt.getTipo(),dt.getPeso(),dt.getNombre(),dt.getDescripcion(),dt.getNivelNecesidad(),dt.getFechaVencimiento(),dt.getTalle(),dt.getMaterial()  );
+    		Bien bien = new Bien( dt.getCodigo(),dt.getTipo(),dt.getPeso(),dt.getNombre(),dt.getDescripcion(),dt.getFechaVencimiento(),dt.getTalle(),dt.getMaterial()  );
     		bienes.add(bien);
     	}
     	
@@ -893,7 +894,6 @@ public class PersistenceApi implements IApi {
 	            bien.getPeso(),                 // double peso
 	            bien.getNombre(),               // String nombre
 	            bien.getDescripcion(),          // String descripcion
-	            bien.getNivelNecesidad(),       // int nivelNecesidad
 	            bien.getFechaVencimiento(),     // LocalDate fechaVencimiento
 	            bien.getTalle(),                // Double talle
 	            bien.getMaterial()              // String material
@@ -1084,6 +1084,37 @@ public class PersistenceApi implements IApi {
 	@Override
 	public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
 		this.inventarioDAO.update(codBien, tipoBien, disponible);
+		
+	}
+
+	@Override
+	public void registrarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+		Bien bienNuevo=null;
+		bienNuevo= this.toBien(bien);
+		this.bienDao.create(bienNuevo);
+		
+	}
+
+	@Override
+	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+		Bien bienMod=null;
+		bienMod= this.toBien(bien);
+		this.bienDao.update(bienMod);
+		
+	}
+
+	@Override
+	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+		Bien bienDelete=null;
+		bienDelete= this.toBien(bien);
+		this.bienDao.remove(bienDelete);
+	}
+	
+	private void cargarBienesDonacion(ArrayList<BienDTO> bienes) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+		
+		for(BienDTO b : bienes) {
+			this.registrarBien(b);
+		}
 		
 	}
 

@@ -22,7 +22,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
 				
-					.prepareStatement("INSERT INTO inventario(codBien,tipoBien,disponible)"
+					.prepareStatement("INSERT INTO inventario(codigoBien,tipoBien,disponible)"
 							+ " VALUES (?, ?, ?)");
 			
 
@@ -52,7 +52,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
-					.prepareStatement("UPDATE inventario SET codBien=? , tipoBien= ?, disponible = ?WHERE codBien = ?");
+					.prepareStatement("UPDATE inventario SET codigoBien=? , tipoBien= ?, disponible = ? WHERE codigoBien = ?");
 	
 
 			statement.setString(1, codBien);
@@ -86,7 +86,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 		try {
 			 Connection conn = ConnectionManager.getConnection();
 		        PreparedStatement statement = conn.prepareStatement(
-		            "DELETE FROM inventario WHERE codBien= ? "
+		            "DELETE FROM inventario WHERE codigoBien= ? "
 		        );
 
 		        statement.setString(1, codBien);
@@ -113,7 +113,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 		Bien bien= null;
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codBien "
+			PreparedStatement sent = conn.prepareStatement("SELECT codigoBien "
 			+ "FROM inventario "+ "WHERE codBien = ?");
 			sent.setString(1, codBien);
 			ResultSet rs = sent.executeQuery();
@@ -143,12 +143,12 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 		
 		try {
 			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codBien  "
+			PreparedStatement sent = conn.prepareStatement("SELECT codigoBien  "
 					+ "FROM inventario ");
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				bienes.add(this.findBien(rs.getString("codBien")));
+				bienes.add(this.findBien(rs.getString("codigoBien")));
 			}
 		}
 		catch(SQLException e){
@@ -172,7 +172,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				bienes.add(this.findBien(rs.getString("codigo")));
+				bienes.add(this.findBien(rs.getString("codigoBien")));
 			}
 		}
 		catch(SQLException e){
@@ -196,7 +196,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 			ResultSet rs = sent.executeQuery();
 			while (rs.next()) {
 				
-				bienes.add(this.findBien(rs.getString("codigo")));
+				bienes.add(this.findBien(rs.getString("codigoBien")));
 			}
 		}
 		catch(SQLException e){

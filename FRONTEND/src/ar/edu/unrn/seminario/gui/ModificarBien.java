@@ -1,206 +1,216 @@
 package ar.edu.unrn.seminario.gui;
 
-import java.awt.EventQueue;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
-import javax.swing.JFrame;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
-import ar.edu.unrn.seminario.modelo.Bien;
 
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.awt.event.ActionEvent;
+import com.toedter.calendar.JCalendar;
 
-public class ModificarBien extends JFrame{
+public class ModificarBien extends JFrame {
 
-	private Bien bien;
+    private static final long serialVersionUID = 1L;
+
     private IApi api;
+    private BienDTO bien;
     private VentanaInventario inventario;
-    
-    
-    private JTextField textField;//tipo
-    private JTextField textField_1;//nombre
-    private JTextField textField_2;//descripcion
-    private JTextField textField_3;//vencimiento
-    private JTextField textField_4;//talle
-    private JTextField textField_5;//peso
-    private JTextField textField_6;//material
 
-	/**
-	 * Create the application.
-	 */
-	public ModificarBien(IApi api, Bien bien, VentanaInventario inventario) {
+    private JPanel contentPane;
+
+    private JTextField tipoTextField;
+    private JTextField nombreTextField;
+    private JTextArea descripcionTextArea;
+    private JTextField talleTextField;
+    private JTextField pesoTextField;
+    private JTextField materialTextField;
+
+    private JCalendar calendar;
+
+    public ModificarBien(IApi api, BienDTO bien, VentanaInventario inventario) {
         this.api = api;
         this.bien = bien;
         this.inventario = inventario;
-        
+
+        initialize();
+        cargarDatos();
+        configurarBloqueosPorTipo();
+    }
+
+    private void initialize() {
+
+        setTitle("Modificar Bien");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 400, 300);
-        getContentPane().setLayout(null);
-        
-        JLabel lblNewLabel = new JLabel("Tipo");
-        lblNewLabel.setBounds(139, 28, 31, 20);
-        getContentPane().add(lblNewLabel);
-        
-        textField = new JTextField(bien.getTipo());
-        textField.setEditable(false);
-        textField.setBounds(180, 29, 96, 20);
-        getContentPane().add(textField);
-        textField.setColumns(10);
-        
-        JLabel lblNewLabel_1 = new JLabel("Nombre");
-        lblNewLabel_1.setBounds(126, 58, 44, 20);
-        getContentPane().add(lblNewLabel_1);
-        
-        textField_1 = new JTextField(bien.getNombre());
-        textField_1.setBounds(180, 59, 96, 18);
-        getContentPane().add(textField_1);
-        textField_1.setColumns(10);
-        
-        JLabel lblNewLabel_2 = new JLabel("Descripcion");
-        lblNewLabel_2.setBounds(110, 86, 60, 20);
-        getContentPane().add(lblNewLabel_2);
-        
-        textField_2 = new JTextField(bien.getDescripcion());
-        textField_2.setBounds(180, 87, 96, 18);
-        getContentPane().add(textField_2);
-        textField_2.setColumns(10);
-        
-        JLabel lblNewLabel_3 = new JLabel("Vencimiento");
-        lblNewLabel_3.setBounds(110, 114, 60, 20);
-        getContentPane().add(lblNewLabel_3);
-        
-        if(bien.getFechaVencimiento()!=null) {
-        	textField_3 = new JTextField(bien.getFechaVencimiento().toString());
+        setBounds(100, 100, 520, 540);
+
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentPane.setLayout(null);
+        setContentPane(contentPane);
+
+        JLabel tipoLabel = new JLabel("Tipo:");
+        tipoLabel.setBounds(40, 25, 120, 16);
+        contentPane.add(tipoLabel);
+
+        tipoTextField = new JTextField();
+        tipoTextField.setEditable(false);
+        tipoTextField.setBounds(170, 22, 200, 22);
+        contentPane.add(tipoTextField);
+
+        JLabel nombreLabel = new JLabel("Nombre:");
+        nombreLabel.setBounds(40, 65, 80, 16);
+        contentPane.add(nombreLabel);
+
+        nombreTextField = new JTextField();
+        nombreTextField.setBounds(170, 62, 200, 22);
+        contentPane.add(nombreTextField);
+
+        JLabel descripcionLabel = new JLabel("Descripción:");
+        descripcionLabel.setBounds(40, 105, 100, 16);
+        contentPane.add(descripcionLabel);
+
+        descripcionTextArea = new JTextArea();
+        descripcionTextArea.setLineWrap(true);
+        descripcionTextArea.setWrapStyleWord(true);
+
+        JScrollPane scrollDescripcion = new JScrollPane(descripcionTextArea);
+        scrollDescripcion.setBounds(170, 102, 280, 110);
+        contentPane.add(scrollDescripcion);
+
+        JLabel vencimientoLabel = new JLabel("Vencimiento:");
+        vencimientoLabel.setBounds(40, 235, 100, 16);
+        contentPane.add(vencimientoLabel);
+
+        calendar = new JCalendar();
+        calendar.setBounds(170, 235, 184, 153);
+        contentPane.add(calendar);
+
+        JLabel pesoLabel = new JLabel("Peso:");
+        pesoLabel.setBounds(40, 404, 80, 16);
+        contentPane.add(pesoLabel);
+
+        pesoTextField = new JTextField();
+        pesoTextField.setBounds(170, 401, 200, 22);
+        contentPane.add(pesoTextField);
+
+        JLabel materialLabel = new JLabel("Material:");
+        materialLabel.setBounds(40, 440, 80, 16);
+        contentPane.add(materialLabel);
+
+        materialTextField = new JTextField();
+        materialTextField.setBounds(170, 437, 200, 22);
+        contentPane.add(materialTextField);
+
+        JLabel talleLabel = new JLabel("Talle:");
+        talleLabel.setBounds(40, 471, 80, 16);
+        contentPane.add(talleLabel);
+
+        talleTextField = new JTextField();
+        talleTextField.setBounds(170, 468, 200, 22);
+        contentPane.add(talleTextField);
+
+        JButton guardarButton = new JButton("Guardar");
+        guardarButton.setBounds(399, 436, 95, 25);
+        guardarButton.addActionListener(e -> guardarCambios());
+        contentPane.add(guardarButton);
+
+        JButton cancelarButton = new JButton("Cancelar");
+        cancelarButton.setBounds(399, 404, 95, 25);
+        cancelarButton.addActionListener(e -> dispose());
+        contentPane.add(cancelarButton);
+    }
+
+    private void cargarDatos() {
+
+        tipoTextField.setText(bien.getTipo());
+        nombreTextField.setText(bien.getNombre());
+        descripcionTextArea.setText(bien.getDescripcion());
+
+        if (bien.getFechaVencimiento() != null) {
+            calendar.setDate(java.sql.Date.valueOf(bien.getFechaVencimiento()));
         }
-        else {
-        	textField_3 = new JTextField("");
+
+        if (bien.getPeso() != null) {
+            pesoTextField.setText(bien.getPeso().toString());
         }
-        textField_3.setBounds(180, 115, 96, 18);
-        getContentPane().add(textField_3);
-        textField_3.setColumns(10);
-        
-        JLabel lblNewLabel_4 = new JLabel("Talle");
-        lblNewLabel_4.setBounds(139, 144, 31, 16);
-        getContentPane().add(lblNewLabel_4);
-        
-        textField_4 = new JTextField(String.valueOf(bien.getTalle()));
-        textField_4.setBounds(180, 143, 96, 18);
-        getContentPane().add(textField_4);
-        textField_4.setColumns(10);
-        
-        JLabel lblNewLabel_5 = new JLabel("Peso");
-        lblNewLabel_5.setBounds(139, 170, 31, 20);
-        getContentPane().add(lblNewLabel_5);
-        
-        textField_5 = new JTextField(String.valueOf(bien.getPeso()));
-        textField_5.setBounds(180, 171, 96, 18);
-        getContentPane().add(textField_5);
-        textField_5.setColumns(10);
-        
-        JLabel lblNewLabel_6 = new JLabel("Material");
-        lblNewLabel_6.setBounds(126, 200, 44, 15);
-        getContentPane().add(lblNewLabel_6);
-        
-        if (bien.getMaterial()!=null) {
-        	textField_6 = new JTextField(bien.getMaterial());
+
+        if (bien.getTalle() != null) {
+            talleTextField.setText(bien.getTalle().toString());
         }
-        else {
-        	textField_6=new JTextField("");
+
+        if (bien.getMaterial() != null) {
+            materialTextField.setText(bien.getMaterial());
         }
-        textField_6.setBounds(180, 199, 96, 18);
-        getContentPane().add(textField_6);
-        textField_6.setColumns(10);
-        
-        
-        //boton cancelar
-        JButton btnNewButton = new JButton("Cancelar");
-        btnNewButton.addActionListener(e->dispose());
-        getContentPane().add(btnNewButton);
-        
-        
-        //boton guardar falta implementacion
-        btnNewButton.setBounds(218, 233, 84, 20);
-        getContentPane().add(btnNewButton);
-        
-        JButton btnNewButton_1 = new JButton("Guardar");
-        btnNewButton_1.addActionListener(e -> {
-        	try {
-        		bien.setNombre(textField_1.getText());
-        		bien.setDescripcion(textField_2.getText());
-        		if (!textField_3.getText().isBlank()) {
-        			bien.setFechaVencimiento(LocalDate.parse(textField_3.getText()));
-        		}
-        		if (!textField_4.getText().isBlank()) {
-            		bien.setTalle(Double.parseDouble(textField_4.getText()));
-        		}
-        		if (!textField_5.getText().isBlank()) {
-            		bien.setPeso(Double.parseDouble(textField_5.getText()));
-        		}
-        		if (!textField_6.getText().isBlank()) {
-            		bien.setMaterial(textField_6.getText());
-        		}
-        		api.ModificarBienInventario(bien);
-        		JOptionPane.showMessageDialog(null, "Se modifico corectamente los datos del Bien", "Actualizacion", JOptionPane.INFORMATION_MESSAGE);
-        	}catch(Exception e1){
-        		JOptionPane.showMessageDialog(null, "Algo salio mal al intentar actualizar"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        		
-        	}
-        });
-        btnNewButton_1.setBounds(86, 233, 84, 20);
-        getContentPane().add(btnNewButton_1);
-        
+    }
+
+    private void guardarCambios() {
+        try {
+            BienDTO dto = crearBienDTO();
+            api.modificarBien(dto);
+            inventario.actualizarTabla();
+            JOptionPane.showMessageDialog(this, "Bien modificado correctamente");
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private BienDTO crearBienDTO() {
+
+        LocalDate fechaVencimiento = null;
+
+        if (calendar.isEnabled()) {
+            fechaVencimiento = calendar.getDate()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+
+        return new BienDTO(
+                bien.getCodigo(), // MISMO CÓDIGO
+                bien.getTipo(),   // MISMO TIPO
+                pesoTextField.getText().isEmpty() ? null : Double.valueOf(pesoTextField.getText()),
+                nombreTextField.getText(),
+                descripcionTextArea.getText(),
+                bien.getNivelNecesidad(),
+                fechaVencimiento,
+                talleTextField.getText().isEmpty() ? null : Double.valueOf(talleTextField.getText()),
+                materialTextField.getText().isEmpty() ? null : materialTextField.getText()
+        );
+    }
+
+    private void configurarBloqueosPorTipo() {
+
         String tipo = bien.getTipo();
-        
-        
-        //habilita los campos que puede editar el tipo de bien
-        if (tipo.equalsIgnoreCase("Mueble") || tipo.equalsIgnoreCase("Electrodomestico")) {//puede editar el peso y el material
-        	habilitarCampo(textField_5);
-        	habilitarCampo(textField_6);
-        	
-        	bloquearCampo(textField_3);
-        	bloquearCampo(textField_4);
+
+        habilitarCampo(talleTextField, true);
+        habilitarCampo(pesoTextField, true);
+        habilitarCampo(materialTextField, true);
+        calendar.setEnabled(true);
+
+        if ("Mueble".equalsIgnoreCase(tipo) || "Electrodoméstico".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+            calendar.setEnabled(false);
+
+        } else if ("Alimento".equalsIgnoreCase(tipo) || "Medicamento".equalsIgnoreCase(tipo)) {
+            habilitarCampo(talleTextField, false);
+            habilitarCampo(materialTextField, false);
+            habilitarCampo(pesoTextField, false);
+
+        } else if ("Ropa".equalsIgnoreCase(tipo)) {
+            habilitarCampo(pesoTextField, false);
+            calendar.setEnabled(false);
         }
-        
-        else { 
-        	if (tipo.equalsIgnoreCase("Alimento") || tipo.equalsIgnoreCase("Medicamento")) {//puede editar la fecha de vencimiento
-        		habilitarCampo(textField_3);
-        		
-        		bloquearCampo(textField_4);
-        		bloquearCampo(textField_5);
-        		bloquearCampo(textField_6);
-        	}
-        	
-        	else{
-        		if (tipo.equalsIgnoreCase("Ropa")) {//puede editar el talle y el material
-        			habilitarCampo(textField_4);
-        			habilitarCampo(textField_6);
-        			
-        			bloquearCampo(textField_3);
-        			bloquearCampo(textField_5);
-        		}
-        		else {// otros pueden editoar todo esepto el tipo
-        			habilitarCampo(textField_3);
-        			habilitarCampo(textField_4);
-        			habilitarCampo(textField_5);
-        			habilitarCampo(textField_6);
-        		}
-        		}
-        	}
-        	
-        }
-	private void bloquearCampo(JTextField campo) {
-        campo.setEditable(false);
     }
 
-    private void habilitarCampo(JTextField campo) {
-        campo.setEditable(true);
+    private void habilitarCampo(JTextField field, boolean habilitar) {
+        field.setEnabled(habilitar);
+        if (!habilitar) {
+            field.setText("");
+        }
     }
-
 }
 

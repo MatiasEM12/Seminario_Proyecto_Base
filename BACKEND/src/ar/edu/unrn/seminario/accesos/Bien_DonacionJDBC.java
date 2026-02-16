@@ -116,7 +116,7 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
                     rs.getObject("peso") != null ? rs.getDouble("peso") : 0.0,
                     rs.getString("nombre"),
                     rs.getString("descripcion"),
-                    rs.getObject("nivelNecesidad") != null ? rs.getInt("nivelNecesidad") : 0,
+                    
                     rs.getDate("fechaVencimiento") != null
                             ? rs.getDate("fechaVencimiento").toLocalDate()
                             : null,

@@ -78,8 +78,22 @@ public class VentanaInventario extends JFrame {
         lblNewLabel.setBounds(94, 10, 90, 30);
         contentPane.add(lblNewLabel);
         
-        JComboBox comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel<>(new String[] {"Todos", "Alimento", "Medicamento", "Ropa", "Mueble", "Electrodomestico", "Otros", "Bienes vencidos"}));
+        comboBox = new JComboBox<>();
+        comboBox.setModel(new DefaultComboBoxModel<>(
+            new String[] {
+                "Todos",
+                "Disponibles",
+                "No disponibles",
+                "Alimento",
+                "Medicamento",
+                "Ropa",
+                "Mueble",
+                "Electrodomestico"
+            }
+        ));
+        comboBox.setBounds(229, 10, 123, 30);
+        contentPane.add(comboBox);
+
         comboBox.setBounds(229, 10, 123, 30);
         contentPane.add(comboBox);
         
@@ -93,8 +107,9 @@ public class VentanaInventario extends JFrame {
 	                if (filaSeleccionada >= 0) {
 	                    String codigo = (String) table.getValueAt(filaSeleccionada, 0);
 	                    try {
-							api.eliminarBineInventario(codigo);
-						} catch (DataNullException | DAOException e1) {
+							api.eliminarBienInventario(codigo);
+							
+						} catch (DAOException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
 	                    DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -122,9 +137,9 @@ public class VentanaInventario extends JFrame {
                 return;
             }
             String codigo=(String) table.getValueAt(fila, 0);
-            Bien bien = null;
+            BienDTO bien = null;
 			try {
-				bien = api.ObtenerBien(codigo);
+				bien = api.obtenerBien(codigo);
 			} catch (DataNullException | DAOException e1) {
 				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
@@ -146,7 +161,7 @@ public class VentanaInventario extends JFrame {
                 int cantidad=0;
                 for (int i=0; i<modelo.getRowCount(); i++){
                     String tipoFila=(String) modelo.getValueAt(i, 1);
-                    //el if comprueba que el tipo de busqueda se realiso si era todos contara todos, sino comprobara si tienen el mismo tipo
+                
                     if (tipoSeleccionado.equals("Todos")||tipoFila.equals(tipoSeleccionado)){
                         cantidad++;
                     }
@@ -159,23 +174,50 @@ public class VentanaInventario extends JFrame {
         });
         
         comboBox.addActionListener(e -> {
-            modelo.setRowCount(0);              // Limpiar las filas actuales
+            modelo.setRowCount(0);
             try {
-                filtrar((String) comboBox.getSelectedItem());  // Filtra usando el valor seleccionado
-            } catch (DataNullException e1) {
-				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+                cargarInventario((String) comboBox.getSelectedItem());
+            } catch (DAOException | DataNullException ex) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         });
+
     }
     
     
     
     
-    
-    //no terminado del todo porque no se como va a estar inventario dto
-	private void filtrar(String tipo) throws DataNullException {
-	    //Obtiene los bienes de acuerdo al tipo elegido
-	    List<BienDTO> bienes = obtenerBienesPorTipo(tipo);
+  
+	
+	private void cargarInventario(String criterio)
+	        throws DAOException, DataNullException {
+
+	    List<BienDTO> bienes;
+
+	    switch (criterio) {
+
+	        case "Todos":
+	            bienes = api.obtenerBienesInventario();
+	            break;
+
+	        case "Disponibles":
+	            bienes = api.obtenerBienesDisponiblesInventario();
+	            break;
+
+	        case "No disponibles":
+	            bienes = api.obtenerBienesNoDisponiblesInventario();
+	            break;
+
+	        default: // tipo de bien
+	            bienes = api.obtenerBienesTipoInventario(criterio);
+	            break;
+	    }
+
 	    for (BienDTO bien : bienes) {
 	        modelo.addRow(new Object[] {
 	            bien.getCodigo(),
@@ -189,22 +231,20 @@ public class VentanaInventario extends JFrame {
 	        });
 	    }
 	}
-	
-	private List<BienDTO> obtenerBienesPorTipo(String tipo) {
-	    if (tipo.equals("Todos")) {
-	        try {
-				return api.obtenerTodosLosBienes();
-			} catch (DAOException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-			}
-	    } else {
-	        try {
-				return api.obtenerBienesPorTipo(tipo);
-			} catch (DataNullException | DAOException e1) {
-				JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-			}
+	public void actualizarTabla() {
+	    modelo.setRowCount(0);
+	    try {
+	        String criterio = (String) comboBox.getSelectedItem();
+	        cargarInventario(criterio);
+	    } catch (DAOException | DataNullException e) {
+	        JOptionPane.showMessageDialog(
+	            this,
+	            e.getMessage(),
+	            "Error",
+	            JOptionPane.ERROR_MESSAGE
+	        );
 	    }
-	    return List.of();
 	}
-	// poner como condicion que el almacendao de bien se true para que sea que esta almacenado, false el bien aun no esta almacenado
+
 }
+

@@ -16,7 +16,7 @@ public class BienDTO {
 	private Double talle;
 	private String material;
 	
-	public BienDTO(String codigo, String tipo, Double peso, String nombre, String descripcion, int nivelNecesidad,
+	public BienDTO(String codigo, String tipo, Double peso, String nombre, String descripcion, int nivelNecesiad,
 			LocalDate fechaVencimiento, Double talle, String material) {
 		super();
 		this.codigo = codigo;

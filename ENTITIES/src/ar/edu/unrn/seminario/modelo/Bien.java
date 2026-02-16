@@ -8,7 +8,14 @@ import ar.edu.unrn.seminario.exception.*;
 
 public class Bien {
 	
-	private static int contadorBien = 0;
+	private static  int contadorBien = 0;
+	private static  int NecesidadMueble=5;
+	private static  int NecesidadElectrodomestico=4;
+	private static  int NecesidadMedicamento=3;
+	private static  int NecesidadRopa=2;
+	private static  int NecesidadAlimento=1;
+	
+	
 	
 	private String codigo;
 	private String tipo;
@@ -16,14 +23,14 @@ public class Bien {
 	private String nombre;
 	private String descripcion;
 	private int nivelNecesidad;
-	private LocalDate fechaVencimiento;
+	private LocalDate fechaVencimiento=null;
 	private Double talle;
 	private String material;
 	
 	
 	
 	
-	public Bien(String codigo, String tipo, Double peso, String nombre, String descripcion, int nivelNecesidad,
+	public Bien(String codigo, String tipo, Double peso, String nombre, String descripcion,
 			LocalDate fechaVencimiento, Double talle, String material) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException  {
 		
 		if(codigo==null) {
@@ -52,6 +59,7 @@ public class Bien {
 			this.nombre = nombre;
 			this.descripcion = descripcion;
 			this.material = material;
+			this.actualizarNivelNecesidad(tipo);
 	
 		}else if(tipo.equalsIgnoreCase("Alimento") ||tipo.equalsIgnoreCase("Medicamento")){
 			
@@ -68,6 +76,7 @@ public class Bien {
 			this.nombre = nombre;
 			this.descripcion = descripcion;
 			this.fechaVencimiento = fechaVencimiento;
+			this.actualizarNivelNecesidad(tipo);
 			
 			
 			
@@ -80,32 +89,15 @@ public class Bien {
 				validarStringsBien(descripcion,"Descripcion");
 				validarStringsBien(tipo,"Tipo");
 				validarLongitudCampo255(descripcion,"Descripcion");
+				validarStringsBien(material,"material");
+				validarLongitudCampo20(material,"material");
+				this.actualizarNivelNecesidad(tipo);
 		
 			this.tipo=tipo;
 			this.nombre = nombre;
 			this.descripcion = descripcion;
 			this.talle = talle;
 			this.material = material;
-			
-			
-			
-			
-		}else {
-			
-				validarStringsBien(nombre,"Nombre");
-				validarLongitudCampo50(nombre,"nombre");
-				validarStringsBien(descripcion,"Descripcion");
-				validarStringsBien(tipo,"Tipo");
-				validarLongitudCampo255(descripcion,"Descripcion");
-		
-			this.tipo=tipo;
-			this.peso = peso;
-			this.nombre = nombre;
-			this.descripcion = descripcion;
-			this.fechaVencimiento = fechaVencimiento;
-			this.talle = talle;
-			this.material = material;
-			
 			
 		}
 		
@@ -200,6 +192,12 @@ public class Bien {
 			 
 		}
 	}
+	private void validarLongitudCampo20( String campo,String nombreCampo) throws DataLengthException {
+		
+		if (campo.length()>20 || campo.length()<4) {
+			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 4 caracteres y como maximo 50 ");
+		}
+	}
 	
 	private void validarLongitudCampo50( String campo,String nombreCampo) throws DataLengthException {
 		
@@ -210,7 +208,7 @@ public class Bien {
 	
 	private void validarLongitudCampo255( String campo,String nombreCampo) throws DataLengthException {
 		
-		if (campo.length()>255 || campo.length()<10) {
+		if (campo.length()>255 || campo.length()<4) {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 255 ");
 		}
 
@@ -229,4 +227,43 @@ public class Bien {
 		
 		}
 	}
+	
+	public void actualizarNecesidad(int necesidad) {
+		this.nivelNecesidad=necesidad;
+	}
+	
+	public void actualizarNivelNecesidad(String tipo) throws StateChangeException {
+
+	    if (tipo == null || tipo.isEmpty()) {
+	        throw new StateChangeException("El tipo no puede ser nulo o vacío");
+	    }
+
+	    switch (tipo.toLowerCase()) {
+
+	        case "mueble":
+	            this.nivelNecesidad = NecesidadMueble;
+	            break;
+
+	        case "electrodomestico":
+	            this.nivelNecesidad = NecesidadElectrodomestico;
+	            break;
+
+	        case "medicamento":
+	            this.nivelNecesidad = NecesidadMedicamento;
+	            break;
+
+	        case "ropa":
+	            this.nivelNecesidad = NecesidadRopa;
+	            break;
+
+	        case "alimento":
+	            this.nivelNecesidad = NecesidadAlimento;
+	            break;
+
+	        default:
+	            throw new StateChangeException("Tipo de bien desconocido: " + tipo);
+	    }
+	}
+
+	
 }
