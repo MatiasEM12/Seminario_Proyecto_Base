@@ -51,7 +51,7 @@ public class VentanaInventario extends JFrame {
     private void initialize(IApi api) {
         this.api = api;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 623, 468);
 
         contentPane = new JPanel();
@@ -69,10 +69,6 @@ public class VentanaInventario extends JFrame {
         contentPane.add(scrollPane);
 
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        JButton btnNewButton = new JButton("Buscar");
-        btnNewButton.setBounds(362, 10, 100, 30);
-        contentPane.add(btnNewButton);
         
         JLabel lblNewLabel = new JLabel("Tipo de Bien:");
         lblNewLabel.setBounds(94, 10, 90, 30);

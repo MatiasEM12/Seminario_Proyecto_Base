@@ -105,8 +105,8 @@ public class TestFinal {
 			
 			//Bien
 			Bien.setContadorBien(bienDAO.obtenerMaximoBienes());
-			Bien alimentoTest = new Bien(null,"Alimento",null,"Manteca","Manteca marca 'YYYY'",1,LocalDate.of(2026, 4, 11),null,null);
-			Bien ropaTest = new Bien(null,"Ropa",null,"Camisa","Camisa usada, con botones cambiados",2,null,4.0,"algodon");
+			Bien alimentoTest = new Bien(null,"Alimento",null,"Manteca","Manteca marca 'YYYY'",LocalDate.of(2026, 4, 11),null,null);
+			Bien ropaTest = new Bien(null,"Ropa",null,"Camisa","Camisa usada, con botones cambiados",null,4.0,"algodon");
 			
 			bienDAO.create(alimentoTest);
 			bienDAO.create(ropaTest);

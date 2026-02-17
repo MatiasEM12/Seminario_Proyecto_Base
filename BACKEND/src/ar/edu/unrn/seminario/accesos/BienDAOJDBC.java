@@ -83,41 +83,69 @@ public class BienDAOJDBC  implements BienDAO{
 	}
 
 	@Override
-	public void update(Bien bien) throws DAOException{
-		try {
+	public void update(Bien bien) throws DAOException {
 
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn
-					.prepareStatement("UPDATE bien SET codigo=?,tipo=?,nombre=?,peso=?,descripcion=?,nivelNecesidad=?,fechaVencimiento=?,talle=?,material=? WHERE codigo = ?");
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(bien.getFechaVencimiento());
-			statement.setString(1, bien.getCodigo());
-			statement.setString(2, bien.getTipo());
-			statement.setString(3, bien.getNombre());
-			statement.setDouble(4, bien.getPeso());
-			statement.setString(5, bien.getDescripcion());
-			statement.setInt(6, bien.getNivelNecesidad());
-			statement.setDate(7, fechaSQL);
-			statement.setDouble(8, bien.getTalle());
-			statement.setString(9, bien.getMaterial());
-			statement.setString(10, bien.getCodigo());
+	    String sql =
+	        "UPDATE bien SET tipo=?, nombre=?, peso=?, descripcion=?, nivelNecesidad=?, " +
+	        "fechaVencimiento=?, talle=?, material=? WHERE codigo=?";
 
-			
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				 System.out.println("El bien se ha actualizado correctamente");
-			} else {
-				throw new DAOException("Error al actualizar. codigo error B200");
-				// TODO: disparar Exception propia
-			}
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement statement = conn.prepareStatement(sql)) {
 
-		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta. codigo error B201");
-			// TODO: disparar Exception propia
-		} finally {
-			ConnectionManager.disconnect();
-		}
-		
+	        // 1 - tipo
+	        statement.setString(1, bien.getTipo());
+
+	        // 2 - nombre
+	        statement.setString(2, bien.getNombre());
+
+	        // 3 - peso (solo Mueble / Electrodoméstico)
+	        if (bien.getPeso() != null) {
+	            statement.setDouble(3, bien.getPeso());
+	        } else {
+	            statement.setNull(3, java.sql.Types.DOUBLE);
+	        }
+
+	        // 4 - descripción
+	        statement.setString(4, bien.getDescripcion());
+
+	        // 5 - nivel necesidad
+	        statement.setInt(5, bien.getNivelNecesidad());
+
+	        // 6 - fecha vencimiento (solo Alimento / Medicamento)
+	        if (bien.getFechaVencimiento() != null) {
+	            statement.setDate(6, java.sql.Date.valueOf(bien.getFechaVencimiento()));
+	        } else {
+	            statement.setNull(6, java.sql.Types.DATE);
+	        }
+
+	        // 7 - talle (solo Ropa)
+	        if (bien.getTalle() != null) {
+	            statement.setDouble(7, bien.getTalle());
+	        } else {
+	            statement.setNull(7, java.sql.Types.DOUBLE);
+	        }
+
+	        // 8 - material (Mueble / Electrodoméstico / Ropa)
+	        if (bien.getMaterial() != null) {
+	            statement.setString(8, bien.getMaterial());
+	        } else {
+	            statement.setNull(8, java.sql.Types.VARCHAR);
+	        }
+
+	        // 9 - where
+	        statement.setString(9, bien.getCodigo());
+
+	        int cantidad = statement.executeUpdate();
+
+	        if (cantidad == 0) {
+	            throw new DAOException("No se encontró el bien para actualizar");
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error al actualizar el bien" + e);
+	    }
 	}
+
 
 	@Override
 	public void remove(Long id) {

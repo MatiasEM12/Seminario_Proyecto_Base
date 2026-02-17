@@ -70,7 +70,7 @@ public class AltaBienes extends JFrame {
         tipoComboBox.addItem("alimento");
         tipoComboBox.addItem("medicamento");
         tipoComboBox.addItem("mueble");
-        tipoComboBox.addItem("electrodoméstico");
+        tipoComboBox.addItem("electrodomestico");
         tipoComboBox.addItem("ropa");
         
 
@@ -145,8 +145,7 @@ public class AltaBienes extends JFrame {
             BienDTO dto = crearBienDTO();
 
             api.registrarBien(dto);
-            api.registrarBienInventario(dto.getCodigo(), dto.getTipo(), true);
-
+            
             JOptionPane.showMessageDialog(this, "Bien registrado correctamente");
             dispose();
 
@@ -224,15 +223,16 @@ public class AltaBienes extends JFrame {
         if ("Mueble".equalsIgnoreCase(tipo)) {
             habilitarCampo(talleTextField, false);
 
-        } else if ("Electrodoméstico".equalsIgnoreCase(tipo)) {
+        } else if ("Electrodomestico".equalsIgnoreCase(tipo)) {
             habilitarCampo(talleTextField, false);
 
-        } else if ("Vestimenta".equalsIgnoreCase(tipo)) {
+        } else if ("Ropa".equalsIgnoreCase(tipo)) {
             habilitarCampo(pesoTextField, false);
 
         } else if ("Alimento".equalsIgnoreCase(tipo)) {
             habilitarCampo(talleTextField, false);
             habilitarCampo(materialTextField, false);
+            habilitarCampo(pesoTextField, false);
 
         } else if ("Medicamento".equalsIgnoreCase(tipo)) {
             habilitarCampo(talleTextField, false);

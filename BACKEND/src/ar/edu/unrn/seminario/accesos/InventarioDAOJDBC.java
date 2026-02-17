@@ -16,9 +16,15 @@ public class InventarioDAOJDBC implements InventarioDAO{
 	private BienDAOJDBC bienDao= new BienDAOJDBC();
 	
 public void create(String codBien,String tipoBien, boolean disponible) throws DAOException {
+	
+	
+	if (existe(codBien)) {
+	    throw new DAOException("El bien ya existe en inventario");
+	}
 		
-		try {
+	try {
 			
+		
 			Connection conn = ConnectionManager.getConnection();
 			PreparedStatement statement = conn
 				
@@ -114,7 +120,7 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement("SELECT codigoBien "
-			+ "FROM inventario "+ "WHERE codBien = ?");
+			+ "FROM inventario "+ "WHERE codigoBien = ?");
 			sent.setString(1, codBien);
 			ResultSet rs = sent.executeQuery();
 			if (rs.next()) {
@@ -211,5 +217,21 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 		return bienes;
 	}
 	
+	public boolean existe(String codBien) throws DAOException {
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(
+	            "SELECT 1 FROM inventario WHERE codigoBien = ?"
+	        );
+	        ps.setString(1, codBien);
+	        ResultSet rs = ps.executeQuery();
+	        return rs.next();
+	    } catch (SQLException e) {
+	        throw new DAOException(e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
+
 	
 }

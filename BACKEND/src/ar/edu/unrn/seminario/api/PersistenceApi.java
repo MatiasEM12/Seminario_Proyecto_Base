@@ -1044,7 +1044,7 @@ public class PersistenceApi implements IApi {
 		List<Bien> bienes= this.inventarioDAO.findAll();
 		
 		List<Bien> filtrados = bienes.stream()
-		        .filter(b -> tipo.equals(b.getTipo()))
+		        .filter(b -> tipo.equalsIgnoreCase(b.getTipo()))
 		        .collect(Collectors.toList());
 
 		ArrayList<BienDTO> bienesDTO= this.listBienDTO(filtrados);
@@ -1092,6 +1092,7 @@ public class PersistenceApi implements IApi {
 		Bien bienNuevo=null;
 		bienNuevo= this.toBien(bien);
 		this.bienDao.create(bienNuevo);
+		this.registrarBienInventario(bienNuevo.getCodigo(), bienNuevo.getTipo(), true);
 		
 	}
 

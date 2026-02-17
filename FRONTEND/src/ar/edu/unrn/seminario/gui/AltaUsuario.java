@@ -50,7 +50,7 @@ public class AltaUsuario extends JFrame {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 		setTitle("Alta Usuario");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 
 		contentPane = new JPanel();

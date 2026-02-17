@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,22 +111,33 @@ public class Bien_DonacionJDBC implements Bien_DonacionDAO {
 
             rs = ps.executeQuery();
             while (rs.next()) {
+
+                Double peso = rs.getObject("peso") != null
+                        ? rs.getDouble("peso")
+                        : null;
+
+                LocalDate fechaVencimiento = rs.getDate("fechaVencimiento") != null
+                        ? rs.getDate("fechaVencimiento").toLocalDate()
+                        : null;
+
+                Double talle = rs.getObject("talle") != null
+                        ? rs.getDouble("talle")
+                        : null;
+
                 Bien bien = new Bien(
                     rs.getString("codigo"),
                     rs.getString("tipo"),
-                    rs.getObject("peso") != null ? rs.getDouble("peso") : 0.0,
+                    peso,
                     rs.getString("nombre"),
                     rs.getString("descripcion"),
-                    
-                    rs.getDate("fechaVencimiento") != null
-                            ? rs.getDate("fechaVencimiento").toLocalDate()
-                            : null,
-                    rs.getObject("talle") != null ? rs.getDouble("talle") : null,
+                    fechaVencimiento,
+                    talle,
                     rs.getString("material")
                 );
 
                 resultado.add(bien);
             }
+
 
         } catch (SQLException e) {
         	throw new DAOException("Error al recuperar bienes de donación: " + e.getMessage() + ". codigo error BD300");

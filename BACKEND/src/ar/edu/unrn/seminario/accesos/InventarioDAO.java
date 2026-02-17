@@ -23,5 +23,5 @@ public interface InventarioDAO {
 
 	List<Bien> findBienesNoDisponibles() throws DAOException;
 	
-
+	public boolean existe(String codBien) throws DAOException;
 }
