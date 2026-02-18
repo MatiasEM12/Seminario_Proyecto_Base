@@ -14,12 +14,12 @@ public class VisitaDTO {
 	private String observaciones;
 	private String tipo;
 	private String codVoluntario;
-	public String codOrdenRetiro;
+	public String codOrden;
 	public ArrayList <BienDTO> bienesRecolectados = new ArrayList<>();
 	
 	private boolean esFinal;
 	
-	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrdenRetiro,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo) {
+	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
@@ -27,10 +27,10 @@ public class VisitaDTO {
 		this.tipo = tipo;
 		this.codVoluntario=codVoluntario;
 		this.bienesRecolectados=bienesRecolectados;
-		this.codOrdenRetiro=codOrdenRetiro;
+		this.codOrden=codOrden;
 	}
 	
-	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrdenRetiro,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo,boolean esFinal) {
+	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo,boolean esFinal) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
@@ -38,12 +38,12 @@ public class VisitaDTO {
 		this.tipo = tipo;
 		this.codVoluntario=codVoluntario;
 		this.bienesRecolectados=bienesRecolectados;
-		this.codOrdenRetiro=codOrdenRetiro;
+		this.codOrden=codOrden;
 		this.esFinal=esFinal;
 	}
 	
 	
-	public VisitaDTO( LocalDate fechaVisita,String codVoluntario  ,String codOrdenRetiro,ArrayList <BienDTO> bienesRecolectados,String observaciones,String tipo, boolean esFinal) {
+	public VisitaDTO( LocalDate fechaVisita,String codVoluntario  ,String codOrden,ArrayList <BienDTO> bienesRecolectados,String observaciones,String tipo, boolean esFinal) {
 		super();
 
 		this.fechaVisita = fechaVisita;
@@ -51,7 +51,7 @@ public class VisitaDTO {
 		this.tipo = tipo;
 		this.codVoluntario=codVoluntario;
 		this.bienesRecolectados=bienesRecolectados;
-		this.codOrdenRetiro=codOrdenRetiro;
+		this.codOrden=codOrden;
 		this.esFinal=esFinal;
 	}
 	
@@ -66,8 +66,8 @@ public class VisitaDTO {
 	public String getCodigo() {
 		return codigo;
 	}
-	public String getCodOrdenRetiro() {
-		return this.codOrdenRetiro;
+	public String getCodOrden() {
+		return this.codOrden;
 	}
 
 	public void setBienesRecolectados(ArrayList<BienDTO> bienesRecolectados) {
@@ -100,8 +100,8 @@ public class VisitaDTO {
 	}
 
 
-	public void setCodOrdenRetiro(String codOrdenRetiro) {
-		this.codOrdenRetiro = codOrdenRetiro;
+	public void setCodOrden(String codOrden) {
+		this.codOrden=codOrden;
 	}
 
 

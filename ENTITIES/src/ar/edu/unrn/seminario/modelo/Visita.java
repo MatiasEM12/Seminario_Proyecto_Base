@@ -236,14 +236,12 @@ public class Visita {
 	    }
 	    this.estado=estado;
 	}
-
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {
-		   
-	    if (fechaVisita.isBefore(LocalDate.now()) || fechaVisita.isAfter(LocalDate.now())) {
-	        throw new DataDateException("Fecha invalida");
+	    if (!fechaVisita.equals(LocalDate.now())) {
+	        throw new DataDateException("La fecha de visita debe ser hoy");
 	    }
 	}
-	
+
 	private void validarCampoVacio(String valorCampo, String nombreCampo) throws DataEmptyException {
 		if (valorCampo.equals("")) {
 			throw new DataEmptyException("el campo " + nombreCampo + " no puede ser vacio");

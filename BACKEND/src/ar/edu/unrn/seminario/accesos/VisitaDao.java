@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Visita;
 
@@ -18,16 +21,16 @@ public interface VisitaDao {
 
 	void remove(Visita visita )throws DAOException;
 
-	Visita find(String username) throws DataNullException, DataLengthException, DAOException;
+	Visita find(String username) throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException;
 
-	List<Visita> findAll() throws DataNullException, DataLengthException, DAOException;
+	List<Visita> findAll() throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException;
 
-	ArrayList<Visita> findAllOrdenRetiro(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException;
+	ArrayList<Visita> findAllOrdenRetiro(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException;
 
 	 int obtenerCantidadVisitas() throws SQLException;
 
 	 ArrayList<Visita> findAllOrdenEntrega(String codOrdenEntrega)
-			throws DataNullException, DataLengthException, DAOException;
+			throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException;
 	 
 	 int obtenerMaximoVisitas() throws SQLException;
 }

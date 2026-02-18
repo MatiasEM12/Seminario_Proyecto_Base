@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
@@ -28,79 +31,74 @@ public void create(Visita visita)
 
     try {
         Connection conn = ConnectionManager.getConnection();
-        PreparedStatement statement = conn.prepareStatement(
+        PreparedStatement st = conn.prepareStatement(
             "INSERT INTO visitas " +
             "(codigo, tipo, observaciones, estado, FechaVisita, codOrdenRetiro, codOrdenEntrega) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
 
-        // Datos básicos
-        statement.setString(1, visita.getCodigo());
-        statement.setString(2, visita.getTipo());
-        statement.setString(3, visita.getObservaciones());
-        statement.setString(4, visita.getEstado());
-        statement.setDate(5, java.sql.Date.valueOf(visita.getFechaVisita()));
- 
+        st.setString(1, visita.getCodigo());
+        st.setString(2, visita.getTipo());
+        st.setString(3, visita.getObservaciones());
+        st.setString(4, visita.getEstado());
+        st.setDate(5, Date.valueOf(visita.getFechaVisita()));
 
-        // Relación con Orden (solo una)
         if (visita.getCodOrdenRetiro() != null) {
-            statement.setString(6, visita.getCodOrdenRetiro());
-            statement.setNull(7, java.sql.Types.VARCHAR);
-
-        } else if (visita.getCodOrdenEntrega() != null) {
-            statement.setNull(8, java.sql.Types.VARCHAR);
-            statement.setString(9, visita.getCodOrdenEntrega());
-
+            st.setString(6, visita.getCodOrdenRetiro());
+            st.setNull(7, java.sql.Types.VARCHAR);
         } else {
-            throw new DAOException("La Visita debe pertenecer a una OrdenRetiro o una OrdenEntrega");
+            st.setNull(6, java.sql.Types.VARCHAR);
+            st.setString(7, visita.getCodOrdenEntrega());
         }
 
-        int cantidad = statement.executeUpdate();
-        if (cantidad <= 0) {
-            throw new DAOException("No se insertó la Visita");
+        if (st.executeUpdate() <= 0) {
+            throw new DAOException("No se insertó la visita");
         }
 
     } catch (SQLException e) {
-        throw new DAOException(
-            "Error al procesar consulta (INSERT Visita): " + e.getMessage() + ".codigo VT100"
-        );
+        throw new DAOException("Error INSERT visita VT100"+ e);
     } finally {
         ConnectionManager.disconnect();
     }
 }
 
 
-	@Override
-	public void update(Visita visita) throws DAOException{
-		try {
 
-			Connection conn = ConnectionManager.getConnection();
-			PreparedStatement statement = conn.prepareStatement(
-				    "UPDATE visitas SET FechaVisita=?, observaciones=?, tipo=?, codOrdenRetiro=? WHERE codigo=?"
-				);
+@Override
+public void update(Visita visita) throws DAOException {
 
-			java.sql.Date fechaSQL = java.sql.Date.valueOf(visita.getFechaVisita());
-			
-			statement.setDate(1, fechaSQL);
-			statement.setString(2, visita.getObservaciones());
-			statement.setString(3, visita.getTipo());
-			statement.setObject(4, visita.getRetiro());
-			statement.setObject(5, visita.getCodigo());
-			int cantidad = statement.executeUpdate();
-			if (cantidad > 0) {
-				// System.out.println("Modificando " + cantidad + " registros");
-			} else {
-				throw new DAOException("Error al actualizar");
-				// TODO: disparar Exception propia
-			}
+    try {
+        Connection conn = ConnectionManager.getConnection();
+        PreparedStatement st = conn.prepareStatement(
+            "UPDATE visitas SET FechaVisita=?, observaciones=?, tipo=?, estado=?, " +
+            "codOrdenRetiro=?, codOrdenEntrega=? WHERE codigo=?"
+        );
 
-		} catch (SQLException e) {
-			throw new DAOException("Error al procesar consulta (INSERT Visita): " + e.getMessage()+".codigo VT200");
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-		
-	}
+        st.setDate(1, Date.valueOf(visita.getFechaVisita()));
+        st.setString(2, visita.getObservaciones());
+        st.setString(3, visita.getTipo());
+        st.setString(4, visita.getEstado());
+
+        if (visita.getCodOrdenRetiro() != null) {
+            st.setString(5, visita.getCodOrdenRetiro());
+            st.setNull(6, java.sql.Types.VARCHAR);
+        } else {
+            st.setNull(5, java.sql.Types.VARCHAR);
+            st.setString(6, visita.getCodOrdenEntrega());
+        }
+
+        st.setString(7, visita.getCodigo());
+
+        if (st.executeUpdate() <= 0) {
+            throw new DAOException("No se actualizó la visita");
+        }
+
+    } catch (SQLException e) {
+        throw new DAOException("Error UPDATE visita VT200"+ e);
+    } finally {
+        ConnectionManager.disconnect();
+    }
+}
 
 	@Override
 	public void remove(String codigo) throws DAOException{
@@ -153,45 +151,51 @@ public void create(Visita visita)
 	}
 
 	@Override
-	public Visita find(String codigo) throws DataNullException, DataLengthException, DAOException {
-	   
-		Visita visita=null;
-		
-		
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement(
-				    "SELECT codigo, FechaVisita, observaciones, tipo, codOrdenRetiro " +
-				    "FROM visitas WHERE codigo = ?"
-				);
+	public Visita find(String codigo)
+	        throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException {
 
-			sent.setString(1, codigo);
-			ResultSet rs = sent.executeQuery();
-			if (rs.next()) {
-				
-				LocalDate localDate = rs.getDate("FechaVisita").toLocalDate();
-				visita=new Visita(localDate,rs.getString("observaciones"),rs.getString("tipo"),rs.getString("ordenRetiro")
-						,biendao.findBienVisita("codigo"),rs.getString("codigo"));
-				
-			}
-		}
-		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo VT500");
-		}
-		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo VT501");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return visita;
+	    Visita visita = null;
 
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigo, FechaVisita, observaciones, tipo, codOrdenRetiro, codOrdenEntrega " +
+	            "FROM visitas WHERE codigo = ?"
+	        );
+
+	        st.setString(1, codigo);
+	        ResultSet rs = st.executeQuery();
+
+	        if (rs.next()) {
+
+	            LocalDate fecha = rs.getDate("FechaVisita").toLocalDate();
+	            String codOrden =
+	                rs.getString("codOrdenRetiro") != null
+	                ? rs.getString("codOrdenRetiro")
+	                : rs.getString("codOrdenEntrega");
+
+	            visita = new Visita(
+	                fecha,
+	                rs.getString("observaciones"),
+	                rs.getString("tipo"),
+	                codOrden,
+	                biendao.findBienVisita(codigo),
+	                rs.getString("codigo")
+	            );
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error FIND visita VT500"+e);
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return visita;
 	}
 
 
-
 	@Override
-	public List<Visita> findAll() throws DataNullException, DataLengthException, DAOException {
+	public List<Visita> findAll() throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException {
 	    List<Visita> visitas = new ArrayList<>();
 
 	    String sqlVisitas =
@@ -223,7 +227,7 @@ public void create(Visita visita)
 
 	@Override
 	public ArrayList<Visita> findAllOrdenRetiro(String codOrdenRetiro)
-	        throws DataNullException, DataLengthException, DAOException {
+	        throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException {
 
 	    ArrayList<Visita> visitas = new ArrayList<>();
 
@@ -254,7 +258,7 @@ public void create(Visita visita)
 	}
 	@Override
 	public ArrayList<Visita> findAllOrdenEntrega(String codOrdenEntrega)
-	        throws DataNullException, DataLengthException, DAOException {
+	        throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException {
 
 	    ArrayList<Visita> visitas = new ArrayList<>();
 

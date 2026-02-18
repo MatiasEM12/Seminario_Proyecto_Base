@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ar.edu.unrn.seminario.accesos.BeneficiarioDAOJDBC;
 import ar.edu.unrn.seminario.accesos.BienDAO;
 import ar.edu.unrn.seminario.accesos.BienDAOJDBC;
 import ar.edu.unrn.seminario.accesos.Bien_DonacionDAO;
@@ -20,6 +21,7 @@ import ar.edu.unrn.seminario.accesos.DonacionDAO;
 import ar.edu.unrn.seminario.accesos.DonacionDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonanteDao;
 import ar.edu.unrn.seminario.accesos.InventarioDAOJDBC;
+import ar.edu.unrn.seminario.accesos.OrdenEntregaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.DonanteDAOJDBC;
 import ar.edu.unrn.seminario.accesos.OrdenPedidoDao;
 import ar.edu.unrn.seminario.accesos.OrdenPedidoDAOJDBC;
@@ -82,7 +84,8 @@ public class PersistenceApi implements IApi {
     private UbicacionDAOJDBC ubicacionDao;
     private CoordenadaDAOJDBC coordenadaDAO; 
     private InventarioDAOJDBC inventarioDAO;
-    //private BeneficiarioDAOJDBC beneficiarioDAO;
+    private BeneficiarioDAOJDBC beneficiarioDAO;
+    private OrdenEntregaDAOJDBC ordenEntregaDAO;
     public PersistenceApi() {
         // inicializar DAOs JDBC
         this.rolDao = new RolDAOJDBC();
@@ -100,6 +103,8 @@ public class PersistenceApi implements IApi {
         this.coordenadaDAO = new CoordenadaDAOJDBC();
         this.ubicacionDao  = new UbicacionDAOJDBC();
         this.inventarioDAO = new InventarioDAOJDBC();
+        this.beneficiarioDAO= new BeneficiarioDAOJDBC();
+        this.ordenEntregaDAO= new OrdenEntregaDAOJDBC();
     }
    
     //Iniciaizar
@@ -703,27 +708,27 @@ public class PersistenceApi implements IApi {
     @Override
     public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
         
-    	Visita visita= toVisita(visitaDTO);
-    
-    	OrdenRetiro oR = this.ordenRetiroDao.find(visita.getCodOrdenRetiro());
-    	
-    	oR.agregarVisita(visita);
-    	this.crearBienVisita(visita);
-    	this.visitaDao.update(visita);
-    	this.ordenRetiroDao.update(oR);
-    	
-    	if(visita.isEsFinal()==true) {
-    		ArrayList<Bien> bienes=oR.getRecolectados();
-    		
-    		for(Bien b: bienes) {
-    			this.registrarBienInventario(b.getCodigo(), b.getTipo(), true);
-    		}
-    	}
-    	
-    	
-    
-    	
-    	
+    	  Visita visita = toVisita(visitaDTO);
+
+    	    visitaDao.create(visita);
+    	    crearBienVisita(visita);
+
+    	    if (visita.getCodOrdenRetiro() != null) {
+    	        OrdenRetiro oR = ordenRetiroDao.find(visita.getCodOrdenRetiro());
+    	        oR.agregarVisita(visita);
+    	        ordenRetiroDao.update(oR);
+
+    	        if (visita.isEsFinal()) {
+    	            for (Bien b : oR.getRecolectados()) {
+    	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
+    	            }
+    	        }
+
+    	    } else {
+    	        OrdenEntrega oE = this.ordenEntregaDAO.find(visita.getCodOrdenEntrega());
+    	        oE.agregarVisita(visita);
+    	        this.ordenEntregaDAO.update(oE);
+    	    }
     	
     }
     private void crearBienDonacion(Donacion donacion) throws DAOException {
@@ -745,14 +750,20 @@ public class PersistenceApi implements IApi {
     	}
     	
     }
-    private Visita toVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataDateException, DataEmptyException, DataListException {
-    	
-    	Visita visita = new Visita (visitaDTO.getFechaVisita(), visitaDTO.getObservaciones(), visitaDTO.getTipo(), visitaDTO.getCodOrdenRetiro(),
-    			 toBienesList(visitaDTO.getBienesRecolectados()),visitaDTO.isEsFinal());
-    	
-    	
-    	return visita ;
+    private Visita toVisita(VisitaDTO dto)
+            throws DataNullException, DataLengthException, DataDateException,
+                   DataEmptyException, DataListException, DataDoubleException, StateChangeException {
+
+        return new Visita(
+            dto.getFechaVisita(),
+            dto.getObservaciones(),
+            dto.getTipo(),
+            dto.getCodOrden(),
+            toBienesList(dto.getBienesRecolectados()),
+            dto.isEsFinal()
+        );
     }
+
     
     private ArrayList<Bien> toBienesList(ArrayList<BienDTO> bienesDTO) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException{
     	
