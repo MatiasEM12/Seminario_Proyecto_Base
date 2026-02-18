@@ -710,8 +710,15 @@ public class PersistenceApi implements IApi {
     	oR.agregarVisita(visita);
     	this.crearBienVisita(visita);
     	this.visitaDao.update(visita);
-		
     	this.ordenRetiroDao.update(oR);
+    	
+    	if(visita.isEsFinal()==true) {
+    		ArrayList<Bien> bienes=oR.getRecolectados();
+    		
+    		for(Bien b: bienes) {
+    			this.registrarBienInventario(b.getCodigo(), b.getTipo(), true);
+    		}
+    	}
     	
     	
     
@@ -1088,11 +1095,15 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public void registrarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+	public void registrarBien(BienDTO bien, Boolean cargarEnInventario) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
 		Bien bienNuevo=null;
 		bienNuevo= this.toBien(bien);
 		this.bienDao.create(bienNuevo);
-		this.registrarBienInventario(bienNuevo.getCodigo(), bienNuevo.getTipo(), true);
+		
+		if(cargarEnInventario==true) {
+			this.registrarBienInventario(bienNuevo.getCodigo(), bienNuevo.getTipo(), true);
+		}
+	
 		
 	}
 
@@ -1114,9 +1125,24 @@ public class PersistenceApi implements IApi {
 	private void cargarBienesDonacion(ArrayList<BienDTO> bienes) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
 		
 		for(BienDTO b : bienes) {
-			this.registrarBien(b);
+			this.registrarBien(b,false);
 		}
 		
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+	
+		
+		ArrayList<DonacionDTO> donaciones= this.obtenerDonaciones();
+		
+		for(DonacionDTO dto:donaciones) {
+			if(dto.getCodPedido().equals(codPedido)) {
+				return dto;
+			}
+
+		}
+		throw new DataNullException("Error al encontrar la Donacion");
 	}
 
 }

@@ -144,7 +144,7 @@ public class AltaBienes extends JFrame {
         try {
             BienDTO dto = crearBienDTO();
 
-            api.registrarBien(dto);
+            api.registrarBien(dto,true);
             
             JOptionPane.showMessageDialog(this, "Bien registrado correctamente");
             dispose();

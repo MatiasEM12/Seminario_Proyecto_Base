@@ -119,7 +119,7 @@ public interface IApi {
 
 	void completarOrdenRetiro(String codOrdenRetiro) throws Exception;
 
-
+    public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 
 	public void registrarUbicacion(Ubicacion ubicacion) throws DAOException;
 
@@ -147,7 +147,7 @@ public interface IApi {
 		
 	
 	
-	public void registrarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
+	public void registrarBien(BienDTO bien,Boolean cargarEnInventario) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
 	
 	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
 	

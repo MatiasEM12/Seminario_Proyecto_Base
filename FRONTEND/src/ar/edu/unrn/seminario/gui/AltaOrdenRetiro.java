@@ -99,7 +99,7 @@ public class AltaOrdenRetiro extends JFrame {
 		seleccionarVoluntario.setBounds(10, 61, 133, 13);
 		contentPane.add(seleccionarVoluntario);
 		
-		JButton btnVoluntarios = new JButton("Ordenes Pedido");
+		JButton btnVoluntarios = new JButton("Voluntario");
 		btnVoluntarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ListadoVoluntarios ventanaVoluntarios = new ListadoVoluntarios(AltaOrdenRetiro.this, api);
@@ -116,7 +116,7 @@ public class AltaOrdenRetiro extends JFrame {
 		txtCodVoluntario.setBounds(140, 85, 96, 19);
 		contentPane.add(txtCodVoluntario);
 		
-		JLabel codVoluntario = new JLabel("Codigo Pedido:");
+		JLabel codVoluntario = new JLabel("Codigo Voluntario");
 		codVoluntario.setBounds(10, 88, 133, 13);
 		contentPane.add(codVoluntario);
 		btnOrdenesPedido.addActionListener(e -> {

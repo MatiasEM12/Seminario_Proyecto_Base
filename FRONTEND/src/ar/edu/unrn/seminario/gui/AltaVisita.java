@@ -3,9 +3,7 @@ package ar.edu.unrn.seminario.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,74 +13,66 @@ import javax.swing.*;
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
-import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
-import ar.edu.unrn.seminario.dto.VoluntarioDTO;
-import ar.edu.unrn.seminario.exception.DAOException;
-import ar.edu.unrn.seminario.exception.DataLengthException;
-import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.*;
 
-import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JCalendar;
 
 public class AltaVisita extends JFrame {
+
     private static final long serialVersionUID = 1L;
 
     private JPanel contentPane;
     private IApi api;
 
-    private JTextField txtCodOR;            // código de la orden de retiro (referencia)
+    private JTextField txtCodOR;
     private JComboBox<String> comboTipo;
     private JTextArea txtObservaciones;
-    private JTextField txtCodDonante;       // campo readonly para mostrar codDonante del pedido asociado
-    private JRadioButton rdbVisitaFinal;
-    LocalDate fecha=null;
-    OrdenRetiroDTO orden;
-     private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>(); // listade bienes seleccionados
+    private JTextField txtCodDonante;
     private JTextField textCodVoluntario;
-    
+
+    private LocalDate fecha = null;
+    private OrdenRetiroDTO orden;
+    private DonacionDTO donacion;
+    private JCalendar calendar;
+    private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>();
+
     public AltaVisita(IApi api, String codOrdenRetiro) throws DataNullException {
+
         this.api = api;
+
         try {
-			orden = api.obtenerOrdenRetiro(codOrdenRetiro);
-		} catch (DAOException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-		}
-        String ordenP= orden.getPedido();
-        
-        DonacionDTO donacion;
-	
-		donacion = api.obtenerDonacion( ordenP);
-	
-        
-        
+            orden = api.obtenerOrdenRetiro(codOrdenRetiro);
+        } catch (DAOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            donacion = api.obtenerDonacionDTO(orden.getPedido());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 520, 607);
         contentPane = new JPanel();
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        // Código OrdenRetiro (referencia)
+        // ===================== ORDEN RETIRO =====================
         JLabel lblCodigo = new JLabel("Codigo OrdenRetiro:");
         lblCodigo.setBounds(10, 10, 150, 14);
         contentPane.add(lblCodigo);
 
-        txtCodOR = new JTextField();
+        txtCodOR = new JTextField(codOrdenRetiro);
         txtCodOR.setEditable(false);
         txtCodOR.setBounds(170, 7, 143, 20);
         contentPane.add(txtCodOR);
-        txtCodOR.setColumns(10);
-        textCodVoluntario.setText(codOrdenRetiro);
 
-       
-
-        // Fecha
-        JLabel lblFecha = new JLabel("Fecha:");
-        lblFecha.setBounds(10, 220, 47, 14);
-        contentPane.add(lblFecha);
-
-        // Tipo
+        // ===================== TIPO =====================
         JLabel lblTipo = new JLabel("Tipo:");
         lblTipo.setBounds(10, 52, 47, 14);
         contentPane.add(lblTipo);
@@ -94,47 +84,60 @@ public class AltaVisita extends JFrame {
         comboTipo.addItem("Seguimiento");
         contentPane.add(comboTipo);
 
-        // Seleccionar bienes (placeholder)
+        // ===================== BIENES =====================
         JLabel lblSeleccion = new JLabel("Seleccionar bienes:");
         lblSeleccion.setBounds(10, 93, 120, 14);
         contentPane.add(lblSeleccion);
 
         JButton btnSeleccionBien = new JButton("Bienes");
         btnSeleccionBien.setBounds(170, 89, 143, 23);
-        btnSeleccionBien.addActionListener(e -> {
-        	abrirSelectorBienes(donacion);
-        });
+        btnSeleccionBien.addActionListener(e -> abrirSelectorBienes(donacion));
         contentPane.add(btnSeleccionBien);
 
-        // Voluntarios
+        // ===================== VOLUNTARIO =====================
         JLabel lblVoluntario = new JLabel("Voluntario asignado:");
         lblVoluntario.setBounds(10, 135, 150, 14);
         contentPane.add(lblVoluntario);
 
-        // CodDonante (solo lectura)
-        JLabel lblCodDonante = new JLabel("Cod Donante (encargado OP):");
+        textCodVoluntario = new JTextField(orden.getCodVoluntario());
+        textCodVoluntario.setEditable(false);
+        textCodVoluntario.setBounds(170, 132, 143, 20);
+        contentPane.add(textCodVoluntario);
+
+        // ===================== DONANTE =====================
+        JLabel lblCodDonante = new JLabel("Donante:");
         lblCodDonante.setBounds(10, 177, 170, 14);
         contentPane.add(lblCodDonante);
 
-        txtCodDonante = new JTextField();
-        txtCodDonante.setBounds(170, 174, 143, 20);
+        txtCodDonante = new JTextField(donacion.getCodDonante());
         txtCodDonante.setEditable(false);
-        txtCodDonante.setText(donacion.getCodDonante());
+        txtCodDonante.setBounds(170, 174, 143, 20);
         contentPane.add(txtCodDonante);
-   
-        // Observaciones
+
+        // ===================== FECHA =====================
+        JLabel lblFecha = new JLabel("Fecha:");
+        lblFecha.setBounds(10, 220, 47, 14);
+        contentPane.add(lblFecha);
+
+        // ===================== OBSERVACIONES =====================
         JLabel lblObserv = new JLabel("Observaciones:");
-        lblObserv.setBounds(10, 330, 100, 14);
+        lblObserv.setBounds(10, 376, 100, 14);
         contentPane.add(lblObserv);
-
-        txtObservaciones = new JTextArea();
-        txtObservaciones.setLineWrap(true);
-        JScrollPane scrollObs = new JScrollPane(txtObservaciones);
-        scrollObs.setBounds(10, 355, 480, 120);
+        JScrollPane scrollObs = new JScrollPane();
+        scrollObs.setBounds(10, 401, 480, 120);
         contentPane.add(scrollObs);
+        
+                txtObservaciones = new JTextArea();
+                scrollObs.setViewportView(txtObservaciones);
+                txtObservaciones.setLineWrap(true);
 
-        // Botones
         JButton btnGuardar = new JButton("Guardar");
+        btnGuardar.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		
+        		onGuardar();
+        	}
+        });
         btnGuardar.setBounds(213, 532, 100, 25);
         contentPane.add(btnGuardar);
 
@@ -142,103 +145,69 @@ public class AltaVisita extends JFrame {
         btnCancelar.setBounds(368, 532, 100, 25);
         contentPane.add(btnCancelar);
         
-        // Radio Visita Final
-        rdbVisitaFinal = new JRadioButton("Visita Final");
-        rdbVisitaFinal.setBounds(10, 482, 120, 23);
-        contentPane.add(rdbVisitaFinal);
-        
-        textCodVoluntario = new JTextField();
-        textCodVoluntario.setText(orden.getCodVoluntario());
-        textCodVoluntario.setEditable(false);
-        textCodVoluntario.setBounds(170, 132, 143, 20);
-        contentPane.add(textCodVoluntario);
-        
-        JCalendar calendar = new JCalendar();
-        calendar.setBounds(76, 220, 141, 105);
+        calendar = new JCalendar();
+        calendar.setBounds(67, 212, 184, 153);
         contentPane.add(calendar);
-        
-        JButton btnFecha = new JButton("Guardar Fecha");
-        btnFecha.setBounds(231, 302, 137, 23);
-        contentPane.add(btnFecha);
 
-
-        btnFecha.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              
-            	Date fechaSeleccionada = calendar.getDate();
-            	fecha = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-            }
-        });
-        
-        // Eventos
         btnCancelar.addActionListener(e -> limpiarCampos());
-
-        btnGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                onGuardar(fecha,  rdbVisitaFinal.isSelected());
-            }
-        });
-
-       
-
 
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
-
-
+    // ===================== MÉTODOS =====================
 
     private void abrirSelectorBienes(DonacionDTO donacion) {
-    	List<BienDTO> listaBienes = donacion.getBienes();
-    	 ArrayList<BienDTO> listaParaMostrar = new ArrayList<>(listaBienes); 
-    	ListadoBienes listado = new ListadoBienes(api,  listaParaMostrar , (seleccion) -> {
+        List<BienDTO> listaBienes = donacion.getBienes();
+        ArrayList<BienDTO> listaParaMostrar = new ArrayList<>(listaBienes);
+
+        ListadoBienes listado = new ListadoBienes(api, listaParaMostrar, seleccion -> {
             if (seleccion != null) {
-            	bienesrecolectados= seleccion;
+                bienesrecolectados = seleccion;
             }
         });
+
         listado.setLocationRelativeTo(this);
         listado.setVisible(true);
-		
-	}
+    }
 
+    private void onGuardar() {
 
-
-
-	private void onGuardar(LocalDate fecha,boolean esFinal) {
-        String codOrdenRetiro = txtCodOR.getText();
-      
-        String tipo = (String) comboTipo.getSelectedItem();
-      
-        String observaciones = txtObservaciones.getText();
+    	boolean esFinal=false;
+    	String tipo= (String) comboTipo.getSelectedItem();
+    	if(tipo.equals("Visita Final")) {
+    		esFinal=true;
+    	}
+    	
+    	fecha  = calendar.getDate()
+                 .toInstant()
+                .atZone(ZoneId.systemDefault())
+               .toLocalDate();
+         
         try {
-        VisitaDTO visita= new VisitaDTO( fecha,orden.getCodVoluntario()  ,codOrdenRetiro,bienesrecolectados, observaciones,tipo,esFinal);
+            VisitaDTO visita = new VisitaDTO(
+                    fecha,
+                    orden.getCodVoluntario(),
+                    txtCodOR.getText(),
+                    bienesrecolectados,
+                    txtObservaciones.getText(),
+                    (String) comboTipo.getSelectedItem(),
+                    esFinal
+            );
 
-        api.cargarVisita(visita);
-        }catch(DataNullException | DataLengthException ex) {
-        	
-        	  JOptionPane.showMessageDialog(this,"Error en los datos de la visita: " + ex.getMessage(), "Error",  JOptionPane.ERROR_MESSAGE);
-        }
-        catch(Exception ex) {
-        	
-        	 JOptionPane.showMessageDialog(this, "Error al registrar visita: " + ex.getMessage(),"Error", JOptionPane.ERROR_MESSAGE);
+            api.cargarVisita(visita);
+            JOptionPane.showMessageDialog(this, "Visita registrada correctamente");
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al registrar visita: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-  
-
-
-
-
-	private void limpiarCampos() {
-        txtCodOR.setText("");
+    private void limpiarCampos() {
         txtObservaciones.setText("");
-        txtCodDonante.setText("");
-
-        if (comboTipo.getItemCount() > 0) comboTipo.setSelectedIndex(0);
-        rdbVisitaFinal.setSelected(false);
+        comboTipo.setSelectedIndex(0);
     }
 }
