@@ -19,7 +19,7 @@ import ar.edu.unrn.seminario.exception.*;
 
 import com.toedter.calendar.JCalendar;
 
-public class AltaVisita extends JFrame {
+public class AltaVisitaRetiro extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,7 @@ public class AltaVisita extends JFrame {
     private JCalendar calendar;
     private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>();
 
-    public AltaVisita(IApi api, String codOrdenRetiro) throws DataNullException {
+    public AltaVisitaRetiro(IApi api, String codOrdenRetiro) throws DataNullException {
 
         this.api = api;
 
@@ -183,7 +183,7 @@ public class AltaVisita extends JFrame {
                  .toInstant()
                 .atZone(ZoneId.systemDefault())
                .toLocalDate();
-         
+     
         try {
             VisitaDTO visita = new VisitaDTO(
                     fecha,

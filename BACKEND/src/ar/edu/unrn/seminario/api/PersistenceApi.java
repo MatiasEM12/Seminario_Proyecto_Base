@@ -1131,19 +1131,35 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
-	
-		
-		ArrayList<DonacionDTO> donaciones= this.obtenerDonaciones();
-		
-		for(DonacionDTO dto:donaciones) {
-			if(dto.getCodPedido().equals(codPedido)) {
-				return dto;
-			}
+	public DonacionDTO obtenerDonacionDTO(String codPedido)
+	        throws DataNullException, DataEmptyException, DataObjectException,
+	               DataDateException, DAOException, DataLengthException, DataListException {
 
-		}
-		throw new DataNullException("Error al encontrar la Donacion");
+	    if (codPedido == null) {
+	        throw new DataNullException("El código de pedido no puede ser null");
+	    }
+
+	    if (codPedido.trim().isEmpty()) {
+	        throw new DataEmptyException("El código de pedido no puede estar vacío");
+	    }
+
+	    ArrayList<DonacionDTO> donaciones = this.obtenerDonaciones();
+
+	    if (donaciones == null || donaciones.isEmpty()) {
+	        throw new DataListException("No existen donaciones registradas");
+	    }
+
+	    for (DonacionDTO dto : donaciones) {
+	        if (dto != null && codPedido.equals(dto.getCodPedido())) {
+	            return dto;
+	        }
+	    }
+
+	    throw new DataObjectException(
+	        "No se encontró una donación asociada al pedido: " + codPedido
+	    );
 	}
+
 
 }
 

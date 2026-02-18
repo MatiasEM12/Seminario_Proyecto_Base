@@ -107,9 +107,9 @@ public class ListadoOrdenes extends JFrame {
                 	String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);	
 					if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 					
-						AltaVisita av;
+						AltaVisitaRetiro av;
 						try {
-							av = new AltaVisita(api,codOR);
+							av = new AltaVisitaRetiro(api,codOR);
 							av.setLocationRelativeTo(null);
 							av.setVisible(true);
 						} catch (DataNullException e1) {
