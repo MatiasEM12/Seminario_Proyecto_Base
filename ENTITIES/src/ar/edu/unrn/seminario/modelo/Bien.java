@@ -265,5 +265,33 @@ public class Bien {
 	    }
 	}
 
-	
+	@Override
+	public boolean equals(Object obj) {
+
+	    if (this == obj) {
+	        return true;
+	    }
+
+	    if (obj == null) {
+	        return false;
+	    }
+
+	    if (getClass() != obj.getClass()) {
+	        return false;
+	    }
+
+	    Bien other = (Bien) obj;
+
+	    if (this.codigo == null || other.codigo == null) {
+	        return false;
+	    }
+
+	    return this.codigo.equals(other.codigo);
+	}
+	@Override
+	public int hashCode() {
+	    return codigo != null ? codigo.hashCode() : 0;
+	}
+
+
 }

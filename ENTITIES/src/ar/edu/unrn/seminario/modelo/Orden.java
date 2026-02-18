@@ -6,6 +6,7 @@ import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
+import ar.edu.unrn.seminario.exception.StateChangeException;
 
 public abstract class Orden {
 
@@ -72,7 +73,7 @@ public abstract class Orden {
         return estado;
     }
 
-    public void setEstado(EstadoOrden estado) throws DataObjectException {
+    public void setEstado(EstadoOrden estado) throws DataObjectException, StateChangeException {
      	this.validarObjectNull(estado);
         this.estado = estado;
     }

@@ -79,9 +79,8 @@ public class AltaVisitaRetiro extends JFrame {
 
         comboTipo = new JComboBox<>();
         comboTipo.setBounds(168, 48, 145, 22);
-        comboTipo.addItem("Regular");
-        comboTipo.addItem("Visita Final");
-        comboTipo.addItem("Seguimiento");
+        comboTipo.addItem("RETIRO");
+      
         contentPane.add(comboTipo);
 
         // ===================== BIENES =====================
@@ -173,6 +172,8 @@ public class AltaVisitaRetiro extends JFrame {
 
     private void onGuardar() {
 
+    	
+    			
     	boolean esFinal=false;
     	String tipo= (String) comboTipo.getSelectedItem();
     	if(tipo.equals("Visita Final")) {
@@ -192,7 +193,8 @@ public class AltaVisitaRetiro extends JFrame {
                     bienesrecolectados,
                     txtObservaciones.getText(),
                     (String) comboTipo.getSelectedItem(),
-                    esFinal
+                    esFinal,null
+                   
             );
 
             api.cargarVisita(visita);

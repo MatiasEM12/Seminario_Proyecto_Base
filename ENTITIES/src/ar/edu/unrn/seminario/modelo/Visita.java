@@ -11,6 +11,7 @@ import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
+import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 
 public class Visita {
 	
@@ -28,7 +29,7 @@ public class Visita {
 
 	
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
-			ArrayList<Bien> bienesRecolectados, boolean esFinal) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException{
+			ArrayList<Bien> bienesRecolectados, boolean esFinal) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, StateChangeException{
 		super();
 		
 		
@@ -47,7 +48,7 @@ public class Visita {
 		this.validarCampoNull(codOrden);
 		
 		this.validarList(bienesRecolectados);
-
+		
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
@@ -67,10 +68,11 @@ public class Visita {
 	
 	}
 	
-	
-	
-	
-	
+
+
+
+
+
 	public Visita(LocalDate fechaVisita, String observaciones, String tipo, String codOrden,
 			ArrayList<Bien> bienesRecolectados,String codigo) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException{
 		super();
@@ -142,6 +144,47 @@ public class Visita {
 			this.codigo=codigo;
 		}
 	}
+	
+	
+	public Visita(String codigo, LocalDate fechaVisita, String observaciones, String tipo, String codOrden, ArrayList<Bien> bienesRecolectados, boolean esFinal, String estado) throws DataDateException, DataEmptyException, DataLengthException, DataNullException, DataListException {
+		super();
+		
+		this.validarDate(fechaVisita);
+		this.validarFechaVisita(fechaVisita);
+		
+		this.validarCampoVacio(observaciones, "observaciones");
+		this.validarCampoNull(observaciones);
+		this.validarLongitudCampo255(observaciones, "observaciones");
+		
+		
+		this.validarCampoVacio(tipo, "tipo");
+		this.validarCampoNull(tipo);
+		
+		this.validarCampoVacio(codOrden, "codOrden");
+		this.validarCampoNull(codOrden);
+		
+		this.validarList(bienesRecolectados);
+		
+		this.codigo = codigo;
+		this.fechaVisita = fechaVisita;
+		this.observaciones = observaciones;
+		this.tipo = tipo;
+		
+		this.bienesRecolectados = bienesRecolectados;
+		this.esFinal = esFinal;
+		this.estado = estado;
+		if(this.esOrdenEntrega(codOrden)) {
+			this.codOrdenEntrega=codOrden;
+		}else {
+			this.codOrdenRetiro = codOrden;
+		}
+	}
+
+
+
+
+
+
 	public String getCodigo() {
 		return codigo;
 	}
@@ -226,16 +269,27 @@ public class Visita {
 		this.esFinal = esFinal;
 	}
 
-	public void setEstado(String estado) throws StateChangeException,DataNullException{
-	    if (estado == null || estado.isEmpty()) {
-	        throw new DataNullException("El campo 'estado' no puede estar vacío");
+	public void completar() throws StateChangeException {
+	    if (!estado.equalsIgnoreCase("En proceso")) {
+	        throw new StateChangeException("La visita no puede completarse");
 	    }
-	    //si las dos son verdaderas entraria en el if
-	    if (!estado.equals("realizada") && !estado.equals("fallida")) {
-	        throw new StateChangeException("El estado ingresado es invalido. Debe ser 'realizada' o 'fallida'.");
-	    }
-	    this.estado=estado;
+	    this.estado = "Completada";
 	}
+
+	public void cancelar() throws StateChangeException {
+	    if (estado.equalsIgnoreCase("Completada")) {
+	        throw new StateChangeException("No se puede cancelar una visita completada");
+	    }
+	    this.estado = "Cancelada";
+	}
+
+	public void enProceso() throws StateChangeException {
+	    if (estado.equalsIgnoreCase("Cancelada")||estado.equalsIgnoreCase("Completada")) {
+	        throw new StateChangeException("No se poner en proceso la visita");
+	    }
+	    this.estado = "En proceso";
+	}
+
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {
 	    if (!fechaVisita.equals(LocalDate.now())) {
 	        throw new DataDateException("La fecha de visita debe ser hoy");
@@ -301,4 +355,8 @@ public class Visita {
 		String primerosDos = codOrden.substring(0, 2); 
 		return primerosDos.equals("OE");
 	}
+	public boolean tieneBienes() {
+	    return bienesRecolectados != null && !bienesRecolectados.isEmpty();
+	}
+
 }

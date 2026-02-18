@@ -16,10 +16,11 @@ public class VisitaDTO {
 	private String codVoluntario;
 	public String codOrden;
 	public ArrayList <BienDTO> bienesRecolectados = new ArrayList<>();
+	public String estado;
 	
 	private boolean esFinal;
 	
-	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo) {
+	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo,String estado) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
@@ -28,9 +29,10 @@ public class VisitaDTO {
 		this.codVoluntario=codVoluntario;
 		this.bienesRecolectados=bienesRecolectados;
 		this.codOrden=codOrden;
+		this.estado=estado;
 	}
 	
-	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo,boolean esFinal) {
+	public VisitaDTO(String codigo, LocalDate fechaVisita, String codVoluntario,String codOrden,ArrayList <BienDTO> bienesRecolectados, String observaciones, String tipo,boolean esFinal,String estado) {
 		super();
 		this.codigo = codigo;
 		this.fechaVisita = fechaVisita;
@@ -40,10 +42,11 @@ public class VisitaDTO {
 		this.bienesRecolectados=bienesRecolectados;
 		this.codOrden=codOrden;
 		this.esFinal=esFinal;
+		this.estado=estado;
 	}
 	
 	
-	public VisitaDTO( LocalDate fechaVisita,String codVoluntario  ,String codOrden,ArrayList <BienDTO> bienesRecolectados,String observaciones,String tipo, boolean esFinal) {
+	public VisitaDTO( LocalDate fechaVisita,String codVoluntario  ,String codOrden,ArrayList <BienDTO> bienesRecolectados,String observaciones,String tipo, boolean esFinal,String estado) {
 		super();
 
 		this.fechaVisita = fechaVisita;
@@ -53,6 +56,7 @@ public class VisitaDTO {
 		this.bienesRecolectados=bienesRecolectados;
 		this.codOrden=codOrden;
 		this.esFinal=esFinal;
+		this.estado=estado;
 	}
 	
 	public boolean isEsFinal() {
@@ -120,5 +124,15 @@ public class VisitaDTO {
 	public String getCodVoluntario() {
 		return this.codVoluntario;
 	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+	
+	
 }
 

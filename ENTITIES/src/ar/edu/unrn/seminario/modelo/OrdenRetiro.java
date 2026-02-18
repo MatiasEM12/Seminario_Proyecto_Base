@@ -20,6 +20,7 @@ public class OrdenRetiro extends Orden{
 	
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> recolectados;
+    private ArrayList<Bien> bienesEsperados;
 	
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
 			ArrayList<Visita> visitas)throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException{
@@ -74,14 +75,52 @@ public class OrdenRetiro extends Orden{
 			}
 	}
 	
+	
+
+	public ArrayList<Bien> getBienesEsperados() {
+			return bienesEsperados;
+		}
+
+		public void setBienesEsperados(ArrayList<Bien> bienesEsperados) {
+			this.bienesEsperados = bienesEsperados;
+		}
+
+
 
 
 	public String getEstadoRetiro() {
 		return super.getEstadoString();
 	}
 
-	
-	public void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
+	public void setEstado(EstadoOrden nuevoEstado)
+	        throws StateChangeException, DataObjectException {
+
+	    if (nuevoEstado == null) {
+	        throw new DataObjectException("El estado de la orden no puede ser null");
+	    }
+
+	    switch (nuevoEstado) {
+
+	        case EN_PROCESO:
+	            ordenEstadoProceso();
+	            break;
+
+	        case COMPLETADA:
+	            ordenEstadoCompleta();
+	            break;
+
+	        case CANCELADA:
+	            ordenEstadoCancelada();
+	            break;
+
+	        default:
+	            throw new StateChangeException(
+	                "Estado de Orden de Retiro inválido: " + nuevoEstado
+	            );
+	    }
+	}
+
+	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
 		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
 			
@@ -92,7 +131,7 @@ public class OrdenRetiro extends Orden{
 		
 	}
 	
-	public void ordenEstadoProceso() throws StateChangeException, DataObjectException {
+	private void ordenEstadoProceso() throws StateChangeException, DataObjectException {
 		
 	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
 			
@@ -104,7 +143,7 @@ public class OrdenRetiro extends Orden{
 		
 	}
 	
-	public void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
+	private void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
 		
 		
 		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
@@ -127,21 +166,74 @@ public class OrdenRetiro extends Orden{
 	public ArrayList<Visita> getVisitas() {
 		return visitas;
 	}
-	public void agregarVisita(Visita visita) throws StateChangeException, DataObjectException, DataListException {
-		this.validarObjectNull(visita);
-		
-		this.visitas.add(visita);
-		if(visita.getBienesRecolectados()!=null) {
-			
-			this.agregarBienes(visita.getBienesRecolectados());
-		}
-		
-		
-		if(visita.isEsFinal()==true ) {
-			this.ordenEstadoCompleta();
-		}
-		
+	public void agregarVisita(Visita visita)
+	        throws DataObjectException, StateChangeException, DataListException {
+
+	    this.validarObjectNull(visita);
+
+	    // Inicializar estado de la visita si no tiene
+	    if (visita.getEstado() == null) {
+	        visita.enProceso();;
+	    }
+
+	    // Primera visita
+	    if (visitas.isEmpty()) {
+	        visitas.add(visita);
+	        agregarBienesSiCorresponde(visita);
+	        actualizarEstadoOrden(visita);
+	        return;
+	    }
+
+	    // Última visita existente
+	    Visita ultima = visitas.get(visitas.size() - 1);
+	    if (!ultima.getEstado().equalsIgnoreCase("pendiente") &&
+	        !ultima.getEstado().equalsIgnoreCase("en proceso")) {
+	        throw new StateChangeException(
+	            "No se puede agregar una nueva visita si la última ya fue finalizada"
+	        );
+	    }
+
+	    visitas.add(visita);
+	    agregarBienesSiCorresponde(visita);
+	    actualizarEstadoOrden(visita);
 	}
+
+	// Método privado para actualizar estado de la orden según la visita
+	private void actualizarEstadoOrden(Visita visita) throws StateChangeException, DataObjectException {
+	    boolean todosBienes = comprobarBienes(bienesEsperados, recolectados);
+
+	    if (todosBienes) {
+	        visita.completar();
+	        this.setEstado(Orden.EstadoOrden.COMPLETADA);
+	    } else if (visita.isEsFinal() && !visita.tieneBienes()) {
+	        visita.completar(); // o cancelar, según el flujo
+	        this.setEstado(Orden.EstadoOrden.CANCELADA);
+	    } else {
+	        this.setEstado(Orden.EstadoOrden.EN_PROCESO);
+	    }
+	}
+
+	private void agregarBienesSiCorresponde(Visita visita) throws DataListException {
+	    if (visita.getBienesRecolectados() != null) {
+	        this.agregarBienes(visita.getBienesRecolectados());
+	    }
+	}
+
+	private boolean comprobarBienes(ArrayList<Bien> bienesPedido,
+            ArrayList<Bien> bienesRecolectados) {
+		
+		if (bienesPedido == null || bienesRecolectados == null) {
+		return false;
+		}
+		
+		if (bienesPedido.size() != bienesRecolectados.size()) {
+		return false;
+		}
+		
+		return bienesPedido.containsAll(bienesRecolectados)
+		&& bienesRecolectados.containsAll(bienesPedido);
+}
+
 	public void agregarBien(Bien bien) throws DataObjectException {
 		this.validarObjectNull(bien);
 		this.recolectados.add(bien);

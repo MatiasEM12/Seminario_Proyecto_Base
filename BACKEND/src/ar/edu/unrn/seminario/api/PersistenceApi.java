@@ -651,7 +651,7 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    // aca pondria que cuando cre la visita que comprue si la visita fue exitosa y si lo fue que agregue tambien el bien en inventariodao
+   
     public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException {
         visitaDao.create(visita);
     }   
@@ -708,22 +708,23 @@ public class PersistenceApi implements IApi {
     @Override
     public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
         
-    	  Visita visita = toVisita(visitaDTO);
-
-    	    visitaDao.create(visita);
-    	    crearBienVisita(visita);
+    	  	Visita visita = toVisita(visitaDTO);
 
     	    if (visita.getCodOrdenRetiro() != null) {
     	        OrdenRetiro oR = ordenRetiroDao.find(visita.getCodOrdenRetiro());
+    	        ArrayList<BienDTO> bienesDTO=this.obtenerBienesPorOrdenPedido(oR.getPedido().getCodigo());
+    	        oR.setBienesEsperados(this.listBien(bienesDTO));
+    	        
     	        oR.agregarVisita(visita);
     	        ordenRetiroDao.update(oR);
 
-    	        if (visita.isEsFinal()) {
+    	        if (visita.tieneBienes()) {
     	            for (Bien b : oR.getRecolectados()) {
     	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
     	            }
     	        }
-
+    	        visitaDao.create(visita);
+        	    crearBienVisita(visita);
     	    } else {
     	        OrdenEntrega oE = this.ordenEntregaDAO.find(visita.getCodOrdenEntrega());
     	        oE.agregarVisita(visita);
@@ -731,6 +732,7 @@ public class PersistenceApi implements IApi {
     	    }
     	
     }
+  
     private void crearBienDonacion(Donacion donacion) throws DAOException {
     	
     	ArrayList<Bien> bienes= donacion.getBienes();
@@ -752,9 +754,9 @@ public class PersistenceApi implements IApi {
     }
     private Visita toVisita(VisitaDTO dto)
             throws DataNullException, DataLengthException, DataDateException,
-                   DataEmptyException, DataListException, DataDoubleException, StateChangeException {
+                   DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException {
 
-        return new Visita(
+    	Visita visita= new Visita(
             dto.getFechaVisita(),
             dto.getObservaciones(),
             dto.getTipo(),
@@ -762,6 +764,7 @@ public class PersistenceApi implements IApi {
             toBienesList(dto.getBienesRecolectados()),
             dto.isEsFinal()
         );
+    	return visita;
     }
 
     
