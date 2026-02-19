@@ -23,7 +23,7 @@ public class OrdenRetiro extends Orden{
     private ArrayList<Bien> bienesEsperados;
 	
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas)throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException{
+			ArrayList<Visita> visitas)throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 		
 		this.validarObjectNull(pedido);
@@ -32,6 +32,7 @@ public class OrdenRetiro extends Orden{
 		this.pedido = pedido;
 		this.visitas = visitas;
 		this.recolectados = new ArrayList<>();
+		pedido.setEstado(Orden.EstadoOrden.EN_PROCESO);
 		crearCodigo();
 	}
 	
@@ -39,7 +40,7 @@ public class OrdenRetiro extends Orden{
 
 
 	public OrdenRetiro( LocalDate fechaEmision, OrdenPedido pedido,
-			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException{
+			ArrayList<Visita> visitas,Voluntario voluntario) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException{
 		super(fechaEmision,EstadoOrden.PENDIENTE,tipo);
 	
 		this.validarObjectNull(pedido);
@@ -51,6 +52,7 @@ public class OrdenRetiro extends Orden{
 		this.visitas = visitas;
 		this.recolectados = new ArrayList<>();
 		crearCodigo();
+		pedido.setEstado(Orden.EstadoOrden.EN_PROCESO);
 		this.voluntario=voluntario;
 		}
 		
@@ -198,24 +200,25 @@ public class OrdenRetiro extends Orden{
 	    actualizarEstadoOrden(visita);
 	}
 
-	// Método privado para actualizar estado de la orden según la visita
 	private void actualizarEstadoOrden(Visita visita)
 	        throws StateChangeException, DataObjectException {
 
+	    // SIEMPRE pasar la orden a EN_PROCESO primero
+	    this.setEstado(EstadoOrden.EN_PROCESO);
+
 	    if (visita.isEsFinal()) {
 
-	        boolean todosBienes = comprobarBienes(bienesEsperados, recolectados);
+	        boolean todosBienes =
+	                comprobarBienes(bienesEsperados, recolectados);
 
 	        if (todosBienes) {
 	            visita.completar();
 	            this.setEstado(EstadoOrden.COMPLETADA);
+	            this.pedido.setEstado(EstadoOrden.COMPLETADA);
 	        } else {
 	            visita.cancelar();
 	            this.setEstado(EstadoOrden.CANCELADA);
 	        }
-
-	    } else {
-	        this.setEstado(EstadoOrden.EN_PROCESO);
 	    }
 	}
 

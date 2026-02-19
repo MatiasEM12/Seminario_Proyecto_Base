@@ -276,24 +276,32 @@ public class Visita {
 
 	public void completar() throws StateChangeException {
 	    if (!estado.equalsIgnoreCase("En proceso")) {
-	        throw new StateChangeException("La visita no puede completarse");
+	        throw new StateChangeException(
+	            "La visita solo puede completarse si está en proceso"
+	        );
 	    }
 	    this.estado = "Completada";
 	}
 
 	public void cancelar() throws StateChangeException {
-	    if (estado.equalsIgnoreCase("Completada")) {
-	        throw new StateChangeException("No se puede cancelar una visita completada");
+	    if (!estado.equalsIgnoreCase("En proceso")) {
+	        throw new StateChangeException(
+	            "La visita solo puede cancelarse si está en proceso"
+	        );
 	    }
 	    this.estado = "Cancelada";
 	}
 
 	public void enProceso() throws StateChangeException {
-	    if (estado.equalsIgnoreCase("Cancelada")||estado.equalsIgnoreCase("Completada")) {
-	        throw new StateChangeException("No se poner en proceso la visita");
+	    if (estado.equalsIgnoreCase("Cancelada") ||
+	        estado.equalsIgnoreCase("Completada")) {
+	        throw new StateChangeException(
+	            "No se puede poner en proceso una visita finalizada"
+	        );
 	    }
 	    this.estado = "En proceso";
 	}
+
 
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {
 	    if (fechaVisita.isAfter(LocalDate.now())) {

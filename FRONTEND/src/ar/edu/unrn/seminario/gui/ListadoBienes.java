@@ -3,7 +3,6 @@ package ar.edu.unrn.seminario.gui;
 
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -28,19 +27,19 @@ public class ListadoBienes extends JFrame {
 	private JPanel contentPane;
 	private JTable table;
 	private DefaultTableModel modelo;
-    private Consumer<ArrayList<BienDTO>> onSeleccion; // callback
 	IApi api;
-	private ArrayList<BienDTO> bienes; //para la seleccion 
+	private ArrayList<BienDTO> bienes; 
+	BienDTO bien=null;
 	
 	
-	
-	public ListadoBienes(IApi api,ArrayList<BienDTO> bienesDTO,Consumer<ArrayList<BienDTO>> onSeleccion) {
+	public ListadoBienes(IApi api,ArrayList<BienDTO> bienesDTO) {
 	
 		
+	
     
         
 		this.api=api;
-		  this.setOnSeleccion(onSeleccion);
+	
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 609, 300);
 		contentPane = new JPanel();
@@ -56,7 +55,6 @@ public class ListadoBienes extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(10, 11, 573, 194);
 		contentPane.add(scrollPane);
-	    table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.bienes = new ArrayList<>(bienesDTO == null ? new ArrayList<>() : bienesDTO);
 		
 		for(BienDTO b : bienes) {
@@ -86,66 +84,6 @@ public class ListadoBienes extends JFrame {
 		});
 		btnCerrar.setBounds(494, 227, 89, 23);
 		contentPane.add(btnCerrar);
-		
-		JButton btnSeleccionar = new JButton("Seleccionar");
-		btnSeleccionar.setBounds(340, 227, 89, 23);
-		contentPane.add(btnSeleccionar);
-		
-		btnSeleccionar.addActionListener( new ActionListener(){
-			
-			public void actionPerformed(ActionEvent e) {
-				
-				  int[] filasSeleccionadas = table.getSelectedRows();
 
-			        if (filasSeleccionadas.length == 0) {
-			            JOptionPane.showMessageDialog(null,
-			                    "Debe seleccionar al menos un bien",
-			                    "Atención",
-			                    JOptionPane.WARNING_MESSAGE);
-			            return;
-			        }
-
-			        ArrayList<BienDTO> seleccionados = new ArrayList<>();
-
-			        for (int filaVista : filasSeleccionadas) {
-
-			            int filaModelo = table.convertRowIndexToModel(filaVista);
-
-			            String codigo = (String) modelo.getValueAt(filaModelo, 0);
-
-			            try {
-			                BienDTO bien = api.obtenerBien(codigo);
-			                if (bien != null) {
-			                    seleccionados.add(bien);
-			                }
-			            } catch (DataNullException | DAOException ex) {
-			                JOptionPane.showMessageDialog(null,
-			                        ex.getMessage(),
-			                        "Error",
-			                        JOptionPane.ERROR_MESSAGE);
-			            }
-			        }
-
-			        if (onSeleccion != null) {
-			            onSeleccion.accept(seleccionados);
-			        }
-
-			        setVisible(false);
-			        dispose();
-			    }
-		});
-
-	}
-
-
-
-	public Consumer<ArrayList<BienDTO>> getOnSeleccion() {
-		return onSeleccion;
-	}
-
-
-
-	public void setOnSeleccion(Consumer<ArrayList<BienDTO>> onSeleccion) {
-		this.onSeleccion = onSeleccion;
 	}
 }

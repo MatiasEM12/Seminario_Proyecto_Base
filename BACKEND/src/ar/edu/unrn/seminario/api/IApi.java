@@ -98,7 +98,7 @@ public interface IApi {
 	
 	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) throws DataNullException, DAOException;
 	public BienDTO obtenerBien (String codigo) throws DataNullException, DAOException;
-	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException ;
+	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException, DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException ;
 	
 	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
 

@@ -112,6 +112,8 @@ public class ListadoOrdenes extends JFrame {
 							av = new AltaVisitaRetiro(api,codOR);
 							av.setLocationRelativeTo(null);
 							av.setVisible(true);
+							
+							actualizarTabla("Todos", "");
 						} catch (DataNullException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
@@ -140,11 +142,17 @@ public class ListadoOrdenes extends JFrame {
 						String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);
 	                    ArrayList<BienDTO> lista = null;
 						try {
-							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
+							try {
+								lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
+							} catch (DataNullException | DataLengthException | DataDateException | DataEmptyException
+									| DataListException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						} catch (DAOException e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
-	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
+	                    ListadoBienes bienes = new ListadoBienes(api, lista);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
 						
@@ -158,7 +166,7 @@ public class ListadoOrdenes extends JFrame {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
 						
-	                    ListadoBienes bienes = new ListadoBienes(api, lista,null);
+	                    ListadoBienes bienes = new ListadoBienes(api, lista);
 	                    bienes.setLocationRelativeTo(null);
 	                    bienes.setVisible(true);
 					}

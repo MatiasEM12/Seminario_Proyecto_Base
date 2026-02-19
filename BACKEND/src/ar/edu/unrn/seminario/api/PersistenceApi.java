@@ -557,18 +557,28 @@ public class PersistenceApi implements IApi {
     }
 
     @Override
-    public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException {
-        // delegamos a OrdenRetiro DAO: buscar la orden y mapear sus bienes
-        ArrayList<BienDTO> resultado = new ArrayList<>();
-        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
-        List<OrdenRetiro> ordenes = ordenRetiroDao.findAll();
-        if (ordenes == null) return resultado;
-        for (OrdenRetiro o : ordenes) {
-            if (o != null && codOrdenRetiro.equalsIgnoreCase(o.getCodigo()) && o.getRecolectados() != null) {
-                for (Bien b : o.getRecolectados()) resultado.add(toBienDTO(b));
-                return resultado;
+    public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException, DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException {
+      
+    	
+    	List<BienDTO> resultado = new ArrayList<>();
+
+        if (codOrdenRetiro == null || codOrdenRetiro.isBlank()) {
+            return resultado;
+        }
+
+        // 1️⃣ Traer visitas del retiro
+        ArrayList<Visita> visitas =
+            visitaDao.findAllOrdenRetiro(codOrdenRetiro);
+
+        // 2️⃣ Recorrer bienes de cada visita
+        for (Visita v : visitas) {
+            if (v.getBienesRecolectados() != null) {
+                for (Bien b : v.getBienesRecolectados()) {
+                    resultado.add(toBienDTO(b));
+                }
             }
         }
+
         return resultado;
     }
 
