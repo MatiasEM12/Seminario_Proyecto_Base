@@ -709,28 +709,30 @@ public class PersistenceApi implements IApi {
     public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
         
     	  	Visita visita = toVisita(visitaDTO);
-
-    	    if (visita.getCodOrdenRetiro() != null) {
-    	        OrdenRetiro oR = ordenRetiroDao.find(visita.getCodOrdenRetiro());
+    	  	OrdenRetiro oR = ordenRetiroDao.find(visita.getCodOrdenRetiro());
+    	    if (oR.getCodigo()!= null) {
+    	        
     	        ArrayList<BienDTO> bienesDTO=this.obtenerBienesPorOrdenPedido(oR.getPedido().getCodigo());
     	        oR.setBienesEsperados(this.listBien(bienesDTO));
     	        
     	        oR.agregarVisita(visita);
     	        ordenRetiroDao.update(oR);
 
-    	        if (visita.tieneBienes()) {
-    	            for (Bien b : oR.getRecolectados()) {
-    	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
-    	            }
-    	        }
-    	        visitaDao.create(visita);
-        	    crearBienVisita(visita);
+    	       
     	    } else {
     	        OrdenEntrega oE = this.ordenEntregaDAO.find(visita.getCodOrdenEntrega());
     	        oE.agregarVisita(visita);
     	        this.ordenEntregaDAO.update(oE);
     	    }
-    	
+    	    visitaDao.create(visita);
+    	    crearBienVisita(visita);
+
+	        if (visita.tieneBienes()) {
+	            for (Bien b : oR.getRecolectados()) {
+	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
+	            }
+	        }
+    	    
     }
   
     private void crearBienDonacion(Donacion donacion) throws DAOException {
@@ -757,12 +759,13 @@ public class PersistenceApi implements IApi {
                    DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException {
 
     	Visita visita= new Visita(
+    		dto.getCodigo(),
             dto.getFechaVisita(),
             dto.getObservaciones(),
             dto.getTipo(),
             dto.getCodOrden(),
             toBienesList(dto.getBienesRecolectados()),
-            dto.isEsFinal()
+            dto.isEsFinal(),dto.getEstado()
         );
     	return visita;
     }
@@ -1018,7 +1021,7 @@ public class PersistenceApi implements IApi {
 
         // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
         OrdenRetiro orden = new OrdenRetiro(
-                retiro.getCodigo(),       // puede ser null -> el constructor crea su propio código si querés; si no, se setea directamente
+                retiro.getCodigo(),       
                 estado,
                 retiro.getFechaEmision(),
                 v,

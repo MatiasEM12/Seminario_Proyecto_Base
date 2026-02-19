@@ -193,7 +193,7 @@ public class AltaVisitaRetiro extends JFrame {
                     bienesrecolectados,
                     txtObservaciones.getText(),
                     (String) comboTipo.getSelectedItem(),
-                    esFinal,null
+                    esFinal,"Pendiente"
                    
             );
 

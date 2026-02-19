@@ -69,7 +69,7 @@ OrdenPedidoDao op = new OrdenPedidoDAOJDBC();
 		try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement statement = conn.prepareStatement(
-	            "UPDATE ordenretiro SET estado = ?, Fecha_Emision = ?, codVoluntario = ?, codOrdenPedido = ? WHERE codigo = ?"
+	            "UPDATE ordenretiro SET estado = ?, FechaCreacion = ?, codVoluntario = ?, codOrdenPedido = ? WHERE codigo = ?"
 	        );
 
 	        // Fecha

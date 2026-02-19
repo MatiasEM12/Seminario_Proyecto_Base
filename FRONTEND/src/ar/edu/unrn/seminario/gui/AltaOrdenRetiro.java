@@ -128,7 +128,7 @@ public class AltaOrdenRetiro extends JFrame {
 		    public void actionPerformed(ActionEvent e) {
 		      
 		    	String codigo = txtCodigo.getText();
-		    	ordenSeleccionada.getEstado();
+		    	String estado= "Pendiente";
 		    	String fechaTexto = txtFecha.getText();
 
 		    	try {
@@ -140,7 +140,7 @@ public class AltaOrdenRetiro extends JFrame {
 
 		    	    	    fecha,
 
-		    	    	    ordenSeleccionada.getEstado().toString(),                    // estado
+		    	    	    estado,                    // estado
 		    	    	    null,                     
 		    	    	    
 		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido

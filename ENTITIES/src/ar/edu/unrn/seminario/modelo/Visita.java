@@ -165,7 +165,7 @@ public class Visita {
 		
 		this.validarList(bienesRecolectados);
 		
-		this.codigo = codigo;
+	
 		this.fechaVisita = fechaVisita;
 		this.observaciones = observaciones;
 		this.tipo = tipo;
@@ -177,6 +177,11 @@ public class Visita {
 			this.codOrdenEntrega=codOrden;
 		}else {
 			this.codOrdenRetiro = codOrden;
+		}
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
 		}
 	}
 

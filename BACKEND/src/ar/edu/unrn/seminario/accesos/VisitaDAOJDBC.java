@@ -24,18 +24,16 @@ import ar.edu.unrn.seminario.modelo.Visita;
 
 public class VisitaDAOJDBC implements VisitaDao{
 BienDAO biendao= new BienDAOJDBC();
-
 @Override
 public void create(Visita visita)
         throws DataNullException, DataLengthException, DAOException {
 
-    try {
-        Connection conn = ConnectionManager.getConnection();
-        PreparedStatement st = conn.prepareStatement(
-            "INSERT INTO visitas " +
-            "(codigo, tipo, observaciones, estado, FechaVisita, codOrdenRetiro, codOrdenEntrega) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)"
-        );
+    try (Connection conn = ConnectionManager.getConnection();
+         PreparedStatement st = conn.prepareStatement(
+                 "INSERT INTO visitas " +
+                 "(codigo, tipo, observaciones, estado, FechaVisita, codOrdenRetiro, codOrdenEntrega) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?)"
+         )) {
 
         st.setString(1, visita.getCodigo());
         st.setString(2, visita.getTipo());
@@ -43,49 +41,34 @@ public void create(Visita visita)
         st.setString(4, visita.getEstado());
         st.setDate(5, Date.valueOf(visita.getFechaVisita()));
 
-        if (visita.getCodOrdenRetiro() != null) {
-            st.setString(6, visita.getCodOrdenRetiro());
-            st.setNull(7, java.sql.Types.VARCHAR);
-        } else {
-            st.setNull(6, java.sql.Types.VARCHAR);
-            st.setString(7, visita.getCodOrdenEntrega());
-        }
+        st.setString(6, visita.getCodOrdenRetiro() != null ? visita.getCodOrdenRetiro() : "");
+        st.setString(7, visita.getCodOrdenEntrega() != null ? visita.getCodOrdenEntrega() : "");
 
         if (st.executeUpdate() <= 0) {
             throw new DAOException("No se insertó la visita");
         }
 
     } catch (SQLException e) {
-        throw new DAOException("Error INSERT visita VT100"+ e);
-    } finally {
-        ConnectionManager.disconnect();
+        throw new DAOException("Error INSERT visita VT100: " + e.getMessage()+ e);
     }
 }
 
-
-
 @Override
 public void update(Visita visita) throws DAOException {
-
-    try {
-        Connection conn = ConnectionManager.getConnection();
-        PreparedStatement st = conn.prepareStatement(
-            "UPDATE visitas SET FechaVisita=?, observaciones=?, tipo=?, estado=?, " +
-            "codOrdenRetiro=?, codOrdenEntrega=? WHERE codigo=?"
-        );
+    try (Connection conn = ConnectionManager.getConnection();
+         PreparedStatement st = conn.prepareStatement(
+                 "UPDATE visitas SET FechaVisita=?, observaciones=?, tipo=?, estado=?, " +
+                 "codOrdenRetiro=?, codOrdenEntrega=? WHERE codigo=?"
+         )) {
 
         st.setDate(1, Date.valueOf(visita.getFechaVisita()));
         st.setString(2, visita.getObservaciones());
         st.setString(3, visita.getTipo());
         st.setString(4, visita.getEstado());
 
-        if (visita.getCodOrdenRetiro() != null) {
-            st.setString(5, visita.getCodOrdenRetiro());
-            st.setNull(6, java.sql.Types.VARCHAR);
-        } else {
-            st.setNull(5, java.sql.Types.VARCHAR);
-            st.setString(6, visita.getCodOrdenEntrega());
-        }
+        // Permite NULL en ambos campos
+        st.setString(5, visita.getCodOrdenRetiro());
+        st.setString(6, visita.getCodOrdenEntrega());
 
         st.setString(7, visita.getCodigo());
 
@@ -94,9 +77,7 @@ public void update(Visita visita) throws DAOException {
         }
 
     } catch (SQLException e) {
-        throw new DAOException("Error UPDATE visita VT200"+ e);
-    } finally {
-        ConnectionManager.disconnect();
+        throw new DAOException("Error UPDATE visita VT200: " + e.getMessage()+ e);
     }
 }
 

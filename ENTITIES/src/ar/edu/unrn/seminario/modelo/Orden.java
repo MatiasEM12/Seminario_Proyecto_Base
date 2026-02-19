@@ -38,9 +38,20 @@ public abstract class Orden {
         if (estado == null || estado.isBlank()) {
             throw new IllegalArgumentException("Estado vacío");
         }
-        return EstadoOrden.valueOf(estado.toUpperCase());
-    }
 
+        switch (estado.trim().toLowerCase()) {
+            case "pendiente":
+                return EstadoOrden.PENDIENTE;
+            case "en proceso":
+                return EstadoOrden.EN_PROCESO;
+            case "completada":
+                return EstadoOrden.COMPLETADA;
+            case "cancelada":
+                return EstadoOrden.CANCELADA;
+            default:
+                throw new IllegalArgumentException("Estado inválido: " + estado);
+        }
+    }
 
     public enum EstadoOrden {
         PENDIENTE("Pendiente"),

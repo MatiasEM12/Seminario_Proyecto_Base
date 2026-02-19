@@ -132,17 +132,17 @@ public class OrdenRetiro extends Orden{
 	}
 	
 	private void ordenEstadoProceso() throws StateChangeException, DataObjectException {
-		
-	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
-			
-			super.setEstado(EstadoOrden.EN_PROCESO);
-		}else {
-			
-			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
-		}
-		
+	    EstadoOrden actual = super.getEstado();
+	    // Permitir que PENDIENTE pase a EN_PROCESO o que ya esté en EN_PROCESO y se mantenga
+	    if (actual == EstadoOrden.PENDIENTE || actual == EstadoOrden.EN_PROCESO) {
+	        super.setEstado(EstadoOrden.EN_PROCESO);
+	    } else {
+	        throw new StateChangeException(
+	            "Cambio de estado de la Orden de Retiro inválido: " + actual
+	        );
+	    }
 	}
-	
+
 	private void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
 		
 		
@@ -206,9 +206,10 @@ public class OrdenRetiro extends Orden{
 	        visita.completar();
 	        this.setEstado(Orden.EstadoOrden.COMPLETADA);
 	    } else if (visita.isEsFinal() && !visita.tieneBienes()) {
-	        visita.completar(); // o cancelar, según el flujo
+	        visita.completar();
 	        this.setEstado(Orden.EstadoOrden.CANCELADA);
 	    } else {
+	        // Parcial: pasa a EN_PROCESO automáticamente
 	        this.setEstado(Orden.EstadoOrden.EN_PROCESO);
 	    }
 	}
