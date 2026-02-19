@@ -168,21 +168,33 @@ public class AltaVisitaRetiro extends JFrame {
     // ===================== MÉTODOS =====================
 
     private void abrirSelectorBienes(DonacionDTO donacion) {
-        List<BienDTO> listaBienes = donacion.getBienes();
-        ArrayList<BienDTO> listaParaMostrar = new ArrayList<>(listaBienes);
-        
+
+        List<BienDTO> bienesDonacion = donacion.getBienes();
+        List<BienDTO> bienesYaRetirados;
+
         try {
-			this.noRetirados(listaBienes, api.obtenerBienesPorOrdenRetiro(orden.getCodigo()));
-		} catch (DAOException e) {
-			
-			e.printStackTrace();
-		}
-        
-        ListadoBienes listado = new ListadoBienes(api, listaParaMostrar, seleccion -> {
-            if (seleccion != null) {
-                bienesrecolectados = seleccion;
-            }
-        });
+            bienesYaRetirados =
+                api.obtenerBienesPorOrdenRetiro(orden.getCodigo());
+        } catch (DAOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al obtener bienes retirados",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        ArrayList<BienDTO> bienesPendientes =
+                noRetirados(bienesYaRetirados, bienesDonacion);
+
+        ListadoBienes listado = new ListadoBienes(
+                api,
+                bienesPendientes,
+                seleccion -> {
+                    if (seleccion != null) {
+                        bienesrecolectados = seleccion;
+                    }
+                }
+        );
 
         listado.setLocationRelativeTo(this);
         listado.setVisible(true);
