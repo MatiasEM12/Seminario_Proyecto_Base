@@ -208,6 +208,10 @@ public class AltaVisitaRetiro extends JFrame {
 
     private void onGuardar() { 
      
+    	String estado="Pendiente";
+    	if(!bienesrecolectados.isEmpty()) {
+    		estado="En proceso";
+    	}
         try {
             VisitaDTO visita = new VisitaDTO(
                     fecha,
@@ -216,7 +220,7 @@ public class AltaVisitaRetiro extends JFrame {
                     bienesrecolectados,
                     txtObservaciones.getText(),
                     (String) comboTipo.getSelectedItem(),
-                    rdbtnRadioButtonEsFinal.isSelected(),"Pendiente"
+                    rdbtnRadioButtonEsFinal.isSelected(),estado
                    
             );
 

@@ -730,6 +730,7 @@ public class PersistenceApi implements IApi {
         	    crearBienVisita(visita);
     	        oR.agregarVisita(visita);
     	        ordenRetiroDao.update(oR);
+    	        ordenPedidoDao.update(oR.getPedido());
 
     	       
     	    } else {

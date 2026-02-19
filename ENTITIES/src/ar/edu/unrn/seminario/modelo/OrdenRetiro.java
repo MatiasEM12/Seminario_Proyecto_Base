@@ -175,7 +175,7 @@ public class OrdenRetiro extends Orden{
 
 	    // Inicializar estado de la visita si no tiene
 	    if (visita.getEstado() == null || visita.getEstado().equalsIgnoreCase("Pendiente")) {
-	        visita.enProceso();;
+	        visita.enProceso();
 	    }
 
 	    // Primera visita
@@ -215,6 +215,7 @@ public class OrdenRetiro extends Orden{
 	            visita.completar();
 	            this.setEstado(EstadoOrden.COMPLETADA);
 	            this.pedido.setEstado(EstadoOrden.COMPLETADA);
+	           
 	        } else {
 	            visita.cancelar();
 	            this.setEstado(EstadoOrden.CANCELADA);
