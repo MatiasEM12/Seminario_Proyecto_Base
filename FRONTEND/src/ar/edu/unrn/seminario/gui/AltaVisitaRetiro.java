@@ -159,8 +159,8 @@ public class AltaVisitaRetiro extends JFrame {
         textFieldFecha.setBounds(170, 217, 143, 20);
         contentPane.add(textFieldFecha);
 
-        btnCancelar.addActionListener(e -> limpiarCampos());
-
+        btnCancelar.addActionListener(e -> dispose());
+   
         setLocationRelativeTo(null);
         setVisible(true);
     }

@@ -1044,6 +1044,7 @@ public class PersistenceApi implements IApi {
 
         // Persistir
         ordenRetiroDao.create(orden);
+        ordenPedidoDao.update(orden.getPedido());
 	}
 
 	public  VoluntarioDTO toVoluntarioDTO(Voluntario v) {
