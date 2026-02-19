@@ -96,35 +96,43 @@ public class ListadoBienes extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				  int[] filasSeleccionadas = table.getSelectedRows();
-	              ArrayList<BienDTO> seleccionados = new ArrayList<>();
-				
-	              for (int filaVista : filasSeleccionadas) {
-	                  
-	            	int filaModelo=table.convertColumnIndexToModel(filaVista);
-	            	
-	            	//obtenemos el codigo
-	            	String codigo=(String) modelo.getValueAt(filaModelo, 0);
-	            	
-	            	//lamada a la api para recuperar el bienDTO
-	            	BienDTO bien = null;
-					try {
-						bien = api.obtenerBien(codigo);
-					} catch (DataNullException | DAOException e1) {
-						JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-					}//
-	            	
-	            	if(bien!=null) {
-	            		seleccionados.add(bien);
-	            	}
-	             }
-	             
-	             //para el callback
-	             if (onSeleccion != null) {
-						onSeleccion.accept(seleccionados);
-					}    
-	          	setVisible(false);
-				dispose();
-			}
+
+			        if (filasSeleccionadas.length == 0) {
+			            JOptionPane.showMessageDialog(null,
+			                    "Debe seleccionar al menos un bien",
+			                    "Atención",
+			                    JOptionPane.WARNING_MESSAGE);
+			            return;
+			        }
+
+			        ArrayList<BienDTO> seleccionados = new ArrayList<>();
+
+			        for (int filaVista : filasSeleccionadas) {
+
+			            int filaModelo = table.convertRowIndexToModel(filaVista);
+
+			            String codigo = (String) modelo.getValueAt(filaModelo, 0);
+
+			            try {
+			                BienDTO bien = api.obtenerBien(codigo);
+			                if (bien != null) {
+			                    seleccionados.add(bien);
+			                }
+			            } catch (DataNullException | DAOException ex) {
+			                JOptionPane.showMessageDialog(null,
+			                        ex.getMessage(),
+			                        "Error",
+			                        JOptionPane.ERROR_MESSAGE);
+			            }
+			        }
+
+			        if (onSeleccion != null) {
+			            onSeleccion.accept(seleccionados);
+			        }
+
+			        setVisible(false);
+			        dispose();
+			    }
 		});
 
 	}

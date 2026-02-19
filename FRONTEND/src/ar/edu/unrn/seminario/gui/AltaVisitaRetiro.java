@@ -37,6 +37,7 @@ public class AltaVisitaRetiro extends JFrame {
     private DonacionDTO donacion;
     private JCalendar calendar;
     private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>();
+    JRadioButton rdbtnRadioButtonEsFinal;
 
     public AltaVisitaRetiro(IApi api, String codOrdenRetiro) throws DataNullException {
 
@@ -120,10 +121,10 @@ public class AltaVisitaRetiro extends JFrame {
 
         // ===================== OBSERVACIONES =====================
         JLabel lblObserv = new JLabel("Observaciones:");
-        lblObserv.setBounds(10, 376, 100, 14);
+        lblObserv.setBounds(10, 436, 100, 14);
         contentPane.add(lblObserv);
         JScrollPane scrollObs = new JScrollPane();
-        scrollObs.setBounds(10, 401, 480, 120);
+        scrollObs.setBounds(10, 461, 480, 60);
         contentPane.add(scrollObs);
         
                 txtObservaciones = new JTextArea();
@@ -147,6 +148,10 @@ public class AltaVisitaRetiro extends JFrame {
         calendar = new JCalendar();
         calendar.setBounds(67, 212, 184, 153);
         contentPane.add(calendar);
+        
+         rdbtnRadioButtonEsFinal = new JRadioButton("esFinal");
+        rdbtnRadioButtonEsFinal.setBounds(10, 397, 109, 23);
+        contentPane.add(rdbtnRadioButtonEsFinal);
 
         btnCancelar.addActionListener(e -> limpiarCampos());
 
@@ -159,7 +164,14 @@ public class AltaVisitaRetiro extends JFrame {
     private void abrirSelectorBienes(DonacionDTO donacion) {
         List<BienDTO> listaBienes = donacion.getBienes();
         ArrayList<BienDTO> listaParaMostrar = new ArrayList<>(listaBienes);
-
+        
+        try {
+			this.noRetirados(listaBienes, api.obtenerBienesPorOrdenRetiro(orden.getCodigo()));
+		} catch (DAOException e) {
+			
+			e.printStackTrace();
+		}
+        
         ListadoBienes listado = new ListadoBienes(api, listaParaMostrar, seleccion -> {
             if (seleccion != null) {
                 bienesrecolectados = seleccion;
@@ -176,9 +188,6 @@ public class AltaVisitaRetiro extends JFrame {
     			
     	boolean esFinal=false;
     	String tipo= (String) comboTipo.getSelectedItem();
-    	if(tipo.equals("Visita Final")) {
-    		esFinal=true;
-    	}
     	
     	fecha  = calendar.getDate()
                  .toInstant()
@@ -193,7 +202,7 @@ public class AltaVisitaRetiro extends JFrame {
                     bienesrecolectados,
                     txtObservaciones.getText(),
                     (String) comboTipo.getSelectedItem(),
-                    esFinal,"Pendiente"
+                    rdbtnRadioButtonEsFinal.isSelected(),"Pendiente"
                    
             );
 
@@ -211,5 +220,25 @@ public class AltaVisitaRetiro extends JFrame {
     private void limpiarCampos() {
         txtObservaciones.setText("");
         comboTipo.setSelectedIndex(0);
+    }
+    private ArrayList<BienDTO> noRetirados( List<BienDTO> listaBienesRetirados,  List<BienDTO> listaBienesARetirar) {
+    	ArrayList<BienDTO> faltantes = new ArrayList<>();
+
+        if (listaBienesARetirar == null) {
+            return faltantes;
+        }
+
+        if (listaBienesRetirados == null) {
+            faltantes.addAll(listaBienesARetirar);
+            return faltantes;
+        }
+
+        for (BienDTO bien : listaBienesARetirar) {
+            if (!listaBienesRetirados.contains(bien)) {
+                faltantes.add(bien);
+            }
+        }
+
+        return faltantes;
     }
 }

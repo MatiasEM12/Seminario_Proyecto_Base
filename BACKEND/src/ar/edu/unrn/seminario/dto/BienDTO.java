@@ -103,7 +103,19 @@ public class BienDTO {
 	}
 	
 	
-	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
+	    BienDTO bien = (BienDTO) o;
+	    return codigo != null && codigo.equals(bien.codigo);
+	}
+
+	@Override
+	public int hashCode() {
+	    return codigo != null ? codigo.hashCode() : 0;
+	}
+
 	
 	
 	
