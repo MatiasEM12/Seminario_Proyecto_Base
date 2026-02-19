@@ -172,7 +172,7 @@ public class OrdenRetiro extends Orden{
 	    this.validarObjectNull(visita);
 
 	    // Inicializar estado de la visita si no tiene
-	    if (visita.getEstado() == null) {
+	    if (visita.getEstado() == null || visita.getEstado().equalsIgnoreCase("Pendiente")) {
 	        visita.enProceso();;
 	    }
 
@@ -199,20 +199,26 @@ public class OrdenRetiro extends Orden{
 	}
 
 	// Método privado para actualizar estado de la orden según la visita
-	private void actualizarEstadoOrden(Visita visita) throws StateChangeException, DataObjectException {
-	    boolean todosBienes = comprobarBienes(bienesEsperados, recolectados);
+	private void actualizarEstadoOrden(Visita visita)
+	        throws StateChangeException, DataObjectException {
 
-	    if (todosBienes) {
-	        visita.completar();
-	        this.setEstado(Orden.EstadoOrden.COMPLETADA);
-	    } else if (visita.isEsFinal() && !visita.tieneBienes()) {
-	        visita.completar();
-	        this.setEstado(Orden.EstadoOrden.CANCELADA);
+	    if (visita.isEsFinal()) {
+
+	        boolean todosBienes = comprobarBienes(bienesEsperados, recolectados);
+
+	        if (todosBienes) {
+	            visita.completar();
+	            this.setEstado(EstadoOrden.COMPLETADA);
+	        } else {
+	            visita.cancelar();
+	            this.setEstado(EstadoOrden.CANCELADA);
+	        }
+
 	    } else {
-	        // Parcial: pasa a EN_PROCESO automáticamente
-	        this.setEstado(Orden.EstadoOrden.EN_PROCESO);
+	        this.setEstado(EstadoOrden.EN_PROCESO);
 	    }
 	}
+
 
 	private void agregarBienesSiCorresponde(Visita visita) throws DataListException {
 	    if (visita.getBienesRecolectados() != null) {

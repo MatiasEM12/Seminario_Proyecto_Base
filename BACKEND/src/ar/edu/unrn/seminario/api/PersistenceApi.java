@@ -120,6 +120,7 @@ public class PersistenceApi implements IApi {
     	Ubicacion.setContadorUbicacion(ubicacionDao.obtenerMaximoUbicaciones());
     	Usuario.setContadorUsuario(usuarioDao.obtenerMaximoUsuarios());
     	Voluntario.setContadorVoluntario(voluntarioDao.obtenerMaximoVoluntarios());
+    	Visita.setContadorVisita(visitaDao.obtenerMaximoVisitas());
     }
     
     // --- Usuario / Rol ---
@@ -715,6 +716,8 @@ public class PersistenceApi implements IApi {
     	        ArrayList<BienDTO> bienesDTO=this.obtenerBienesPorOrdenPedido(oR.getPedido().getCodigo());
     	        oR.setBienesEsperados(this.listBien(bienesDTO));
     	        
+    	        visitaDao.create(visita);
+        	    crearBienVisita(visita);
     	        oR.agregarVisita(visita);
     	        ordenRetiroDao.update(oR);
 
@@ -724,8 +727,7 @@ public class PersistenceApi implements IApi {
     	        oE.agregarVisita(visita);
     	        this.ordenEntregaDAO.update(oE);
     	    }
-    	    visitaDao.create(visita);
-    	    crearBienVisita(visita);
+    	
 
 	        if (visita.tieneBienes()) {
 	            for (Bien b : oR.getRecolectados()) {

@@ -58,7 +58,7 @@ public class Visita {
 		}else {
 			this.codOrdenRetiro = codOrden;
 		}
-		
+		this.estado = "Pendiente";
 		this.bienesRecolectados = bienesRecolectados;
 		this.esFinal=esFinal;
 		
@@ -99,7 +99,7 @@ public class Visita {
 		}else {
 			this.codOrdenRetiro = codOrden;
 		}
-		
+		this.estado = "Pendiente";
 		this.bienesRecolectados = bienesRecolectados;
 		if(codigo==null) {
 			crearCodigo();
@@ -135,7 +135,7 @@ public class Visita {
 		}else {
 			this.codOrdenRetiro = codOrden;
 		}
-		
+		this.estado = "Pendiente";
 		this.bienesRecolectados = new ArrayList<>();
 		this.bienesRecolectados.add(bien);
 		if(codigo==null) {
@@ -296,7 +296,7 @@ public class Visita {
 	}
 
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {
-	    if (!fechaVisita.equals(LocalDate.now())) {
+	    if (fechaVisita.isAfter(LocalDate.now())) {
 	        throw new DataDateException("La fecha de visita debe ser hoy");
 	    }
 	}

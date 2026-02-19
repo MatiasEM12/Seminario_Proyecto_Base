@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +36,9 @@ public class AltaVisitaRetiro extends JFrame {
     private LocalDate fecha = null;
     private OrdenRetiroDTO orden;
     private DonacionDTO donacion;
-    private JCalendar calendar;
     private ArrayList<BienDTO> bienesrecolectados = new ArrayList<>();
     JRadioButton rdbtnRadioButtonEsFinal;
+    private JTextField textFieldFecha;
 
     public AltaVisitaRetiro(IApi api, String codOrdenRetiro) throws DataNullException {
 
@@ -115,8 +116,8 @@ public class AltaVisitaRetiro extends JFrame {
         contentPane.add(txtCodDonante);
 
         // ===================== FECHA =====================
-        JLabel lblFecha = new JLabel("Fecha:");
-        lblFecha.setBounds(10, 220, 47, 14);
+        JLabel lblFecha = new JLabel("Fecha Emision:");
+        lblFecha.setBounds(10, 220, 84, 14);
         contentPane.add(lblFecha);
 
         // ===================== OBSERVACIONES =====================
@@ -145,13 +146,18 @@ public class AltaVisitaRetiro extends JFrame {
         btnCancelar.setBounds(368, 532, 100, 25);
         contentPane.add(btnCancelar);
         
-        calendar = new JCalendar();
-        calendar.setBounds(67, 212, 184, 153);
-        contentPane.add(calendar);
-        
          rdbtnRadioButtonEsFinal = new JRadioButton("esFinal");
         rdbtnRadioButtonEsFinal.setBounds(10, 397, 109, 23);
         contentPane.add(rdbtnRadioButtonEsFinal);
+        
+        fecha= LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaString = fecha.format(formatter);
+        
+        textFieldFecha = new JTextField(fechaString);
+        textFieldFecha.setEditable(false);
+        textFieldFecha.setBounds(170, 217, 143, 20);
+        contentPane.add(textFieldFecha);
 
         btnCancelar.addActionListener(e -> limpiarCampos());
 
@@ -182,17 +188,7 @@ public class AltaVisitaRetiro extends JFrame {
         listado.setVisible(true);
     }
 
-    private void onGuardar() {
-
-    	
-    			
-    	boolean esFinal=false;
-    	String tipo= (String) comboTipo.getSelectedItem();
-    	
-    	fecha  = calendar.getDate()
-                 .toInstant()
-                .atZone(ZoneId.systemDefault())
-               .toLocalDate();
+    private void onGuardar() { 
      
         try {
             VisitaDTO visita = new VisitaDTO(
