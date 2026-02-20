@@ -301,6 +301,16 @@ public class Visita {
 	    }
 	    this.estado = "En proceso";
 	}
+	
+	public void enPendiente() throws StateChangeException {
+	    if (estado.equalsIgnoreCase("Cancelada") ||
+	        estado.equalsIgnoreCase("Completada")) {
+	        throw new StateChangeException(
+	            "No se puede poner en pendinete una visita finalizada o ocmpletada"
+	        );
+	    }
+	    this.estado = "Pendiente";
+	}
 
 
 	private void validarFechaVisita(LocalDate fechaVisita) throws DataDateException {

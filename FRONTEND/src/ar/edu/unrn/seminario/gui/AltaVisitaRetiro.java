@@ -208,8 +208,10 @@ public class AltaVisitaRetiro extends JFrame {
 
     private void onGuardar() { 
      
-    	String estado="Pendiente";
-    	if(!bienesrecolectados.isEmpty()) {
+    	String estado=null;
+    	if(bienesrecolectados.isEmpty()) {
+    		estado="Pendiente";
+    	}else {
     		estado="En proceso";
     	}
         try {
@@ -235,10 +237,6 @@ public class AltaVisitaRetiro extends JFrame {
         }
     }
 
-    private void limpiarCampos() {
-        txtObservaciones.setText("");
-        comboTipo.setSelectedIndex(0);
-    }
     private ArrayList<BienDTO> noRetirados( List<BienDTO> listaBienesRetirados,  List<BienDTO> listaBienesARetirar) {
     	ArrayList<BienDTO> faltantes = new ArrayList<>();
 

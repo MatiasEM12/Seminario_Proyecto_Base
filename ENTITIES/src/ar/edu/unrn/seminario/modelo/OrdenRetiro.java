@@ -173,13 +173,11 @@ public class OrdenRetiro extends Orden{
 
 	    this.validarObjectNull(visita);
 
-	    // Inicializar estado de la visita si no tiene
-	    if (visita.getEstado() == null || visita.getEstado().equalsIgnoreCase("Pendiente")) {
-	        visita.enProceso();
-	    }
-
+	   
+	    
 	    // Primera visita
 	    if (visitas.isEmpty()) {
+	
 	        visitas.add(visita);
 	        agregarBienesSiCorresponde(visita);
 	        actualizarEstadoOrden(visita);
@@ -196,6 +194,7 @@ public class OrdenRetiro extends Orden{
 	    }
 
 	    visitas.add(visita);
+	    comprobarYCambiarEstadoCancelado();
 	    agregarBienesSiCorresponde(visita);
 	    actualizarEstadoOrden(visita);
 	}
@@ -203,24 +202,80 @@ public class OrdenRetiro extends Orden{
 	private void actualizarEstadoOrden(Visita visita)
 	        throws StateChangeException, DataObjectException {
 
-	    // SIEMPRE pasar la orden a EN_PROCESO primero
-	    this.setEstado(EstadoOrden.EN_PROCESO);
 
+	
+		
+	 //this.setEstado(EstadoOrden.EN_PROCESO);
+	  boolean todosBienes =comprobarBienes(bienesEsperados, recolectados);
 	    if (visita.isEsFinal()) {
 
-	        boolean todosBienes =
-	                comprobarBienes(bienesEsperados, recolectados);
+	      if(!visita.getBienesRecolectados().isEmpty()&&todosBienes) {
+	    	  //caso: es la visita Final y tiene bienes, además todos los bienes fueron retirados 
+	    	  
+	    	  visita.completar();
+	    	  this.ordenEstadoCompleta();
+	    	  this.pedido.setEstado(this.getEstado());
+	      }else {
+	    	  //caso: la visita es final y no tiene materiales, pero no habran más visitas para retirar los bienes pendientes 
+	    	  visita.completar();
+	    	  this.ordenEstadoCompleta();
+	    	  this.pedido.setEstado(this.getEstado());
+	      }
 
-	        if (todosBienes) {
-	            visita.completar();
-	            this.setEstado(EstadoOrden.COMPLETADA);
-	            this.pedido.setEstado(EstadoOrden.COMPLETADA);
-	           
-	        } else {
-	            visita.cancelar();
-	            this.setEstado(EstadoOrden.CANCELADA);
+	       		
+	       	
+	    }else {
+	    	
+	    	if(!visita.getBienesRecolectados().isEmpty() && !!this.recolectados.isEmpty()) {
+	    		//caso: La visita no es final , tiene bienes y la OrdenRetiro tiene bienes  por lo cual quedan bienes a retirar. 
+	    		visita.enProceso();
+	    		this.ordenEstadoProceso();
+	    		
+	    	}else {
+	    		//caso: La visita no es final, no tiene bienes y la OrdenRetiro no tiene bienes, esa visita no modificaciones de bienes.
+	    		visita.enPendiente();
+	    		this.ordenEstadoProceso();
+	    		pedido.setEstado(this.getEstado());
+	    		
+	    		comprobarYCambiarEstadoCancelado();//por si es valida a cancelar
+	    		
+	    		
+	    	}
+	    	
+	    	
+	    	
+	    }
+	    
+	}
+	public void comprobarYCambiarEstadoCancelado()
+	        throws StateChangeException, DataObjectException {
+
+	    if (visitas == null || visitas.size() < 3) {
+	        return; 
+	    }
+
+	    int size = visitas.size();
+
+	    // Tomamos las últimas 3 visitas
+	    Visita v1 = visitas.get(size - 1);
+	    Visita v2 = visitas.get(size - 2);
+	    Visita v3 = visitas.get(size - 3);
+
+	    if (sonTodasPendientes(v1, v2, v3)) {
+
+	    
+	        v1.cancelar();
+	        this.ordenEstadoCancelada();
+	        if (this.pedido != null) {
+	            this.pedido.setEstado(this.getEstado());
 	        }
 	    }
+	}
+	private boolean sonTodasPendientes(Visita v1, Visita v2, Visita v3) {
+
+	    return v1.getEstado().equalsIgnoreCase("Pendiente")
+	        && v2.getEstado().equalsIgnoreCase("Pendiente")
+	        && v3.getEstado().equalsIgnoreCase("Pendiente");
 	}
 
 
