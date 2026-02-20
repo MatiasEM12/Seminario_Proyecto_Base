@@ -128,7 +128,7 @@ public class OrdenRetiro extends Orden{
 			
 			super.setEstado(EstadoOrden.COMPLETADA);
 		}else {
-			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
+			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido");
 		}
 		
 	}
@@ -153,7 +153,7 @@ public class OrdenRetiro extends Orden{
 			super.setEstado(EstadoOrden.CANCELADA);
 		}else {
 
-			  throw new StateChangeException("Cambio deestado de la Orden de Retiro Invalido");
+			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido");
 		}
 		
 		
@@ -208,7 +208,7 @@ public class OrdenRetiro extends Orden{
 	
 		
 	 //this.setEstado(EstadoOrden.EN_PROCESO);
-	  boolean todosBienes =comprobarBienes(bienesEsperados, recolectados);
+	  boolean todosBienes =comprobarBienes(bienesEsperados, recolectados);//true si todos los bienes fueron recolectados
 	    if (visita.isEsFinal()) {
 
 	      if(!visita.getBienesRecolectados().isEmpty()&&todosBienes) {
@@ -218,7 +218,7 @@ public class OrdenRetiro extends Orden{
 	    	  this.ordenEstadoCompleta();
 	    	  this.pedido.setEstado(this.getEstado());
 	      }else {
-	    	  //caso: la visita es final y no tiene materiales, pero no habran más visitas para retirar los bienes pendientes 
+	    	  //caso: la visita es final y no tiene bienes, pero no habran más visitas para retirar los bienes pendientes 
 	    	  visita.completar();
 	    	  this.ordenEstadoCompleta();
 	    	  this.pedido.setEstado(this.getEstado());
@@ -228,7 +228,7 @@ public class OrdenRetiro extends Orden{
 	       	
 	    }else {
 	    	
-	    	if(!visita.getBienesRecolectados().isEmpty() && !!this.recolectados.isEmpty()) {
+	    	if(!visita.getBienesRecolectados().isEmpty() && !this.recolectados.isEmpty()) {
 	    		//caso: La visita no es final , tiene bienes y la OrdenRetiro tiene bienes  por lo cual quedan bienes a retirar. 
 	    		visita.enProceso();
 	    		this.ordenEstadoProceso();

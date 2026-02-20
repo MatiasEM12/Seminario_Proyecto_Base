@@ -726,12 +726,16 @@ public class PersistenceApi implements IApi {
     	        ArrayList<BienDTO> bienesDTO=this.obtenerBienesPorOrdenPedido(oR.getPedido().getCodigo());
     	        oR.setBienesEsperados(this.listBien(bienesDTO));
     	        
-    	     
+
+    	    
     	        oR.agregarVisita(visita);
-    	        ordenRetiroDao.update(oR);
-    	        ordenPedidoDao.update(oR.getPedido());
+    	        
+    	        
     	        visitaDao.create(visita);
         	    crearBienVisita(visita);
+    	        ordenRetiroDao.update(oR);
+    	        ordenPedidoDao.update(oR.getPedido());
+    	        
 
     	       
     	    } else {
