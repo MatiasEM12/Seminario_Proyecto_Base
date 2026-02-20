@@ -173,7 +173,7 @@ public class OrdenRetiro extends Orden{
 
 	    this.validarObjectNull(visita);
 
-	   
+	  
 	    
 	    // Primera visita
 	    if (visitas.isEmpty()) {
@@ -194,7 +194,9 @@ public class OrdenRetiro extends Orden{
 	    }
 
 	    visitas.add(visita);
-	    comprobarYCambiarEstadoCancelado();
+	    if(visita.getEstado().equalsIgnoreCase("Pendiente")) {
+			   comprobarYCambiarEstadoCancelado();
+		   }
 	    agregarBienesSiCorresponde(visita);
 	    actualizarEstadoOrden(visita);
 	}
