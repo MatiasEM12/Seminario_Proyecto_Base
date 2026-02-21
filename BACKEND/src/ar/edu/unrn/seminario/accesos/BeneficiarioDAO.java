@@ -10,7 +10,7 @@ import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
 
 public interface BeneficiarioDAO {
-	abstract void create(Beneficiario beneficiario) throws DAOException;
+	void create(Beneficiario beneficiario) throws DAOException;
 
 	void update(Beneficiario beneficiario) throws DAOException;
 	

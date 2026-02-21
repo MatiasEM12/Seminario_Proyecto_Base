@@ -232,6 +232,30 @@ public void create(String codBien,String tipoBien, boolean disponible) throws DA
 	        ConnectionManager.disconnect();
 	    }
 	}
+	
+	public boolean esDisponible(String codBien) throws DAOException {
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(
+	            "SELECT disponible FROM inventario WHERE codigoBien = ?"
+	        );
+	        ps.setString(1, codBien);
+
+	        ResultSet rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            return rs.getBoolean("disponible");
+	        }
+
+	        // si no existe el bien en inventario
+	        return false;
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error al verificar disponibilidad del bien: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
 
 	
 }

@@ -16,7 +16,7 @@ public class OrdenEntrega extends Orden{
 	
 	public static String tipo="ORDEN_ENTREGA";
 	private String codigo=null;
-	private LocalDateTime fechaHoraProgramada;
+	private LocalDate fechaHoraProgramada;
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> entregados;
 	private Beneficiario beneficiario;
@@ -34,11 +34,32 @@ public class OrdenEntrega extends Orden{
 	
 		this.beneficiario=beneficiario;
 	}
+
+
+
 	
-	
-	private void setFecha(LocalDateTime fechaHoraProgramada) throws DataDateException {
-		this.validarDateTime(fechaHoraProgramada);
-		this.validarDateTimeProgramacion(fechaHoraProgramada);
+	public OrdenEntrega(LocalDate fechaEmision, String estado, String codigo,
+			LocalDate fechaHoraProgramada, ArrayList<Visita> visitas, Beneficiario beneficiario,
+			Voluntario voluntario)
+			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
+		super(fechaEmision, estado, tipo);
+		
+		
+		this.codigo = codigo;
+		this.fechaHoraProgramada = fechaHoraProgramada;
+		this.visitas = visitas;
+		this.beneficiario = beneficiario;
+		this.voluntario = voluntario;
+
+		inicializarEntregados();
+	}
+
+
+
+
+	private void setFecha(LocalDate fechaHoraProgramada) throws DataDateException {
+		this.validarDate(fechaHoraProgramada);
+		this.validarDateProgramacion(fechaHoraProgramada);
 		this.fechaHoraProgramada=fechaHoraProgramada;	
 	}
 	
@@ -53,14 +74,11 @@ public class OrdenEntrega extends Orden{
 	public String getCodigo() {
 		return codigo;
 	}
-	public LocalDateTime getFechaHoraProgramada() {
+	public LocalDate getFechaHoraProgramada() {
 		return fechaHoraProgramada;
 	}
 	
 
-	private Beneficiario getBeneficiario() {
-		return beneficiario;
-	}
 	
 	
 
@@ -99,15 +117,15 @@ public class OrdenEntrega extends Orden{
 		OrdenEntrega.contadorEntrega = contador;
 	}
 	
-	private void validarDateTime(LocalDateTime fecha) throws DataDateException {
+	private void validarDate(LocalDate fecha) throws DataDateException {
 		if (fecha==null) {
 			throw new DataDateException("La fecha no puede ser nula");
 		
 		}
 	}
-	private void validarDateTimeProgramacion(LocalDateTime fecha) throws DataDateException {
-		if (fecha.isBefore(LocalDateTime.now())) {
-			throw new DataDateException("Fecha invalida, anterior a la actual");
+	private void validarDateProgramacion(LocalDate fecha) throws DataDateException {
+		if (fecha.isBefore(LocalDate.now())) {
+			throw new DataDateException("Fecha invalida");
 		
 		}
 	}
@@ -190,8 +208,8 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	}
 
 
-	public void setFechaHoraProgramada(LocalDateTime fechaHoraProgramada) throws DataDateException {
-		this.validarDateTimeProgramacion(fechaHoraProgramada);
+	public void setFechaHoraProgramada(LocalDate fechaHoraProgramada) throws DataDateException {
+		this.validarDateProgramacion(fechaHoraProgramada);
 		this.fechaHoraProgramada = fechaHoraProgramada;
 	}
 
@@ -201,6 +219,46 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	}
 
 
+	public static int getContadorEntrega() {
+		return contadorEntrega;
+	}
+
+
+	public static void setContadorEntrega(int contadorEntrega) {
+		OrdenEntrega.contadorEntrega = contadorEntrega;
+	}
+  
+	
+
+	public Beneficiario getBeneficiario() {
+		return beneficiario;
+	}
+
+
+	public void setBeneficiario(Beneficiario beneficiario) {
+		this.beneficiario = beneficiario;
+	}
+
+
+	public void setVoluntario(Voluntario voluntario) throws DataObjectException {
+		this.validarObjectNull(voluntario);
+		this.voluntario = voluntario;
+	}
+
+
+	private void inicializarEntregados() {
+	    this.entregados = new ArrayList<>();
+
+	    if (this.visitas == null) {
+	        return;
+	    }
+
+	    for (Visita v : visitas) {
+	        if (v.getBienesRecolectados()!=null) {
+	            this.entregados.addAll(v.getBienesRecolectados());
+	        }
+	    }
+	}
 
 
 
