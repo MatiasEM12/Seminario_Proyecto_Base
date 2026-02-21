@@ -124,11 +124,12 @@ public class OrdenRetiro extends Orden{
 
 	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
-		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
+		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) || super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString())) {
 			
 			super.setEstado(EstadoOrden.COMPLETADA);
 		}else {
-			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido");
+			// este es el qque proboca el error
+			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido aqui");
 		}
 		
 	}
