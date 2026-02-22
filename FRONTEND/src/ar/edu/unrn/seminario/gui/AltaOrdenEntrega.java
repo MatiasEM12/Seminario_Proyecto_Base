@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.dto.OrdenEntregaDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.SolicitudBienDTO;
@@ -27,7 +28,7 @@ public class AltaOrdenEntrega extends JFrame {
 
 
 
-	private OrdenPedidoDTO ordenSeleccionada;
+	private OrdenEntregaDTO ordenEntrega;
     private VoluntarioDTO voluntario;
 
 	private JTextField txtFecha;
