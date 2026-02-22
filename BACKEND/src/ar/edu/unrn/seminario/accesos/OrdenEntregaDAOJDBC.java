@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.modelo.Beneficiario;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Orden;
@@ -23,62 +24,85 @@ import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 import ar.edu.unrn.seminario.modelo.OrdenEntrega;
 
 public class OrdenEntregaDAOJDBC implements OrdenEntregaDAO{
-VisitaDao visita;
-VoluntarioDAO voluntario;
-OrdenPedidoDao op;
+VisitaDao visita= new VisitaDAOJDBC();
+VoluntarioDAO voluntario= new VoluntarioDAOJDBC();
+OrdenPedidoDao op =new OrdenPedidoDAOJDBC();
+BeneficiarioDAO beneficiario=new BeneficiarioDAOJDBC();	
 	
-	@Override
-	public void create(OrdenEntrega orden) throws DAOException {
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement st = conn.prepareStatement(
-	            "INSERT INTO ordenEntrega (codigo, estado, FechaCreacion, FechaProgramada, codVoluntario) " +
-	            "VALUES (?, ?, ?, ?, ?)"
-	        );
 
-	        st.setString(1, orden.getCodigo());
-	        st.setString(2, orden.getEstadoString());
-	        st.setDate(3, java.sql.Date.valueOf(orden.getFechaEmision()));
-	        st.setTimestamp(4, java.sql.Timestamp.valueOf(orden.getFechaHoraProgramada()));
-	        st.setString(5, orden.getVoluntario().getCodigo());
-	    
+@Override
+public void create(OrdenEntrega orden) throws DAOException {
+    try {
+        Connection conn = ConnectionManager.getConnection();
+        PreparedStatement st = conn.prepareStatement(
+            "INSERT INTO ordenEntrega " +
+            "(codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario) " +
+            "VALUES (?, ?, ?, ?, ?, ?)"
+        );
 
-	        int filas = st.executeUpdate();
-	        if (filas <= 0) {
-	            throw new DAOException("No se insertó OrdenEntrega");
-	        }
+        st.setString(1, orden.getCodigo());
+        st.setString(2, orden.getEstadoString());
+        st.setDate(3, java.sql.Date.valueOf(orden.getFechaEmision()));
 
-	    } catch (SQLException e) {
-	        throw new DAOException("Error INSERT OrdenEntrega: " + e.getMessage() + ".OE100");
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-	}
+        if (orden.getFechaHoraProgramada() != null) {
+            st.setDate(4, java.sql.Date.valueOf(orden.getFechaHoraProgramada()));
+        } else {
+            st.setNull(4, java.sql.Types.DATE);
+        }
 
+        if (orden.getVoluntario() != null) {
+            st.setString(5, orden.getVoluntario().getCodigo());
+        } else {
+            st.setNull(5, java.sql.Types.VARCHAR);
+        }
 
-	@Override
-	public void update(OrdenEntrega orden) throws DAOException {
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement st = conn.prepareStatement(
-	            "UPDATE ordenEntrega SET estado=?, FechaProgramada=?, codVoluntario=? WHERE codigo=?"
-	        );
+        st.setString(6, orden.getBeneficiario().getCodigo());
 
-	        st.setString(1, orden.getEstadoString());
-	        st.setTimestamp(2, java.sql.Timestamp.valueOf(orden.getFechaHoraProgramada()));
-	        st.setString(3, orden.getVoluntario().getCodigo());
-	        st.setString(4, orden.getCodigo());
+        if (st.executeUpdate() <= 0) {
+            throw new DAOException("No se insertó OrdenEntrega");
+        }
 
-	        if (st.executeUpdate() <= 0) {
-	            throw new DAOException("No se actualizó OrdenEntrega");
-	        }
+    } catch (SQLException e) {
+        throw new DAOException("Error INSERT OrdenEntrega: " + e.getMessage() + ".OE100");
+    } finally {
+        ConnectionManager.disconnect();
+    }
+}
 
-	    } catch (SQLException e) {
-	        throw new DAOException("Error UPDATE OrdenEntrega: " + e.getMessage() + ".OE200");
-	    } finally {
-	        ConnectionManager.disconnect();
-	    }
-	}
+@Override
+public void update(OrdenEntrega orden) throws DAOException {
+    try {
+        Connection conn = ConnectionManager.getConnection();
+        PreparedStatement st = conn.prepareStatement(
+            "UPDATE ordenEntrega SET estado=?, FechaProgramada=?, codVoluntario=? WHERE codigo=?"
+        );
+
+        st.setString(1, orden.getEstadoString());
+
+        if (orden.getFechaHoraProgramada() != null) {
+            st.setDate(2, java.sql.Date.valueOf(orden.getFechaHoraProgramada()));
+        } else {
+            st.setNull(2, java.sql.Types.DATE);
+        }
+
+        if (orden.getVoluntario() != null) {
+            st.setString(3, orden.getVoluntario().getCodigo());
+        } else {
+            st.setNull(3, java.sql.Types.VARCHAR);
+        }
+
+        st.setString(4, orden.getCodigo());
+
+        if (st.executeUpdate() <= 0) {
+            throw new DAOException("No se actualizó OrdenEntrega");
+        }
+
+    } catch (SQLException e) {
+        throw new DAOException("Error UPDATE OrdenEntrega: " + e.getMessage() + ".OE200");
+    } finally {
+        ConnectionManager.disconnect();
+    }
+}
 
 
 	@Override
@@ -115,34 +139,42 @@ OrdenPedidoDao op;
 	    try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT estado, FechaCreacion, FechaProgramada, codVoluntario " +
+	            "SELECT codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario " +
 	            "FROM ordenEntrega WHERE codigo = ?"
 	        );
-	        st.setString(1, codigo);
 
+	        st.setString(1, codigo);
 	        ResultSet rs = st.executeQuery();
+
 	        if (rs.next()) {
 
-	            LocalDate fechaCreacion =
-	                rs.getDate("FechaCreacion").toLocalDate();
+	            String estado = rs.getString("estado");
+	            LocalDate fechaCreacion = rs.getDate("FechaCreacion").toLocalDate();
 
-	            LocalDateTime fechaProg =
-	                rs.getTimestamp("FechaProgramada").toLocalDateTime();
+	            LocalDate fechaProg = null;
+	            if (rs.getDate("FechaProgramada") != null) {
+	                fechaProg = rs.getDate("FechaProgramada").toLocalDate();
+	            }
+
+	            Beneficiario beneficiario =
+	                this.beneficiario.find(rs.getString("codBeneficiario"));
+
+	            Voluntario voluntario = null;
+	            if (rs.getString("codVoluntario") != null) {
+	                voluntario = this.voluntario.find(rs.getString("codVoluntario"));
+	            }
+
+	            ArrayList<Visita> visitas =
+	                this.visita.findAllOrdenEntrega(codigo);
 
 	            orden = new OrdenEntrega(
-	                new ArrayList<>(), // bienes se cargan desde visitas
-	                null,              // beneficiario viene indirecto
-	                fechaCreacion
-	            );
-
-	            orden.setFechaHoraProgramada(fechaProg);
-	            orden.setEstado(
-	                EstadoOrden.valueOf(rs.getString("estado"))
-	            );
-
-	            // visitas SOLO por OrdenEntrega
-	            orden.setVisitas(
-	                visita.findAllOrdenEntrega(codigo)
+	                fechaCreacion,
+	                estado,
+	                codigo,
+	                fechaProg,
+	                visitas,
+	                beneficiario,
+	                voluntario
 	            );
 	        }
 
@@ -156,8 +188,6 @@ OrdenPedidoDao op;
 
 	    return orden;
 	}
-
-
 
 	@Override
 	public List<OrdenEntrega> findAll() throws DAOException {
