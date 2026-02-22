@@ -8,6 +8,7 @@ import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.exception.StateChangeException;
+import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
 
 
 
@@ -119,6 +120,7 @@ public class OrdenPedido extends Orden {
 	
 		this.observaciones = observaciones;
 	}
+	
 
 
 	
@@ -168,6 +170,74 @@ public class OrdenPedido extends Orden {
 			throw new DataLengthException("el campo " + nombreCampo + " tiene tener min 10 caracteres y como maximo 255 ");
 		}
 
+	}
+	
+	
+	public void setEstado(EstadoOrden nuevoEstado)
+	        throws StateChangeException, DataObjectException {
+
+	    if (nuevoEstado == null) {
+	        throw new DataObjectException("El estado de la orden no puede ser null");
+	    }
+
+	    switch (nuevoEstado) {
+
+	        case EN_PROCESO:
+	            ordenEstadoProceso();
+	            break;
+
+	        case COMPLETADA:
+	            ordenEstadoCompleta();
+	            break;
+
+	        case CANCELADA:
+	            ordenEstadoCancelada();
+	            break;
+
+	        default:
+	            throw new StateChangeException(
+	                "Estado de Orden de Retiro inválido: " + nuevoEstado
+	            );
+	    }
+	}
+	
+	
+	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
+		
+		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) || super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString())) {
+			
+			super.setEstado(EstadoOrden.COMPLETADA);
+		}else {
+			// este es el qque proboca el error
+			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido aqui");
+		}
+		
+	}
+	
+	private void ordenEstadoProceso() throws StateChangeException, DataObjectException {
+	    EstadoOrden actual = super.getEstado();
+	    // Permitir que PENDIENTE pase a EN_PROCESO o que ya esté en EN_PROCESO y se mantenga
+	    if (actual == EstadoOrden.PENDIENTE || actual == EstadoOrden.EN_PROCESO) {
+	        super.setEstado(EstadoOrden.EN_PROCESO);
+	    } else {
+	        throw new StateChangeException(
+	            "Cambio de estado de la Orden de Retiro inválido: " + actual
+	        );
+	    }
+	}
+
+	private void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
+		
+		
+		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
+			
+			super.setEstado(EstadoOrden.CANCELADA);
+		}else {
+
+			  throw new StateChangeException("Cambio de estado de la Orden de Retiro Invalido");
+		}
+		
+		
 	}
 
 }
