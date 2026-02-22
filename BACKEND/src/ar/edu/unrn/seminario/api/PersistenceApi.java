@@ -304,7 +304,6 @@ public class PersistenceApi implements IApi {
     public List<OrdenDTO> obtenerOrdenes() throws DAOException {
 
         List<OrdenDTO> resultado = new ArrayList<>();
-
         // ORDENES PEDIDO
         List<OrdenPedido> pedidos = ordenPedidoDao.findAll();
         if (pedidos != null) {
@@ -1049,6 +1048,8 @@ public class PersistenceApi implements IApi {
 
         // Persistir
         ordenRetiroDao.create(orden);
+        OrdenPedido A = orden.getPedido();
+        A.setEstado(Orden.EstadoOrden.EN_PROCESO);
         ordenPedidoDao.update(orden.getPedido());
 	}
 
