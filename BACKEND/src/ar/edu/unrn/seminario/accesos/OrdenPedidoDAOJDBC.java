@@ -63,7 +63,7 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 	        statement.setDate(1, fechaSQL);
 	        statement.setBoolean(2, orden.isCargaPesada());
 	        statement.setString(3, orden.getObservaciones());
-	        statement.setString(4, orden.getEstado().name());
+	        statement.setString(4, orden.getEstado().toString());
 	        statement.setString(5, orden.getCodigo());
 			int cantidad = statement.executeUpdate();
 			if (cantidad > 0) {
