@@ -18,6 +18,7 @@ import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Orden;
 import ar.edu.unrn.seminario.modelo.OrdenPedido;
 import ar.edu.unrn.seminario.modelo.OrdenRetiro;
+import ar.edu.unrn.seminario.modelo.SolicitudBien;
 import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
@@ -28,6 +29,7 @@ VisitaDao visita= new VisitaDAOJDBC();
 VoluntarioDAO voluntario= new VoluntarioDAOJDBC();
 OrdenPedidoDao op =new OrdenPedidoDAOJDBC();
 BeneficiarioDAO beneficiario=new BeneficiarioDAOJDBC();	
+SolicitudBienesDAO solicitud= new SolicitudBienesJDBC();
 	
 
 @Override
@@ -36,8 +38,8 @@ public void create(OrdenEntrega orden) throws DAOException {
         Connection conn = ConnectionManager.getConnection();
         PreparedStatement st = conn.prepareStatement(
             "INSERT INTO ordenEntrega " +
-            "(codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario) " +
-            "VALUES (?, ?, ?, ?, ?, ?)"
+            "(codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario,codSolicitud) " +
+            "VALUES (?, ?, ?, ?, ?, ?,?)"
         );
 
         st.setString(1, orden.getCodigo());
@@ -57,7 +59,7 @@ public void create(OrdenEntrega orden) throws DAOException {
         }
 
         st.setString(6, orden.getBeneficiario().getCodigo());
-
+        st.setString(7, orden.getSolicitud().getCodigo());
         if (st.executeUpdate() <= 0) {
             throw new DAOException("No se insertó OrdenEntrega");
         }
@@ -139,7 +141,7 @@ public void update(OrdenEntrega orden) throws DAOException {
 	    try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario " +
+	            "SELECT codigo, estado,tipo, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario,codSolicitud " +
 	            "FROM ordenEntrega WHERE codigo = ?"
 	        );
 
@@ -150,7 +152,7 @@ public void update(OrdenEntrega orden) throws DAOException {
 
 	            String estado = rs.getString("estado");
 	            LocalDate fechaCreacion = rs.getDate("FechaCreacion").toLocalDate();
-
+	            String tipo=rs.getString("tipo");
 	            LocalDate fechaProg = null;
 	            if (rs.getDate("FechaProgramada") != null) {
 	                fechaProg = rs.getDate("FechaProgramada").toLocalDate();
@@ -164,15 +166,16 @@ public void update(OrdenEntrega orden) throws DAOException {
 	                voluntario = this.voluntario.find(rs.getString("codVoluntario"));
 	            }
 
+	            SolicitudBien solicitud = this.solicitud.find("codSolicitud");
 	            ArrayList<Visita> visitas =
 	                this.visita.findAllOrdenEntrega(codigo);
 
 	            orden = new OrdenEntrega(
 	                fechaCreacion,
-	                estado,
+	                estado,tipo,
 	                codigo,
 	                fechaProg,
-	                visitas,
+	                visitas,solicitud,
 	                beneficiario,
 	                voluntario
 	            );
@@ -216,6 +219,33 @@ public void update(OrdenEntrega orden) throws DAOException {
 	    return ordenes;
 	}
 
+	@Override
+	public List<OrdenEntrega> findAllByBeneficiario(String codBeneficiario) throws DAOException {
+	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigo FROM ordenEntrega WHERE codBeneficiario = ?"
+	        );
+	        st.setString(1, codBeneficiario);
+
+	        ResultSet rs = st.executeQuery();
+	        while (rs.next()) {
+	            ordenes.add(this.find(rs.getString("codigo")));
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error al procesar consulta FIND ALL OrdenEntrega por Beneficiario: " +
+	            e.getMessage() + ".OE610"
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ordenes;
+	}
 	
 	@Override
 	public int obtenerCantidadOE() throws SQLException {

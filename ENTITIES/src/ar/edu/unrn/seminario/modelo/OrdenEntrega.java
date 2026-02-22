@@ -19,6 +19,7 @@ public class OrdenEntrega extends Orden{
 	private LocalDate fechaHoraProgramada;
 	private ArrayList<Visita> visitas;
 	private ArrayList<Bien> entregados;
+	private SolicitudBien solicitud;
 	private Beneficiario beneficiario;
 	private Voluntario voluntario;
 
@@ -52,6 +53,41 @@ public class OrdenEntrega extends Orden{
 		this.voluntario = voluntario;
 
 		inicializarEntregados();
+	}
+
+
+
+
+	public OrdenEntrega(LocalDate fechaEmision, String estado, String tipo, String codigo,
+			LocalDate fechaHoraProgramada, ArrayList<Visita> visitas,
+			SolicitudBien solicitud, Beneficiario beneficiario, Voluntario voluntario)
+			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
+		super(fechaEmision, estado, tipo);
+		this.codigo = codigo;
+		this.fechaHoraProgramada = fechaHoraProgramada;
+		this.visitas = visitas;
+		inicializarEntregados();
+		this.solicitud = solicitud;
+		this.beneficiario = beneficiario;
+		this.voluntario = voluntario;
+	}
+
+
+
+
+
+
+
+
+	public SolicitudBien getSolicitud() {
+		return solicitud;
+	}
+
+
+
+
+	public void setSolicitud(SolicitudBien solicitud) {
+		this.solicitud = solicitud;
 	}
 
 

@@ -26,4 +26,6 @@ public interface OrdenEntregaDAO {
 		int obtenerCantidadOE() throws SQLException;
 	
 		int obtenerMaximoOrdenEntrega() throws SQLException;
+
+		List<OrdenEntrega> findAllByBeneficiario(String codBeneficiario) throws DAOException;
 }

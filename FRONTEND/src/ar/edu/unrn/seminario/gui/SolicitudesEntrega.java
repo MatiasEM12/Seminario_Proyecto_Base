@@ -1,6 +1,7 @@
 package ar.edu.unrn.seminario.gui;
 
 import java.awt.EventQueue;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -13,27 +14,28 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
-import ar.edu.unrn.seminario.dto.DonacionDTO;
+import ar.edu.unrn.seminario.dto.BeneficiarioDTO;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Donacion;
-
-public class SolicitudesEntrega extends JFrame {
+import ar.edu.unrn.seminario.dto.*;
+abstract class SolicitudesEntrega extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable tabla;
 	private DefaultTableModel modelo;
 	private IApi api;
-	
+	ArrayList <SolicitudBienDTO> solicitudesDTO;
 
 	/**
 	 * Create the frame.
 	 */
 	public SolicitudesEntrega(IApi api) {
 
+		solicitudesDTO=api.obtenerSolicitudesPendientes();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 800, 380);
         contentPane = new JPanel();
@@ -75,41 +77,44 @@ public class SolicitudesEntrega extends JFrame {
         // listeners
         btnVer.addActionListener(e -> {
             try {
-                cargarSolicitudes();
+                verPedido();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error al refrescar donaciones: " + ex.getMessage());
             }
         });
 
-        btnVer.addActionListener(e -> seleccionarPedido());
+     
     }
 
     private void cargarSolicitudes() throws DataNullException, DataEmptyException, DataObjectException, DataDateException {
-        // intentamos obtener donaciones pendientes 
-    	List <DonacionDTO> donaciones;
+       
+    	List <BeneficiarioDTO> beneficiarios= new ArrayList<>();
         try {
-            donaciones = api.obtenerDonacionesPendientes();
+          
+        	for (SolicitudBienDTO s: solicitudesDTO) {
+        		beneficiarios.add(s.getBeneficiario());
+        	}
+        	
+        	
         } catch (Exception e) {
-            // si falla, mostramos lista vacía y aviso
-            donaciones = java.util.Collections.emptyList();
+           
+            beneficiarios = java.util.Collections.emptyList();
             System.err.println("Error al obtener donaciones pendientes: " + e.getMessage());
         }
 
-        if (donaciones == null) donaciones = java.util.Collections.emptyList();
+        if (beneficiarios== null) beneficiarios = java.util.Collections.emptyList();
 
         modelo.setRowCount(0);
 
-        for (DonacionDTO D : donaciones) {
-            if (D == null) continue;
+        for (BeneficiarioDTO b : beneficiarios) {
+            if (b == null) continue;
 
-            Object fecha = D.getFechaDonacion() != null ? D.getFechaDonacion() : null;
+         
             modelo.addRow(new Object[] {
-                    safeString(D.getCodigo()),
-                    safeString(D.getObservacion()),
-                    fecha,
-                    safeString(D.getCodDonante()),
-                    safeString(D.getCodPedido())
+                    safeString(b.getCodigo()),
+                    safeString("Entrega"),
+                    safeString(b.getPrioridad())
             });
         }
     }
@@ -118,21 +123,37 @@ public class SolicitudesEntrega extends JFrame {
         return o == null ? "" : String.valueOf(o);
     }
 
-    private void seleccionarPedido() {
+    private void verPedido() {
         int fila = tabla.getSelectedRow();
+
         if (fila < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccioná una donación.");
+            JOptionPane.showMessageDialog(this, "Seleccioná un beneficiario.");
             return;
         }
-        List<DonacionDTO> donaciones;
-		DonacionDTO seleccionada = donaciones.get(fila);
 
-        if (ventanaPedido != null) {
-            ventanaPedido.recibirDonacion(seleccionada);
+        String codigoBeneficiario = modelo.getValueAt(fila, 0).toString();
+
+        SolicitudBienDTO solicitud = buscarSolicitud(codigoBeneficiario);
+
+        if (solicitud == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró la solicitud.");
+            return;
         }
 
-        setVisible(false);
+        //  abrir la ventana de pedido
+        VentanaPedido ventanaPedido = new VentanaPedido(api, solicitud);
+        ventanaPedido.setVisible(true);
+
         dispose();
+    }
+    private SolicitudBienDTO buscarSolicitud(String codBeneficiario) {
+    	
+    	for (SolicitudBienDTO s: solicitudesDTO) {
+    		if(s.getBeneficiario().getCodigo().equalsIgnoreCase(codBeneficiario)) {
+    			return s;
+    		}
+    	}
+    	return null;
     }
 }
 

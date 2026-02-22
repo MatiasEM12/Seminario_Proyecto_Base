@@ -10,6 +10,7 @@ import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
@@ -18,9 +19,10 @@ import ar.edu.unrn.seminario.modelo.Ubicacion;
 public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
 
     private final UbicacionDAO ubicacionDAO;
-
+    private OrdenEntregaDAO ordenEntega=new OrdenEntregaDAOJDBC();
+    private SolicitudBienesDAO solicitud=new SolicitudBienesJDBC();
     public BeneficiarioDAOJDBC() {
-        this.ubicacionDAO = new UbicacionDAOJDBC(); // ajustá si se llama distinto
+        this.ubicacionDAO = new UbicacionDAOJDBC();
     }
 
     public void create(Beneficiario b) throws DAOException {
@@ -127,7 +129,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public Beneficiario find(String codigo) throws DAOException, DataLengthException, DataIntException {
+    public Beneficiario find(String codigo) throws DAOException, DataLengthException, DataIntException, DataListException {
         if (codigo == null || codigo.trim().isEmpty()) return null;
 
         final String SQL =
@@ -159,7 +161,13 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
 
             
                 bene.setCodigoDesdeBD(cod);
-
+                bene.setOrdenesEntrega(
+                	    new ArrayList<>(this.ordenEntega.findAllByBeneficiario(cod))
+                	);
+                
+                bene.setSolicitudBienes(
+                	    new ArrayList<>(this.solicitud.findAllByBeneficiario(cod))
+                	);
                 return bene;
             }
 
@@ -177,7 +185,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public List<Beneficiario> findAll() throws DAOException, DataLengthException, DataIntException {
+    public List<Beneficiario> findAll() throws DAOException, DataLengthException, DataIntException, DataListException {
         final String SQL = "SELECT codigo FROM beneficiario";
         List<Beneficiario> lista = new ArrayList<>();
 

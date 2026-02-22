@@ -6,6 +6,7 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
 
@@ -18,9 +19,9 @@ public interface BeneficiarioDAO {
 
 	void remove(Beneficiario beneficiario)throws DAOException;
 
-	Beneficiario find(String codigo)throws DataNullException, DAOException, DataLengthException, DataIntException;
+	Beneficiario find(String codigo)throws DataNullException, DAOException, DataLengthException, DataIntException, DataListException;
 
-	List<Beneficiario> findAll()throws DAOException, DataLengthException, DataIntException;
+	List<Beneficiario> findAll()throws DAOException, DataLengthException, DataIntException, DataListException;
 	
 	int obtenerCantidadBeneficiarios() throws SQLException;
 	int obtenerMaximoBeneficiarios() throws SQLException;

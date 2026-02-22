@@ -21,6 +21,7 @@ public class Beneficiario extends Persona{
 	private String username;
 	private String codigo;
 	private ArrayList<OrdenEntrega> ordenesEntrega;
+	private ArrayList<SolicitudBien> solicitudBienes;
 	private int cantAcargo;
 	private int prioridad;
 	
@@ -39,6 +40,24 @@ public class Beneficiario extends Persona{
 		
 	}
 	
+	
+	
+	public Beneficiario(String nombre, String apellido, String dni, LocalDate fecha_nac, String contacto,
+			Ubicacion ubicacion, String username, String codigo, ArrayList<OrdenEntrega> ordenesEntrega,
+			ArrayList<SolicitudBien> solicitudBienes, int cantAcargo, int prioridad)
+			throws DataEmptyException, DataNullException, DataDateException, DataLengthException {
+		super(nombre, apellido, dni, fecha_nac, contacto);
+		this.ubicacion = ubicacion;
+		this.username = username;
+		this.codigo = codigo;
+		this.ordenesEntrega = ordenesEntrega;
+		this.solicitudBienes = solicitudBienes;
+		this.cantAcargo = cantAcargo;
+		this.prioridad = prioridad;
+	}
+
+
+
 	public Ubicacion getUbicacion() {
 		return ubicacion;
 	}
@@ -52,11 +71,6 @@ public class Beneficiario extends Persona{
 		return codigo;
 	}
 	
-
-
-
-
-
 
 	public String getUsername() {
 		return username;
@@ -170,5 +184,19 @@ public class Beneficiario extends Persona{
 			throw new DataIntException("Rango de prioridad invalido");
 		}
 	}
+
+
+
+	public ArrayList<SolicitudBien> getSolicitudBienes() {
+		return solicitudBienes;
+	}
+
+
+
+	public void setSolicitudBienes(ArrayList<SolicitudBien> solicitudBienes) {
+		this.solicitudBienes = solicitudBienes;
+	}
+	
+	
 	
 }

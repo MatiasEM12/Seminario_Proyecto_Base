@@ -10,164 +10,201 @@ import java.util.List;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.modelo.Beneficiario;
 import ar.edu.unrn.seminario.modelo.Bien;
+import ar.edu.unrn.seminario.modelo.SolicitudBien;
 
 public class SolicitudBienesJDBC implements SolicitudBienesDAO {
+	private BeneficiarioDAO beneficiarioDAO = new BeneficiarioDAOJDBC();
+	private BienDAO bienDAO = new BienDAOJDBC();
+	@Override
+	public void create(SolicitudBien solicitud) throws DAOException {
 
-    private InventarioDAO inventarioDao = new InventarioDAOJDBC();
-    private BienDAO bienDao = new BienDAOJDBC();
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
 
-    // =========================
-    // CREATE
-    // =========================
-    @Override
-    public void create(String codBien, String codBeneficiario, boolean activo) throws DAOException {
+	        //  insertar solicitud
+	        PreparedStatement st = conn.prepareStatement(
+	            "INSERT INTO solicitudBien (codigoSolicitud, codigoBeneficiario, estado) " +
+	            "VALUES (?, ?, ?)"
+	        );
 
-    	//consideramos estas validaciones ya que el Beneficiario deberia elegir que bienes necesita, seleccionando desde los que
-    	//esten disponibles en el inventario como si se tratara de una tienda.
-    	
-        // 1. Verificar que el bien exista en inventario
-        if (!((InventarioDAOJDBC) inventarioDao).existe(codBien)) {
-            throw new DAOException("El bien no existe en inventario");
-        }
+	        st.setString(1, solicitud.getCodigo());
+	        st.setString(2, solicitud.getBeneficiario().getCodigo());
+	        st.setString(3, solicitud.getEstado());
+	        st.executeUpdate();
 
-        // 2. Verificar que el bien esté disponible
-        
-        if (!inventarioDao.esDisponible(codBien)) {
-            throw new DAOException("El bien no está disponible en inventario");
-        }
+	        // insertar bienes solicitados
+	        PreparedStatement stBien = conn.prepareStatement(
+	            "INSERT INTO bien_solicitud (codigoSolicitud, codBien) VALUES (?, ?)"
+	        );
 
-        // 3. Insertar solicitud
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement st = conn.prepareStatement(
-                "INSERT INTO solicitudBien (codigoBien, codigoBeneficiario, disponible) " +
-                "VALUES (?, ?, ?)"
-            );
+	        for (Bien b : solicitud.getBienesSolicitados()) {
+	            stBien.setString(1, solicitud.getCodigo());
+	            stBien.setString(2, b.getCodigo());
+	            stBien.executeUpdate();
+	        }
 
-            st.setString(1, codBien);
-            st.setString(2, codBeneficiario);
-            st.setBoolean(3, activo);
+	        
 
-            if (st.executeUpdate() <= 0) {
-                throw new DAOException("No se pudo crear la solicitud del bien");
-            }
+	    } catch (SQLException e) {
+	        throw new DAOException("Error CREATE SolicitudBien: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
 
-        } catch (SQLException e) {
-            throw new DAOException("Error INSERT SolicitudBien: " + e.getMessage());
-        } finally {
-            ConnectionManager.disconnect();
-        }
-    }
+	@Override
+	public void updateEstado(String codigoSolicitud, String estado) throws DAOException {
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+	        PreparedStatement st = conn.prepareStatement(
+	            "UPDATE solicitudBien SET estado = ? WHERE codigoSolicitud = ?"
+	        );
 
-    // =========================
-    // UPDATE (activar / desactivar solicitudes del beneficiario)
-    // =========================
-    @Override
-    public void update(String codBeneficiario, boolean activo) throws DAOException {
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement st = conn.prepareStatement(
-                "UPDATE solicitudBien SET disponible = ? WHERE codigoBeneficiario = ?"
-            );
+	        st.setString(1, estado);
+	        st.setString(2, codigoSolicitud);
 
-            st.setBoolean(1, activo);
-            st.setString(2, codBeneficiario);
+	        if (st.executeUpdate() <= 0) {
+	            throw new DAOException("Solicitud inexistente");
+	        }
 
-            if (st.executeUpdate() <= 0) {
-                throw new DAOException("No se actualizaron solicitudes del beneficiario");
-            }
+	    } catch (SQLException e) {
+	        throw new DAOException("Error UPDATE SolicitudBien: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
 
-        } catch (SQLException e) {
-            throw new DAOException("Error UPDATE SolicitudBien: " + e.getMessage());
-        } finally {
-            ConnectionManager.disconnect();
-        }
-    }
+	@Override
+	public SolicitudBien find(String codigo) throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
 
-    // =========================
-    // REMOVE (por bien)
-    // =========================
-    @Override
-    public void remove(String codBien) throws DAOException {
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement st = conn.prepareStatement(
-                "DELETE FROM solicitudBien WHERE codigoBien = ?"
-            );
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
 
-            st.setString(1, codBien);
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigoBeneficiario, estado FROM solicitudBien WHERE codigoSolicitud = ?"
+	        );
+	        st.setString(1, codigo);
 
-            if (st.executeUpdate() <= 0) {
-                throw new DAOException("No existe solicitud para el bien");
-            }
+	        ResultSet rs = st.executeQuery();
+	        if (!rs.next()) return null;
 
-        } catch (SQLException e) {
-            throw new DAOException("Error DELETE SolicitudBien: " + e.getMessage());
-        } finally {
-            ConnectionManager.disconnect();
-        }
-    }
+	        Beneficiario b = beneficiarioDAO.find(rs.getString("codigoBeneficiario"));
 
-    // =========================
-    // FIND ALL BIENES ACTIVOS (solicitados)
-    // =========================
-    @Override
-    public List<Bien> findAllBienesActivos()
-            throws DAOException, DataLengthException, DataIntException, DataNullException {
+	        // bienes
+	        PreparedStatement stBien = conn.prepareStatement(
+	            "SELECT codBien FROM bien_solicitud WHERE codigoSolicitud = ?"
+	        );
+	        stBien.setString(1, codigo);
 
-        List<Bien> bienes = new ArrayList<>();
+	        ResultSet rsBien = stBien.executeQuery();
+	        ArrayList<Bien> bienes = new ArrayList<>();
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement st = conn.prepareStatement(
-                "SELECT codigoBien FROM solicitudBien WHERE disponible = 1"
-            );
+	        while (rsBien.next()) {
+	            bienes.add(bienDAO.find(rsBien.getString("codBien")));
+	        }
 
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                bienes.add(bienDao.find(rs.getString("codigoBien")));
-            }
+	        return new SolicitudBien(codigo, b, bienes, rs.getString("estado"));
 
-        } catch (SQLException e) {
-            throw new DAOException("Error FIND ALL Bienes Activos: " + e.getMessage());
-        } finally {
-            ConnectionManager.disconnect();
-        }
+	    } catch (SQLException e) {
+	        throw new DAOException("Error FIND SolicitudBien: " + e.getMessage());
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+	}
+	
+	@Override
+	public List<SolicitudBien> findAllByBeneficiario(String codBeneficiario)
+	        throws DAOException, DataNullException, DataLengthException,
+	               DataIntException, DataListException {
 
-        return bienes;
-    }
+	    if (codBeneficiario == null || codBeneficiario.isBlank()) {
+	        throw new DataNullException("Código de beneficiario inválido");
+	    }
 
-    // =========================
-    // FIND BIENES ACTIVOS POR BENEFICIARIO
-    // =========================
-    @Override
-    public List<Bien> findAllBienesBeneficiario(String codBeneficiario)
-            throws DAOException, DataLengthException, DataIntException, DataNullException {
+	    ArrayList<SolicitudBien> solicitudes = new ArrayList<>();
 
-        List<Bien> bienes = new ArrayList<>();
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement st = conn.prepareStatement(
-                "SELECT codigoBien FROM solicitudBien " +
-                "WHERE codigoBeneficiario = ? AND disponible = 1"
-            );
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigoSolicitud " +
+	            "FROM solicitudBien " +
+	            "WHERE codigoBeneficiario = ?"
+	        );
 
-            st.setString(1, codBeneficiario);
-            ResultSet rs = st.executeQuery();
+	        st.setString(1, codBeneficiario);
+	        ResultSet rs = st.executeQuery();
 
-            while (rs.next()) {
-                bienes.add(bienDao.find(rs.getString("codigoBien")));
-            }
+	        while (rs.next()) {
+	            solicitudes.add(this.find(rs.getString("codigoSolicitud")));
+	        }
 
-        } catch (SQLException e) {
-            throw new DAOException("Error FIND Bienes por Beneficiario: " + e.getMessage());
-        } finally {
-            ConnectionManager.disconnect();
-        }
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error FIND ALL SolicitudBien por Beneficiario: " + e.getMessage()
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
 
-        return bienes;
-    }
+	    return solicitudes;
+	}
+	@Override
+	public List<SolicitudBien> findAllPendientes()
+	        throws DAOException, DataNullException, DataLengthException,
+	               DataIntException, DataListException {
+
+	    ArrayList<SolicitudBien> solicitudes = new ArrayList<>();
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+
+	        PreparedStatement st = conn.prepareStatement(
+	            "SELECT codigoSolicitud " +
+	            "FROM solicitudBien " +
+	            "WHERE estado = ?"
+	        );
+
+	        st.setString(1, "Pendiente");
+
+	        ResultSet rs = st.executeQuery();
+
+	        while (rs.next()) {
+	            solicitudes.add(this.find(rs.getString("codigoSolicitud")));
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error FIND ALL SolicitudBien Pendientes: " + e.getMessage()
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return solicitudes;
+	}
+	   public int obtenerMaximoSolicitudes() throws SQLException {
+	        String sql = "SELECT MAX(codigoSolicitud) FROM solicitudBien";
+
+	        try (Connection conn = ConnectionManager.getConnection();
+	             PreparedStatement ps = conn.prepareStatement(sql);
+	             ResultSet rs = ps.executeQuery()) {
+
+	            if (rs.next()) {
+	                String maxCodigo = rs.getString(1);
+
+	                if (maxCodigo != null) {
+	                   
+	                    return Integer.parseInt(maxCodigo.substring(2));
+	                }
+	            }
+	        } finally {
+	            ConnectionManager.disconnect();
+	        }
+	        return 0;
+	    }
 }

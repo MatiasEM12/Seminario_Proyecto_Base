@@ -17,6 +17,7 @@ public class BeneficiarioDTO extends PersonaDTO{
 	private int cantAcargo;
 	private int prioridad;
 	private ArrayList<OrdenEntrega> ordenesEntrega;
+	private ArrayList<SolicitudBienDTO> solicidutudBienes;
 	
 	public BeneficiarioDTO(String nombre, String apellido,LocalDate fecha_nac, String dni, String Contacto,UbicacionDTO ubicacion,String codigo,String username,int cantAcargo,int prioridad) {
 		super(nombre, apellido,Contacto, dni, fecha_nac);
@@ -27,6 +28,23 @@ public class BeneficiarioDTO extends PersonaDTO{
 		this.prioridad=prioridad;
 	}
 	
+	
+	
+	public BeneficiarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
+			UbicacionDTO ubicacion, String username, String codigo, int cantAcargo, int prioridad,
+			ArrayList<OrdenEntrega> ordenesEntrega, ArrayList<SolicitudBienDTO> solicidutudBienes) {
+		super(nombre, apellido, contacto, dni, fecha_nac);
+		this.ubicacion = ubicacion;
+		this.username = username;
+		this.codigo = codigo;
+		this.cantAcargo = cantAcargo;
+		this.prioridad = prioridad;
+		this.ordenesEntrega = ordenesEntrega;
+		this.solicidutudBienes = solicidutudBienes;
+	}
+
+
+
 	public String getUsername() {
 		return username;
 	}
@@ -70,5 +88,18 @@ public class BeneficiarioDTO extends PersonaDTO{
 	public void setOrdenesEntrega(ArrayList<OrdenEntrega> ordenesEntrega) {
 		this.ordenesEntrega = ordenesEntrega;
 	}
+
+
+
+	public ArrayList<SolicitudBienDTO> getSolicidutudBienes() {
+		return solicidutudBienes;
+	}
+
+
+
+	public void setSolicidutudBienes(ArrayList<SolicitudBienDTO> solicidutudBienes) {
+		this.solicidutudBienes = solicidutudBienes;
+	}
+	
 	
 }
