@@ -29,16 +29,19 @@ public class ListadoVoluntarios extends JFrame {
 	private DefaultTableModel modelo;
 	private List<VoluntarioDTO> voluntarios;
 	private AltaOrdenRetiro ventanaRetiro;
+	private AltaOrdenEntrega ventanaEntrega;
 	IApi api;
 	private JButton btnCancelar;
 	/**
 	 * Create the frame.
 	 */
 
-	public ListadoVoluntarios(AltaOrdenRetiro ventanaRetiro, IApi api) {
+	public ListadoVoluntarios(AltaOrdenRetiro ventanaRetiro, IApi api, AltaOrdenEntrega ventanaEntrega) {
 	    this.api = api;
+	    
+	    
         this.ventanaRetiro = ventanaRetiro;
-
+        this.ventanaEntrega=ventanaEntrega;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // no cerrar toda la app
         setBounds(100, 100, 800, 340);
 
@@ -131,9 +134,16 @@ public class ListadoVoluntarios extends JFrame {
 
         int filaModelo = tabla.convertRowIndexToModel(filaVista);
 
+        
+        
         VoluntarioDTO seleccionado = voluntarios.get(filaModelo);
 
-        ventanaRetiro.recibirVoluntario(seleccionado);
+        if(ventanaRetiro==null) {
+        	ventanaEntrega.recibirVoluntario(seleccionado);
+        }else {
+        	 ventanaRetiro.recibirVoluntario(seleccionado);
+        }
+
         dispose();
     }
 }

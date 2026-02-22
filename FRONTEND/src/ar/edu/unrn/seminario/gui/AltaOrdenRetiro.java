@@ -67,6 +67,7 @@ public class AltaOrdenRetiro extends JFrame {
 		contentPane.add(lblNewLabel_2);
 		
 		txtFecha = new JTextField();
+		txtFecha.setEditable(false);
 		txtFecha.setBounds(140, 173, 96, 19);
 		contentPane.add(txtFecha);
 		txtFecha.setColumns(10);
