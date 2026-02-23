@@ -21,7 +21,7 @@ public class ListadoVisitas extends JFrame {
     private IApi api;
     private java.util.List<VisitaDTO> visitas;
 
-    public ListadoVisitas(IApi api, String codOrdenRetiro) throws DataNullException, DataLengthException {
+    public ListadoVisitas(IApi api, String codOrden) throws DataNullException, DataLengthException {
         this.api = api;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 700, 320);
@@ -46,20 +46,20 @@ public class ListadoVisitas extends JFrame {
         contentPane.add(btnCerrar);
         btnCerrar.addActionListener(e -> { setVisible(false); dispose(); });
 
-        cargarVisitas(codOrdenRetiro);
+        cargarVisitas(codOrden);
     }
 
-    private void cargarVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException {
-        visitas = api.obtenerVisitas(codOrdenRetiro);
+    private void cargarVisitas(String codOrden) throws DataNullException, DataLengthException {
+        visitas = api.obtenerVisitas(codOrden);
         if (visitas == null) visitas = new ArrayList<>();
 
         modelo.setRowCount(0);
         for (VisitaDTO v : visitas) {
             String usuario = "";
             try {
-                // si VisitaDTO tiene codVoluntario lo usamos para pedir nombre
+               
                 if (v.getCodVoluntario() != null) {
-                    String usr = api.obtenerUsernameVoluntarioPorOrdenRetiro(v.getCodVoluntario());
+                    String usr = api.obtenerUsernameVoluntario(v.getCodVoluntario());
                     usuario = usr == null ? "" : usr;
                 }
             } catch (Exception ex) { usuario = ""; }

@@ -49,6 +49,7 @@ public class ListadoOrdenes extends JFrame {
         listadoBox.addItem("Todos");
         listadoBox.addItem("ORDEN_RETIRO");
         listadoBox.addItem("ORDEN_PEDIDO");
+        listadoBox.addItem("ORDEN_ENTREGA");
         listadoBox.setBounds(94, 19, 150, 21);
         contentPane.add(listadoBox);
 
@@ -76,7 +77,7 @@ public class ListadoOrdenes extends JFrame {
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
                   
-                  if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
+                  if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1)) || "ORDEN_ENTREGA".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 
                       	ListadoVisitas visitas = null;
 						try {
@@ -104,12 +105,12 @@ public class ListadoOrdenes extends JFrame {
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
                     String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
-                	String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);	
+                	String codOrden = (String) tabla.getValueAt(filaSeleccionada, 0);	
 					if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 					
 						AltaVisitaRetiro av;
 						try {
-							av = new AltaVisitaRetiro(api,codOR);
+							av = new AltaVisitaRetiro(api,codOrden);
 							av.setLocationRelativeTo(null);
 							av.setVisible(true);
 							
@@ -118,8 +119,17 @@ public class ListadoOrdenes extends JFrame {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
 					
-					}else {
-					
+					}else if("ORDEN_ENTREGA".equals(tabla.getValueAt(filaSeleccionada, 1))){
+						AltaVisitaEntrega av;
+						try {
+							av = new AltaVisitaEntrega(api,codOrden);
+							av.setLocationRelativeTo(null);
+							av.setVisible(true);
+							
+							actualizarTabla("Todos", "");
+						} catch (DataNullException e2) {
+							JOptionPane.showMessageDialog(null, e2.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+						}
 					}
                 }
         		
@@ -133,45 +143,38 @@ public class ListadoOrdenes extends JFrame {
         btnVerBienes.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		
-        		
         		int filaSeleccionada = tabla.getSelectedRow();
-				if (filaSeleccionada >= 0) {
-					String tipo = (String) tabla.getValueAt(filaSeleccionada, 1);
-					if("ORDEN_RETIRO".equalsIgnoreCase(tipo)) {
-						
-						String codOR = (String) tabla.getValueAt(filaSeleccionada, 0);
-	                    ArrayList<BienDTO> lista = null;
-						try {
-							try {
-								lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codOR);
-							} catch (DataNullException | DataLengthException | DataDateException | DataEmptyException
-									| DataListException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						} catch (DAOException e1) {
-							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-						}
-	                    ListadoBienes bienes = new ListadoBienes(api, lista);
-	                    bienes.setLocationRelativeTo(null);
-	                    bienes.setVisible(true);
-						
-					}else {
-						String codOP = (String) tabla.getValueAt(filaSeleccionada, 0);
-	                    ArrayList<BienDTO> lista = null;
-						try {
-							lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codOP);
-							} catch (DataEmptyException | DataObjectException | DataDateException
-								| DAOException | DataNullException | DataLengthException | DataListException e1) {
-							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-						}
-						
-	                    ListadoBienes bienes = new ListadoBienes(api, lista);
-	                    bienes.setLocationRelativeTo(null);
-	                    bienes.setVisible(true);
-					}
-                }
-				
+        		if (filaSeleccionada >= 0) {
+
+        		    String tipo = (String) tabla.getValueAt(filaSeleccionada, 1);
+        		    String codigo = (String) tabla.getValueAt(filaSeleccionada, 0);
+        		    ArrayList<BienDTO> lista = new ArrayList<>();
+
+        		    try {
+
+        		        if ("ORDEN_RETIRO".equalsIgnoreCase(tipo)) {
+
+        		            lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenRetiro(codigo);
+
+        		        } else if ("ORDEN_PEDIDO".equalsIgnoreCase(tipo)) {
+
+        		            lista = (ArrayList<BienDTO>) api.obtenerBienesPorOrdenPedido(codigo);
+
+        		        } else if ("ORDEN_ENTREGA".equalsIgnoreCase(tipo)) {
+
+        		            OrdenEntregaDTO entrega = api.obtenerOrdenEntrega(codigo);
+        		            lista = entrega.getEntregados();
+
+        		        }
+
+        		        ListadoBienes bienes = new ListadoBienes(api, lista);
+        		        bienes.setLocationRelativeTo(null);
+        		        bienes.setVisible(true);
+
+        		    } catch (Exception e1) {
+        		        JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        		    }
+        		}
         		
         		
         	}
@@ -252,17 +255,47 @@ public class ListadoOrdenes extends JFrame {
                 });
             }
 
-        // ================= TODOS =================
-        } else {
+  
+     
+        	// ================= ORDEN ENTREGA =================
+        } else if ("ORDEN_ENTREGA".equals(filtro)) {
 
+            List<OrdenEntregaDTO> entregas = ordenes.stream()
+                .filter(o -> "ORDEN_ENTREGA".equals(o.getTipo()))
+                .map(o -> (OrdenEntregaDTO) o)
+                .collect(Collectors.toList());
+
+            modelo.setColumnIdentifiers(new String[]{
+                "Codigo", "Tipo", "Fecha", "Estado", "Beneficiario", "Voluntario"
+            });
+
+            for (OrdenEntregaDTO oe : entregas) {
+                modelo.addRow(new Object[]{
+                    oe.getCodigo(),
+                    oe.getTipo(),
+                    oe.getFechaEmision(),
+                    oe.getEstado(),
+                    oe.getBeneficiario().getNombre(),   
+                    oe.getVoluntario().getNombre()
+                });
+            }
+        } else {
+        	  // ================= TODOS =================
             modelo.setColumnIdentifiers(new String[]{
                 "Codigo", "Tipo", "Fecha", "Estado"
             });
 
             for (OrdenDTO o : ordenes) {
-                String codigo = (o instanceof OrdenPedidoDTO)
-                        ? ((OrdenPedidoDTO) o).getCodigo()
-                        : ((OrdenRetiroDTO) o).getCodigo();
+
+                String codigo = "";
+
+                if (o instanceof OrdenPedidoDTO) {
+                    codigo = ((OrdenPedidoDTO) o).getCodigo();
+                } else if (o instanceof OrdenRetiroDTO) {
+                    codigo = ((OrdenRetiroDTO) o).getCodigo();
+                } else if (o instanceof OrdenEntregaDTO) {
+                    codigo = ((OrdenEntregaDTO) o).getCodigo();
+                }
 
                 modelo.addRow(new Object[]{
                     codigo,
@@ -271,8 +304,9 @@ public class ListadoOrdenes extends JFrame {
                     o.getEstado()
                 });
             }
+            }
         }
     }
 
 
-}
+

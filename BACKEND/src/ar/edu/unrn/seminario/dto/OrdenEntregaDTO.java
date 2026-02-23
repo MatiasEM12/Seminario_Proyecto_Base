@@ -22,10 +22,10 @@ public class OrdenEntregaDTO extends OrdenDTO{
 	private BeneficiarioDTO beneficiario;
 	private VoluntarioDTO voluntario;
 	
-	public OrdenEntregaDTO(LocalDate fechaEmision, EstadoOrden estado, String tipo, String codigo,
+	public OrdenEntregaDTO(LocalDate fechaEmision, String estado, String codigo,
 			LocalDate fechaHoraProgramada, ArrayList<VisitaDTO> visitas, ArrayList<BienDTO> entregados,
 			SolicitudBienDTO solicitud, BeneficiarioDTO beneficiario, VoluntarioDTO voluntario) {
-		super(fechaEmision, estado, tipo);
+		super(fechaEmision, estado, "ORDEN_ENTREGA");
 		this.codigo = codigo;
 		this.fechaHoraProgramada = fechaHoraProgramada;
 		this.visitas = visitas;

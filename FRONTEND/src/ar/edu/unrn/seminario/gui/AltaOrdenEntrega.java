@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,11 +16,16 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.dto.BeneficiarioDTO;
+import ar.edu.unrn.seminario.dto.BienDTO;
 import ar.edu.unrn.seminario.dto.OrdenEntregaDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.SolicitudBienDTO;
+import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
+import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
+
 import com.toedter.calendar.JCalendar;
 
 public class AltaOrdenEntrega extends JFrame {
@@ -36,6 +43,8 @@ public class AltaOrdenEntrega extends JFrame {
 	private JTextField txtCodigo;
 	IApi api;
 	private JTextField txtCodVoluntario;
+	private JCalendar calendar;
+
 
 	/**
 	 * Create the frame.
@@ -117,7 +126,7 @@ public class AltaOrdenEntrega extends JFrame {
 		lblNewLabel_2_1.setBounds(10, 193, 96, 13);
 		contentPane.add(lblNewLabel_2_1);
 		
-		JCalendar calendar = new JCalendar();
+		calendar = new JCalendar();
 		calendar.setBounds(107, 193, 184, 153);
 		contentPane.add(calendar);
 		
@@ -130,27 +139,28 @@ public class AltaOrdenEntrega extends JFrame {
 		    	String codigo = txtCodigo.getText();
 		    	String estado= "Pendiente";
 		    	String fechaTexto = txtFecha.getText();
+		  
+		    
 
 		    	try {
 		    	    // Convertir texto a LocalDate
 		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
 		    	    String[] codVisitas = {};
-		    	    // Crear DTO (no entidad)
-		    	    OrdenRetiroDTO retiro = new OrdenRetiroDTO(
-
-		    	    	    fecha,
-
-		    	    	    estado,                    // estado
-		    	    	    null,                     
-		    	    	    
-		    	    	    ordenSeleccionada.getCodigo(),           // código del pedido
-		    	    	    voluntario.getCodigo(),codVisitas
+		    	    
+		    	    LocalDate FechaProgramada=calendar.getDate()
+		                    .toInstant()
+		                    .atZone(ZoneId.systemDefault())
+		                    .toLocalDate();
+		    
+		    	    ordenEntrega = new OrdenEntregaDTO(
+		    	    		fecha,estado,null,FechaProgramada,new ArrayList<VisitaDTO>(),new ArrayList<BienDTO>(),solicitud,
+		    	    		solicitud.getBeneficiario(),voluntario		    	
 		    	    	);
-		    	    api.registrarOrdenRetiro(retiro);
+		    	    api.registrarOrdenEntrega(ordenEntrega);
 
                   
                     // Limpieza
-                    ordenSeleccionada = null;
+          
                     txtCodigo.setText("");
                     txtEstado.setText("");
                     txtFecha.setText("");
@@ -170,13 +180,7 @@ public class AltaOrdenEntrega extends JFrame {
         });
     }
 
-    public void recibirOrdenPedido(OrdenPedidoDTO orden) {
-        this.ordenSeleccionada = orden;
 
-        txtCodigo.setText(orden.getCodigo());
-        txtEstado.setText(orden.getEstado().toString());             
-        txtFecha.setText(orden.getFechaEmision().toString());
-    }
     void recibirVoluntario(VoluntarioDTO voluntario) {
        this.voluntario=voluntario;
        txtCodVoluntario.setText(voluntario.getCodigo());
