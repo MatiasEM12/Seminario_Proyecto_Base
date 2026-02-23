@@ -72,7 +72,7 @@ public interface IApi {
 
 	ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() throws DAOException;
 
-	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException;
+	ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException;
 	
 	//Donante
 	public void registrarDonante(Donante donante) throws DAOException;
@@ -154,7 +154,11 @@ public interface IApi {
 	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException;
 	
 	
-	
+	public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException;
+
+	public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException;
+
+	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException;
 	
 	
 }

@@ -296,7 +296,10 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	    }
 	}
 
-
+	public static final boolean esEntrega(String codigo) {
+	    return codigo != null && codigo.length() >= 2
+	            && codigo.substring(0, 2).equals("OE");
+	}
 
 
 }

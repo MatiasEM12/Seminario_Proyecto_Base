@@ -416,5 +416,10 @@ public class OrdenRetiro extends Orden{
 			throw new DataListException("List invalida");
 		}
 	}
+	
+	public static final boolean esRetiro(String codigo) {
+	    return codigo != null && codigo.length() >= 2
+	            && codigo.substring(0, 2).equals("OR");
+	}
 
 }

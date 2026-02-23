@@ -33,13 +33,18 @@ import ar.edu.unrn.seminario.accesos.UbicacionDAOJDBC;
 import ar.edu.unrn.seminario.accesos.UsuarioDAOJDBC;
 import ar.edu.unrn.seminario.accesos.VisitaDAOJDBC;
 import ar.edu.unrn.seminario.accesos.VoluntarioDAOJDBC;
+import ar.edu.unrn.seminario.dto.BeneficiarioDTO;
 import ar.edu.unrn.seminario.dto.BienDTO;
+import ar.edu.unrn.seminario.dto.CoordenadaDTO;
 import ar.edu.unrn.seminario.dto.DonacionDTO;
 import ar.edu.unrn.seminario.dto.DonanteDTO;
 import ar.edu.unrn.seminario.dto.OrdenDTO;
+import ar.edu.unrn.seminario.dto.OrdenEntregaDTO;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.RolDTO;
+import ar.edu.unrn.seminario.dto.SolicitudBienDTO;
+import ar.edu.unrn.seminario.dto.UbicacionDTO;
 import ar.edu.unrn.seminario.dto.UsuarioDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
@@ -65,6 +70,7 @@ import ar.edu.unrn.seminario.modelo.OrdenRetiro;
 import ar.edu.unrn.seminario.modelo.Visita;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 import ar.edu.unrn.seminario.modelo.Rol;
+import ar.edu.unrn.seminario.modelo.SolicitudBien;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 import ar.edu.unrn.seminario.modelo.Usuario;
 
@@ -114,7 +120,7 @@ public class PersistenceApi implements IApi {
     	Coordenada.setContadorCoordenada(coordenadaDAO.obtenerMaximoCoordenadas());
     	Donacion.setContadorDonacion(donacionDao.obtenerMaximoDonaciones());
     	Donante.setContadorDonante(donanteDao.obtenerMaximoDonantes());
-    	//OrdenEntrega.setContadorCoordenada(0)
+    	OrdenEntrega.setContadorCoordenada(ordenEntregaDAO.obtenerMaximoOrdenEntrega());
     	OrdenPedido.setContadorPedido(ordenPedidoDao.obtenerMaximoOrdenPedido());
     	OrdenRetiro.setContadorOrdenRetiro(ordenRetiroDao.obtenerMaximoOrdenRetiro());
     	Ubicacion.setContadorUbicacion(ubicacionDao.obtenerMaximoUbicaciones());
@@ -819,9 +825,23 @@ public class PersistenceApi implements IApi {
 	}
 
 	@Override
-	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<VisitaDTO> obtenerVisitas(String codOrden) throws DataNullException, DataLengthException, DAOException, DataDateException, DataEmptyException, DataListException {
+		ArrayList<VisitaDTO> visitasDTO=new ArrayList<VisitaDTO>();
+		ArrayList<Visita>visitas = new ArrayList<Visita>();
+		if(OrdenRetiro.esRetiro(codOrden)) {
+			visitas = this.visitaDao.findAllOrdenRetiro(codOrden);
+		}else {
+			visitas = this.visitaDao.findAllOrdenEntrega(codOrden);
+			
+		}
+		
+		
+		for(Visita v: visitas) {
+			
+			visitasDTO.add(this.toVisitaDTO(v));
+		}
+		
+		return visitasDTO;
 	}
 
 	@Override
@@ -1197,6 +1217,171 @@ public class PersistenceApi implements IApi {
 	    );
 	}
 
+	@Override
+	public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException {
+		
+		OrdenEntrega orden = this.ordenEntregaDAO.find(codEntrega);
+		
+		
+		return this.toOrdenEntregaDTO(orden);
+	}
 
+	 private OrdenEntregaDTO toOrdenEntregaDTO(OrdenEntrega orden) {
+
+		    ArrayList<VisitaDTO> visitasDTO = new ArrayList<>();
+		    if (orden.getVisitas() != null) {
+		        for (Visita v : orden.getVisitas()) {
+		            visitasDTO.add(toVisitaDTO(v));
+		        }
+		    }
+
+		    ArrayList<BienDTO> entregadosDTO = new ArrayList<>();
+		    if (orden.getEntregados() != null) {
+		        for (Bien b : orden.getEntregados()) {
+		            entregadosDTO.add(toBienDTO(b));
+		        }
+		    }
+
+		    SolicitudBienDTO solicitudDTO = null;
+		    if (orden.getSolicitud() != null) {
+		        solicitudDTO = toSolicitudBienDTO(orden.getSolicitud());
+		    }
+
+		    BeneficiarioDTO beneficiarioDTO = null;
+		    if (orden.getBeneficiario() != null) {
+		        beneficiarioDTO = toBeneficiarioDTO(orden.getBeneficiario());
+		    }
+
+		    VoluntarioDTO voluntarioDTO = null;
+		    if (orden.getVoluntario() != null) {
+		        voluntarioDTO = toVoluntarioDTO(orden.getVoluntario());
+		    }
+
+		    OrdenEntregaDTO dto = new OrdenEntregaDTO(
+		        orden.getFechaEmision(),
+		        orden.getEstadoString(),
+		        orden.getCodigo(),
+		        orden.getFechaHoraProgramada(),
+		        visitasDTO,
+		        entregadosDTO,
+		        solicitudDTO,
+		        beneficiarioDTO,
+		        voluntarioDTO
+		    );
+
+		    return dto;
+		}
+	 private VisitaDTO toVisitaDTO(Visita visita) {
+
+		    ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+		    if (visita.getBienesRecolectados() != null) {
+		        for (Bien b : visita.getBienesRecolectados()) {
+		            bienesDTO.add(toBienDTO(b));
+		        }
+		    }
+
+		    String codOrden = visita.getCodOrdenEntrega() != null
+		            ? visita.getCodOrdenEntrega()
+		            : visita.getCodOrdenRetiro();
+
+		    return new VisitaDTO(
+		        visita.getCodigo(),
+		        visita.getFechaVisita(),
+		        null,                 // 
+		        codOrden,
+		        bienesDTO,
+		        visita.getObservaciones(),
+		        visita.getTipo(),
+		        visita.isEsFinal(),
+		        visita.getEstado()
+		    );
+		}
+	 
+	 private SolicitudBienDTO toSolicitudBienDTO(SolicitudBien solicitud) {
+
+		    ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+		    if (solicitud.getBienesSolicitados() != null) {
+		        for (Bien b : solicitud.getBienesSolicitados()) {
+		            bienesDTO.add(toBienDTO(b));
+		        }
+		    }
+
+		    BeneficiarioDTO beneficiarioDTO = null;
+		    if (solicitud.getBeneficiario() != null) {
+		        beneficiarioDTO = toBeneficiarioDTO(solicitud.getBeneficiario());
+		    }
+
+		    return new SolicitudBienDTO(
+		        solicitud.getCodigo(),
+		        beneficiarioDTO,
+		        bienesDTO,
+		        solicitud.getEstado()
+		    );
+		}
+	 private BeneficiarioDTO toBeneficiarioDTO(Beneficiario beneficiario) {
+
+		    UbicacionDTO ubicacionDTO = null;
+		    if (beneficiario.getUbicacion() != null) {
+		        ubicacionDTO = toUbicacionDTO(beneficiario.getUbicacion());
+		    }
+
+		    return new BeneficiarioDTO(
+		        beneficiario.getNombre(),
+		        beneficiario.getApellido(),
+		        beneficiario.getFecha_nac(),
+		        beneficiario.getDni(),
+		        beneficiario.getContacto(),
+		        ubicacionDTO,
+		        beneficiario.getCodigo(),
+		        beneficiario.getUsername(),
+		        beneficiario.getCantAcargo(),
+		        beneficiario.getPrioridad()
+		    );
+	}
+	 
+	
+	 private UbicacionDTO toUbicacionDTO(Ubicacion ubicacion) {
+
+		    if (ubicacion == null) {
+		        return null;
+		    }
+
+		    CoordenadaDTO coordenadaDTO = null;
+		    if (ubicacion.getCoordenada() != null) {
+		        coordenadaDTO = new CoordenadaDTO(ubicacion.getCoordenada().getLatitud(),ubicacion.getCoordenada().getLongitud(),ubicacion.getCoordenada().getCodigo());
+		    }
+
+		    return new UbicacionDTO(
+		        ubicacion.getCodigo(),
+		        ubicacion.getZona(),
+		        ubicacion.getBarrio(),
+		        ubicacion.getDireccion(),
+		        coordenadaDTO
+		    );
+		}
+
+	 @Override
+	 public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException {
+
+      Voluntario voluntario= this.voluntarioDao.find(codVoluntario);
+		return voluntario.getUsername();
+	 }
+
+	 @Override
+	 public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException {
+		OrdenEntrega orden = this.ordenEntregaDAO.find(codigo);
+		
+		ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+		if (orden.getEntregados() != null) {
+		     for (Bien b : orden.getEntregados()) {
+		            bienesDTO.add(toBienDTO(b));
+		      }
+		 }
+		   
+		return bienesDTO;
+	 }
+	 
+	 
 }
+
 

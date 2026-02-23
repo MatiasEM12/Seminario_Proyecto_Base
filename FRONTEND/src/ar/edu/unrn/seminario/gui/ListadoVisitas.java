@@ -6,7 +6,11 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 
 import java.util.ArrayList;
@@ -50,7 +54,13 @@ public class ListadoVisitas extends JFrame {
     }
 
     private void cargarVisitas(String codOrden) throws DataNullException, DataLengthException {
-        visitas = api.obtenerVisitas(codOrden);
+        try {
+			visitas = api.obtenerVisitas(codOrden);
+		} catch (DataNullException | DataLengthException | DAOException | DataDateException | DataEmptyException
+				| DataListException e) {
+			
+			e.printStackTrace();
+		}
         if (visitas == null) visitas = new ArrayList<>();
 
         modelo.setRowCount(0);

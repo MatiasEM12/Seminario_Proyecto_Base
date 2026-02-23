@@ -104,33 +104,35 @@ public class ListadoOrdenes extends JFrame {
         		
         		int filaSeleccionada = tabla.getSelectedRow();
 				if (filaSeleccionada >= 0) {
-                    String tipo =(String) tabla.getValueAt(filaSeleccionada,1);
+                 
                 	String codOrden = (String) tabla.getValueAt(filaSeleccionada, 0);	
-					if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
-					
-						AltaVisitaRetiro av;
-						try {
-							av = new AltaVisitaRetiro(api,codOrden);
-							av.setLocationRelativeTo(null);
-							av.setVisible(true);
+                	try {
+	                	if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
+						
+							AltaVisitaRetiro av;
+						
+								av = new AltaVisitaRetiro(api,codOrden);
+								av.setLocationRelativeTo(null);
+								av.setVisible(true);
+								
+								actualizarTabla("Todos", "");
+						
+						
+						}else if("ORDEN_ENTREGA".equals(tabla.getValueAt(filaSeleccionada, 1))){
+							AltaVisitaEntrega av;
 							
-							actualizarTabla("Todos", "");
-						} catch (DataNullException e1) {
-							JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-						}
-					
-					}else if("ORDEN_ENTREGA".equals(tabla.getValueAt(filaSeleccionada, 1))){
-						AltaVisitaEntrega av;
-						try {
-							av = new AltaVisitaEntrega(api,codOrden);
-							av.setLocationRelativeTo(null);
-							av.setVisible(true);
+								av = new AltaVisitaEntrega(api,codOrden);
+								av.setLocationRelativeTo(null);
+								av.setVisible(true);
+								
+								actualizarTabla("Todos", "");
 							
-							actualizarTabla("Todos", "");
-						} catch (DataNullException e2) {
-							JOptionPane.showMessageDialog(null, e2.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 						}
-					}
+						
+					
+				} catch (DataNullException e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
                 }
         		
         		
