@@ -28,6 +28,7 @@ import ar.edu.unrn.seminario.accesos.OrdenPedidoDAOJDBC;
 import ar.edu.unrn.seminario.accesos.OrdenRetiroDao;
 import ar.edu.unrn.seminario.accesos.OrdenRetiroDAOJDBC;
 import ar.edu.unrn.seminario.accesos.RolDAOJDBC;
+import ar.edu.unrn.seminario.accesos.SolicitudBienesJDBC;
 import ar.edu.unrn.seminario.accesos.UbicacionDAO;
 import ar.edu.unrn.seminario.accesos.UbicacionDAOJDBC;
 import ar.edu.unrn.seminario.accesos.UsuarioDAOJDBC;
@@ -92,6 +93,7 @@ public class PersistenceApi implements IApi {
     private InventarioDAOJDBC inventarioDAO;
     private BeneficiarioDAOJDBC beneficiarioDAO;
     private OrdenEntregaDAOJDBC ordenEntregaDAO;
+    private SolicitudBienesJDBC solicitudBienDAO;
     public PersistenceApi() {
         // inicializar DAOs JDBC
         this.rolDao = new RolDAOJDBC();
@@ -111,11 +113,12 @@ public class PersistenceApi implements IApi {
         this.inventarioDAO = new InventarioDAOJDBC();
         this.beneficiarioDAO= new BeneficiarioDAOJDBC();
         this.ordenEntregaDAO= new OrdenEntregaDAOJDBC();
+        this.solicitudBienDAO=new SolicitudBienesJDBC();
     }
    
     //Iniciaizar
     public void InicializarContadores() throws SQLException {
-    	//Beneficiario.setContadorDonante(0);
+    	Beneficiario.setContadorDonante(beneficiarioDAO.obtenerMaximoBeneficiarios());
     	Bien.setContadorBien(bienDao.obtenerMaximoBienes());
     	Coordenada.setContadorCoordenada(coordenadaDAO.obtenerMaximoCoordenadas());
     	Donacion.setContadorDonacion(donacionDao.obtenerMaximoDonaciones());
@@ -127,6 +130,7 @@ public class PersistenceApi implements IApi {
     	Usuario.setContadorUsuario(usuarioDao.obtenerMaximoUsuarios());
     	Voluntario.setContadorVoluntario(voluntarioDao.obtenerMaximoVoluntarios());
     	Visita.setContadorVisita(visitaDao.obtenerMaximoVisitas());
+    	SolicitudBien.setContadorSolicitud(solicitudBienDAO.obtenerMaximoSolicitudes());
     }
     
     // --- Usuario / Rol ---
@@ -1380,8 +1384,151 @@ public class PersistenceApi implements IApi {
 		   
 		return bienesDTO;
 	 }
+
+	 private OrdenEntrega toOrdenEntrega(OrdenEntregaDTO dto) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException {
+
+		    ArrayList<Visita> visitas = new ArrayList<>();
+		    if (dto.getVisitas() != null) {
+		        for (VisitaDTO vDTO : dto.getVisitas()) {
+		            visitas.add(toVisita(vDTO));
+		        }
+		    }
+
+		    Beneficiario beneficiario = null;
+		    if (dto.getBeneficiario() != null) {
+		        beneficiario = toBeneficiario(dto.getBeneficiario());
+		    }
+
+		    Voluntario voluntario = null;
+		    if (dto.getVoluntario() != null) {
+		        voluntario = toVoluntario(dto.getVoluntario());
+		    }
+
+		    SolicitudBien solicitud = null;
+		    if (dto.getSolicitud() != null) {
+		        solicitud = toSolicitudBien(dto.getSolicitud());
+		    }
+
+		    OrdenEntrega orden;
+		    
+		        orden = new OrdenEntrega(
+		            dto.getFechaEmision(),
+		            dto.getEstado().toString(),
+		            dto.getCodigo(),
+		            dto.getFechaHoraProgramada(),
+		            visitas,
+		            solicitud,
+		            beneficiario,
+		            voluntario
+		        );
+		    
+
+		
+		    return orden;
+		}
 	 
+	 private Beneficiario toBeneficiario(BeneficiarioDTO dto) {
+
+		    if (dto == null) {
+		        return null;
+		    }
+
+		    Ubicacion ubicacion = null;
+		    if (dto.getUbicacion() != null) {
+		        ubicacion = toUbicacion(dto.getUbicacion());
+		    }
+
+		    try {
+		    	
+		    	ArrayList<OrdenEntrega> entregas = new ArrayList<>( this.ordenEntregaDAO.findAllByBeneficiario(dto.getCodigo()));
+		    	ArrayList<SolicitudBien> solicitudes= new ArrayList<>(this.solicitudBienDAO.findAllByBeneficiario(dto.getCodigo()));
+		        return new Beneficiario(
+		            dto.getNombre(),
+		            dto.getApellido(),
+		            dto.getDni(),
+		            dto.getFecha_nac(),
+		            dto.getContacto(),
+		            ubicacion,
+		            dto.getUsername(),
+		            dto.getCodigo(),
+		            entregas,
+		            solicitudes, 
+		            dto.getCantAcargo(),
+		            dto.getPrioridad()
+		        );
+		    } catch (Exception e) {
+		        throw new RuntimeException("Error convirtiendo BeneficiarioDTO a Beneficiario", e);
+		    }
+		}
 	 
+	 private SolicitudBien toSolicitudBien(SolicitudBienDTO dto) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
+
+		    if (dto == null) {
+		        return null;
+		    }
+
+		    ArrayList<Bien> bienes = new ArrayList<>();
+		    if (dto.getBienesSolicitados() != null) {
+		        for (BienDTO bDTO : dto.getBienesSolicitados()) {
+		            bienes.add(this.toBien(bDTO));
+		        }
+		    }
+
+		    Beneficiario beneficiario = null;
+		    if (dto.getBeneficiario() != null) {
+		        beneficiario = toBeneficiario(dto.getBeneficiario());
+		    }
+
+		    return new SolicitudBien(
+		        dto.getCodigo(),
+		        beneficiario,
+		        bienes,
+		        dto.getEstado()
+		    );
+		}
+	 
+	 private Ubicacion toUbicacion(UbicacionDTO dto) {
+
+		    if (dto == null) {
+		        return null; 
+		    }
+
+		    try {
+		        return new Ubicacion(
+		            dto.getCodigo(),
+		            dto.getZona(),
+		            dto.getBarrio(),
+		            dto.getDireccion(),
+		            new Coordenada(dto.getCoordenada().getLatitud(),dto.getCoordenada().getLatitud(),dto.getCoordenada().getCodigo())
+		        );
+		    } catch (Exception e) {
+		        throw new RuntimeException("Error al convertir UbicacionDTO a Ubicacion", e);
+		    }
+		}
+	 
+	 private Voluntario toVoluntario(VoluntarioDTO dto) throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException, DAOException {
+
+		    if (dto == null) {
+		        throw new IllegalArgumentException("VoluntarioDTO no puede ser null");
+		    }
+
+		    ArrayList<OrdenRetiro> retiros = new ArrayList<>( this.ordenRetiroDao.findAllByVoluntario(dto.getCodigo()));
+		        Voluntario voluntario = new Voluntario(
+		            dto.getNombre(),
+		            dto.getApellido(),
+		            dto.getFecha_nac(),
+		            dto.getContacto(),
+		            dto.getDni(),
+		            dto.getUsername(),
+		            dto.getCodigo(),retiros
+		        );
+
+		      
+		        voluntario.setDisponible(dto.isDisponible());
+				return voluntario;
+		        
+	 }
+		
 }
 
 

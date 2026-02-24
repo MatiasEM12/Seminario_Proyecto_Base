@@ -277,6 +277,36 @@ OrdenPedidoDao op = new OrdenPedidoDAOJDBC();
 	    }
 	    return 0;
 	}
+	
+	public List<OrdenRetiro> findAllByVoluntario(String codVoluntario) throws DAOException {
+
+	    ArrayList<OrdenRetiro> ordenes = new ArrayList<>();
+
+	    try {
+	        Connection conn = ConnectionManager.getConnection();
+
+	        PreparedStatement sent = conn.prepareStatement(
+	            "SELECT codigo FROM ordenretiro WHERE codVoluntario = ?"
+	        );
+
+	        sent.setString(1, codVoluntario);
+
+	        ResultSet rs = sent.executeQuery();
+
+	        while (rs.next()) {
+	            ordenes.add(this.find(rs.getString("codigo")));
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException(
+	            "Error al buscar OrdenRetiro por voluntario " + codVoluntario + " .codigo OR610"+ e
+	        );
+	    } finally {
+	        ConnectionManager.disconnect();
+	    }
+
+	    return ordenes;
+	}
 
 
 }

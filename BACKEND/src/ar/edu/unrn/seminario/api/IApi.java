@@ -159,6 +159,8 @@ public interface IApi {
 	public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException;
 
 	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException;
+
+	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega);
 	
 	
 }

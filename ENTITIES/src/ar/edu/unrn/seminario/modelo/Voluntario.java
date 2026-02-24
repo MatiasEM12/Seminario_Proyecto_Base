@@ -31,16 +31,16 @@ public class Voluntario extends Persona{
 		crearCodigo();
 	}
 
-	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,String codigo) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
+	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,String codigo,ArrayList<OrdenRetiro> ordenesRetiro) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException, DataListException{
 		super(nombre, apellido, dni, fecha_nac, contacto);
 	
 		this.validarCampoNull(username);
 		this.validarCampoVacio( username,"Usuario");
 		this.validarLongitudCampo20(username, "Usuario");
-		
+		this.validarListRetiro(ordenesRetiro);
 		this.validarCampoVacio( codigo,"Codigo");
 		
-		
+		this.ordenesRetiro=ordenesRetiro;
 		this.username = username;
 		if(codigo==null) {
 			crearCodigo();
@@ -62,6 +62,8 @@ public class Voluntario extends Persona{
 		this.username = username;
 		crearCodigo();
 	}
+
+
 	
 	public String toString() {
 	    return nombre + " " + apellido; // o como prefieras mostrarlo
@@ -143,7 +145,9 @@ public class Voluntario extends Persona{
 		
 	}
 	
-	private void validarListPedido( ArrayList<OrdenRetiro> ordenesRetiro2) throws DataListException {
+	
+	
+	private void validarListRetiro( ArrayList<OrdenRetiro> ordenesRetiro2) throws DataListException {
 		if (ordenesRetiro2==null) {
 			throw new DataListException("List invalida");
 		}

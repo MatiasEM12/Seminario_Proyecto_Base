@@ -22,4 +22,5 @@ public interface OrdenRetiroDao {
 	int obtenerCantidadOR() throws SQLException;
 	
 	int obtenerMaximoOrdenRetiro() throws SQLException;
+	public List<OrdenRetiro> findAllByVoluntario(String codVoluntario) throws DAOException;
 }

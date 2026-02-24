@@ -78,6 +78,22 @@ public class OrdenEntrega extends Orden{
 
 
 
+	public OrdenEntrega(LocalDate fechaEmision,String estado, String codigo,
+			LocalDate fechaHoraProgramada, ArrayList<Visita> visitas, SolicitudBien solicitud,
+			Beneficiario beneficiario, Voluntario voluntario)
+			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
+		super(fechaEmision, estado, tipo);
+		this.codigo = codigo;
+		this.fechaHoraProgramada = fechaHoraProgramada;
+		this.visitas = visitas;
+		this.solicitud = solicitud;
+		this.beneficiario = beneficiario;
+		this.voluntario = voluntario;
+		inicializarEntregados();
+	}
+
+
+
 
 	public SolicitudBien getSolicitud() {
 		return solicitud;
