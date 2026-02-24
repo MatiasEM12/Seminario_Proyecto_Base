@@ -1528,6 +1528,14 @@ public class PersistenceApi implements IApi {
 				return voluntario;
 		        
 	 }
+
+	 @Override
+	 public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		
+		 OrdenEntrega orden= this.toOrdenEntrega(ordenEntrega);
+		this.ordenEntregaDAO.create(orden);// estado de orden en pendiente, hasta que se le cargue una visita
+		this.solicitudBienDAO.updateEstado(orden.getSolicitud().getCodigo(), Orden.EstadoOrden.EN_PROCESO.toString()); //solicitud en proceso al haberse creado la OrdenEntrega
+	 }
 		
 }
 

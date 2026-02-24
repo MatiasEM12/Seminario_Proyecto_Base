@@ -160,7 +160,7 @@ public interface IApi {
 
 	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException;
 
-	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega);
+	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException;
 	
 	
 }
