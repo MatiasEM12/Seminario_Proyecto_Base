@@ -47,7 +47,7 @@ public class AltaVisitaEntrega extends JFrame {
 
 	    private LocalDate fecha = null;
 	    private OrdenEntregaDTO orden;
-	    private DonacionDTO donacion;
+	  
 	    private ArrayList<BienDTO> bienesEntregados = new ArrayList<>();
 	    JRadioButton rdbtnRadioButtonEsFinal;
 	    private JTextField textFieldFecha;
@@ -96,7 +96,7 @@ public class AltaVisitaEntrega extends JFrame {
 	        contentPane.add(lblSeleccion);
 
 	        JButton btnSeleccionBien = new JButton("Bienes");
-	        btnSeleccionBien.setBounds(170, 89, 143, 23);
+	        btnSeleccionBien.setBounds(170, 107, 143, 23);
 	        btnSeleccionBien.addActionListener(e -> abrirSelectorBienes(orden.getSolicitud()));
 	        contentPane.add(btnSeleccionBien);
 
@@ -111,7 +111,7 @@ public class AltaVisitaEntrega extends JFrame {
 	        contentPane.add(textCodVoluntario);
 
 	        // ===================== DONANTE =====================
-	        JLabel lblCodBeneficiario = new JLabel("Donante:");
+	        JLabel lblCodBeneficiario = new JLabel("Beneficiario");
 	        lblCodBeneficiario.setBounds(10, 225, 170, 14);
 	        contentPane.add(lblCodBeneficiario);
 
@@ -180,14 +180,10 @@ public class AltaVisitaEntrega extends JFrame {
 	        List<BienDTO> bienesYaEntregados=null;
 
 	        try {
-	            try {
+	            
 					bienesYaEntregados =
 					    api.obtenerBienesPorOrdenEntrega(orden.getCodigo());
-				} catch (DataNullException | DataLengthException | DataDateException | DataEmptyException
-						| DataListException e) {
-				
-					e.printStackTrace();
-				}
+			
 	        } catch (DAOException e) {
 	            JOptionPane.showMessageDialog(this,
 	                    "Error al obtener bienes retirados",
@@ -233,7 +229,7 @@ public class AltaVisitaEntrega extends JFrame {
 	                   
 	            );
 
-	            api.cargarVisita(visita);
+	            api.cargarVisitaEntrega(visita);
 	            JOptionPane.showMessageDialog(this, "Visita registrada correctamente");
 
 	        } catch (Exception ex) {

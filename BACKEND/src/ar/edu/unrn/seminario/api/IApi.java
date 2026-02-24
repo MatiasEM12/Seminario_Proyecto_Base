@@ -110,7 +110,7 @@ public interface IApi {
 
 	//Visitas
 	public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException;
-	public void cargarVisita(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException;
+	public void cargarVisitaRetiro(VisitaDTO visita) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException;
 	public void registrarOrdenPedido(OrdenPedido orden)throws DataNullException, DAOException, DataObjectException ;
 	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException ;
 
@@ -161,6 +161,8 @@ public interface IApi {
 	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException;
 
 	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException;
+
+	public void cargarVisitaEntrega(VisitaDTO visita) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException;
 	
 	
 }

@@ -19,6 +19,7 @@ import ar.edu.unrn.seminario.modelo.SolicitudBien;
 public class SolicitudBienesJDBC implements SolicitudBienesDAO {
 	private BeneficiarioDAO beneficiarioDAO = new BeneficiarioDAOJDBC();
 	private BienDAO bienDAO = new BienDAOJDBC();
+	private Bien_SolicitudDAO bien_solicitud = new Bien_SolicitudDAOJDBC();
 	@Override
 	public void create(SolicitudBien solicitud) throws DAOException {
 
@@ -37,14 +38,9 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
 	        st.executeUpdate();
 
 	        // insertar bienes solicitados
-	        PreparedStatement stBien = conn.prepareStatement(
-	            "INSERT INTO bien_solicitud (codigoSolicitud, codBien) VALUES (?, ?)"
-	        );
-
+	      
 	        for (Bien b : solicitud.getBienesSolicitados()) {
-	            stBien.setString(1, solicitud.getCodigo());
-	            stBien.setString(2, b.getCodigo());
-	            stBien.executeUpdate();
+	            this.bien_solicitud.create(b.getCodigo(), solicitud.getCodigo());
 	        }
 
 	        

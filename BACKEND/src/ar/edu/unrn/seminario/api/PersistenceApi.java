@@ -726,7 +726,7 @@ public class PersistenceApi implements IApi {
 
 
     @Override
-    public void cargarVisita(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
+    public void cargarVisitaRetiro(VisitaDTO visitaDTO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
         
     	  	Visita visita = toVisita(visitaDTO);
     	  	OrdenRetiro oR = ordenRetiroDao.find(visita.getCodOrdenRetiro());
@@ -747,15 +747,11 @@ public class PersistenceApi implements IApi {
     	        
 
     	       
-    	    } else {
-    	        OrdenEntrega oE = this.ordenEntregaDAO.find(visita.getCodOrdenEntrega());
-    	        oE.agregarVisita(visita);
-    	        this.ordenEntregaDAO.update(oE);
-    	    }
+    	    } 
     	
 
 	        if (visita.tieneBienes()) {
-	            for (Bien b : oR.getRecolectados()) {
+	            for (Bien b : visita.getBienesRecolectados()) {
 	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
 	            }
 	        }
@@ -1535,6 +1531,32 @@ public class PersistenceApi implements IApi {
 		 OrdenEntrega orden= this.toOrdenEntrega(ordenEntrega);
 		this.ordenEntregaDAO.create(orden);// estado de orden en pendiente, hasta que se le cargue una visita
 		this.solicitudBienDAO.updateEstado(orden.getSolicitud().getCodigo(), Orden.EstadoOrden.EN_PROCESO.toString()); //solicitud en proceso al haberse creado la OrdenEntrega
+	 }
+
+	 @Override
+	 public void cargarVisitaEntrega(VisitaDTO visita) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		Visita v = this.toVisita(visita);
+		OrdenEntrega entrega = this.ordenEntregaDAO.find(v.getCodOrdenEntrega());
+		
+		  if (entrega!= null) {
+  	        
+
+  	    
+  	        entrega.agregarVisita(v);
+  	        
+  	        
+  	        visitaDao.create(v);
+  	        ordenEntregaDAO.update(entrega);;
+  	        solicitudBienDAO.updateEstado(entrega.getSolicitud().getCodigo(),entrega.getSolicitud().getEstado());
+  	        
+
+  	       
+  	    } 
+	        if (v.tieneBienes()) {
+	            for (Bien b : v.getBienesRecolectados()) {
+	                inventarioDAO.update(b.getCodigo(), b.getTipo(), false);;
+	            }
+	        }
 	 }
 		
 }
