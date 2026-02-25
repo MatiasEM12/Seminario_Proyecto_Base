@@ -181,30 +181,31 @@ public class OrdenEntrega extends Orden{
 		
 		}
 	}
-public void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
+	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
-		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) ) {
+		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) || super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString())) {
 			
 			super.setEstado(EstadoOrden.COMPLETADA);
 		}else {
-			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
+			
+			  throw new StateChangeException("Cambio de estado de la Orden de Entrega Invalido aqui");
 		}
 		
 	}
 	
-	public void ordenEstadoProceso() throws StateChangeException, DataObjectException {
-		
-	if(super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString()) ) {
-			
-			super.setEstado(EstadoOrden.EN_PROCESO);
-		}else {
-			
-			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
-		}
-		
+	private void ordenEstadoProceso() throws StateChangeException, DataObjectException {
+	    EstadoOrden actual = super.getEstado();
+	    // Permitir que PENDIENTE pase a EN_PROCESO o que ya esté en EN_PROCESO y se mantenga
+	    if (actual == EstadoOrden.PENDIENTE || actual == EstadoOrden.EN_PROCESO) {
+	        super.setEstado(EstadoOrden.EN_PROCESO);
+	    } else {
+	        throw new StateChangeException(
+	            "Cambio de estado de la Orden de Entrega inválido: " + actual
+	        );
+	    }
 	}
-	
-	public void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
+
+	private void ordenEstadoCancelada() throws StateChangeException, DataObjectException {
 		
 		
 		if(!super.getEstadoString().equals(EstadoOrden.COMPLETADA.toString())) {
@@ -212,7 +213,7 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 			super.setEstado(EstadoOrden.CANCELADA);
 		}else {
 
-			  throw new StateChangeException("Cambio deestado de la Orden de Entrega Invalido");
+			  throw new StateChangeException("Cambio de estado de la Orden de Entrega Invalido");
 		}
 		
 		
@@ -222,19 +223,143 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 		this.entregados = entregados;
 	}
 	public void agregarVisita(Visita visita) throws StateChangeException, DataObjectException, DataListException {
+		 
+
 		this.validarObjectNull(visita);
-		
-		this.visitas.add(visita);
-		if(visita.getBienesRecolectados()!=null) {
+
+			  
+			    
+			    // Primera visita
+		if (visitas.isEmpty()) {
 			
-			this.setRecolectados(visita.getBienesRecolectados());
+			 visitas.add(visita);
+			 agregarBienesSiCorresponde(visita);
+			 actualizarEstadoOrden(visita);
+			 return;
+		}
+
+			    // Última visita existente
+		 Visita ultima = visitas.get(visitas.size() - 1);
+			  if (!ultima.getEstado().equalsIgnoreCase("pendiente") &&
+			        !ultima.getEstado().equalsIgnoreCase("en proceso")) {
+			        throw new StateChangeException(
+			            "No se puede agregar una nueva visita si la última ya fue finalizada"
+			        );
+			    }
+
+		visitas.add(visita);
+		if(visita.getEstado().equalsIgnoreCase("Pendiente")) {
+			comprobarYCambiarEstadoCancelado();
+		}
+		agregarBienesSiCorresponde(visita);
+		actualizarEstadoOrden(visita);
+		
+		}
+	
+	
+		  
+	private void actualizarEstadoOrden(Visita visita)throws StateChangeException, DataObjectException {
+
+
+			
+				
+			 //this.setEstado(EstadoOrden.EN_PROCESO);
+		boolean todosBienes =comprobarBienes(solicitud.getBienesSolicitados(), entregados);//true si todos los bienes fueron entredos
+		if (visita.isEsFinal()) {
+
+			if(!visita.getBienesRecolectados().isEmpty()&&todosBienes) {
+			    	  //caso: es la visita Final y tiene bienes, además todos los bienes fueron entregados 
+			    	  
+			 visita.completar();
+			 this.ordenEstadoCompleta();
+			 this.solicitud.setEstado(this.getEstado().toString());
+		}else {
+			    	  //caso: la visita es final y no tiene bienes, pero no habran más visitas para entregar los bienes restantes
+			  visita.completar();
+			  this.ordenEstadoCompleta();
+			  this.solicitud.setEstado(this.getEstado().toString());
+		}
+
+			       		
+			       	
+		}else {
+			    	
+			if(!visita.getBienesRecolectados().isEmpty() && !this.entregados.isEmpty()) {
+			    		//caso: La visita no es final , tiene bienes y la OrdenEntrega tiene bienes  por lo cual quedan bienes a entregar
+				visita.enProceso();
+			    this.ordenEstadoProceso();
+			    		
+			 }else {
+			    		//caso: La visita no es final, no tiene bienes y la OrdenEntrega no tiene bienes, esa visita no modificaciones de bienes.
+			    visita.enPendiente();
+			    this.ordenEstadoProceso();
+			    this.solicitud.setEstado(this.getEstado().toString());
+			    		
+			    comprobarYCambiarEstadoCancelado();//por si es valida a cancelar
+			    		
+			    		
+			  }
+			    	
+			    	
+			    	
+			    }
+			    
+	}
+	public void comprobarYCambiarEstadoCancelado()
+			        throws StateChangeException, DataObjectException {
+
+		if (visitas == null || visitas.size() < 3) {
+			        return; 
+	    }
+
+	   int size = visitas.size();
+
+			    // Tomamos las últimas 3 visitas
+	   Visita v1 = visitas.get(size - 1);
+	   Visita v2 = visitas.get(size - 2);
+	   Visita v3 = visitas.get(size - 3);
+
+	   if (sonTodasPendientes(v1, v2, v3)) {
+
+			    
+		v1.cancelar();
+		this.ordenEstadoCancelada();
+			if (this.solicitud != null) {
+			   this.solicitud.setEstado(this.getEstado().toString());
+			 }
+	   }
+	}
+	private boolean comprobarBienes(ArrayList<Bien> bienesPedido,
+            ArrayList<Bien> bienesRecolectados) {
+		
+		if (bienesPedido == null || bienesRecolectados == null) {
+		return false;
 		}
 		
-		
-		if(visita.isEsFinal()==true ) {
-			this.ordenEstadoCompleta();
+		if (bienesPedido.size() != bienesRecolectados.size()) {
+		return false;
 		}
 		
+		return bienesPedido.containsAll(bienesRecolectados)
+		&& bienesRecolectados.containsAll(bienesPedido);
+}
+
+	private boolean sonTodasPendientes(Visita v1, Visita v2, Visita v3) {
+
+			 return v1.getEstado().equalsIgnoreCase("Pendiente")
+			 && v2.getEstado().equalsIgnoreCase("Pendiente")
+			 && v3.getEstado().equalsIgnoreCase("Pendiente");
+	}
+		  
+	private void agregarBienesSiCorresponde(Visita visita) throws DataListException {
+			 if (visita.getBienesRecolectados() != null) {
+			       this.agregarBienes(visita.getBienesRecolectados());
+			}
+	}
+	
+	public void agregarBienes (ArrayList<Bien> bienes) throws DataListException {
+		this.validarListBien(bienes);
+		this.entregados.addAll(bienes);
 	}
 	public void agregarBien(Bien bien) throws DataObjectException {
 		this.validarObjectNull(bien);
@@ -315,6 +440,19 @@ public void ordenEstadoCompleta() throws StateChangeException, DataObjectExcepti
 	public static final boolean esEntrega(String codigo) {
 	    return codigo != null && codigo.length() >= 2
 	            && codigo.substring(0, 2).equals("OE");
+	}
+	
+	public ArrayList<Bien> obtenerBienesFaltantes(ArrayList<Bien> esperados, ArrayList<Bien> entregados) {
+		ArrayList<Bien> faltantes = new ArrayList<>();
+		
+		    
+		    for (Bien bien : esperados) {
+		        if (!entregados.contains(bien)) {
+		           		faltantes.add(bien);
+		        }
+		    }
+		
+	    return faltantes;
 	}
 
 
