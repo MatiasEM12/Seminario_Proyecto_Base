@@ -98,8 +98,8 @@ public class VentanaPedido extends JFrame {
 		crearOrdenEntregaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 AltaOrdenEntrega ventanaEntrega = new VentanaEntrega(api, solicitud);
-				 AltaOrdenEntrega.setVisible(true);
+				 AltaOrdenEntrega ventanaEntrega = new AltaOrdenEntrega(api, solicitud);
+				 ventanaEntrega.setVisible(true);
 			}
 		});
 		crearOrdenEntregaButton.setBounds(390, 320, 170, 28);

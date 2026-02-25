@@ -226,7 +226,7 @@ public class AltaVisitaRetiro extends JFrame {
                    
             );
 
-            api.cargarVisita(visita);
+            api.cargarVisitaRetiro(visita);
             JOptionPane.showMessageDialog(this, "Visita registrada correctamente");
 
         } catch (Exception ex) {

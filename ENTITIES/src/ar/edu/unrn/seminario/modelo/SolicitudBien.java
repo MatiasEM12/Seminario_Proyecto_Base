@@ -7,7 +7,7 @@ private static int contadorSolicitud = 0;
 	
 	
 	private String codigo;
-	private Beneficiario beneficiario;
+	private String codBeneficiario;
 	private ArrayList<Bien> bienesSolicitados;
 	private String estado;
 	
@@ -15,10 +15,10 @@ private static int contadorSolicitud = 0;
 	
 	
 	
-	public SolicitudBien(String codigo, Beneficiario beneficiario, ArrayList<Bien> bienesSolicitados, String estado) {
+	public SolicitudBien(String codigo, String codBeneficiario, ArrayList<Bien> bienesSolicitados, String estado) {
 		super();
 		this.codigo = codigo;
-		this.beneficiario = beneficiario;
+		this.codBeneficiario = codBeneficiario;
 		this.bienesSolicitados = bienesSolicitados;
 		this.estado = estado;
 	}
@@ -28,7 +28,7 @@ private static int contadorSolicitud = 0;
 	public SolicitudBien(Beneficiario beneficiario, ArrayList<Bien> bienesSolicitados, String estado) {
 		super();
 		crearCodigo();
-		this.beneficiario = beneficiario;
+		this.codBeneficiario = codBeneficiario;
 		this.bienesSolicitados = bienesSolicitados;
 		this.estado = estado;
 	}
@@ -49,16 +49,16 @@ private static int contadorSolicitud = 0;
 
 
 
-	public Beneficiario getBeneficiario() {
-		return beneficiario;
+	public String getBeneficiario() {
+		return codBeneficiario;
 	}
 
 
 
 
 
-	public void setBeneficiario(Beneficiario beneficiario) {
-		this.beneficiario = beneficiario;
+	public void setBeneficiario(String codBeneficiario) {
+		this.codBeneficiario = codBeneficiario;
 	}
 
 

@@ -103,7 +103,7 @@ public class AltaOrdenRetiro extends JFrame {
 		JButton btnVoluntarios = new JButton("Voluntario");
 		btnVoluntarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListadoVoluntarios ventanaVoluntarios = new ListadoVoluntarios(AltaOrdenRetiro.this, api);
+				ListadoVoluntarios ventanaVoluntarios = new ListadoVoluntarios(AltaOrdenRetiro.this, api,null);
 				ventanaVoluntarios.setLocationRelativeTo(AltaOrdenRetiro.this);
 				ventanaVoluntarios.setVisible(true);
 			}

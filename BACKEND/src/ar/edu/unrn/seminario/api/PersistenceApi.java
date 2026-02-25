@@ -54,6 +54,7 @@ import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataDoubleException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
 import ar.edu.unrn.seminario.exception.DataExistsException;
+import ar.edu.unrn.seminario.exception.DataIntException;
 import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
@@ -1306,14 +1307,13 @@ public class PersistenceApi implements IApi {
 		        }
 		    }
 
-		    BeneficiarioDTO beneficiarioDTO = null;
-		    if (solicitud.getBeneficiario() != null) {
-		        beneficiarioDTO = toBeneficiarioDTO(solicitud.getBeneficiario());
-		    }
+		    String codBeneficiario= solicitud.getBeneficiario();
+		     
+		    
 
 		    return new SolicitudBienDTO(
 		        solicitud.getCodigo(),
-		        beneficiarioDTO,
+		        codBeneficiario,
 		        bienesDTO,
 		        solicitud.getEstado()
 		    );
@@ -1470,14 +1470,11 @@ public class PersistenceApi implements IApi {
 		        }
 		    }
 
-		    Beneficiario beneficiario = null;
-		    if (dto.getBeneficiario() != null) {
-		        beneficiario = toBeneficiario(dto.getBeneficiario());
-		    }
+		   String codBeneficiario= dto.getBeneficiario();
 
 		    return new SolicitudBien(
 		        dto.getCodigo(),
-		        beneficiario,
+		        codBeneficiario,
 		        bienes,
 		        dto.getEstado()
 		    );
@@ -1566,6 +1563,25 @@ public class PersistenceApi implements IApi {
            }
 	   }     
 	        
+	 }
+
+	 @Override
+	 public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes() throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
+	  
+		 ArrayList<SolicitudBien> solicitudesPendientes= new ArrayList<>( this.solicitudBienDAO.findAllPendientes());		 
+		 ArrayList<SolicitudBienDTO> solicitudesPendientesDTO= new  ArrayList<SolicitudBienDTO>();
+		 
+		 for(SolicitudBien sb:solicitudesPendientes ) {
+			 solicitudesPendientesDTO.add(this.toSolicitudBienDTO(sb));
+		 }
+		return solicitudesPendientesDTO;
+	 }
+
+	 @Override
+	 public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario) throws DAOException, DataLengthException, DataIntException, DataListException {
+		BeneficiarioDTO dto=null;
+		Beneficiario benefiriario= beneficiarioDAO.find(beneficiario);
+		return dto=this.toBeneficiarioDTO(benefiriario);
 	 }
 		
 }

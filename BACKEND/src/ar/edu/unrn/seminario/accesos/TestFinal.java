@@ -3,14 +3,15 @@ package ar.edu.unrn.seminario.accesos;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import ar.edu.unrn.seminario.api.IApi;
-import ar.edu.unrn.seminario.api.PersistenceApi;
+
 import ar.edu.unrn.seminario.modelo.Beneficiario;
 import ar.edu.unrn.seminario.modelo.Bien;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.modelo.Donante;
+import ar.edu.unrn.seminario.modelo.Orden;
 import ar.edu.unrn.seminario.modelo.Rol;
+import ar.edu.unrn.seminario.modelo.SolicitudBien;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 import ar.edu.unrn.seminario.modelo.Usuario;
 import ar.edu.unrn.seminario.modelo.Voluntario;
@@ -20,7 +21,7 @@ public class TestFinal {
 	
 	public static void main(String[] args) {
 		try {
-			IApi api = new PersistenceApi();
+			
 			
 			RolDao rolDAO = new RolDAOJDBC();
 			UsuarioDAOJDBC usuarioDAO = new UsuarioDAOJDBC();
@@ -32,6 +33,10 @@ public class TestFinal {
 			BienDAOJDBC bienDAO = new BienDAOJDBC();
 			DonacionDAOJDBC donacionDAO= new DonacionDAOJDBC();
 			Bien_DonacionJDBC bienDonacionDAO = new Bien_DonacionJDBC();
+			InventarioDAO inventarioDAO= new InventarioDAOJDBC();
+			SolicitudBienesDAO solicitudBienDAO = new SolicitudBienesJDBC();
+			
+		
 			//roles
 			//crea los roles base
 			Rol rol1 = new Rol(1,"Admin", true);
@@ -105,16 +110,16 @@ public class TestFinal {
 			
 			//Bien
 			Bien.setContadorBien(bienDAO.obtenerMaximoBienes());
-			Bien alimentoTest = new Bien(null,"Alimento",null,"Manteca","Manteca marca 'YYYY'",LocalDate.of(2026, 4, 11),null,null);
+			Bien alimentoTest = new Bien(null,"Alimento",null,"Manteca","Manteca marca 'YYYY'",LocalDate.of(2027, 1, 1),null,null);
 			Bien ropaTest = new Bien(null,"Ropa",null,"Camisa","Camisa usada, con botones cambiados",null,4.0,"algodon");
 			
 			bienDAO.create(alimentoTest);
 			bienDAO.create(ropaTest);
 			
-			ArrayList <Bien> bienesTest= new ArrayList();
+			ArrayList <Bien> bienesTest= new ArrayList<>();
 			bienesTest.add(ropaTest);
 			bienesTest.add(alimentoTest);
-			//Donacion
+			
 			Donacion.setContadorDonacion(donacionDAO.obtenerMaximoDonaciones());
 			
 			Donacion donacionTest = new Donacion(LocalDate.now(),"Donacion de una camisa y una manteca",bienesTest,donanteTest,null);
@@ -123,6 +128,28 @@ public class TestFinal {
 			bienDonacionDAO.create(alimentoTest.getCodigo(), donacionTest.getCodigo());
 			
 			donacionDAO.create(donacionTest);
+			
+			
+			/*Como hicimos el sistema pensando en la perspectiva del ADM, representamos de la siguiente forma la creacion de la solicitud 
+			 * de Bienes por parte del beneficiario.
+			 * 		Decidimos pensar que desde la perspectiva del Benficiariom él podra elegir los bienes que se encuentran disponibles 
+			 * en el inventario, tal como si fuese un "carro de compras" que seleccionara los bienes que se encuentran disponibles en la
+			 * Organizacion. 
+			 * */
+			Bien alimentoTestSolicitud = new Bien(null,"Alimento",null,"Fideos","Fideos marca 'YYYY'",LocalDate.of(2026, 7, 12),null,null);
+			Bien ropaTestSolicitud = new Bien(null,"Ropa",null,"Pantalon","Pantalon nuevo",null,1.0,"algodon");
+			
+			bienDAO.create(alimentoTestSolicitud);
+			bienDAO.create(ropaTestSolicitud);
+			inventarioDAO.create(alimentoTestSolicitud.getCodigo(), alimentoTestSolicitud.getTipo(), true);
+			inventarioDAO.create(ropaTestSolicitud.getCodigo(), ropaTestSolicitud.getTipo(), true);
+			
+			ArrayList <Bien> bienesSeleccionados= new ArrayList<>();
+			bienesSeleccionados.add(ropaTestSolicitud);
+			bienesSeleccionados.add(alimentoTestSolicitud);
+			
+			SolicitudBien solicitud= new SolicitudBien(beneficiarioTest,bienesSeleccionados,Orden.EstadoOrden.PENDIENTE.toString());
+			solicitudBienDAO.create(solicitud);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

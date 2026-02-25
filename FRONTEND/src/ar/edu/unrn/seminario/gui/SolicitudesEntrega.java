@@ -15,13 +15,17 @@ import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.BeneficiarioDTO;
+import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
 import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataIntException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Donacion;
 import ar.edu.unrn.seminario.dto.*;
-abstract class SolicitudesEntrega extends JFrame {
+public class SolicitudesEntrega extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -35,7 +39,13 @@ abstract class SolicitudesEntrega extends JFrame {
 	 */
 	public SolicitudesEntrega(IApi api) {
 
-		solicitudesDTO=api.obtenerSolicitudesPendientes();
+		this.api=api;
+		try {
+			solicitudesDTO=api.obtenerSolicitudesPendientes();
+		} catch (DAOException | DataNullException | DataLengthException | DataIntException | DataListException e) {
+			
+			e.printStackTrace();
+		}
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 800, 380);
         contentPane = new JPanel();
@@ -93,9 +103,8 @@ abstract class SolicitudesEntrega extends JFrame {
         try {
           
         	for (SolicitudBienDTO s: solicitudesDTO) {
-        		beneficiarios.add(s.getBeneficiario());
+        		beneficiarios.add(api.obtenerBeneficiarioDTO(s.getBeneficiario()));
         	}
-        	
         	
         } catch (Exception e) {
            

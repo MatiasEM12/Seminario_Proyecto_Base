@@ -163,6 +163,10 @@ public interface IApi {
 	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException;
 
 	public void cargarVisitaEntrega(VisitaDTO visita) throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException, DataDoubleException, StateChangeException, DataObjectException, DAOException;
+
+	public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes() throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException;
+
+	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario) throws DAOException, DataLengthException, DataIntException, DataListException;
 	
 	
 }

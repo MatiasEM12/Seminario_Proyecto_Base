@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class SolicitudBienDTO {
 	private String codigo;
-	private BeneficiarioDTO beneficiario;
+	private String codBeneficiario;
 	private ArrayList<BienDTO> bienesSolicitados;
 	private String estado;
 	
@@ -13,10 +13,10 @@ public class SolicitudBienDTO {
 	
 	
 	
-	public SolicitudBienDTO(String codigo, BeneficiarioDTO beneficiario, ArrayList<BienDTO> bienesSolicitados, String estado) {
+	public SolicitudBienDTO(String codigo,String codBeneficiario, ArrayList<BienDTO> bienesSolicitados, String estado) {
 		super();
 		this.codigo = codigo;
-		this.beneficiario = beneficiario;
+		this.codBeneficiario = codBeneficiario;
 		this.bienesSolicitados = bienesSolicitados;
 		this.estado = estado;
 	}
@@ -26,16 +26,16 @@ public class SolicitudBienDTO {
 
 
 
-	public BeneficiarioDTO  getBeneficiario() {
-		return beneficiario;
+	public String getBeneficiario() {
+		return codBeneficiario;
 	}
 
 
 
 
 
-	public void setBeneficiario(BeneficiarioDTO beneficiario) {
-		this.beneficiario = beneficiario;
+	public void setBeneficiario(String codBeneficiario) {
+		this.codBeneficiario = codBeneficiario;
 	}
 
 

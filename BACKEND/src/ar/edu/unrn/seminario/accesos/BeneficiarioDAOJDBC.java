@@ -14,13 +14,16 @@ import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Beneficiario;
+import ar.edu.unrn.seminario.modelo.OrdenEntrega;
+import ar.edu.unrn.seminario.modelo.SolicitudBien;
 import ar.edu.unrn.seminario.modelo.Ubicacion;
 
 public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
 
     private final UbicacionDAO ubicacionDAO;
-    private OrdenEntregaDAO ordenEntega=new OrdenEntregaDAOJDBC();
-    private SolicitudBienesDAO solicitud=new SolicitudBienesJDBC();
+    private ArrayList<OrdenEntrega> ordenesEntrega= new ArrayList<>();
+    private ArrayList<SolicitudBien> solicitudBienes= new ArrayList<>();
+  
     public BeneficiarioDAOJDBC() {
         this.ubicacionDAO = new UbicacionDAOJDBC();
     }
@@ -47,7 +50,7 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
             st.setDate(6, Date.valueOf(b.getFecha_nac()));
             st.setString(7, b.getUsername());
 
-            // 🔥 ESTOS DOS ESTABAN MAL
+            
             st.setInt(8, b.getCantAcargo());
             st.setInt(9, b.getPrioridad());
 
@@ -136,6 +139,18 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
             "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, coUbicacion,aCargo,prioridad " +
             "FROM beneficiario WHERE codigo = ?";
 
+        OrdenEntregaDAO ordenEntregaDAO = new OrdenEntregaDAOJDBC();
+        	ordenesEntrega= new ArrayList<>(ordenEntregaDAO.findAllByBeneficiario(codigo));
+        
+      
+        SolicitudBienesDAO solicitudDAO = new SolicitudBienesJDBC();
+        try {
+			solicitudBienes=new ArrayList<>(solicitudDAO.findAllByBeneficiario(codigo));
+		} catch (DAOException | DataNullException | DataLengthException | DataIntException | DataListException e) {
+			
+			e.printStackTrace();
+		}
+        
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement st = conn.prepareStatement(SQL)) {
 
@@ -152,22 +167,36 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
                 LocalDate fechaNac = rs.getDate("Fecha_Nacimiento").toLocalDate();
                 String username = rs.getString("username");
                 String codUbic = rs.getString("coUbicacion");
-                int aCargo = Integer.parseInt("aCargo");
-                int prioridad= Integer.parseInt("prioridad");
 
-                Ubicacion ubic = (ubicacionDAO != null) ? ubicacionDAO.find(codUbic) : null;
+                int aCargo = rs.getInt("aCargo");
+                int prioridad = rs.getInt("prioridad");
 
-                Beneficiario bene = new Beneficiario(nombre, apellido, fechaNac, dni, contacto, ubic, username,prioridad,aCargo);
+                Ubicacion ubic = (ubicacionDAO != null)
+                        ? ubicacionDAO.find(codUbic)
+                        : null;
 
+                Beneficiario bene = new Beneficiario(
+                        nombre,
+                        apellido,
+                        fechaNac,
+                        dni,
+                        contacto,
+                        ubic,
+                        username,
+                        prioridad,
+                        aCargo
+                );
             
                 bene.setCodigoDesdeBD(cod);
+               
                 bene.setOrdenesEntrega(
-                	    new ArrayList<>(this.ordenEntega.findAllByBeneficiario(cod))
-                	);
-                
+                  this.ordenesEntrega
+                );
+        
+
                 bene.setSolicitudBienes(
-                	    new ArrayList<>(this.solicitud.findAllByBeneficiario(cod))
-                	);
+                   solicitudBienes
+                );
                 return bene;
             }
 

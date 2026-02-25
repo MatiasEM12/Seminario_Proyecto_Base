@@ -28,7 +28,7 @@ public class OrdenEntregaDAOJDBC implements OrdenEntregaDAO{
 VisitaDao visita= new VisitaDAOJDBC();
 VoluntarioDAO voluntario= new VoluntarioDAOJDBC();
 OrdenPedidoDao op =new OrdenPedidoDAOJDBC();
-BeneficiarioDAO beneficiario=new BeneficiarioDAOJDBC();	
+
 SolicitudBienesDAO solicitud= new SolicitudBienesJDBC();
 	
 
@@ -158,9 +158,9 @@ public void update(OrdenEntrega orden) throws DAOException {
 	                fechaProg = rs.getDate("FechaProgramada").toLocalDate();
 	            }
 
+	            BeneficiarioDAO beneficiarioDAO = new BeneficiarioDAOJDBC();
 	            Beneficiario beneficiario =
-	                this.beneficiario.find(rs.getString("codBeneficiario"));
-
+	                beneficiarioDAO.find(rs.getString("codBeneficiario"));
 	            Voluntario voluntario = null;
 	            if (rs.getString("codVoluntario") != null) {
 	                voluntario = this.voluntario.find(rs.getString("codVoluntario"));

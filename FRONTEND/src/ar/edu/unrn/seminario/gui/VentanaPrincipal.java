@@ -203,9 +203,9 @@ public class VentanaPrincipal extends JFrame {
 		JMenuItem itemSolicitudesEntrega =new JMenuItem("Solicitudes de entrega");
 		 itemSolicitudesEntrega.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				ListadoOrdenes ventanaListado=new ListadoOrdenes(api);
-				ventanaListado.setLocationRelativeTo(null);
-				ventanaListado.setVisible(true);
+				SolicitudesEntrega solicitudesEntrega=new SolicitudesEntrega(api);
+				solicitudesEntrega.setLocationRelativeTo(null);
+				solicitudesEntrega.setVisible(true);
 				
 				
 			}
