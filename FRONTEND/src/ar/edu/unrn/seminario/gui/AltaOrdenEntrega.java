@@ -40,11 +40,12 @@ public class AltaOrdenEntrega extends JFrame {
 
 	private JTextField txtFecha;
 	private JTextField txtEstado;
-	private JTextField txtCodigo;
+	private JTextField txtCodigoBeneficiario;
 	IApi api;
 	private JTextField txtCodVoluntario;
 	private JCalendar calendar;
-
+	private JTextField textCodSolicitud;
+	private LocalDate fechaProgramada=null;
 
 	/**
 	 * Create the frame.
@@ -58,35 +59,37 @@ public class AltaOrdenEntrega extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel codBeneficiario = new JLabel("Codigo Pedido:");
-		codBeneficiario.setBounds(10, 11, 133, 13);
+		JLabel codBeneficiario = new JLabel("Codigo Beneficiario");
+		codBeneficiario.setBounds(10, 73, 133, 13);
 		contentPane.add(codBeneficiario);
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Estado:");
-		lblNewLabel_1_1.setBounds(10, 119, 102, 13);
+		lblNewLabel_1_1.setBounds(10, 155, 102, 13);
 		contentPane.add(lblNewLabel_1_1);
 		
 		JLabel lblNewLabel_2 = new JLabel("Fecha Emision:");
-		lblNewLabel_2.setBounds(10, 156, 96, 13);
+		lblNewLabel_2.setBounds(10, 185, 96, 13);
 		contentPane.add(lblNewLabel_2);
 		
-		txtFecha = new JTextField();
+		LocalDate fecha = LocalDate.now();
+		String texto = fecha.toString();
+		txtFecha = new JTextField(texto);
 		txtFecha.setEditable(false);
-		txtFecha.setBounds(140, 152, 96, 19);
+		txtFecha.setBounds(140, 181, 96, 19);
 		contentPane.add(txtFecha);
 		txtFecha.setColumns(10);
 		
-		txtEstado = new JTextField();
+		txtEstado = new JTextField("Pendiente");
 		txtEstado.setEditable(false);
 		txtEstado.setColumns(10);
-		txtEstado.setBounds(140, 115, 96, 19);
+		txtEstado.setBounds(140, 151, 96, 19);
 		contentPane.add(txtEstado);
 		
-		txtCodigo = new JTextField();
-		txtCodigo.setEditable(false);
-		txtCodigo.setColumns(10);
-		txtCodigo.setBounds(140, 7, 96, 19);
-		contentPane.add(txtCodigo);
+		txtCodigoBeneficiario = new JTextField(solicitud.getBeneficiario());
+		txtCodigoBeneficiario.setEditable(false);
+		txtCodigoBeneficiario.setColumns(10);
+		txtCodigoBeneficiario.setBounds(140, 69, 96, 19);
+		contentPane.add(txtCodigoBeneficiario);
 		
 		JButton btnGuardar = new JButton("Guardar");
 		btnGuardar.setBounds(175, 432, 85, 21);
@@ -98,7 +101,7 @@ public class AltaOrdenEntrega extends JFrame {
 		 btnNewButton_1.addActionListener(e -> dispose());
 		
 		JLabel seleccionarVoluntario = new JLabel("Selecionar Voluntario");
-		seleccionarVoluntario.setBounds(10, 61, 133, 13);
+		seleccionarVoluntario.setBounds(10, 97, 133, 13);
 		contentPane.add(seleccionarVoluntario);
 		
 		JButton btnVoluntarios = new JButton("Voluntario");
@@ -109,34 +112,52 @@ public class AltaOrdenEntrega extends JFrame {
 				ventanaVoluntarios.setVisible(true);
 			}
 		});
-		btnVoluntarios.setBounds(140, 57, 151, 21);
+		btnVoluntarios.setBounds(140, 93, 151, 21);
 		contentPane.add(btnVoluntarios);
 		
 		txtCodVoluntario = new JTextField();
 		txtCodVoluntario.setEditable(false);
 		txtCodVoluntario.setColumns(10);
-		txtCodVoluntario.setBounds(140, 85, 96, 19);
+		txtCodVoluntario.setBounds(140, 121, 96, 19);
 		contentPane.add(txtCodVoluntario);
 		
 		JLabel codVoluntario = new JLabel("Codigo Voluntario");
-		codVoluntario.setBounds(10, 88, 133, 13);
+		codVoluntario.setBounds(10, 131, 133, 13);
 		contentPane.add(codVoluntario);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("Fecha Programada:");
-		lblNewLabel_2_1.setBounds(10, 193, 96, 13);
+		lblNewLabel_2_1.setBounds(10, 220, 96, 13);
 		contentPane.add(lblNewLabel_2_1);
 		
 		calendar = new JCalendar();
-		calendar.setBounds(107, 193, 184, 153);
+		calendar.setBounds(107, 222, 184, 153);
 		contentPane.add(calendar);
 		
 		JButton btnVerBienes = new JButton("Ver Bienes");
+		btnVerBienes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				ListadoBienes ventanaBienes= new ListadoBienes(api,solicitud.getBienesSolicitados());
+				ventanaBienes.setLocationRelativeTo(AltaOrdenEntrega.this);
+				ventanaBienes.setVisible(true);
+			}
+		});
 		btnVerBienes.setBounds(10, 386, 102, 21);
 		contentPane.add(btnVerBienes);
+		
+		textCodSolicitud = new JTextField(solicitud.getCodigo());
+		textCodSolicitud.setEditable(false);
+		textCodSolicitud.setColumns(10);
+		textCodSolicitud.setBounds(140, 39, 96, 19);
+		contentPane.add(textCodSolicitud);
+		
+		JLabel codSolicitud = new JLabel("Codigo Solicitud");
+		codSolicitud.setBounds(10, 42, 133, 13);
+		contentPane.add(codSolicitud);
 		btnGuardar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		      
-		    	String codigo = txtCodigo.getText();
+		    	String codigo = txtCodigoBeneficiario.getText();
 		    	String estado= "Pendiente";
 		    	String fechaTexto = txtFecha.getText();
 		  
@@ -145,36 +166,48 @@ public class AltaOrdenEntrega extends JFrame {
 		    	try {
 		    	    // Convertir texto a LocalDate
 		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
-		    	    String[] codVisitas = {};
 		    	    
-		    	    LocalDate FechaProgramada=calendar.getDate()
-		                    .toInstant()
-		                    .atZone(ZoneId.systemDefault())
-		                    .toLocalDate();
-		    
+		    	    
+		    	    fechaProgramada = calendar.getDate()
+		    	            .toInstant()
+		    	            .atZone(ZoneId.systemDefault())
+		    	            .toLocalDate();
+
+		    	    if (fechaProgramada.isBefore(LocalDate.now())) {
+		    	        JOptionPane.showMessageDialog(
+		    	            null,
+		    	            "La fecha programada no puede ser anterior a hoy",
+		    	            "Fecha inválida",
+		    	            JOptionPane.ERROR_MESSAGE
+		    	        );
+		    	      
+		    	    }
 		    	    ordenEntrega = new OrdenEntregaDTO(
-		    	    		fecha,estado,null,FechaProgramada,new ArrayList<VisitaDTO>(),new ArrayList<BienDTO>(),solicitud,
-		    	    		solicitud.getBeneficiario(),voluntario		    	
+		    	    		fecha,estado,null,fechaProgramada,new ArrayList<VisitaDTO>(),new ArrayList<BienDTO>(),solicitud,
+		    	    		api.obtenerBeneficiarioDTO(solicitud.getBeneficiario()),voluntario		    	
 		    	    	);
 		    	    api.registrarOrdenEntrega(ordenEntrega);
 
                   
                     // Limpieza
           
-                    txtCodigo.setText("");
+                    txtCodigoBeneficiario.setText("");
                     txtEstado.setText("");
                     txtFecha.setText("");
 
                     JOptionPane.showMessageDialog(null, 
-                        "Orden de Retiro registrada correctamente.",
+                        "Orden de Entrega registrada correctamente.",
                         "OK",
                         JOptionPane.INFORMATION_MESSAGE);
 
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, 
-                        "Error al crear la orden de retiro.\nFormato de fecha válido: 2025-10-26",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+
+                    JOptionPane.showMessageDialog(
+                        null,
+                        ex.getMessage(),
+                        "Error al crear la orden de entrega",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
         });

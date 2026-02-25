@@ -48,6 +48,22 @@ public class Voluntario extends Persona{
 			this.codigo=codigo;
 		}
 	}
+	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,String codigo) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException, DataListException{
+		super(nombre, apellido, dni, fecha_nac, contacto);
+	
+		this.validarCampoNull(username);
+		this.validarCampoVacio( username,"Usuario");
+		this.validarLongitudCampo20(username, "Usuario");
+		
+		this.validarCampoVacio( codigo,"Codigo");
+		
+		this.username = username;
+		if(codigo==null) {
+			crearCodigo();
+		}else {
+			this.codigo=codigo;
+		}
+	}
 
 	public Voluntario(String nombre, String apellido,LocalDate fecha_nac,String contacto, String dni,String username,boolean disponible) throws DataEmptyException,DataObjectException ,DataNullException, DataDateException, DataLengthException{
 		super(nombre, apellido, dni, fecha_nac, contacto);

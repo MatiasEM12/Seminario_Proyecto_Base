@@ -4,6 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Voluntario;
 
 public interface VoluntarioDAO {
@@ -20,7 +26,7 @@ public interface VoluntarioDAO {
 
 	Voluntario find(String codigo)throws DAOException;
 
-	List<Voluntario> findAll()throws DAOException;
+	List<Voluntario> findAll()throws DAOException, DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException;
 	
 	int obtenerCantidadVoluntarios() throws SQLException;
 	int obtenerMaximoVoluntarios() throws SQLException;

@@ -330,7 +330,13 @@ public class PersistenceApi implements IApi {
                 resultado.add(toOrdenRetiroDTO(or));
             }
         }
-
+        
+        List<OrdenEntrega> entregas = ordenEntregaDAO.findAll();
+        if (entregas != null) {
+            for (OrdenEntrega oe : entregas) {
+                resultado.add(toOrdenEntregaDTO(oe));
+            }
+        }
         return resultado;
     }
     private OrdenPedidoDTO toOrdenPedidoDTO(OrdenPedido op) {
@@ -663,7 +669,7 @@ public class PersistenceApi implements IApi {
         voluntarioDao.create(voluntario);
     }
     @Override
-    public List<VoluntarioDTO> obtenerVoluntarios() throws DAOException {
+    public List<VoluntarioDTO> obtenerVoluntarios() throws DAOException, DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException {
     	List<Voluntario> voluntarios= this.voluntarioDao.findAll();
     	
     	 return voluntarios.stream()
@@ -1087,8 +1093,7 @@ public class PersistenceApi implements IApi {
             v.getCodigo(),
             v.getTarea(),
             v.isDisponible(),
-            v.getUsername(),
-            null
+            v.getUsername()
         );
     }
 	
@@ -1582,6 +1587,27 @@ public class PersistenceApi implements IApi {
 		BeneficiarioDTO dto=null;
 		Beneficiario benefiriario= beneficiarioDAO.find(beneficiario);
 		return dto=this.toBeneficiarioDTO(benefiriario);
+	 }
+
+	 @Override
+	 public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados) {
+		
+
+		    try {
+		        for (BienDTO bien : bienesSolicitados) {
+		            // si algún bien no está disponible, devolvemos false
+		            if (!inventarioDAO.esDisponible(bien.getCodigo())) {
+		                return false;
+		            }
+		        }
+		    } catch (DAOException e) {
+		        // si hay error al consultar inventario, lo tratamos como no disponible
+		        e.printStackTrace();
+		        return false;
+		    }
+
+		    // todos los bienes están disponibles
+		    return true;
 	 }
 		
 }

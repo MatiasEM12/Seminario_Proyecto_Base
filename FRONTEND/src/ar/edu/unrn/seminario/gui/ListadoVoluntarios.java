@@ -20,6 +20,12 @@ import ar.edu.unrn.seminario.api.IApi;
 import ar.edu.unrn.seminario.dto.OrdenPedidoDTO;
 import ar.edu.unrn.seminario.dto.VoluntarioDTO;
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 
 public class ListadoVoluntarios extends JFrame {
 
@@ -106,7 +112,13 @@ public class ListadoVoluntarios extends JFrame {
 
     private void cargarVoluntarios() throws DAOException {
         
-        voluntarios = api.obtenerVoluntarios();
+        try {
+			voluntarios = api.obtenerVoluntarios();
+		} catch (DAOException | DataEmptyException | DataObjectException | DataNullException | DataDateException
+				| DataLengthException | DataListException e) {
+			
+			e.printStackTrace();
+		}
 
         if (voluntarios== null) {
             voluntarios = java.util.Collections.emptyList();

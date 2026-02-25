@@ -97,8 +97,8 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
             String estado = rs.getString("estado");
 
             PreparedStatement stBien = conn.prepareStatement(
-                "SELECT codBien FROM bien_solicitud WHERE codigoSolicitud = ?"
-            );
+            	    "SELECT codBien FROM bien_solicitud WHERE codSolicitud = ?"
+            	);
             stBien.setString(1, codigo);
 
             ResultSet rsBien = stBien.executeQuery();

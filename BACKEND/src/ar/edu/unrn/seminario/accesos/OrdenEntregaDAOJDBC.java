@@ -141,7 +141,7 @@ public void update(OrdenEntrega orden) throws DAOException {
 	    try {
 	        Connection conn = ConnectionManager.getConnection();
 	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT codigo, estado,tipo, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario,codSolicitud " +
+	            "SELECT codigo, estado, FechaCreacion, FechaProgramada, codVoluntario, codBeneficiario,codSolicitud " +
 	            "FROM ordenEntrega WHERE codigo = ?"
 	        );
 
@@ -152,7 +152,7 @@ public void update(OrdenEntrega orden) throws DAOException {
 
 	            String estado = rs.getString("estado");
 	            LocalDate fechaCreacion = rs.getDate("FechaCreacion").toLocalDate();
-	            String tipo=rs.getString("tipo");
+	           
 	            LocalDate fechaProg = null;
 	            if (rs.getDate("FechaProgramada") != null) {
 	                fechaProg = rs.getDate("FechaProgramada").toLocalDate();
@@ -165,14 +165,20 @@ public void update(OrdenEntrega orden) throws DAOException {
 	            if (rs.getString("codVoluntario") != null) {
 	                voluntario = this.voluntario.find(rs.getString("codVoluntario"));
 	            }
+	            String codSolicitud = rs.getString("codSolicitud");
 
-	            SolicitudBien solicitud = this.solicitud.find("codSolicitud");
+	            SolicitudBien solicitud = this.solicitud.find(codSolicitud);
+	            if (solicitud == null) {
+	                throw new DAOException(
+	                    "OrdenEntrega " + codigo + " tiene solicitud inexistente: " + codSolicitud
+	                );
+	            }
 	            ArrayList<Visita> visitas =
 	                this.visita.findAllOrdenEntrega(codigo);
 
 	            orden = new OrdenEntrega(
 	                fechaCreacion,
-	                estado,tipo,
+	                estado,
 	                codigo,
 	                fechaProg,
 	                visitas,solicitud,
@@ -191,59 +197,62 @@ public void update(OrdenEntrega orden) throws DAOException {
 
 	    return orden;
 	}
-
 	@Override
 	public List<OrdenEntrega> findAll() throws DAOException {
-	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+	    final String SQL = "SELECT codigo FROM ordenEntrega";
+	    List<String> codigos = new ArrayList<>();
 
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT codigo FROM ordenEntrega"
-	        );
+	    // 1) leer códigos (sin llamar a find acá adentro)
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement st = conn.prepareStatement(SQL);
+	         ResultSet rs = st.executeQuery()) {
 
-	        ResultSet rs = st.executeQuery();
 	        while (rs.next()) {
-	            ordenes.add(this.find(rs.getString("codigo")));
+	            codigos.add(rs.getString("codigo"));
 	        }
 
 	    } catch (SQLException e) {
-	        throw new DAOException(
-	            "Error al procesar consulta FIND ALL OrdenEntrega: " +
-	            e.getMessage() + ".OE600"
-	        );
+	        throw new DAOException("Error FIND ALL OrdenEntrega: " + e.getMessage() + ".OE600");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
 
+	    // 2) ahora sí, llamar find por cada código
+	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+	    for (String cod : codigos) {
+	        OrdenEntrega oe = this.find(cod);
+	        if (oe != null) ordenes.add(oe);
+	    }
 	    return ordenes;
 	}
 
 	@Override
 	public List<OrdenEntrega> findAllByBeneficiario(String codBeneficiario) throws DAOException {
-	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+	    final String SQL = "SELECT codigo FROM ordenEntrega WHERE codBeneficiario = ?";
+	    List<String> codigos = new ArrayList<>();
 
-	    try {
-	        Connection conn = ConnectionManager.getConnection();
-	        PreparedStatement st = conn.prepareStatement(
-	            "SELECT codigo FROM ordenEntrega WHERE codBeneficiario = ?"
-	        );
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement st = conn.prepareStatement(SQL)) {
+
 	        st.setString(1, codBeneficiario);
 
-	        ResultSet rs = st.executeQuery();
-	        while (rs.next()) {
-	            ordenes.add(this.find(rs.getString("codigo")));
+	        try (ResultSet rs = st.executeQuery()) {
+	            while (rs.next()) {
+	                codigos.add(rs.getString("codigo"));
+	            }
 	        }
 
 	    } catch (SQLException e) {
-	        throw new DAOException(
-	            "Error al procesar consulta FIND ALL OrdenEntrega por Beneficiario: " +
-	            e.getMessage() + ".OE610"
-	        );
+	        throw new DAOException("Error FIND ALL OE por beneficiario: " + e.getMessage() + ".OE610");
 	    } finally {
 	        ConnectionManager.disconnect();
 	    }
 
+	    ArrayList<OrdenEntrega> ordenes = new ArrayList<>();
+	    for (String cod : codigos) {
+	        OrdenEntrega oe = this.find(cod);
+	        if (oe != null) ordenes.add(oe);
+	    }
 	    return ordenes;
 	}
 	

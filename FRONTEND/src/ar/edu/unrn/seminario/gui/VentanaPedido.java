@@ -36,6 +36,7 @@ public class VentanaPedido extends JFrame {
 	private JButton crearOrdenEntregaButton;
 	private JButton cerrarButton;
 	private ArrayList<BienDTO> bienes;
+	private boolean disponible;
 
 	public VentanaPedido(IApi api, SolicitudBienDTO solicitud  ) {
 
@@ -91,10 +92,22 @@ public class VentanaPedido extends JFrame {
 
 		// Botones de acción inferiores
 		notificarBeneficiarioButton = new JButton("Notificar Beneficiario");
+		notificarBeneficiarioButton.setEnabled(false);
+		notificarBeneficiarioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if (disponible==true) {
+					JOptionPane.showMessageDialog(null, "Se le notifico al Beneficiario que se le entregaran los Bienes deseados");
+				}else {
+					JOptionPane.showMessageDialog(null, "Se le notifico al Beneficiario que no se le prodran entregar los bienes por falta de Stock");
+				}
+			}
+		});
 		notificarBeneficiarioButton.setBounds(210, 320, 170, 28);
 		contentPane.add(notificarBeneficiarioButton);
 
 		crearOrdenEntregaButton = new JButton("Crear Orden Entrega");
+		crearOrdenEntregaButton.setEnabled(false);
 		crearOrdenEntregaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -120,15 +133,17 @@ public class VentanaPedido extends JFrame {
 		// stock
 		ActionListener mostrarResultadoStock = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boolean disponible=false;
-			//	disponible= api.verificarDisponiblilidad(solicitud.getBienesSolicitados());
+				disponible=false;
+				disponible= api.verificarDisponiblilidad(solicitud.getBienesSolicitados());
 				if (disponible==true) {
 					 JOptionPane.showMessageDialog(null, "Stock disponible");
+					 crearOrdenEntregaButton.setEnabled(true);
 					
 				}else {
 					 JOptionPane.showMessageDialog(null, "No hay Stock disponible");
-					 crearOrdenEntregaButton.setEnabled(false);
+					 
 				}
+				notificarBeneficiarioButton.setEnabled(true);
 			}
 		};
 

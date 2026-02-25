@@ -158,7 +158,7 @@ public class SolicitudesEntrega extends JFrame {
     private SolicitudBienDTO buscarSolicitud(String codBeneficiario) {
     	
     	for (SolicitudBienDTO s: solicitudesDTO) {
-    		if(s.getBeneficiario().getCodigo().equalsIgnoreCase(codBeneficiario)) {
+    		if(s.getBeneficiario().equalsIgnoreCase(codBeneficiario)) {
     			return s;
     		}
     	}

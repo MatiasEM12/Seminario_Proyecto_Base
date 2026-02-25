@@ -28,6 +28,15 @@ public class VoluntarioDTO extends PersonaDTO{
 	}
 
 
+    public VoluntarioDTO(String nombre, String apellido, String contacto, String dni, LocalDate fecha_nac,
+			 String codigo, String tarea,boolean disponible, String username) {
+		super(nombre, apellido, contacto, dni, fecha_nac);
+		this.codigo = codigo;
+		this.tarea = tarea;
+		this.disponible = disponible;
+		this.username = username;
+		
+	}
 
 
 

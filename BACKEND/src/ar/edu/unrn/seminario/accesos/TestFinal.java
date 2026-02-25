@@ -148,7 +148,7 @@ public class TestFinal {
 			bienesSeleccionados.add(ropaTestSolicitud);
 			bienesSeleccionados.add(alimentoTestSolicitud);
 			
-			SolicitudBien solicitud= new SolicitudBien(beneficiarioTest,bienesSeleccionados,Orden.EstadoOrden.PENDIENTE.toString());
+			SolicitudBien solicitud= new SolicitudBien(beneficiarioTest.getCodigo(),bienesSeleccionados,Orden.EstadoOrden.PENDIENTE.toString());
 			solicitudBienDAO.create(solicitud);
 		}catch(Exception e) {
 			e.printStackTrace();

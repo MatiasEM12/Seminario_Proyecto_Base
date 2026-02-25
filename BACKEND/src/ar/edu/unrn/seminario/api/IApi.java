@@ -81,7 +81,7 @@ public interface IApi {
 
 	//Voluntario 
 	public void registrarVoluntario(Voluntario voluntario) throws DAOException;
-	List<VoluntarioDTO> obtenerVoluntarios() throws DAOException;
+	List<VoluntarioDTO> obtenerVoluntarios() throws DAOException, DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException;
 	List<UsuarioDTO> obtenerUserVoluntarios() throws DataNullException, DAOException, DataObjectException, DataLengthException;
 	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro);
 	//Administrador 
@@ -167,6 +167,8 @@ public interface IApi {
 	public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes() throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException;
 
 	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario) throws DAOException, DataLengthException, DataIntException, DataListException;
+
+	public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados);
 	
 	
 }

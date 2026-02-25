@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unrn.seminario.exception.DAOException;
+import ar.edu.unrn.seminario.exception.DataDateException;
+import ar.edu.unrn.seminario.exception.DataEmptyException;
+import ar.edu.unrn.seminario.exception.DataLengthException;
+import ar.edu.unrn.seminario.exception.DataListException;
+import ar.edu.unrn.seminario.exception.DataNullException;
+import ar.edu.unrn.seminario.exception.DataObjectException;
 import ar.edu.unrn.seminario.modelo.Coordenada;
 import ar.edu.unrn.seminario.modelo.Donante;
 import ar.edu.unrn.seminario.modelo.Voluntario;
@@ -158,6 +164,9 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	@Override
 	public Voluntario find(String codigo) throws DAOException{
 		Voluntario voluntario= null;
+		
+		
+		
 		try {
 			Connection conn= ConnectionManager.getConnection();
 			PreparedStatement sent = conn.prepareStatement(  "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username " +
@@ -192,29 +201,35 @@ public class VoluntarioDAOJDBC implements VoluntarioDAO{
 	}
 
 	@Override
-	public List<Voluntario> findAll() throws DAOException{
-		List<Voluntario> voluntarios = new ArrayList<>();
-		try {
-			Connection conn= ConnectionManager.getConnection();
-			PreparedStatement sent = conn.prepareStatement("SELECT codigo "+ "FROM voluntario ");
-			ResultSet rs = sent.executeQuery();
-			while (rs.next()) {
-				
-				
-				voluntarios.add(this.find(rs.getString("codigo")));
-			}
-		}
-		catch(SQLException e){
-			throw new DAOException("Error al procesar consulta"+ e.getMessage()+".codigo V600");
-		}
-		catch (Exception e) {
-			throw new DAOException("Error inesperado: " + e.getMessage()+".codigo V601");
-		} 
-		finally {
-			ConnectionManager.disconnect();
-		}	 
-		return voluntarios;
-	
+	public List<Voluntario> findAll() throws DAOException, DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException {
+	    List<Voluntario> voluntarios = new ArrayList<>();
+	    try (Connection conn = ConnectionManager.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(
+	             "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, activo FROM voluntario"
+	         );
+	         ResultSet rs = stmt.executeQuery()) {
+
+	        while (rs.next()) {
+	            Date sqlDate = rs.getDate("Fecha_Nacimiento");
+	            LocalDate fecha = (sqlDate != null) ? sqlDate.toLocalDate() : LocalDate.now();
+
+	            Voluntario v = new Voluntario(
+	                rs.getString("nombre"),
+	                rs.getString("apellido"),
+	                fecha,
+	                rs.getString("contacto"),
+	                rs.getString("dni"),
+	                rs.getString("username"),
+	                rs.getString("codigo")
+	            );
+	            v.setDisponible(rs.getBoolean("activo"));
+	            voluntarios.add(v);
+	        }
+
+	    } catch (SQLException e) {
+	        throw new DAOException("Error al procesar consulta: " + e.getMessage());
+	    }
+	    return voluntarios;
 	}
 	
 	public int obtenerCantidadVoluntarios() throws SQLException {

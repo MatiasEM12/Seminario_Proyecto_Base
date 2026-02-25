@@ -45,8 +45,14 @@ public class OrdenEntrega extends Orden{
 			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
 		super(fechaEmision, estado, tipo);
 		
+		this.validarDate(fechaEmision);
+		this.validarDate(fechaHoraProgramada);
 		
-		this.codigo = codigo;
+		if (codigo == null) {
+		    crearCodigo();
+		} else {
+		    this.codigo = codigo;
+		}
 		this.fechaHoraProgramada = fechaHoraProgramada;
 		this.visitas = visitas;
 		this.beneficiario = beneficiario;
@@ -63,7 +69,11 @@ public class OrdenEntrega extends Orden{
 			SolicitudBien solicitud, Beneficiario beneficiario, Voluntario voluntario)
 			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
 		super(fechaEmision, estado, tipo);
-		this.codigo = codigo;
+		if (codigo == null) {
+		    crearCodigo();
+		} else {
+		    this.codigo = codigo;
+		}
 		this.fechaHoraProgramada = fechaHoraProgramada;
 		this.visitas = visitas;
 		inicializarEntregados();
@@ -83,7 +93,11 @@ public class OrdenEntrega extends Orden{
 			Beneficiario beneficiario, Voluntario voluntario)
 			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
 		super(fechaEmision, estado, tipo);
-		this.codigo = codigo;
+		if (codigo == null) {
+		    crearCodigo();
+		} else {
+		    this.codigo = codigo;
+		}
 		this.fechaHoraProgramada = fechaHoraProgramada;
 		this.visitas = visitas;
 		this.solicitud = solicitud;
@@ -111,7 +125,7 @@ public class OrdenEntrega extends Orden{
 
 	private void setFecha(LocalDate fechaHoraProgramada) throws DataDateException {
 		this.validarDate(fechaHoraProgramada);
-		this.validarDateProgramacion(fechaHoraProgramada);
+	
 		this.fechaHoraProgramada=fechaHoraProgramada;	
 	}
 	
@@ -175,12 +189,7 @@ public class OrdenEntrega extends Orden{
 		
 		}
 	}
-	private void validarDateProgramacion(LocalDate fecha) throws DataDateException {
-		if (fecha.isBefore(LocalDate.now())) {
-			throw new DataDateException("Fecha invalida");
-		
-		}
-	}
+	
 	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
 		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) || super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString())) {
@@ -386,7 +395,7 @@ public class OrdenEntrega extends Orden{
 
 
 	public void setFechaHoraProgramada(LocalDate fechaHoraProgramada) throws DataDateException {
-		this.validarDateProgramacion(fechaHoraProgramada);
+		this.validarDate(fechaHoraProgramada);
 		this.fechaHoraProgramada = fechaHoraProgramada;
 	}
 

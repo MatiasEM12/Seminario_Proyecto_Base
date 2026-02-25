@@ -132,25 +132,15 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
     }
 
     @Override
-    public Beneficiario find(String codigo) throws DAOException, DataLengthException, DataIntException, DataListException {
+    public Beneficiario find(String codigo)
+            throws DAOException, DataLengthException, DataIntException, DataListException {
+
         if (codigo == null || codigo.trim().isEmpty()) return null;
 
         final String SQL =
-            "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, coUbicacion,aCargo,prioridad " +
+            "SELECT codigo, nombre, apellido, dni, contacto, Fecha_Nacimiento, username, coUbicacion, aCargo, prioridad " +
             "FROM beneficiario WHERE codigo = ?";
 
-        OrdenEntregaDAO ordenEntregaDAO = new OrdenEntregaDAOJDBC();
-        	ordenesEntrega= new ArrayList<>(ordenEntregaDAO.findAllByBeneficiario(codigo));
-        
-      
-        SolicitudBienesDAO solicitudDAO = new SolicitudBienesJDBC();
-        try {
-			solicitudBienes=new ArrayList<>(solicitudDAO.findAllByBeneficiario(codigo));
-		} catch (DAOException | DataNullException | DataLengthException | DataIntException | DataListException e) {
-			
-			e.printStackTrace();
-		}
-        
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement st = conn.prepareStatement(SQL)) {
 
@@ -167,47 +157,28 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
                 LocalDate fechaNac = rs.getDate("Fecha_Nacimiento").toLocalDate();
                 String username = rs.getString("username");
                 String codUbic = rs.getString("coUbicacion");
-
                 int aCargo = rs.getInt("aCargo");
                 int prioridad = rs.getInt("prioridad");
 
-                Ubicacion ubic = (ubicacionDAO != null)
-                        ? ubicacionDAO.find(codUbic)
-                        : null;
+                Ubicacion ubic = (ubicacionDAO != null) ? ubicacionDAO.find(codUbic) : null;
 
                 Beneficiario bene = new Beneficiario(
-                        nombre,
-                        apellido,
-                        fechaNac,
-                        dni,
-                        contacto,
-                        ubic,
-                        username,
-                        prioridad,
-                        aCargo
+                    nombre, apellido, fechaNac, dni, contacto, ubic, username, prioridad, aCargo
                 );
-            
-                bene.setCodigoDesdeBD(cod);
-               
-                bene.setOrdenesEntrega(
-                  this.ordenesEntrega
-                );
-        
 
-                bene.setSolicitudBienes(
-                   solicitudBienes
-                );
+                bene.setCodigoDesdeBD(cod);
+
+                // No se cargan en este find ya que genera un Loop infinito de excepciones
+                bene.setOrdenesEntrega(new ArrayList<>());
+                bene.setSolicitudBienes(new ArrayList<>());
+
                 return bene;
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al procesar consulta (SELECT beneficiario): " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        } catch (DataEmptyException | DataObjectException | DataNullException | DataDateException e) {
-            System.out.println("Error reconstruyendo Beneficiario desde BD: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new DAOException("Error FIND beneficiario: " + e.getMessage());
+        } catch (Exception e) {
+            throw new DAOException("Error reconstruyendo Beneficiario: " + e.getMessage());
         } finally {
             ConnectionManager.disconnect();
         }
@@ -273,5 +244,21 @@ public class BeneficiarioDAOJDBC implements BeneficiarioDAO {
         return 0;
     }
 
+    public Beneficiario findCompleto(String codigo)throws DAOException, DataLengthException, DataIntException, DataListException {
 
+        Beneficiario b = this.find(codigo);
+        if (b == null) return null;
+
+        try {
+            OrdenEntregaDAO ordenEntregaDAO = new OrdenEntregaDAOJDBC();
+            b.setOrdenesEntrega(new ArrayList<>(ordenEntregaDAO.findAllByBeneficiario(codigo)));
+
+            SolicitudBienesDAO solicitudDAO = new SolicitudBienesJDBC();
+            b.setSolicitudBienes(new ArrayList<>(solicitudDAO.findAllByBeneficiario(codigo)));
+        } catch (Exception e) {
+            throw new DAOException("Error cargando relaciones de Beneficiario: " + e.getMessage());
+        }
+
+        return b;
+    }
 }

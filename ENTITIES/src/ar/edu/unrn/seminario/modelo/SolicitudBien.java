@@ -25,7 +25,7 @@ private static int contadorSolicitud = 0;
 
 
 
-	public SolicitudBien(Beneficiario beneficiario, ArrayList<Bien> bienesSolicitados, String estado) {
+	public SolicitudBien(String  codBeneficiario, ArrayList<Bien> bienesSolicitados, String estado) {
 		super();
 		crearCodigo();
 		this.codBeneficiario = codBeneficiario;
