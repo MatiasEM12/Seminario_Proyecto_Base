@@ -382,4 +382,13 @@ public class Visita {
 	    return bienesRecolectados != null && !bienesRecolectados.isEmpty();
 	}
 
+
+
+
+
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
 }
