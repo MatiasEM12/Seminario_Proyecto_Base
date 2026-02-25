@@ -69,8 +69,8 @@ public class ListadoVisitas extends JFrame {
             try {
                
                 if (v.getCodVoluntario() != null) {
-                    String usr = api.obtenerUsernameVoluntario(v.getCodVoluntario());
-                    usuario = usr == null ? "" : usr;
+                    usuario= api.obtenerUsernameVoluntario(v.getCodVoluntario());
+                  
                 }
             } catch (Exception ex) { usuario = ""; }
 
