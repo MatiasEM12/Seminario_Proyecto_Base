@@ -20,17 +20,17 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
     private BienDAO bienDAO = new BienDAOJDBC();
     private Bien_SolicitudDAO bienSolicitudDAO = new Bien_SolicitudDAOJDBC();
 
-    // ================= CREATE =================
+
 
     @Override
     public void create(SolicitudBien solicitud) throws DAOException {
-        try {
-            Connection conn = ConnectionManager.getConnection();
+        final String SQL =
+            "INSERT INTO solicitudBien (codigoSolicitud, codigoBeneficiario, estado) VALUES (?, ?, ?)";
 
-            PreparedStatement st = conn.prepareStatement(
-                "INSERT INTO solicitudBien (codigoSolicitud, codigoBeneficiario, estado) " +
-                "VALUES (?, ?, ?)"
-            );
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+
+        
 
             st.setString(1, solicitud.getCodigo());
             st.setString(2, solicitud.getBeneficiario());
@@ -41,14 +41,19 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
                 bienSolicitudDAO.create(b.getCodigo(), solicitud.getCodigo());
             }
 
-        } catch (SQLException e) {
-            throw new DAOException("Error CREATE SolicitudBien: " + e.getMessage());
+     
+
+        } catch (Exception e) {
+            try {
+                ConnectionManager.getConnection().rollback(); // si tu ConnectionManager devuelve SIEMPRE la misma conn por thread, ok
+            } catch (Exception ignore) {}
+            throw new DAOException("Error CREATE SolicitudBien: " + e.getMessage()+ e);
         } finally {
             ConnectionManager.disconnect();
         }
     }
 
-    // ================= UPDATE =================
+    
 
     @Override
     public void updateEstado(String codigoSolicitud, String estado)
@@ -78,118 +83,114 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
 
     @Override
     public SolicitudBien find(String codigo)
-            throws DAOException, DataNullException,
-                   DataLengthException, DataIntException, DataListException {
+        throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
+        final String SQL_SOL = "SELECT codigoBeneficiario, estado FROM solicitudBien WHERE codigoSolicitud = ?";
+        final String SQL_BIEN = "SELECT codBien FROM bien_solicitud WHERE codSolicitud = ?";
 
-            PreparedStatement st = conn.prepareStatement(
-                "SELECT codigoBeneficiario, estado " +
-                "FROM solicitudBien WHERE codigoSolicitud = ?"
-            );
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL_SOL)) {
+
             st.setString(1, codigo);
 
-            ResultSet rs = st.executeQuery();
-            if (!rs.next()) return null;
+            try (ResultSet rs = st.executeQuery()) {
+                if (!rs.next()) return null;
 
-            String codigoBeneficiario = rs.getString("codigoBeneficiario");
-            String estado = rs.getString("estado");
+                String codBenef = rs.getString("codigoBeneficiario");
+                String estado = rs.getString("estado");
 
-            PreparedStatement stBien = conn.prepareStatement(
-            	    "SELECT codBien FROM bien_solicitud WHERE codSolicitud = ?"
-            	);
-            stBien.setString(1, codigo);
+                ArrayList<Bien> bienes = new ArrayList<>();
+                try (PreparedStatement stB = conn.prepareStatement(SQL_BIEN)) {
+                    stB.setString(1, codigo);
+                    try (ResultSet rsB = stB.executeQuery()) {
+                        while (rsB.next()) {
+                            bienes.add(bienDAO.find(rsB.getString("codBien")));
+                        }
+                    }
+                }
 
-            ResultSet rsBien = stBien.executeQuery();
-            ArrayList<Bien> bienes = new ArrayList<>();
-
-            while (rsBien.next()) {
-                bienes.add(bienDAO.find(rsBien.getString("codBien")));
+                return new SolicitudBien(codigo, codBenef, bienes, estado);
             }
 
-            return new SolicitudBien(codigo, codigoBeneficiario, bienes, estado);
-
-        } catch (SQLException e) {
-            throw new DAOException("Error FIND SolicitudBien: " + e.getMessage());
+        } catch (Exception e) {
+            throw new DAOException("Error FIND SolicitudBien: " + e.getMessage()+ e);
         } finally {
             ConnectionManager.disconnect();
         }
     }
 
-    // ================= FIND ALL BY BENEFICIARIO =================
+    
 
     @Override
     public List<SolicitudBien> findAllByBeneficiario(String codigoBeneficiario)
-            throws DAOException, DataNullException,
-                   DataLengthException, DataIntException, DataListException {
+            throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
 
         if (codigoBeneficiario == null || codigoBeneficiario.isBlank()) {
             throw new DataNullException("Código de beneficiario inválido");
         }
 
-        ArrayList<SolicitudBien> solicitudes = new ArrayList<>();
+        final String SQL = "SELECT codigoSolicitud FROM solicitudBien WHERE codigoBeneficiario = ?";
+        List<String> codigos = new ArrayList<>();
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
 
-            PreparedStatement st = conn.prepareStatement(
-                "SELECT codigoSolicitud FROM solicitudBien WHERE codigoBeneficiario = ?"
-            );
             st.setString(1, codigoBeneficiario);
 
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                solicitudes.add(this.find(rs.getString("codigoSolicitud")));
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    codigos.add(rs.getString("codigoSolicitud"));
+                }
             }
 
         } catch (SQLException e) {
-            throw new DAOException(
-                "Error FIND ALL SolicitudBien por Beneficiario: " + e.getMessage()
-            );
+            throw new DAOException("Error FIND ALL SolicitudBien por Beneficiario: " + e.getMessage()+ e);
         } finally {
             ConnectionManager.disconnect();
         }
-
-        return solicitudes;
-    }
-
-    // ================= FIND ALL PENDIENTES =================
-
-    @Override
-    public List<SolicitudBien> findAllPendientes()
-            throws DAOException, DataNullException,
-                   DataLengthException, DataIntException, DataListException {
 
         ArrayList<SolicitudBien> solicitudes = new ArrayList<>();
-
-        try {
-            Connection conn = ConnectionManager.getConnection();
-
-            PreparedStatement st = conn.prepareStatement(
-                "SELECT codigoSolicitud FROM solicitudBien WHERE estado = ?"
-            );
-            st.setString(1, "Pendiente");
-
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                solicitudes.add(this.find(rs.getString("codigoSolicitud")));
-            }
-
-        } catch (SQLException e) {
-            throw new DAOException(
-                "Error FIND ALL SolicitudBien Pendientes: " + e.getMessage()
-            );
-        } finally {
-            ConnectionManager.disconnect();
+        for (String cod : codigos) {
+            SolicitudBien s = this.find(cod);
+            if (s != null) solicitudes.add(s);
         }
 
         return solicitudes;
     }
 
-    // ================= UTIL =================
+   
+    @Override
+    public List<SolicitudBien> findAllPendientes()
+            throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
+
+        final String SQL = "SELECT codigoSolicitud FROM solicitudBien WHERE estado = ?";
+        List<String> codigos = new ArrayList<>();
+
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
+
+            st.setString(1, "Pendiente");
+
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    codigos.add(rs.getString("codigoSolicitud"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Error FIND ALL SolicitudBien Pendientes: " + e.getMessage()+ e);
+        } finally {
+            ConnectionManager.disconnect();
+        }
+
+        ArrayList<SolicitudBien> solicitudes = new ArrayList<>();
+        for (String cod : codigos) {
+            SolicitudBien s = this.find(cod);
+            if (s != null) solicitudes.add(s);
+        }
+
+        return solicitudes;
+    }
 
     public int obtenerMaximoSolicitudes() throws SQLException {
         String sql = "SELECT MAX(codigoSolicitud) FROM solicitudBien";

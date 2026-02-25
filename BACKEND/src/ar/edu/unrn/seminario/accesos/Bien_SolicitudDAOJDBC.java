@@ -18,19 +18,18 @@ public class Bien_SolicitudDAOJDBC implements Bien_SolicitudDAO {
     @Override
     public void create(String codBien, String codSolicitud) throws DAOException {
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO bien_solicitud (codBien, codSolicitud) VALUES (?, ?)"
-            );
+        final String SQL = "INSERT INTO bien_solicitud (codBien, codSolicitud) VALUES (?, ?)";
 
-            ps.setString(1, codBien);
-            ps.setString(2, codSolicitud);
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
 
-            ps.executeUpdate();
+            st.setString(1, codBien);
+            st.setString(2, codSolicitud);
+
+            st.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DAOException("Error al crear Bien_Solicitud BS100"+ e);
+            throw new DAOException("Error CREATE Bien_Solicitud: " + e.getMessage() + ".BS100"+ e);
         } finally {
             ConnectionManager.disconnect();
         }
@@ -121,26 +120,22 @@ public class Bien_SolicitudDAOJDBC implements Bien_SolicitudDAO {
     @Override
     public List<Bien> findAllBySolicitud(String codSolicitud) throws DAOException, DataNullException {
 
+        final String SQL = "SELECT codBien FROM bien_solicitud WHERE codSolicitud = ?";
         ArrayList<Bien> bienes = new ArrayList<>();
 
-        try {
-            Connection conn = ConnectionManager.getConnection();
-            PreparedStatement ps = conn.prepareStatement(
-                "SELECT codBien FROM bien_solicitud WHERE codSolicitud = ?"
-            );
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement st = conn.prepareStatement(SQL)) {
 
-            ps.setString(1, codSolicitud);
+            st.setString(1, codSolicitud);
 
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                bienes.add(
-                    bienDAO.find(rs.getString("codBien"))
-                );
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    bienes.add(bienDAO.find(rs.getString("codBien")));
+                }
             }
 
-        } catch (SQLException e) {
-            throw new DAOException("Error en findAllBySolicitud BS500"+e);
+        } catch (Exception e) {
+            throw new DAOException("Error findAllBySolicitud: " + e.getMessage() + ".BS500"+ e);
         } finally {
             ConnectionManager.disconnect();
         }

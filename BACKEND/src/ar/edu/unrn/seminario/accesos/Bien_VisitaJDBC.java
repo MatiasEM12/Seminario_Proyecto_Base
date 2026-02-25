@@ -11,26 +11,24 @@ import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.modelo.Bien;
 
 public class Bien_VisitaJDBC implements Bien_VisitaDAO{
-	BienDAO bien= new BienDAOJDBC();
+	BienDAO bienDAO= new BienDAOJDBC();
 
 	 @Override
 	    public void create(String codBien, String codVisita) throws DAOException {
 
-	        try {
-	            Connection conn = ConnectionManager.getConnection();
-	            PreparedStatement statement = conn.prepareStatement(
-	                    "INSERT INTO Bien_Visita (codBien, codVisita) VALUES (?, ?)");
+	        final String SQL = "INSERT INTO Bien_Visita (codBien, codVisita) VALUES (?, ?)";
 
-	            statement.setString(1, codBien);
-	            statement.setString(2, codVisita);
+	        try (Connection conn = ConnectionManager.getConnection();
+	             PreparedStatement st = conn.prepareStatement(SQL)) {
 
-	            int cantidad = statement.executeUpdate();
-	            if (cantidad <= 0) {
-	                throw new DAOException("Error al actualizar. codigo error BV100");
-	            }
+	            st.setString(1, codBien);
+	            st.setString(2, codVisita);
+
+	            int filas = st.executeUpdate();
+	            if (filas <= 0) throw new DAOException("No se insertó Bien_Visita. BV100");
 
 	        } catch (SQLException e) {
-	            throw new DAOException("Error al procesar consulta. codigo error BV101"+e);
+	            throw new DAOException("Error INSERT Bien_Visita: " + e.getMessage() + ".BV101"+ e);
 	        } finally {
 	            ConnectionManager.disconnect();
 	        }
@@ -61,32 +59,31 @@ public class Bien_VisitaJDBC implements Bien_VisitaDAO{
 	    }
 
 	    @Override
-	    public List<Bien> findVisita(String codVisita) throws DAOException {
+	public List<Bien> findVisita(String codVisita) throws DAOException {
 
+	        final String SQL = "SELECT codBien FROM Bien_Visita WHERE codVisita = ?";
 	        List<Bien> bienes = new ArrayList<>();
 
-	        try {
-	            Connection conn = ConnectionManager.getConnection();
-	            PreparedStatement sent = conn.prepareStatement(
-	                    "SELECT codBien FROM Bien_Visita WHERE codVisita = ?");
+	        try (Connection conn = ConnectionManager.getConnection();
+	             PreparedStatement st = conn.prepareStatement(SQL)) {
 
-	            sent.setString(1, codVisita); // ✅ solo uno
+	            st.setString(1, codVisita);
 
-	            ResultSet rs = sent.executeQuery();
-	            while (rs.next()) {
-	                bienes.add(bien.find(rs.getString("codBien"))); // ✅ nombre correcto
+	            try (ResultSet rs = st.executeQuery()) {
+	                while (rs.next()) {
+	                    bienes.add(bienDAO.find(rs.getString("codBien")));
+	                }
 	            }
 
-	        } catch (SQLException e) {
-	            throw new DAOException("Error al procesar consulta. codigo error BV300"+ e);
 	        } catch (Exception e) {
-	            throw new DAOException("Error inesperado. codigo error BV301"+e);
+	            throw new DAOException("Error FIND Bien_Visita: " + e.getMessage() + ".BV300"+e);
 	        } finally {
 	            ConnectionManager.disconnect();
 	        }
 
 	        return bienes;
-	    }
+	}
+	
 
 	@Override
 	public void remove(Long id) {
