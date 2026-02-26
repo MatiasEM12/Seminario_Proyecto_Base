@@ -303,8 +303,9 @@ public class MemoryApi implements IApi {
         try {
    
         	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal",  LocalDate.now(), 0, null));
+        	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal",  LocalDate.now(), 0.0, null));
         	Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",null, 5.0,"algodon");
+        	
         	
         	bienes1.add(b2);
             // crear donante ejemplo si no existe
@@ -312,7 +313,8 @@ public class MemoryApi implements IApi {
             
             Donacion donacion1 = new Donacion(LocalDate.now(), "Entrega en sede central", bienes1, donante1,null,null);
             
-            OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo(), donacion1.getCodigo());
+            OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo());
+            
             donacion1.setPedido(ordenPedido);
             donacion1.setCodigo(ordenPedido.getCodigo());
             
@@ -325,7 +327,7 @@ public class MemoryApi implements IApi {
     }
 
   //pre-carfa OrdenRetiro
-  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException {
+  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException {
   		if (codPedido == null || codPedido.trim().isEmpty()) {
   	        return;
   	    }
@@ -370,11 +372,7 @@ public class MemoryApi implements IApi {
 
   	    // Convertir bienes a DTO
   	    ArrayList<BienDTO> bienesDTOv1 = new ArrayList<>();
-  	    VisitaDTO dto1 = new VisitaDTO(v1.getCodigo(),v1.getFechaVisita(),null
-  	    		,retiro.getCodigo(),bienesDTOv1,v1.getObservaciones(),v1.getTipo(),false);
-
-  	    this.visitas.add(dto1);
-
+  	    VisitaDTO dto1 = new VisitaDTO(v1.getCodigo(),v1.getFechaVisita(),null,retiro.getCodigo(),bienesDTOv1,v1.getObservaciones(),v1.getTipo(),v1.getEstado());
   	    // Segunda visita (exitosa, con bienes del retiro)
   	    ArrayList<BienDTO> bienesDTOv2 = new ArrayList<>();
   	    for (Bien b : retiro.getRecolectados()) {
@@ -385,7 +383,7 @@ public class MemoryApi implements IApi {
   	    v2.setEstado("realizada");
   	    
   	    VisitaDTO dto2 = new VisitaDTO(v2.getCodigo(),v2.getFechaVisita(),null
-  	    		,retiro.getCodigo(),bienesDTOv2,v2.getObservaciones(),v2.getTipo(),true);
+  	    		,retiro.getCodigo(),bienesDTOv2,v2.getObservaciones(),v2.getTipo(),v2.getEstado());
   	    this.visitas.add(dto2);
 
   	    ArrayList<Visita> lista = new ArrayList<>();
@@ -404,8 +402,7 @@ public class MemoryApi implements IApi {
         OrdenPedido orden;
         for (int i = 0; i < ordenes.size(); i++) {
             orden = ordenes.get(i);
-            ordenesDTO.add( new OrdenPedidoDTO(orden.getFechaEmision(),orden.getEstado().toString(),OrdenPedido.getTipo(),orden.getCodigo(),orden.isCargaPesada(), orden.getObservaciones(),orden.getCodDonante(),orden.getCodDonacion()));
-           
+            ordenesDTO.add( new OrdenPedidoDTO(orden.getFechaEmision(),orden.getEstado().toString(),orden.getCodigo(),orden.isCargaPesada(), orden.getObservaciones(),orden.getCodDonacion()));
         }
         return ordenesDTO;
     }
@@ -423,15 +420,14 @@ public class MemoryApi implements IApi {
 	    for (OrdenRetiro orden : ordenesRetiro) {
 	        if (orden != null) {
 	            ordenesDTO.add(new OrdenRetiroDTO(
-	                orden.getFechaEmision(),
-	                orden.getEstado().toString(),
-	                OrdenRetiro.getTipo(),
-	                orden.getCodigo(),
-	                orden.getPedido() != null ? orden.getPedido().getCodigo() : null,
-	                null,
-	                orden.getCodVisitas()
+	            		orden.getFechaEmision(),
+	            	    orden.getEstado().toString(),
+	            	    orden.getCodigo(),
+	            	    orden.getPedido() != null ? orden.getPedido().getCodigo() : null,
+	            	    null
 	            ));
 	        }
+	        
 	    }
 	    return ordenesDTO;
 	}
@@ -516,15 +512,14 @@ public class MemoryApi implements IApi {
     private Bien toBien(BienDTO dto) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
 		if (dto == null) return null;
 		return new Bien(
-			dto.getCodigo(),
-			dto.getTipo(),
-			dto.getPeso(),
-			dto.getNombre(),
-			dto.getDescripcion(),
-			dto.getNivelNecesidad(),
-			dto.getFechaVencimiento(),
-			dto.getTalle() != null ? dto.getTalle() : 0.0,
-			dto.getMaterial()
+				dto.getCodigo(),
+				dto.getTipo(),
+				dto.getPeso(),
+				dto.getNombre(),
+				dto.getDescripcion(),
+				dto.getFechaVencimiento(),
+				dto.getTalle() != null ? dto.getTalle() : 0.0,
+				dto.getMaterial()
 		);
 	}
 
@@ -599,7 +594,7 @@ public class MemoryApi implements IApi {
 		}
 		// esFinal: si viene null, asumimos false
 		boolean esFinal = dto.isEsFinal();
-		Visita v = new Visita(dto.getFechaVisita(), dto.getObservaciones(), dto.getTipo(), dto.getCodOrdenRetiro(), recolectados, esFinal);
+		Visita v = new Visita(dto.getFechaVisita(), dto.getObservaciones(), dto.getTipo(), dto.getCodOrden(), recolectados, esFinal);
 		if (dto.getCodigo() != null && !dto.getCodigo().trim().isEmpty()) {
 			try { v.setCodigo(dto.getCodigo()); } catch (Exception e) { /* ignore */ }
 		}
@@ -716,7 +711,7 @@ public class MemoryApi implements IApi {
 
 	    for (VisitaDTO v : this.visitas) {
 	        if (v == null) continue;
-	        String cod = v.getCodOrdenRetiro();
+	        String cod = v.getCodOrden();
 	        if (cod != null && codOrdenRetiro.equalsIgnoreCase(cod)) {
 	            resultado.add(v);
 	        }
@@ -989,11 +984,10 @@ public class MemoryApi implements IApi {
 		}
 		try {
 			OrdenPedido op = new OrdenPedido(
-				orden.getCodigo(),
-				orden.getFechaEmision(),
-				orden.getObservaciones(),
-				orden.isCargaPesada(),
-				orden.getCodDonante()
+					orden.getFechaEmision(),
+					orden.isCargaPesada(),
+					orden.getObservaciones(),
+					orden.getCodDonacion()
 			);
 
 			// Si el DTO trae estado, lo aplicamos
@@ -1020,13 +1014,16 @@ public class MemoryApi implements IApi {
 		for (OrdenRetiro orden : ordenesRetiro) {
 			if (orden != null && codOrdenRetiro.equalsIgnoreCase(orden.getCodigo())) {
 				return new OrdenRetiroDTO(
-					orden.getFechaEmision(),
-					orden.getEstado() != null ? orden.getEstado().toString() : EstadoOrden.PENDIENTE.toString(),
-					OrdenRetiro.getTipo(),
-					orden.getCodigo(),
-					orden.getPedido() != null ? orden.getPedido().getCodigo() : null,
-					orden.getVoluntario() != null ? orden.getVoluntario().getCodigo() : null,
-					orden.getCodVisitas()
+						orden.getFechaEmision(),
+					    orden.getEstado() != null 
+					        ? orden.getEstado().toString() 
+					        : EstadoOrden.PENDIENTE.toString(),
+					    orden.getCodigo(),
+					    orden.getPedido() != null 
+					        ? orden.getPedido().getCodigo() : null,
+					    orden.getVoluntario() != null 
+					        ? orden.getVoluntario().getCodigo() : null,
+					    orden.getCodVisitas()
 				);
 			}
 		}
@@ -1050,7 +1047,7 @@ public class MemoryApi implements IApi {
 		return res;
 	}
 
-
+// no se como solucionarlo
 	@Override
 	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException {
 		if (ordenP == null || ordenP.trim().isEmpty()) {
@@ -1074,6 +1071,7 @@ public class MemoryApi implements IApi {
 		return null;
 	}
 
+	//podriamos cambiarlo a cargar visita retiro o entrega o asta registrar visita
 	@Override
 	public void cargarVisita(VisitaDTO visita)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
@@ -1091,15 +1089,15 @@ public class MemoryApi implements IApi {
 		// Asociar a OrdenRetiro
 		OrdenRetiro or = null;
 		for (OrdenRetiro item : ordenesRetiro) {
-			if (item != null && visita.getCodOrdenRetiro() != null
-					&& visita.getCodOrdenRetiro().equalsIgnoreCase(item.getCodigo())) {
+			if (item != null && visita.getCodOrden() != null
+					&& visita.getCodOrden().equalsIgnoreCase(item.getCodigo())) {
 				or = item;
 				break;
 			}
 		}
 
 		if (or == null) {
-			throw new DAOException("No existe OrdenRetiro con código: " + visita.getCodOrdenRetiro());
+			throw new DAOException("No existe OrdenRetiro con código: " + visita.getCodOrden());
 		}
 
 		// Agregar visita a la orden
@@ -1343,6 +1341,145 @@ public class MemoryApi implements IApi {
 			}
 		}
 		ordenesRetiro.add(or);
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacionPorPedido(String ordenP) throws DataNullException, DAOException,
+			DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void cargarVisitaRetiro(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataDateException, DataEmptyException, DataListException, DataObjectException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException,
+			DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesInventario() throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void eliminarBienInventario(String codBien) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarBien(BienDTO bien, Boolean cargarEnInventario) throws DataNullException, DataDoubleException,
+			StateChangeException, DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
+			DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
+			DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega)
+			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+			DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cargarVisitaEntrega(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+			DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes()
+			throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario)
+			throws DAOException, DataLengthException, DataIntException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 
