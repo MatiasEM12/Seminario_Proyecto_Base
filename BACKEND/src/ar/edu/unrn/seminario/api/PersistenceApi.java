@@ -1609,6 +1609,46 @@ public class PersistenceApi implements IApi {
 		    // todos los bienes están disponibles
 		    return true;
 	 }
+
+	@Override
+	public void cargarVisita(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataDateException, DataEmptyException, DataListException, DataObjectException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<BienDTO> obtenerTodosLosBienes() throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void ModificarBienInventario(Bien bien) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataObjectException, DataListException, DataDateException, DataEmptyException {
+		// TODO Auto-generated method stub
+		
+	}
 		
 }
 
