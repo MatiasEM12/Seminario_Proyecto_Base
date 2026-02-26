@@ -847,81 +847,81 @@ public class MemoryApi implements IApi {
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
                    DataDateException, DataEmptyException, DataListException, DataObjectException {
 
-        if (visita == null) throw new DataNullException("VisitaDTO null");
+    		Visita v = toVisita(visita);
+    	  	OrdenRetiro oR = retirosByCodigo.get(v.getRetiro());
+    	    if (oR.getCodigo()!= null) {
+    	        
+    	        ArrayList<BienDTO> bienesDTO=this.obtenerBienesPorOrdenPedido(oR.getPedido().getCodigo());
+    	        oR.setBienesEsperados(this.listBien(bienesDTO));
+    	        
 
-        Visita v = toVisita(visita);
-        visitasByCodigo.put(v.getCodigo(), v);
+    	    
+    	        oR.agregarVisita(v);
+    	        
+    	        
+    	        visitasByCodigo.put(v.getCodigo(), v);
+    	      
+    	        retirosByCodigo.put(oR.getCodigo(), oR);
+    	        pedidosByCodigo.put(oR.getPedido().getCodigo(), oR.getPedido());
+    
+    	        
 
-        OrdenRetiro or = retirosByCodigo.get(visita.getCodOrden());
-        if (or == null) throw new DAOException("No existe OrdenRetiro con código: " + visita.getCodOrden());
+    	       
+    	    } 
+    	
 
-        or.agregarVisita(v);
+	        if (v.tieneBienes()) {
+	            for (Bien b : v.getBienesRecolectados()) {
+	                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
+	            }
+	        }
 
-        // si trae bienes recolectados => ingresan al inventario como disponibles
-        if (v.getBienesRecolectados() != null) {
-            for (Bien b : v.getBienesRecolectados()) {
-                if (b == null) continue;
-                bienByCodigo.put(b.getCodigo(), b);
-                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
-            }
-        }
-
-        // si final -> completar OR (como en persistence)
-        if (visita.isEsFinal()) {
-            if (or.getEstado() == EstadoOrden.PENDIENTE) {
-                or.ordenEstadoProceso();
-            }
-            or.ordenEstadoCompleta();
-        }
+     
     }
+    private ArrayList<Bien> listBien(List<BienDTO> bienesDTO)
+	        throws DataNullException, DataDoubleException,
+	               StateChangeException, DataLengthException, DataDateException {
 
+	    ArrayList<Bien> bienes = new ArrayList<>();
+
+	    for (BienDTO dt : bienesDTO) {
+	        bienes.add(this.toBien(dt));
+	    }
+
+	    return bienes;
+	}
     @Override
     public void cargarVisitaEntrega(VisitaDTO visita)
             throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
                    DataDoubleException, StateChangeException, DataObjectException, DAOException {
+    	Visita v = this.toVisita(visita);
+		OrdenEntrega entrega = entregasByCodigo.get(v.getCodOrdenEntrega());
+		
+		  if (entrega!= null) {
+  	        
 
-        if (visita == null) throw new DataNullException("VisitaDTO null");
+  	    
+  	        entrega.agregarVisita(v);
+  	        
+  	        visitasByCodigo.put(v.getCodigo(), v);
+  	        entregasByCodigo.put(entrega.getCodigo(), entrega);
+  	        solicitudesByCodigo.put(entrega.getSolicitud().getCodigo(), entrega.getSolicitud());
 
-        Visita v = toVisita(visita);
-        visitasByCodigo.put(v.getCodigo(), v);
-
-        OrdenEntrega entrega = entregasByCodigo.get(visita.getCodOrden());
-        if (entrega == null) throw new DAOException("No existe OrdenEntrega con código: " + visita.getCodOrden());
-
-        entrega.agregarVisita(v);
-
-        // si la visita tiene bienes entregados => se "deshabilitan" en inventario
-        if (v.tieneBienes()) {
-            for (Bien b : v.getBienesRecolectados()) {
-                if (b == null) continue;
-                // marca no disponible
-                if (inventarioTipo.containsKey(b.getCodigo())) {
-                    modificarBienInventario(b.getCodigo(), inventarioTipo.get(b.getCodigo()), false);
-                } else {
-                    modificarBienInventario(b.getCodigo(), b.getTipo(), false);
-                }
-            }
-        }
-
-        // actualizar solicitud acorde al estado actual en el modelo (igual que persistence)
-        if (entrega.getSolicitud() != null) {
-            SolicitudBien sb = solicitudesByCodigo.get(entrega.getSolicitud().getCodigo());
-            if (sb != null) {
-                sb.setEstado(entrega.getSolicitud().getEstado());
-            }
-        }
-
-        // si entrega quedó completada: reincorpora faltantes
-        if (entrega.getEstado() == EstadoOrden.COMPLETADA) {
-            try {
-                ArrayList<Bien> faltantes = entrega.obtenerBienesFaltantes(entrega.getEntregados(), entrega.getSolicitud().getBienesSolicitados());
-                for (Bien b : faltantes) {
-                    if (b == null) continue;
-                    // vuelve a disponible
-                    modificarBienInventario(b.getCodigo(), b.getTipo(), true);
-                }
-            } catch (Exception ignored) { }
-        }
+  	       
+  	    } 
+	   if (v.tieneBienes()) {
+		   //si la visita tubo bienes entregados, quedan inavilitados del inventario
+	            for (Bien b : v.getBienesRecolectados()) {
+	                inventarioDAO.update(b.getCodigo(), b.getTipo(), false);;
+	            }
+	   } 
+	   
+	   //si la entrega finalizo y hay bienes que no fueron entregados, re reincorporan nuevamente en el inventario
+	   if(entrega.getEstado().equals(Orden.EstadoOrden.COMPLETADA)) {
+		   for (Bien b : entrega.obtenerBienesFaltantes(entrega.getEntregados(), entrega.getSolicitud().getBienesSolicitados())) {
+               inventarioDAO.update(b.getCodigo(), b.getTipo(), true);;
+           }
+	   }  
     }
 
     // =========================================================
