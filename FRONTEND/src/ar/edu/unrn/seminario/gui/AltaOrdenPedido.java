@@ -150,7 +150,7 @@ public class AltaOrdenPedido extends JFrame {
                     fecha = LocalDate.parse(fechaTexto.trim()); // formato yyyy-MM-dd
                 }
 
-                // Determinar estado (si tu DTO espera un estado, lo pasamos; si no, ajustá)
+           
                 String estado = txtEstado.getText();
                 if (estado == null || estado.trim().isEmpty()) estado = "PENDIENTE";
 

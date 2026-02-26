@@ -1,1405 +1,1663 @@
 package ar.edu.unrn.seminario.api;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import ar.edu.unrn.seminario.dto.*;
+import ar.edu.unrn.seminario.exception.*;
 import ar.edu.unrn.seminario.modelo.*;
 import ar.edu.unrn.seminario.modelo.Orden.EstadoOrden;
-import ar.edu.unrn.seminario.exception.*;
-import ar.edu.unrn.seminario.dto.*;
+
 
 
 public class MemoryApi implements IApi {
 
-    private List<Rol> roles = new ArrayList<>();
-
-
     
-    //username-objeto
+    private Map<Integer, Rol> rolesByCodigo = new HashMap<>();
+
+    // usuarios
+    private Map<String, Usuario> usuariosByCodigo = new HashMap<>();
     private Map<String, Usuario> usuariosByUsername = new HashMap<>();
-    private Map<String, Donante> donantesByUser = new HashMap<>();
-    private Map<String,Beneficiario> beneficiarioByUser = new HashMap<>();
-    private Map<String, Voluntario> voluntariosByUser = new HashMap<>();
+
+    // perfiles
+    private Map<String, Donante> donantesByCodigo = new HashMap<>();
+    private Map<String, Beneficiario> beneficiarioByCodigo = new HashMap<>();
+    private Map<String, Voluntario> voluntariosByCodigo = new HashMap<>();
+
+    // ubicaciones
     private Map<String, Ubicacion> ubicacionesByCodigo = new HashMap<>();
+
+    // órdenes
     private Map<String, OrdenEntrega> entregasByCodigo = new HashMap<>();
     private Map<String, OrdenPedido> pedidosByCodigo = new HashMap<>();
     private Map<String, OrdenRetiro> retirosByCodigo = new HashMap<>();
+
+    // bienes / visitas / donaciones / solicitudes
     private Map<String, Bien> bienByCodigo = new HashMap<>();
-  
-    
+    private Map<String, Visita> visitasByCodigo = new HashMap<>();
+    private Map<String, Donacion> donacionByCodigo = new HashMap<>();
+    private Map<String, SolicitudBien> solicitudesByCodigo = new HashMap<>();
+
+
+    // inventario contiene los Bien "presentes" en inventario
     private ArrayList<Bien> inventario = new ArrayList<>();
-    
-    private ArrayList<BienDTO> bienesDTO = new ArrayList<>();
-    private ArrayList<VisitaDTO> visitasDTO = new ArrayList<>();
-    private List<OrdenPedido> ordenesPedido = new ArrayList<>();
-    private List<Donacion> donaciones = new ArrayList<>();
-    private List<OrdenRetiro> ordenesRetiro = new ArrayList<>();
-    private List<Voluntario> voluntarios = new ArrayList<>();
-    private List<Visita> visitas = new ArrayList<>();
+    // disponibilidad por código de Bien
+    private Map<String, Boolean> inventarioDisponible = new HashMap<>();
+    // tipoBien por código de Bien (tabla inventario tenía tipoBien)
+    private Map<String, String> inventarioTipo = new HashMap<>();
 
-    public MemoryApi() throws DataNullException, StateChangeException, DataEmptyException, DataObjectException, DataDateException, DataLengthException {
-        // datos iniciales
-    	
-    	
-        this.roles.add(new Rol(1, "ADMIN"));
-        
-        /*
-        this.roles.add(new Rol(2, "ESTUDIANTE"));
-        this.roles.add(new Rol(3, "INVITADO"));*/
-        // agregar roles necesarios para dominio
-        
-        this.roles.add(new Rol(2, "DONANTE"));
-        this.roles.add(new Rol(3, "VOLUNTARIO"));
-        //this.roles.add(new Rol(6, "BENEFICIARIO"));
+    // =========================
+    // Datos de prueba
+    // =========================
+    private SolicitudBien solicitudTest;
+    private Donacion donacionTest;
 
-        activarRol(1);
-        activarRol(2);
-        activarRol(3);
-        //activarRol(6);
-
-        inicializarUsuarios();
-        inicializarOrdenesPedido();
-        inicializarVoluntarios();
-  
+    public MemoryApi() throws Exception {
+        inicializarContadores();
+        inicializarTest();
     }
 
-    //USUARIOS 
-    private void inicializarUsuarios()  {
-        try {
-        	
-            registrarUsuario("admin", "1234", "admin@x.com", "Admin", 1,true);/*
-            registrarUsuario("ldifabio", "4", "ldifabio@unrn.edu.ar", "Lucas", 2);
-            registrarUsuario("bjgorosito", "1234", "bjgorosito@unrn.edu.ar", "Bruno", 3);*/
-        	
-        	
-        	
-            // crear ejemplo de donante / voluntario para pruebas
-            registrarUsuario("pedro_don", "p", "pedro@x.com", "Pedro.C", 2,true);
-            registrarUsuario("matias_don", "m", "matias@x.com", "Matias. M", 2,false);
-            registrarUsuario("ian_don", "i", "ian@x.com", "Ian.H", 2,false);
-            registrarUsuario("juan_vol", "v", "juan@x.com", "Juan Vol", 3,true);
-        } catch (Exception e) {
-            System.out.println(e);
+
+
+    private void inicializarTest() throws Exception {
+
+        rolesByCodigo.clear();
+        usuariosByCodigo.clear();
+        usuariosByUsername.clear();
+
+        donantesByCodigo.clear();
+        beneficiarioByCodigo.clear();
+        voluntariosByCodigo.clear();
+
+        ubicacionesByCodigo.clear();
+        entregasByCodigo.clear();
+        pedidosByCodigo.clear();
+        retirosByCodigo.clear();
+
+        bienByCodigo.clear();
+        visitasByCodigo.clear();
+        donacionByCodigo.clear();
+        solicitudesByCodigo.clear();
+
+        inventario.clear();
+        inventarioDisponible.clear();
+        inventarioTipo.clear();
+
+        solicitudTest = null;
+        donacionTest = null;
+
+        // ===================== ROLES =====================
+        Rol rol1 = new Rol(1, "Admin", true);
+        Rol rol2 = new Rol(2, "Voluntario", true);
+        Rol rol3 = new Rol(3, "Donante", true);
+        Rol rol4 = new Rol(4, "Beneficiario", true);
+
+        rolesByCodigo.put(rol1.getCodigo(), rol1);
+        rolesByCodigo.put(rol2.getCodigo(), rol2);
+        rolesByCodigo.put(rol3.getCodigo(), rol3);
+        rolesByCodigo.put(rol4.getCodigo(), rol4);
+
+        // ===================== USUARIOS =====================
+        Usuario usuario_1 = new Usuario("perry_AD", "87654321", "Jeff", "perry_AD12@mail.com", rol1, true, null);
+        Usuario usuario_2 = new Usuario("pedro_Vol", "12345678", "Pedro", "pedro_Vol12@mail.com", rol2, true, null);
+        Usuario usuario_3 = new Usuario("ian_Don", "12121212", "Ian", "ian_Don12@mail.com", rol3, true, null);
+        Usuario usuario_4 = new Usuario("matias_Ben", "00010001", "Matias", "matias_Ben12@mail.com", rol4, true, null);
+
+        putUsuario(usuario_1);
+        putUsuario(usuario_2);
+        putUsuario(usuario_3);
+        putUsuario(usuario_4);
+
+        // ===================== COORDENADAS + UBICACIONES =====================
+        Coordenada coordenadaBeneficiario = new Coordenada(11.233, 12.333);
+        Coordenada coordenadaDonante = new Coordenada(23.333, 12.3333);
+
+        Ubicacion ubicacionBeneficiario = new Ubicacion("Este", "SanJuan", "123", coordenadaBeneficiario);
+        Ubicacion ubicacionDonante = new Ubicacion("Norte", "Flores", "456", coordenadaDonante);
+
+        ubicacionesByCodigo.put(ubicacionBeneficiario.getCodigo(), ubicacionBeneficiario);
+        ubicacionesByCodigo.put(ubicacionDonante.getCodigo(), ubicacionDonante);
+
+        // ===================== BENEFICIARIO / DONANTE / VOLUNTARIO =====================
+        Beneficiario beneficiarioTest = new Beneficiario(
+                "Matias", "Ben",
+                LocalDate.of(2000, 1, 10),
+                "11111111",
+                "matias_Ben12@mail.com",
+                ubicacionBeneficiario,
+                "matias_Ben",
+                1,
+                0
+        );
+
+        Donante donanteTest = new Donante(
+                "Ian", "Don",
+                LocalDate.of(1999, 3, 20),
+                "22222222",
+                "ian_Don12@mail.com",
+                ubicacionDonante,
+                "ian_Don"
+        );
+
+        Voluntario voluntarioTest = new Voluntario(
+                "Pedro", "Contrera",
+                LocalDate.of(2003, 10, 21),
+                "pedro_Vol12@mail.com",
+                "33333333",
+                "pedro_Vol"
+        );
+
+        beneficiarioByCodigo.put(beneficiarioTest.getCodigo(), beneficiarioTest);
+        donantesByCodigo.put(donanteTest.getCodigo(), donanteTest);
+        voluntariosByCodigo.put(voluntarioTest.getCodigo(), voluntarioTest);
+
+        // ===================== BIENES + DONACION =====================
+        Bien alimentoTest = new Bien(null, "Alimento", null, "Manteca", "Manteca marca 'YYYY'",
+                LocalDate.of(2027, 1, 1), null, null);
+
+        Bien ropaTest = new Bien(null, "Ropa", null, "Camisa", "Camisa usada, con botones cambiados",
+                null, 4.0, "algodon");
+
+        bienByCodigo.put(alimentoTest.getCodigo(), alimentoTest);
+        bienByCodigo.put(ropaTest.getCodigo(), ropaTest);
+
+        ArrayList<Bien> bienesDonacion = new ArrayList<>();
+        bienesDonacion.add(ropaTest);
+        bienesDonacion.add(alimentoTest);
+
+        donacionTest = new Donacion(
+                LocalDate.now(),
+                "Donacion de una camisa y una manteca",
+                bienesDonacion,
+                donanteTest,
+                null
+        );
+        donacionByCodigo.put(donacionTest.getCodigo(), donacionTest);
+
+        // ===================== BIENES PARA SOLICITUD + INVENTARIO =====================
+        Bien alimentoTestSolicitud = new Bien(null, "Alimento", null, "Fideos", "Fideos marca 'YYYY'",
+                LocalDate.of(2026, 7, 12), null, null);
+
+        Bien ropaTestSolicitud = new Bien(null, "Ropa", null, "Pantalon", "Pantalon nuevo",
+                null, 1.0, "algodon");
+
+        bienByCodigo.put(alimentoTestSolicitud.getCodigo(), alimentoTestSolicitud);
+        bienByCodigo.put(ropaTestSolicitud.getCodigo(), ropaTestSolicitud);
+
+        // inventario inicial (disponibles)
+        registrarBienInventario(alimentoTestSolicitud.getCodigo(), alimentoTestSolicitud.getTipo(), true);
+        registrarBienInventario(ropaTestSolicitud.getCodigo(), ropaTestSolicitud.getTipo(), true);
+
+        ArrayList<Bien> bienesSeleccionados = new ArrayList<>();
+        bienesSeleccionados.add(ropaTestSolicitud);
+        bienesSeleccionados.add(alimentoTestSolicitud);
+
+        solicitudTest = new SolicitudBien(
+                beneficiarioTest.getCodigo(),
+                bienesSeleccionados,
+                EstadoOrden.PENDIENTE.toString()
+        );
+        solicitudesByCodigo.put(solicitudTest.getCodigo(), solicitudTest);
+    }
+
+    private void inicializarContadores() {
+        // contadores en 0: entorno memoria
+        Beneficiario.setContadorDonante(0);
+        Bien.setContadorBien(0);
+        Coordenada.setContadorCoordenada(0);
+        Donacion.setContadorDonacion(0);
+        Donante.setContadorDonante(0);
+        OrdenEntrega.setContadorCoordenada(0);
+        OrdenPedido.setContadorPedido(0);
+        OrdenRetiro.setContadorOrdenRetiro(0);
+        Ubicacion.setContadorUbicacion(0);
+        Usuario.setContadorUsuario(0);
+        Voluntario.setContadorVoluntario(0);
+        Visita.setContadorVisita(0);
+        SolicitudBien.setContadorSolicitud(0);
+    }
+
+
+    @Override
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol, boolean activo)
+            throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataIntException {
+
+        if (username == null) throw new DataNullException("username nulo");
+        if (password == null) throw new DataNullException("password nulo");
+        if (email == null) throw new DataNullException("email nulo");
+        if (nombre == null) throw new DataNullException("nombre nulo");
+        if (rol == null) throw new DataNullException("rol nulo");
+
+        if (existeUsuario(username)) {
+           
+            throw new DataObjectException("Ya existe el usuario: " + username);
+        }
+
+        Rol role = buscarRol(rol);
+        if (role == null) throw new DataObjectException("No existe rol con código: " + rol);
+
+        Usuario usuario = new Usuario(username, password, nombre, email, role, activo, null);
+        putUsuario(usuario);
+
+        // crear perfil básico según rol (mínimos cambios)
+        String rn = role.getNombre();
+        if ("DONANTE".equalsIgnoreCase(rn)) {
+            Coordenada cor = new Coordenada(11111, 11111);
+            Ubicacion ubicacion = new Ubicacion("lugar", "de", "prueba", cor);
+            Donante d = new Donante(nombre, "jose", LocalDate.now(), "34453544", email, ubicacion, username);
+            donantesByCodigo.put(d.getCodigo(), d);
+        } else if ("VOLUNTARIO".equalsIgnoreCase(rn)) {
+            Voluntario v = new Voluntario(nombre, "pepe", LocalDate.now(), email, "34453544", username);
+            voluntariosByCodigo.put(v.getCodigo(), v);
+        } else if ("BENEFICIARIO".equalsIgnoreCase(rn)) {
+            Coordenada cor = new Coordenada(11111, 11111);
+            Ubicacion ubicacion = new Ubicacion("lugar", "de", "prueba", cor);
+            Beneficiario b = new Beneficiario(nombre, "ape", LocalDate.now(), "00000000", email, ubicacion, username, 0, 0);
+            beneficiarioByCodigo.put(b.getCodigo(), b);
         }
     }
 
     @Override
-    public void registrarUsuario(String username, String password, String email, String nombre, Integer rol,boolean activo) throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException {
+    public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol)
+            throws DataEmptyException, DataNullException, DataExistsException, DataObjectException, DataLengthException, DataIntException {
 
-   
-        if (!existeUsuario(username)) {
-            Rol role = this.buscarRol(rol);
-            Usuario usuario = new Usuario(username, password, nombre, email, role,activo,null);
-            this.usuariosByUsername.put(username, usuario);
-            
-            // mapUsuarios.put(username, password); // eliminado
+        if (username == null) throw new DataNullException("username nulo");
+        if (existeUsuario(username)) throw new DataExistsException("Ya existe el usuario: " + username);
 
-            // crear perfil básico según rol
-            String rn = role.getNombre();
-            if ("DONANTE".equalsIgnoreCase(rn)) {
-            	Coordenada cor=new Coordenada(11111,11111);
-            	Ubicacion ubicacion= new Ubicacion("lugar", "de", "prueba", cor);
-                // atributos por defecto mínimos; se pueden completar luego con editar perfil
-                Donante d = new Donante(nombre, "jose", LocalDate.now(), "34453544",username,ubicacion);
-                donantesByUser.put(username, d);
-            } else if ("VOLUNTARIO".equalsIgnoreCase(rn)) {
-            	Voluntario v= new Voluntario(nombre, "pepe", LocalDate.now(),email,"34453544",username);
-                voluntariosByUser.put(username, v);
-            }
-            
-            
+        try {
+            registrarUsuario(username, password, email, nombre, codigoRol, true);
+        } catch (DataDateException e) {
+            throw new DataObjectException(e.getMessage());
         }
     }
 
     @Override
     public List<UsuarioDTO> obtenerUsuarios() {
-        List<UsuarioDTO> dtos = new ArrayList<>();
-        for (Usuario u : this.usuariosByUsername.values()) {
-            dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
-                    u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-        }
-        return dtos;
+        return usuariosByUsername.values().stream()
+                .filter(Objects::nonNull)
+                .map(this::toUsuarioDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UsuarioDTO obtenerUsuario(String username) {
-
         Usuario u = usuariosByUsername.get(username);
-        if (u != null) {
-            return 	new UsuarioDTO(u.getUsuario(), u.getContrasena(), u.getNombre(), u.getContacto(),
-                    u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo());
-        }
-        return null;
+        return (u == null) ? null : toUsuarioDTOFull(u);
     }
 
     @Override
     public void eliminarUsuario(String username) {
+        Usuario u = usuariosByUsername.remove(username);
+        if (u != null && u.getCodigo() != null) usuariosByCodigo.remove(u.getCodigo());
 
-    	 this.usuariosByUsername.remove(username);
-        // borrar perfiles asociados:
-        donantesByUser.remove(username);
-        voluntariosByUser.remove(username);
-
+        // borrar perfiles asociados por username (si existieran)
+        // 
+        donantesByCodigo.values().removeIf(d -> d != null && username.equalsIgnoreCase(d.getUsername()));
+        voluntariosByCodigo.values().removeIf(v -> v != null && username.equalsIgnoreCase(v.getUsername()));
+        beneficiarioByCodigo.values().removeIf(b -> b != null && username.equalsIgnoreCase(b.getUsername()));
     }
 
     @Override
     public void activarUsuario(String usuario) throws StateChangeException {
-        Usuario user = this.buscarUsuario(usuario);
+        Usuario user = usuariosByUsername.get(usuario);
         if (user != null) user.activar();
     }
 
     @Override
     public void desactivarUsuario(String usuario) throws StateChangeException {
-        Usuario user = this.buscarUsuario(usuario);
+        Usuario user = usuariosByUsername.get(usuario);
         if (user != null) user.desactivar();
     }
 
-
-    private Usuario buscarUsuario(String usuario) {
-        return usuariosByUsername.get(usuario);
+    @Override
+    public void modificarContraseña(String usuario, String passWord)
+            throws DataEmptyException, DataNullException, DataLengthException {
+        if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("usuario vacío");
+        if (passWord == null || passWord.trim().isEmpty()) throw new DataEmptyException("contraseña vacía");
+        Usuario user = usuariosByUsername.get(usuario);
+        if (user != null) user.setContrasena(passWord);
     }
 
-    public Boolean existeUsuario(String username ) {
-    
-        return this.usuariosByUsername.containsKey(username);
+    @Override
+    public Boolean autenticar(String username, String password) {
+        if (username == null || password == null) return false;
+        Usuario u = usuariosByUsername.get(username);
+        if (u == null) return false;
+        return password.equals(u.getContrasena());
     }
 
-    
-	@Override
-	public List<UsuarioDTO> obtenerUserDonantes() {
-		
-		
-	    List<UsuarioDTO> dtos = new ArrayList<>();
-        for (Usuario u : this.usuariosByUsername.values()) {
-        	Rol r=u.getRol();
-        	if("DONANTE".equalsIgnoreCase(r.getNombre())){
-        		
-        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
-                          u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-        	}
-            
-        }
-        return dtos;
-	}
+    @Override
+    public Boolean existeUsuario(String username) {
+        return username != null && usuariosByUsername.containsKey(username);
+    }
 
-	@Override
-	public List<UsuarioDTO> obtenerUserVoluntarios() {
-		  List<UsuarioDTO> dtos = new ArrayList<>();
-	        for (Usuario u : this.usuariosByUsername.values()) {
-	        	Rol r=u.getRol();
-	        	if("VOLUNTARIO".equalsIgnoreCase(r.getNombre())){
-	        		
-	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
-	                          u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-	        	}
-	            
-	        }
-	        return dtos;
-	}
+    @Override
+    public List<UsuarioDTO> obtenerUserDonantes() {
+        return usuariosByUsername.values().stream()
+                .filter(Objects::nonNull)
+                .filter(u -> u.getRol() != null && "DONANTE".equalsIgnoreCase(u.getRol().getNombre()))
+                .map(this::toUsuarioDTO)
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<UsuarioDTO> obtenerUserAdministrador() {
-		  List<UsuarioDTO> dtos = new ArrayList<>();
-	        for (Usuario u : this.usuariosByUsername.values()) {
-	        	Rol r=u.getRol();
-	        	if("ADMIN".equalsIgnoreCase(r.getNombre())){
-	        		
-	        		  dtos.add(new UsuarioDTO(u.getUsuario(), null /*no enviar password*/, u.getNombre(), u.getContacto(),
-	                          u.getRol().getNombre(), u.isActivo(), u.obtenerEstado(),u.getCodigo()));
-	        	}
-	            
-	        }
-	        return dtos;
-	}
+    @Override
+    public List<UsuarioDTO> obtenerUserVoluntarios() {
+        return usuariosByUsername.values().stream()
+                .filter(Objects::nonNull)
+                .filter(u -> u.getRol() != null && "VOLUNTARIO".equalsIgnoreCase(u.getRol().getNombre()))
+                .map(this::toUsuarioDTO)
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public List<UsuarioDTO> obtenerUserAdministrador() {
+        return usuariosByUsername.values().stream()
+                .filter(Objects::nonNull)
+                .filter(u -> u.getRol() != null && "ADMIN".equalsIgnoreCase(u.getRol().getNombre()))
+                .map(this::toUsuarioDTO)
+                .collect(Collectors.toList());
+    }
 
     // ROLES
+
     @Override
     public List<RolDTO> obtenerRoles() {
-        List<RolDTO> dtos = new ArrayList<>();
-        for (Rol r : this.roles) {
-            dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo(), r.getDescripcion()));
-        }
-        return dtos;
+        return rolesByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .map(r -> new RolDTO(r.getCodigo(), r.getNombre(), r.isActivo(), r.getDescripcion()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<RolDTO> obtenerRolesActivos() {
-        List<RolDTO> dtos = new ArrayList<>();
-        for (Rol r : this.roles) {
-            if (r.isActivo())
-                dtos.add(new RolDTO(r.getCodigo(), r.getNombre(), r.getDescripcion()));
-        }
-        return dtos;
+        return rolesByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .filter(Rol::isActivo)
+                .map(r -> new RolDTO(r.getCodigo(), r.getNombre(), r.getDescripcion()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException {
+        if (codigo == null) throw new DataNullException("codigo rol null");
         Rol rol = new Rol(codigo, nombre, descripcion, estado);
-        this.roles.add(rol);
+        rolesByCodigo.put(codigo, rol);
+    }
+
+    @Override
+    public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
+        if (codigo == null) throw new DataNullException("codigo rol null");
+        Rol rol = new Rol(codigo, nombre, estado);
+        rolesByCodigo.put(codigo, rol);
     }
 
     @Override
     public void guardarRol(RolDTO rol) throws DataNullException {
+        if (rol == null) throw new DataNullException("rol null");
         Rol rolnew = new Rol(rol.getCodigo(), rol.getNombre(), rol.getDescripcion(), rol.isActivo());
-        this.roles.add(rolnew);
+        rolesByCodigo.put(rolnew.getCodigo(), rolnew);
     }
 
     @Override
     public RolDTO obtenerRolPorCodigo(Integer codigo) {
-        for (Rol rol : this.roles) {
-            if (codigo.equals(rol.getCodigo())) {
-                return new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo(), rol.getDescripcion());
-            }
-        }
-        return null;
+        Rol rol = rolesByCodigo.get(codigo);
+        if (rol == null) return null;
+        return new RolDTO(rol.getCodigo(), rol.getNombre(), rol.isActivo(), rol.getDescripcion());
     }
 
     @Override
     public void activarRol(Integer codigo) throws StateChangeException {
-        Rol rol = this.buscarRol(codigo);
+        Rol rol = rolesByCodigo.get(codigo);
         if (rol != null) rol.activar();
     }
 
     @Override
     public void desactivarRol(Integer codigo) throws StateChangeException {
-        Rol rol = this.buscarRol(codigo);
+        Rol rol = rolesByCodigo.get(codigo);
         if (rol != null) rol.desactivar();
     }
 
-    private Rol buscarRol(Integer codigo) {
-        for (Rol rol : roles) {
-            if (rol.getCodigo().equals(codigo))
-                return rol;
-        }
-        return null;
-    }
-
-
-    // API
+  
 
     @Override
-    public void modificarContraseña(String usuario, String passWord) throws DataEmptyException, DataNullException, DataLengthException {
+    public List<OrdenDTO> obtenerOrdenes() {
+        List<OrdenDTO> todas = new ArrayList<>();
 
-        Usuario user = this.buscarUsuario(usuario);
-        if (user != null) {
-            user.setContrasena(passWord);
-           
+        for (OrdenPedido op : pedidosByCodigo.values()) {
+            OrdenPedidoDTO dto = toOrdenPedidoDTO(op);
+            if (dto != null) todas.add(dto);
         }
+
+        for (OrdenRetiro or : retirosByCodigo.values()) {
+            OrdenRetiroDTO dto = toOrdenRetiroDTO(or);
+            if (dto != null) todas.add(dto);
+        }
+
+        for (OrdenEntrega oe : entregasByCodigo.values()) {
+            OrdenEntregaDTO dto = toOrdenEntregaDTO(oe);
+            if (dto != null) todas.add(dto);
+        }
+
+        return todas;
     }
-
-
 
     @Override
-    public Boolean autenticar(String username, String password) {
-        if (username == null || password == null) return false;
-        Usuario u = this.usuariosByUsername.get(username);
-        if (u == null) return false;
-        return password.equals(u.getContrasena());
-    }
-
-    
-   
-
-
-  	
-  	
-    
-    // ORDEN PEDIDO
-
-    public void registrarOrdenPedido(OrdenPedido orden) {
-        ordenes.add(orden);
-    }
     public ArrayList<OrdenPedidoDTO> obtenerOrdenesPedido() {
-        ArrayList<OrdenPedidoDTO> ordenesDTO = new ArrayList<>();
-        OrdenPedido orden;
-        for (int i = 0; i < ordenes.size(); i++) {
-            orden = ordenes.get(i);
-            ordenesDTO.add( new OrdenPedidoDTO(orden.getFechaEmision(),orden.getEstado().toString(),orden.getCodigo(),orden.isCargaPesada(), orden.getObservaciones(),orden.getCodDonacion()));
+        ArrayList<OrdenPedidoDTO> res = new ArrayList<>();
+        for (OrdenPedido op : pedidosByCodigo.values()) {
+            OrdenPedidoDTO dto = toOrdenPedidoDTO(op);
+            if (dto != null) res.add(dto);
         }
-        return ordenesDTO;
-    }
-   
-	
-    // OrdenRetiro
-
-	
-
-    
-    
-	@Override
-	public ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() {
-		ArrayList<OrdenRetiroDTO> ordenesDTO = new ArrayList<>();
-	    for (OrdenRetiro orden : ordenesRetiro) {
-	        if (orden != null) {
-	            ordenesDTO.add(new OrdenRetiroDTO(
-	            		orden.getFechaEmision(),
-	            	    orden.getEstado().toString(),
-	            	    orden.getCodigo(),
-	            	    orden.getPedido() != null ? orden.getPedido().getCodigo() : null,
-	            	    null
-	            ));
-	        }
-	        
-	    }
-	    return ordenesDTO;
-	}
-	
-
-    // Donacion
-
-    public void registrarDonacion(Donacion donacion) {
-        donaciones.add(donacion);
+        return res;
     }
 
-    public ArrayList<DonacionDTO> obtenerDonaciones() {
-        ArrayList<DonacionDTO> donacionesDTO = new ArrayList<>();
-        Donacion donacion;
+    @Override
+    public ArrayList<OrdenRetiroDTO> obtenerOrdenesRetiro() {
+        ArrayList<OrdenRetiroDTO> res = new ArrayList<>();
+        for (OrdenRetiro or : retirosByCodigo.values()) {
+            OrdenRetiroDTO dto = toOrdenRetiroDTO(or);
+            if (dto != null) res.add(dto);
+        }
+        return res;
+    }
 
-        for (int i = 0; i < donaciones.size(); i++) {
-            donacion = donaciones.get(i);
-            ArrayList<BienDTO> bienesDTO = new ArrayList<>();
-            ArrayList<Bien> bienes = donacion.getBienes();
-            if (bienes != null) {
-                for (Bien bien : bienes) {
-                    if (bien != null) {
-                        bienesDTO.add(toBienDTO(bien));
-                    }
-                }
+    @Override
+    public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException {
+        if (orden == null) throw new DataNullException("OrdenPedidoDTO inválida");
+        try {
+            OrdenPedido op = new OrdenPedido(
+                    orden.getFechaEmision(),
+                    orden.isCargaPesada(),
+                    orden.getObservaciones(),
+                    orden.getCodDonacion()
+            );
+            if (orden.getEstado() != null) {
+                try { op.setEstado(orden.getEstado()); } catch (Exception ignored) { }
             }
-            donacionesDTO.add(new DonacionDTO(donacion.getCodigo(), donacion.getFechaDonacion(), 
-            		donacion.getObservacion(),bienesDTO,donacion.getDonante().getCodigo(),donacion.getPedido().getCodigo(),null));
+            pedidosByCodigo.put(op.getCodigo(), op);
+
+            // si existe donación con ese código, asociarla
+            Donacion d = donacionByCodigo.get(orden.getCodDonacion());
+            if (d != null) {
+                d.setPedido(op);
+                donacionByCodigo.put(d.getCodigo(), d);
+            }
+        } catch (Exception e) {
+            throw new DataNullException(e.getMessage());
         }
-        return donacionesDTO;
     }
 
-    // Donante: registro y obtención
+    @Override
+    public void inicializarOrdenesRetiro(String codPedido)
+            throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException {
 
+        if (codPedido == null || codPedido.trim().isEmpty()) throw new DataNullException("Código pedido vacío");
+
+        OrdenPedido pedido = pedidosByCodigo.get(codPedido);
+        if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + codPedido);
+
+        // crea una OR "por defecto"
+        OrdenRetiro or = new OrdenRetiro(null, EstadoOrden.PENDIENTE.toString(), LocalDate.now(), null, pedido, new ArrayList<>());
+        retirosByCodigo.put(or.getCodigo(), or);
+
+        // opcional: pasar pedido a EN_PROCESO si corresponde
+        try {
+            if (pedido.getEstado() == EstadoOrden.PENDIENTE) {
+                pedido.setEstado(EstadoOrden.EN_PROCESO);
+            }
+        } catch (Exception ignored) { }
+    }
+
+    @Override
+    public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
+        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) throw new DataNullException("codigo OR vacío");
+        OrdenRetiro target = retirosByCodigo.get(codOrdenRetiro);
+        if (target == null) throw new DAOException("No existe OrdenRetiro: " + codOrdenRetiro);
+
+        if (target.getEstado() != null && target.getEstado() == EstadoOrden.PENDIENTE) {
+            target.ordenEstadoProceso();
+        }
+        target.ordenEstadoCompleta();
+    }
+
+    @Override
+    public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException,
+                   DataListException, DataDateException, DataEmptyException {
+
+        if (retiro == null) throw new DataNullException("OrdenRetiroDTO es nula");
+
+        OrdenPedido pedido = pedidosByCodigo.get(retiro.getPedido());
+        if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + retiro.getPedido());
+
+        Voluntario voluntario = null;
+        if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
+            voluntario = findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
+        }
+
+        ArrayList<Visita> visitasOR = new ArrayList<>();
+        if (retiro.getCodVisitas() != null) {
+            for (String codV : retiro.getCodVisitas()) {
+                if (codV == null) continue;
+                Visita v = visitasByCodigo.get(codV);
+                if (v != null) visitasOR.add(v);
+            }
+        }
+
+        String estado = (retiro.getEstado() != null) ? retiro.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
+        String codigo = retiro.getCodigo();
+
+        OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
+        retirosByCodigo.put(or.getCodigo(), or);
+    }
+
+    @Override
+    public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+                   DataObjectException, DataListException, DataDateException, DataEmptyException {
+        // en memoria: misma lógica que registrarOrdenRetiro
+        registrarOrdenRetiro(retiro);
+    }
+
+    @Override
+    public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) throws DAOException {
+        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return null;
+        OrdenRetiro or = retirosByCodigo.get(codOrdenRetiro);
+        return (or == null) ? null : toOrdenRetiroDTO(or);
+    }
+
+    @Override
+    public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException {
+        if (codEntrega == null || codEntrega.trim().isEmpty()) return null;
+        OrdenEntrega oe = entregasByCodigo.get(codEntrega);
+        return (oe == null) ? null : toOrdenEntregaDTO(oe);
+    }
+
+    @Override
+    public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega)
+            throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+                   DataDoubleException, StateChangeException, DataObjectException, DAOException {
+
+        if (ordenEntrega == null) throw new DataNullException("OrdenEntregaDTO null");
+
+        OrdenEntrega oe = toOrdenEntrega(ordenEntrega);
+
+        // persistir en memoria
+        entregasByCodigo.put(oe.getCodigo(), oe);
+
+        // al crear OE: solicitud pasa a EN_PROCESO (igual que PersistenceApi)
+        if (oe.getSolicitud() != null) {
+            SolicitudBien sb = solicitudesByCodigo.get(oe.getSolicitud().getCodigo());
+            if (sb != null) {
+                sb.setEstado(EstadoOrden.EN_PROCESO.toString());
+            }
+        }
+    }
+
+    // =========================================================
+    // DONACIONES / DONANTES / VOLUNTARIOS / UBICACIÓN
+    // =========================================================
+
+    @Override
     public void registrarDonante(Donante donante) {
-    	
-        if (donante != null && donante.getUsername() != null) {
-            donantesByUser.put(donante.getUsername(), donante);
-        }
+        if (donante == null) return;
+        donantesByCodigo.put(donante.getCodigo(), donante);
     }
 
-    /*
-     * Método con autorización. ADMIN obtiene todos; DONANTE/Voluntario obtiene solo su propio DTO;
-     * otros roles no están autorizados a obtener la lista de donantes completos.
-     */
+    @Override
+    public List<DonanteDTO> obtenerDonantes() throws DAOException {
+        return donantesByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .map(this::toDonanteDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<DonanteDTO> obtenerDonantes(String userSolicitante) {
-    	
         Usuario u = usuariosByUsername.get(userSolicitante);
-        if (u == null) {
-            throw new RuntimeException("Usuario no autenticado");
-        }
-        
-        String roleName = u.getRol().getNombre();
+        if (u == null) throw new RuntimeException("Usuario no autenticado");
+
+        String roleName = (u.getRol() != null) ? u.getRol().getNombre() : "";
 
         if ("ADMIN".equalsIgnoreCase(roleName)) {
-        	
-            return donantesByUser.values().stream().map(this::toDonanteDTO).collect(Collectors.toList());
-            
+            return donantesByCodigo.values().stream().map(this::toDonanteDTO).collect(Collectors.toList());
         } else if ("DONANTE".equalsIgnoreCase(roleName)) {
-        	
-            Donante d = donantesByUser.get(userSolicitante);
-            if (d == null) { 
-            	return Collections.emptyList();
-            } else {
-            	 return Arrays.asList(toDonanteDTO(d));
-            }
-            
-        } else  {
+            Donante d = findDonanteByUsername(userSolicitante);
+            if (d == null) return Collections.emptyList();
+            return Arrays.asList(toDonanteDTO(d));
+        } else {
             throw new RuntimeException("No autorizado para ver donantes");
         }
     }
 
-
-
-
-    // Helpers DTO
-    private DonanteDTO toDonanteDTO(Donante donante) {
-        return new DonanteDTO(donante.getNombre(), donante.getCodigo(), donante.getApellido(),
-                donante.getContacto(), null, donante.getUbicacion().getCodigo(), null);
+    @Override
+    public void registrarVoluntario(Voluntario voluntario) {
+        if (voluntario == null) return;
+        voluntariosByCodigo.put(voluntario.getCodigo(), voluntario);
     }
-    
-    private Bien toBien(BienDTO dto) throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
-		if (dto == null) return null;
-		return new Bien(
-				dto.getCodigo(),
-				dto.getTipo(),
-				dto.getPeso(),
-				dto.getNombre(),
-				dto.getDescripcion(),
-				dto.getFechaVencimiento(),
-				dto.getTalle() != null ? dto.getTalle() : 0.0,
-				dto.getMaterial()
-		);
-	}
 
-	private Donante findDonanteByCodigo(String codigoDonante) {
-		if (codigoDonante == null) return null;
-		for (Donante d : donantesByUser.values()) {
-			if (d != null && codigoDonante.equalsIgnoreCase(d.getCodigo())) return d;
-		}
-		return null;
-	}
+    @Override
+    public List<VoluntarioDTO> obtenerVoluntarios() {
+        return voluntariosByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .map(this::toVoluntarioDTO)
+                .collect(Collectors.toList());
+    }
 
-	private OrdenPedido findOrdenPedidoByCodigo(String codPedido) {
-		if (codPedido == null) return null;
-		for (OrdenPedido op : ordenes) {
-			if (op != null && codPedido.equalsIgnoreCase(op.getCodigo())) return op;
-		}
-		return null;
-	}
+    @Override
+    public void registrarUbicacion(Ubicacion ubicacion) throws DAOException {
+        if (ubicacion == null) return;
+        if (ubicacion.getCodigo() != null) ubicacionesByCodigo.put(ubicacion.getCodigo(), ubicacion);
+    }
 
-	private Voluntario findVoluntarioByCodigoOrUsername(String cod) {
-		if (cod == null) return null;
-		for (Voluntario v : voluntariosByUser.values()) {
-			if (v == null) continue;
-			try {
-				if (cod.equalsIgnoreCase(v.getCodigo())) return v;
-			} catch (Exception e) {
-				// ignore
-			}
-			try {
-				if (v.getUsername() != null && cod.equalsIgnoreCase(v.getUsername())) return v;
-			} catch (Exception e) {
-				// ignore
-			}
-		}
-		return null;
-	}
+    // Donaciones (DTO)
+    @Override
+    public void registrarDonacion(DonacionDTO donacion)
+            throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException,
+                   DataDateException, DAOException, StateChangeException, DataLengthException, DataListException {
 
-	private DonacionDTO toDonacionDTO(Donacion donacion) {
-		if (donacion == null) return null;
-		ArrayList<BienDTO> bienesDTO = new ArrayList<>();
-		ArrayList<Bien> bs = donacion.getBienes();
-		if (bs != null) {
-			for (Bien b : bs) {
-				if (b != null) bienesDTO.add(toBienDTO(b));
-			}
-		}
-		return new DonacionDTO(
-			donacion.getCodigo(),
-			donacion.getFechaDonacion(),
-			donacion.getObservacion(),
-			bienesDTO,
-			donacion.getDonante() != null ? donacion.getDonante().getCodigo() : null,
-			donacion.getPedido() != null ? donacion.getPedido().getCodigo() : null,
-			null
-		);
-	}
+        if (donacion == null) throw new DataNullException("DonacionDTO null");
 
-	private Visita toVisita(VisitaDTO dto) throws DataNullException, DataLengthException, DataDoubleException, DataDateException, DataEmptyException, DataListException, StateChangeException {
-		if (dto == null) return null;
-		ArrayList<Bien> recolectados = new ArrayList<>();
-		if (dto.getBienesRecolectados() != null) {
-			for (BienDTO b : dto.getBienesRecolectados()) {
-				if (b != null) {
-					try {
-						recolectados.add(toBien(b));
-					} catch (Exception e) {
-						// Si un bien no se puede crear, dejamos que falle la carga por consistencia
-						throw e;
-					}
-				}
-			}
-		}
-		// esFinal: si viene null, asumimos false
-		boolean esFinal = dto.isEsFinal();
-		Visita v = new Visita(dto.getFechaVisita(), dto.getObservaciones(), dto.getTipo(), dto.getCodOrden(), recolectados, esFinal);
-		if (dto.getCodigo() != null && !dto.getCodigo().trim().isEmpty()) {
-			try { v.setCodigo(dto.getCodigo()); } catch (Exception e) { /* ignore */ }
-		}
-		return v;
-	}
+        Donante donante = donantesByCodigo.get(donacion.getCodDonante());
+        if (donante == null) throw new DataObjectException("No existe Donante con código: " + donacion.getCodDonante());
 
-    //Orden
-
-	@Override
-	public List<OrdenDTO> obtenerOrdenes() {
-		
-		  // Lista que contendrá todas las órdenes (Pedido y Retiro)
-	    List<OrdenDTO> todasOrdenes = new ArrayList<>();
-
-	    // Agregar órdenes de pedido si existen
-	    List<OrdenPedidoDTO> pedidos = obtenerOrdenesPedido();
-	    if (pedidos != null && !pedidos.isEmpty()) {
-	        todasOrdenes.addAll(pedidos);
-	    }
-
-	    // Agregar órdenes de retiro si existen
-	    List<OrdenRetiroDTO> retiros = obtenerOrdenesRetiro();
-	    if (retiros != null && !retiros.isEmpty()) {
-	        todasOrdenes.addAll(retiros);
-	    }
-
-	    // Retorna la lista completa; puede estar vacía si no hay órdenes
-
-		return todasOrdenes;
-	}
-
-	public Voluntario obtenerVoluntarioPorUsername(String username) {
-	    if (username == null || username.isEmpty()) {
-	        throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacío");
-	    }
-
-	    Voluntario v = voluntariosByUser.get(username);
-	    if (v == null) {
-	        throw new RuntimeException("No se encontró voluntario con username: " + username);
-	    }
-
-	    return v;
-	}
-
-
-	public OrdenPedido obtenerOrdenPedidoPorCodigo(String codigo) {
-	    if (codigo == null || codigo.isEmpty()) {
-	        throw new IllegalArgumentException("El código no puede ser nulo o vacío");
-	    }
-
-	    for (OrdenPedido orden : ordenes) {
-	        if (codigo.equals(orden.getCodigo())) {
-	            return orden;
-	        }
-	    }
-
-	    throw new RuntimeException("No se encontró OrdenPedido con código: " + codigo);
-	}
-
-	public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {
-	    if (codOrdenRetiro == null || codOrdenRetiro.isEmpty()) {
-	        throw new IllegalArgumentException("El código de la orden de retiro no puede ser nulo o vacío");
-	    }
-
-	    for (OrdenRetiro orden : ordenesRetiro) {
-	        if (codOrdenRetiro.equals(orden.getCodigo())) {
-	            Voluntario v = orden.getVoluntario();
-	            if (v == null) {
-	                throw new RuntimeException("La orden de retiro existe pero no tiene voluntario asignado: " + codOrdenRetiro);
-	            }
-	            
-	            return v.getUsername();
-	            
-	        }
-	    }
-
-	    throw new RuntimeException("No se encontró OrdenRetiro con código: " + codOrdenRetiro);
-	}
-	
-	public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
-	    if (codVisita == null || codVisita.trim().isEmpty()) {
-	        return new ArrayList<>();
-	    }
-
-	    // Buscar la visita 
-	    VisitaDTO visitaEncontrada = visitas.stream()
-	        .filter(Objects::nonNull)
-	        .filter(v -> codVisita.equalsIgnoreCase(v.getCodigo()))
-	        .findFirst()
-	        .orElse(null);
-
-	    if (visitaEncontrada == null || visitaEncontrada.getBienesRecolectados() == null) {
-	        return new ArrayList<>();
-	    }
-	 
-	   return visitaEncontrada.getBienesRecolectados();
-	        
-	}
-	
-	public String[] obtenerCodigosDeBien(BienDTO bien) {
-	    if (bien == null || bien.getCodigo() == null) {
-	        return new String[0]; // retorna array vacío si no hay bien o código
-	    }
-
-	    String[] cod = { bien.getCodigo() };
-	    return cod;
-	}
-	public ArrayList<VisitaDTO> obtenerVisitas(String codOrdenRetiro){
-	    ArrayList<VisitaDTO> resultado = new ArrayList<>();
-
-	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-	        return resultado; // vacío si no se pasó código válido
-	    }
-
-	    for (VisitaDTO v : this.visitas) {
-	        if (v == null) continue;
-	        String cod = v.getCodOrden();
-	        if (cod != null && codOrdenRetiro.equalsIgnoreCase(cod)) {
-	            resultado.add(v);
-	        }
-	    }
-
-	    return resultado;
-	}
-
-	public ArrayList<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) {
-	    if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-	        return new ArrayList<>();
-	    }
-
-	   return ordenesRetiro.stream() // Convierte la lista de órdenes de retiro en un flujo (Stream)
-	            .filter(Objects::nonNull) // Elimina las referencias nulas
-	            .filter(o -> codOrdenRetiro.equalsIgnoreCase(o.getCodigo())) // Busca la orden con el código indicado (sin importar mayúsculas/minúsculas)
-	            .findFirst() // Obtiene la primera coincidencia (devuelve un Optional<OrdenRetiro>)
-	            .map(OrdenRetiro::getRecolectados) // Si existe, obtiene la lista de bienes recolectados (Optional<List<Bien>>)
-	            .map(list -> list.stream() // Convierte esa lista en un Stream<Bien>
-	                    .filter(Objects::nonNull) // Elimina los bienes nulos
-	                    .map(this::toBienDTO) // Convierte cada Bien a BienDTO usando el método toBienDTO()
-	                    .collect(Collectors.toCollection(ArrayList::new))) // Junta los resultados en un ArrayList<BienDTO>
-	            .orElseGet(ArrayList::new); // Si no se encontró la orden o la lista es nula, devuelve una lista vacía
-	}
-
-	
-	public OrdenRetiro obtenerOrdenRetiroPorPedido(String codPedido) {
-	    if (codPedido == null || codPedido.trim().isEmpty()) {
-	        throw new IllegalArgumentException("El código del pedido no puede ser nulo o vacío");
-	    }
-
-	    for (OrdenRetiro retiro : ordenesRetiro) {
-	        if (retiro != null && retiro.getPedido() != null 
-	            && codPedido.equalsIgnoreCase(retiro.getPedido().getCodigo())) {
-	            return retiro;
-	        }
-	    }
-
-	    throw new RuntimeException("No se encontró OrdenRetiro asociada al pedido con código: " + codPedido);
-	}
-
-	@Override
-	
-	public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) {
-		 ArrayList<BienDTO> retirar = new ArrayList<>();
-		   if (codOP == null || codOP.trim().isEmpty()) {
-		        return retirar;
-		    }
-
-		    for (Donacion donacion : donaciones) {
-		        if (donacion != null) {
-		            String codPedidoDonacion = donacion.getCodigo();
-
-		            if (codPedidoDonacion != null && codOP.equalsIgnoreCase(codPedidoDonacion)) {
-		                ArrayList<Bien> bienesDonacion = donacion.getBienes();
-
-		                if (bienesDonacion != null) {
-		                    for (Bien bien : bienesDonacion) {
-		                        if (bien != null) {
-		                            BienDTO dto = toBienDTO(bien);
-		                           
-		                            
-		                            retirar.add(dto);
-		                        }
-		                    }
-		                }
-		                // Si una orden tiene una sola donación, podés cortar acá
-		                // break;
-		            }
-		        }
-		    }
-
-         return retirar; 
-	}
-	public ArrayList<BienDTO> obtenerBienesPorDonacion(String codDonacion) {
-	    if (codDonacion == null || codDonacion.trim().isEmpty()) {
-	        return new ArrayList<>();
-	    }
-
-	    ArrayList<BienDTO> resultado = donaciones.stream() // Convierte la lista de donaciones en un flujo (Stream)
-	            .filter(Objects::nonNull) // Filtra las donaciones que no sean nulas
-	            .filter(d -> codDonacion.equalsIgnoreCase(d.getCodigo())) // Filtra la donación que coincida con el código dado (sin importar mayúsculas/minúsculas)
-	            .findFirst() // Obtiene la primera donación que cumpla con la condición (devuelve un Optional<Donacion>)
-	            .map(Donacion::getBienes) // Si existe, obtiene su lista de bienes (devuelve Optional<List<Bien>>)
-	            .map(List::stream) // Convierte esa lista de bienes en un Stream 
-	            .orElseGet(Stream::empty) // Si no se encontró la donación, devuelve un Stream vacío
-	            .filter(Objects::nonNull) // Filtra los bienes no nulos
-	            .map(bien -> toBienDTO(bien)) // Convierte cada Bien a un BienDTO mediante el método toBienDTO()
-	            .collect(Collectors.toCollection(ArrayList::new)); // Recolecta el resultado en un ArrayList<BienDTO>
-
-	    return resultado;
-	}
-
-	
-	//HELPERS 
-	
-	public BienDTO toBienDTO(Bien bien) {
-	    if (bien == null) return null;
-	    return new BienDTO(
-	        bien.getCodigo(),
-	        bien.getTipo(),
-	        bien.getPeso(),
-	        bien.getNombre(),
-	        bien.getDescripcion(),
-	        bien.getNivelNecesidad(),
-	        bien.getFechaVencimiento(),
-	        bien.getTalle(),
-	        bien.getMaterial()
-	    );
-	    
-	
-	}
-
-	@Override
-	public void guardarRol(Integer codigo, String nombre, boolean estado) throws DataNullException {
-		  Rol rol = new Rol(codigo, nombre, estado);
-	        this.roles.add(rol);
-		
-	}
-
-	@Override
-	public void registrarUsuario(String username, String password, String email, String nombre, Integer codigoRol)
-			throws DataEmptyException, DataNullException, DataExistsException, DataObjectException, DataLengthException {
-		
-			// En MemoryApi no persistimos en BD: validamos y delegamos al método principal.
-			if (username == null) {
-				throw new DataNullException("username nulo");
-			}
-			if (existeUsuario(username)) {
-				throw new DataExistsException("Ya existe el usuario: " + username);
-			}
-			// Por defecto, el usuario queda activo (igual que en una alta típica)
-			try {
-				registrarUsuario(username, password, email, nombre, codigoRol, true);
-			} catch (DataDateException e) {
-				// No debería ocurrir en el alta simple; re-lanzamos como objeto inválido
-				throw new DataObjectException(e.getMessage());
-			}
-	}
-
-	@Override
-	public void registrarVoluntario(Voluntario voluntario) {
-		voluntarios.add(voluntario);
-		
-	}
-
-	@Override
-	public List<VoluntarioDTO> obtenerVoluntarios() {
-		ArrayList<VoluntarioDTO> voluntariosDTO = new ArrayList<>();
-        Voluntario voluntario;
-        for (int i = 0; i < voluntarios.size(); i++) {
-            voluntario = voluntarios.get(i);
-            voluntariosDTO.add( new VoluntarioDTO(voluntario.getNombre(),voluntario.getApellido(),voluntario.getContacto()
-            		,voluntario.getDni(),voluntario.getFecha_nac(),voluntario.getCodigo(),voluntario.isDisponible()));
-           
+        OrdenPedido pedido = null;
+        if (donacion.getCodPedido() != null && !donacion.getCodPedido().trim().isEmpty()) {
+            pedido = pedidosByCodigo.get(donacion.getCodPedido());
+            if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + donacion.getCodPedido());
         }
-        return voluntariosDTO;
-       
-	}
-	public void registrarVisita(VisitaDTO visita) {
-		visitas.add(visita);
-	}
-	public void registrarVisita(Visita visita) {
-		visitass.add(visita);
-	}
-	
-	public void inicializarVoluntarios() throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException {
-		Voluntario v1=new Voluntario(
-		        "Matias",               // nombre
-		        "Mellado", LocalDate.now(),          // apellido
-		        "WhatsApp","123456",            // preferencia de contacto
-		        "matiM"            // username);
-		        );
+
+        ArrayList<Bien> bienesDom = new ArrayList<>();
+        if (donacion.getBienes() != null) {
+            for (BienDTO b : donacion.getBienes()) {
+                if (b == null) continue;
+                Bien bienDom = toBien(b);
+                bienesDom.add(bienDom);
+                bienByCodigo.put(bienDom.getCodigo(), bienDom);
+            }
+        }
+
+        Donacion dom = new Donacion(
+                donacion.getFechaDonacion(),
+                donacion.getObservacion(),
+                bienesDom,
+                donante,
+                pedido,
+                donacion.getCodigo()
+        );
+
+        donacionByCodigo.put(dom.getCodigo(), dom);
+    }
+
+    @Override
+    public ArrayList<DonacionDTO> obtenerDonaciones()
+            throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+
+        ArrayList<DonacionDTO> res = new ArrayList<>();
+        for (Donacion d : donacionByCodigo.values()) {
+            DonacionDTO dto = toDonacionDTO(d);
+            if (dto != null) res.add(dto);
+        }
+        return res;
+    }
+
+    @Override
+    public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException {
+        ArrayList<DonacionDTO> res = new ArrayList<>();
+        for (Donacion d : donacionByCodigo.values()) {
+            if (d == null) continue;
+            OrdenPedido p = d.getPedido();
+            EstadoOrden eo = (p != null && p.getEstado() != null) ? p.getEstado() : EstadoOrden.PENDIENTE;
+            if (eo != EstadoOrden.COMPLETADA && eo != EstadoOrden.CANCELADA) {
+                DonacionDTO dto = toDonacionDTO(d);
+                if (dto != null) res.add(dto);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public DonacionDTO obtenerDonacionPorPedido(String ordenP)
+            throws DataNullException, DAOException, DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
+
+        if (ordenP == null || ordenP.trim().isEmpty()) throw new DataNullException("codPedido vacío");
+
+        for (Donacion d : donacionByCodigo.values()) {
+            if (d == null) continue;
+            if (d.getPedido() != null && ordenP.equalsIgnoreCase(d.getPedido().getCodigo())) {
+                return toDonacionDTO(d);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public DonacionDTO obtenerDonacionDTO(String codPedido)
+            throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+
+        if (codPedido == null) throw new DataNullException("codPedido null");
+        if (codPedido.trim().isEmpty()) throw new DataEmptyException("codPedido vacío");
+
+        DonacionDTO dto = obtenerDonacionPorPedido(codPedido);
+        if (dto == null) throw new DataObjectException("No se encontró donación asociada al pedido: " + codPedido);
+
+        return dto;
+    }
+
+    // =========================================================
+    // VISITAS
+    // =========================================================
+
+    @Override
+    public ArrayList<VisitaDTO> obtenerVisitas(String codOrden) {
+        ArrayList<VisitaDTO> resultado = new ArrayList<>();
+        if (codOrden == null || codOrden.trim().isEmpty()) return resultado;
+
+        for (Visita v : visitasByCodigo.values()) {
+            if (v == null) continue;
+            String cod = (v.getCodOrdenEntrega() != null) ? v.getCodOrdenEntrega() : v.getCodOrdenRetiro();
+            if (cod != null && codOrden.equalsIgnoreCase(cod)) {
+                resultado.add(toVisitaDTO(v));
+            }
+        }
+        return resultado;
+    }
+
+    @Override
+    public ArrayList<BienDTO> obtenerBienesDeVisita(String codVisita) {
+        if (codVisita == null || codVisita.trim().isEmpty()) return new ArrayList<>();
+        Visita v = visitasByCodigo.get(codVisita);
+        if (v == null || v.getBienesRecolectados() == null) return new ArrayList<>();
+        return v.getBienesRecolectados().stream()
+                .filter(Objects::nonNull)
+                .map(this::toBienDTO)
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Override
+    public void cargarVisita(VisitaDTO visita)
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+                   DataDateException, DataEmptyException, DataListException, DataObjectException {
+
+        // Router: si es OR -> retiro; si no -> entrega
+        if (visita == null) throw new DataNullException("VisitaDTO null");
+
+        // Si tu OrdenRetiro tiene helper esRetiro(cod): lo usamos, sino fallback por prefijo
+        boolean esRetiro = false;
+        try {
+            esRetiro = OrdenRetiro.esRetiro(visita.getCodOrden());
+        } catch (Exception e) {
+            String c = visita.getCodOrden();
+            esRetiro = (c != null && c.toUpperCase().startsWith("OR"));
+        }
+
+        if (esRetiro) {
+            cargarVisitaRetiro(visita);
+        } else {
+            cargarVisitaEntrega(visita);
+        }
+    }
+
+    @Override
+    public void cargarVisitaRetiro(VisitaDTO visita)
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+                   DataDateException, DataEmptyException, DataListException, DataObjectException {
+
+        if (visita == null) throw new DataNullException("VisitaDTO null");
+
+        Visita v = toVisita(visita);
+        visitasByCodigo.put(v.getCodigo(), v);
+
+        OrdenRetiro or = retirosByCodigo.get(visita.getCodOrden());
+        if (or == null) throw new DAOException("No existe OrdenRetiro con código: " + visita.getCodOrden());
+
+        or.agregarVisita(v);
+
+        // si trae bienes recolectados => ingresan al inventario como disponibles
+        if (v.getBienesRecolectados() != null) {
+            for (Bien b : v.getBienesRecolectados()) {
+                if (b == null) continue;
+                bienByCodigo.put(b.getCodigo(), b);
+                registrarBienInventario(b.getCodigo(), b.getTipo(), true);
+            }
+        }
+
+        // si final -> completar OR (como en persistence)
+        if (visita.isEsFinal()) {
+            if (or.getEstado() == EstadoOrden.PENDIENTE) {
+                or.ordenEstadoProceso();
+            }
+            or.ordenEstadoCompleta();
+        }
+    }
+
+    @Override
+    public void cargarVisitaEntrega(VisitaDTO visita)
+            throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+                   DataDoubleException, StateChangeException, DataObjectException, DAOException {
+
+        if (visita == null) throw new DataNullException("VisitaDTO null");
+
+        Visita v = toVisita(visita);
+        visitasByCodigo.put(v.getCodigo(), v);
+
+        OrdenEntrega entrega = entregasByCodigo.get(visita.getCodOrden());
+        if (entrega == null) throw new DAOException("No existe OrdenEntrega con código: " + visita.getCodOrden());
+
+        entrega.agregarVisita(v);
+
+        // si la visita tiene bienes entregados => se "deshabilitan" en inventario
+        if (v.tieneBienes()) {
+            for (Bien b : v.getBienesRecolectados()) {
+                if (b == null) continue;
+                // marca no disponible
+                if (inventarioTipo.containsKey(b.getCodigo())) {
+                    modificarBienInventario(b.getCodigo(), inventarioTipo.get(b.getCodigo()), false);
+                } else {
+                    modificarBienInventario(b.getCodigo(), b.getTipo(), false);
+                }
+            }
+        }
+
+        // actualizar solicitud acorde al estado actual en el modelo (igual que persistence)
+        if (entrega.getSolicitud() != null) {
+            SolicitudBien sb = solicitudesByCodigo.get(entrega.getSolicitud().getCodigo());
+            if (sb != null) {
+                sb.setEstado(entrega.getSolicitud().getEstado());
+            }
+        }
+
+        // si entrega quedó completada: reincorpora faltantes
+        if (entrega.getEstado() == EstadoOrden.COMPLETADA) {
+            try {
+                ArrayList<Bien> faltantes = entrega.obtenerBienesFaltantes(entrega.getEntregados(), entrega.getSolicitud().getBienesSolicitados());
+                for (Bien b : faltantes) {
+                    if (b == null) continue;
+                    // vuelve a disponible
+                    modificarBienInventario(b.getCodigo(), b.getTipo(), true);
+                }
+            } catch (Exception ignored) { }
+        }
+    }
+
+    // =========================================================
+    // BIENES / INVENTARIO
+    // =========================================================
+
+    @Override
+    public BienDTO obtenerBien(String codigo) {
+        if (codigo == null) return null;
+        Bien b = bienByCodigo.get(codigo);
+        return (b == null) ? null : toBienDTO(b);
+    }
+
+    @Override
+    public Bien ObtenerBien(String codigo) throws DataNullException, DAOException {
+        if (codigo == null || codigo.trim().isEmpty()) throw new DataNullException("codigo vacío");
+        return bienByCodigo.get(codigo);
+    }
+
+    @Override
+    public List<BienDTO> obtenerTodosLosBienes() throws DAOException {
+        return bienByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException {
+        if (tipo == null || tipo.trim().isEmpty()) throw new DataNullException("tipo vacío");
+        return bienByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .filter(b -> b.getTipo() != null && tipo.equalsIgnoreCase(b.getTipo()))
+                .filter(this::bienNoVencido) // “no contempla vencidos, solo válidos”
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void registrarBien(BienDTO bien, Boolean cargarEnInventario)
+            throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+
+        if (bien == null) throw new DataNullException("BienDTO null");
+        Bien dom = toBien(bien);
+
+        bienByCodigo.put(dom.getCodigo(), dom);
+
+        if (Boolean.TRUE.equals(cargarEnInventario)) {
+            registrarBienInventario(dom.getCodigo(), dom.getTipo(), true);
+        }
+    }
+
+    @Override
+    public void modificarBien(BienDTO bien)
+            throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+
+        if (bien == null) throw new DataNullException("BienDTO null");
+        Bien dom = toBien(bien);
+        bienByCodigo.put(dom.getCodigo(), dom);
+
+        // si está en inventario, mantenemos tipo actualizado (disponible se conserva)
+        if (inventarioTipo.containsKey(dom.getCodigo())) {
+            inventarioTipo.put(dom.getCodigo(), dom.getTipo());
+        }
+    }
+
+    @Override
+    public void eliminarBien(BienDTO bien)
+            throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException, DAOException {
+
+        if (bien == null) throw new DataNullException("BienDTO null");
+
+        String cod = bien.getCodigo();
+        if (cod == null || cod.trim().isEmpty()) throw new DataNullException("codigo bien vacío");
+
+        bienByCodigo.remove(cod);
+        // también de inventario
+        eliminarBienInventario(cod);
+    }
+
+    // INVENTARIO
+
+    @Override
+    public List<BienDTO> obtenerBienesInventario() throws DAOException {
+        // devuelve todos los bienes del inventario (sin mirar disponible)
+        return inventario.stream()
+                .filter(Objects::nonNull)
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException {
+        if (tipo == null || tipo.trim().isEmpty()) throw new DataNullException("tipo vacío");
+
+        return inventario.stream()
+                .filter(Objects::nonNull)
+                .filter(b -> b.getTipo() != null && tipo.equalsIgnoreCase(b.getTipo()))
+                .filter(this::bienNoVencido)
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException {
+        return inventario.stream()
+                .filter(Objects::nonNull)
+                .filter(b -> Boolean.TRUE.equals(inventarioDisponible.get(b.getCodigo())))
+                .filter(this::bienNoVencido)
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException {
+        return inventario.stream()
+                .filter(Objects::nonNull)
+                .filter(b -> Boolean.FALSE.equals(inventarioDisponible.get(b.getCodigo())))
+                .filter(this::bienNoVencido)
+                .map(this::toBienDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void eliminarBienInventario(String codBien) throws DAOException {
+        if (codBien == null) return;
+        inventario.removeIf(b -> b != null && codBien.equalsIgnoreCase(b.getCodigo()));
+        inventarioDisponible.remove(codBien);
+        inventarioTipo.remove(codBien);
+    }
+
+    // compat: en tu clase tenías también "eliminarBineInventario" con typo
+    @Override
+    public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
+        if (codigo == null || codigo.trim().isEmpty()) throw new DataNullException("codigo vacío");
+        eliminarBienInventario(codigo);
+    }
+
+    @Override
+    public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+        if (codBien == null) return;
+
+        Bien b = bienByCodigo.get(codBien);
+        if (b == null) {
+            // si no existe en bienes, inventario no puede referenciarlo
+            // (en BD esto sería FK). En memoria: no hacemos nada o tiramos.
+            throw new DAOException("No existe Bien con código: " + codBien);
+        }
+
+        // evitar duplicado en inventario
+        boolean exists = inventario.stream().anyMatch(x -> x != null && codBien.equalsIgnoreCase(x.getCodigo()));
+        if (!exists) inventario.add(b);
+
+        inventarioDisponible.put(codBien, disponible);
+        inventarioTipo.put(codBien, tipoBien != null ? tipoBien : b.getTipo());
+    }
+
+    @Override
+    public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+        if (codBien == null) return;
+
+        Bien b = bienByCodigo.get(codBien);
+        if (b == null) throw new DAOException("No existe Bien con código: " + codBien);
+
+        // si no existe en inventario, lo agrega (mínimos cambios)
+        boolean exists = inventario.stream().anyMatch(x -> x != null && codBien.equalsIgnoreCase(x.getCodigo()));
+        if (!exists) inventario.add(b);
+
+        inventarioDisponible.put(codBien, disponible);
+        inventarioTipo.put(codBien, tipoBien != null ? tipoBien : b.getTipo());
+    }
+
+    // =========================================================
+    // ORDEN ENTREGA: bienes entregados
+    // =========================================================
+
+    @Override
+    public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException {
+        OrdenEntrega oe = entregasByCodigo.get(codigo);
+        if (oe == null) return new ArrayList<>();
+        if (oe.getEntregados() == null) return new ArrayList<>();
+        return oe.getEntregados().stream().filter(Objects::nonNull).map(this::toBienDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP)
+            throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+
+        ArrayList<BienDTO> retirar = new ArrayList<>();
+        if (codOP == null || codOP.trim().isEmpty()) return retirar;
+
+        for (Donacion d : donacionByCodigo.values()) {
+            if (d == null) continue;
+            if (d.getPedido() != null && codOP.equalsIgnoreCase(d.getPedido().getCodigo())) {
+                if (d.getBienes() != null) {
+                    for (Bien b : d.getBienes()) {
+                        if (b != null) retirar.add(toBienDTO(b));
+                    }
+                }
+            }
+        }
+        return retirar;
+    }
+
+    @Override
+    public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro)
+            throws DAOException, DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException {
+
+        ArrayList<BienDTO> resultado = new ArrayList<>();
+        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return resultado;
+
+        // bienes de visitas del retiro
+        for (Visita v : visitasByCodigo.values()) {
+            if (v == null) continue;
+            if (v.getCodOrdenRetiro() != null && codOrdenRetiro.equalsIgnoreCase(v.getCodOrdenRetiro())) {
+                if (v.getBienesRecolectados() != null) {
+                    for (Bien b : v.getBienesRecolectados()) {
+                        if (b != null) resultado.add(toBienDTO(b));
+                    }
+                }
+            }
+        }
+        return resultado;
+    }
+
+    // =========================================================
+    // SOLICITUDES / BENEFICIARIO
+    // =========================================================
+
+    @Override
+    public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes()
+            throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
+
+        ArrayList<SolicitudBienDTO> res = new ArrayList<>();
+        for (SolicitudBien sb : solicitudesByCodigo.values()) {
+            if (sb == null) continue;
+            if ("Pendiente".equalsIgnoreCase(sb.getEstado()) || EstadoOrden.PENDIENTE.toString().equalsIgnoreCase(sb.getEstado())) {
+                res.add(toSolicitudBienDTO(sb));
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario)
+            throws DAOException, DataLengthException, DataIntException, DataListException {
+
+        if (beneficiario == null) return null;
+
+        Beneficiario b = beneficiarioByCodigo.get(beneficiario);
+        if (b == null) {
+            // también puede venir username; intentamos por username
+            b = beneficiarioByCodigo.values().stream()
+                    .filter(Objects::nonNull)
+                    .filter(x -> beneficiario.equalsIgnoreCase(x.getUsername()))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return (b == null) ? null : toBeneficiarioDTO(b);
+    }
+
+    @Override
+    public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados) {
+        try {
+            if (bienesSolicitados == null) return true;
+            for (BienDTO b : bienesSolicitados) {
+                if (b == null || b.getCodigo() == null) return false;
+                Boolean disp = inventarioDisponible.get(b.getCodigo());
+                if (disp == null || !disp) return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // =========================================================
+    // USERNAME VOLUNTARIO
+    // =========================================================
+
+    @Override
+    public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException {
+        if (codVoluntario == null) return null;
+        Voluntario v = voluntariosByCodigo.get(codVoluntario);
+        if (v == null) return null;
+        return v.getUsername();
+    }
+
+    @Override
+    public String obtenerUsernameVoluntarioPorOrdenRetiro(String codOrdenRetiro) {
+        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) return null;
+        OrdenRetiro or = retirosByCodigo.get(codOrdenRetiro);
+        if (or == null || or.getVoluntario() == null) return null;
+        return or.getVoluntario().getUsername();
+    }
+
+    // =========================================================
+    // Inicializar contadores (compat con interface)
+    // =========================================================
+
+    @Override
+    public void InicializarContadores() {
+        // en memoria: tomamos tamaño para “arrancar arriba”
+        try { Bien.setContadorBien(bienByCodigo.size()); } catch (Exception ignored) { }
+        try { Donacion.setContadorDonacion(donacionByCodigo.size()); } catch (Exception ignored) { }
+        try { Donante.setContadorDonante(donantesByCodigo.size()); } catch (Exception ignored) { }
+        try { OrdenPedido.setContadorPedido(pedidosByCodigo.size()); } catch (Exception ignored) { }
+        try { OrdenRetiro.setContadorOrdenRetiro(retirosByCodigo.size()); } catch (Exception ignored) { }
+        try { Visita.setContadorVisita(visitasByCodigo.size()); } catch (Exception ignored) { }
+        try { SolicitudBien.setContadorSolicitud(solicitudesByCodigo.size()); } catch (Exception ignored) { }
+    }
+
+    // =========================================================
+    // “ModificarBienInventario” (la tuya con mayúscula)
+    // =========================================================
+    @Override
+    public void ModificarBienInventario(Bien bien) throws DAOException {
+        if (bien == null || bien.getCodigo() == null) return;
+        bienByCodigo.put(bien.getCodigo(), bien);
+
+        // si está en inventario, mantenemos
+        if (inventarioTipo.containsKey(bien.getCodigo())) {
+            inventarioTipo.put(bien.getCodigo(), bien.getTipo());
+        }
+    }
+
+    // =========================================================
+    // Estado pedido
+    // =========================================================
+    @Override
+    public String obtenerEstadoOrdenPedido(String codOrdenPedido) {
+        if (codOrdenPedido == null || codOrdenPedido.trim().isEmpty()) return null;
+        OrdenPedido op = pedidosByCodigo.get(codOrdenPedido);
+        if (op == null) return null;
+        return (op.getEstado() != null) ? op.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
+    }
+
+    // =========================================================
+    // Helpers privados (DTO / Entidad)
+    // =========================================================
+
+    private void putUsuario(Usuario u) {
+        if (u == null) return;
+        if (u.getCodigo() != null) usuariosByCodigo.put(u.getCodigo(), u);
+        if (u.getUsuario() != null) usuariosByUsername.put(u.getUsuario(), u);
+    }
+
+    private Rol buscarRol(Integer codigo) {
+        return rolesByCodigo.get(codigo);
+    }
+
+    private UsuarioDTO toUsuarioDTO(Usuario u) {
+        if (u == null) return null;
+        return new UsuarioDTO(
+                u.getUsuario(),
+                null, // no enviar password
+                u.getNombre(),
+                u.getContacto(),
+                u.getRol() != null ? u.getRol().getNombre() : null,
+                u.isActivo(),
+                u.obtenerEstado(),
+                u.getCodigo()
+        );
+    }
+
+    private UsuarioDTO toUsuarioDTOFull(Usuario u) {
+        if (u == null) return null;
+        return new UsuarioDTO(
+                u.getUsuario(),
+                u.getContrasena(),
+                u.getNombre(),
+                u.getContacto(),
+                u.getRol() != null ? u.getRol().getNombre() : null,
+                u.isActivo(),
+                u.obtenerEstado(),
+                u.getCodigo()
+        );
+    }
+
+    private DonanteDTO toDonanteDTO(Donante d) {
+        if (d == null) return null;
+        return new DonanteDTO(
+                d.getNombre(),
+                d.getCodigo(),
+                d.getApellido(),
+                d.getContacto(),
+                null,
+                d.getUbicacion() != null ? d.getUbicacion().getCodigo() : null,
+                null
+        );
+    }
+
+    private VoluntarioDTO toVoluntarioDTO(Voluntario v) {
+        if (v == null) return null;
+        return new VoluntarioDTO(
+                v.getNombre(),
+                v.getApellido(),
+                v.getContacto(),
+                v.getDni(),
+                v.getFecha_nac(),
+                v.getCodigo(),
+                v.getTarea(),
+                v.isDisponible(),
+                v.getUsername()
+        );
+    }
+
+    public BienDTO toBienDTO(Bien bien) {
+        if (bien == null) return null;
+        return new BienDTO(
+                bien.getCodigo(),
+                bien.getTipo(),
+                bien.getPeso(),
+                bien.getNombre(),
+                bien.getDescripcion(),
+                bien.getNivelNecesidad(),
+                bien.getFechaVencimiento(),
+                bien.getTalle(),
+                bien.getMaterial()
+        );
+    }
+
+    private Bien toBien(BienDTO dto)
+            throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
+
+        if (dto == null) return null;
+        return new Bien(
+                dto.getCodigo(),
+                dto.getTipo(),
+                dto.getPeso(),
+                dto.getNombre(),
+                dto.getDescripcion(),
+                dto.getFechaVencimiento(),
+                dto.getTalle(),
+                dto.getMaterial()
+        );
+    }
+
+    private Donante findDonanteByUsername(String username) {
+        if (username == null) return null;
+        return donantesByCodigo.values().stream()
+                .filter(Objects::nonNull)
+                .filter(d -> username.equalsIgnoreCase(d.getUsername()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Voluntario findVoluntarioByCodigoOrUsername(String cod) {
+        if (cod == null) return null;
+        for (Voluntario v : voluntariosByCodigo.values()) {
+            if (v == null) continue;
+            if (cod.equalsIgnoreCase(v.getCodigo())) return v;
+            if (v.getUsername() != null && cod.equalsIgnoreCase(v.getUsername())) return v;
+        }
+        return null;
+    }
+
+    private DonacionDTO toDonacionDTO(Donacion donacion) {
+        if (donacion == null) return null;
+
+        ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+        ArrayList<Bien> bs = donacion.getBienes();
+        if (bs != null) {
+            for (Bien b : bs) if (b != null) bienesDTO.add(toBienDTO(b));
+        }
+
+        return new DonacionDTO(
+                donacion.getCodigo(),
+                donacion.getFechaDonacion(),
+                donacion.getObservacion(),
+                bienesDTO,
+                donacion.getDonante() != null ? donacion.getDonante().getCodigo() : null,
+                donacion.getPedido() != null ? donacion.getPedido().getCodigo() : null,
+                null
+        );
+    }
+
+    private Visita toVisita(VisitaDTO dto)
+            throws DataNullException, DataLengthException, DataDoubleException, DataDateException,
+                   DataEmptyException, DataListException, StateChangeException {
+
+        if (dto == null) return null;
+
+        ArrayList<Bien> recolectados = new ArrayList<>();
+        if (dto.getBienesRecolectados() != null) {
+            for (BienDTO b : dto.getBienesRecolectados()) {
+                if (b == null) continue;
+                recolectados.add(toBien(b));
+            }
+        }
+
+        boolean esFinal = dto.isEsFinal();
+        // constructor equivalente al que usás en persistence (código puede venir)
+        Visita v = new Visita(
+                dto.getCodigo(),
+                dto.getFechaVisita(),
+                dto.getObservaciones(),
+                dto.getTipo(),
+                dto.getCodOrden(),
+                recolectados,
+                esFinal,
+                dto.getEstado()
+        );
+        return v;
+    }
+
+    private VisitaDTO toVisitaDTO(Visita visita) {
+        if (visita == null) return null;
+
+        ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+        if (visita.getBienesRecolectados() != null) {
+            for (Bien b : visita.getBienesRecolectados()) {
+                if (b != null) bienesDTO.add(toBienDTO(b));
+            }
+        }
+
+        String codOrden = visita.getCodOrdenEntrega() != null ? visita.getCodOrdenEntrega() : visita.getCodOrdenRetiro();
+
+        return new VisitaDTO(
+                visita.getCodigo(),
+                visita.getFechaVisita(),
+                null,
+                codOrden,
+                bienesDTO,
+                visita.getObservaciones(),
+                visita.getTipo(),
+                visita.isEsFinal(),
+                visita.getEstado()
+        );
+    }
+
+    private OrdenPedidoDTO toOrdenPedidoDTO(OrdenPedido op) {
+        if (op == null) return null;
+        return new OrdenPedidoDTO(
+                op.getFechaEmision(),
+                op.getEstado() != null ? op.getEstado().toString() : EstadoOrden.PENDIENTE.toString(),
+                op.getCodigo(),
+                op.isCargaPesada(),
+                op.getObservaciones(),
+                op.getCodDonacion()
+        );
+    }
+
+    private OrdenRetiroDTO toOrdenRetiroDTO(OrdenRetiro or) {
+        if (or == null) return null;
+
+        String codPedido = (or.getPedido() != null) ? or.getPedido().getCodigo() : null;
+        String codVol = (or.getVoluntario() != null) ? or.getVoluntario().getCodigo() : null;
+        String[] codVisitas = or.getCodVisitas();
+
+        return new OrdenRetiroDTO(
+                or.getFechaEmision(),
+                or.getEstado() != null ? or.getEstado().toString() : EstadoOrden.PENDIENTE.toString(),
+                or.getCodigo(),
+                codPedido,
+                codVol,
+                codVisitas
+        );
+    }
+
+    private OrdenEntregaDTO toOrdenEntregaDTO(OrdenEntrega orden) {
+        if (orden == null) return null;
+
+        ArrayList<VisitaDTO> visitasDTO = new ArrayList<>();
+        if (orden.getVisitas() != null) {
+            for (Visita v : orden.getVisitas()) visitasDTO.add(toVisitaDTO(v));
+        }
+
+        ArrayList<BienDTO> entregadosDTO = new ArrayList<>();
+        if (orden.getEntregados() != null) {
+            for (Bien b : orden.getEntregados()) entregadosDTO.add(toBienDTO(b));
+        }
+
+        SolicitudBienDTO solicitudDTO = (orden.getSolicitud() != null) ? toSolicitudBienDTO(orden.getSolicitud()) : null;
+        BeneficiarioDTO beneficiarioDTO = (orden.getBeneficiario() != null) ? toBeneficiarioDTO(orden.getBeneficiario()) : null;
+        VoluntarioDTO voluntarioDTO = (orden.getVoluntario() != null) ? toVoluntarioDTO(orden.getVoluntario()) : null;
+
+        return new OrdenEntregaDTO(
+                orden.getFechaEmision(),
+                orden.getEstadoString(),
+                orden.getCodigo(),
+                orden.getFechaHoraProgramada(),
+                visitasDTO,
+                entregadosDTO,
+                solicitudDTO,
+                beneficiarioDTO,
+                voluntarioDTO
+        );
+    }
+
+    private OrdenEntrega toOrdenEntrega(OrdenEntregaDTO dto)
+            throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+                   DataDoubleException, StateChangeException, DataObjectException, DAOException {
+
+        ArrayList<Visita> visitas = new ArrayList<>();
+        if (dto.getVisitas() != null) {
+            for (VisitaDTO vDTO : dto.getVisitas()) {
+                visitas.add(toVisita(vDTO));
+            }
+        }
+
+        Beneficiario beneficiario = null;
+        if (dto.getBeneficiario() != null) {
+            beneficiario = toBeneficiario(dto.getBeneficiario());
+        }
+
+        Voluntario voluntario = null;
+        if (dto.getVoluntario() != null) {
+            voluntario = toVoluntario(dto.getVoluntario());
+        }
+
+        SolicitudBien solicitud = null;
+        if (dto.getSolicitud() != null) {
+            solicitud = toSolicitudBien(dto.getSolicitud());
+        }
+
+        return new OrdenEntrega(
+                dto.getFechaEmision(),
+                dto.getEstado().toString(),
+                dto.getCodigo(),
+                dto.getFechaHoraProgramada(),
+                visitas,
+                solicitud,
+                beneficiario,
+                voluntario
+        );
+    }
+
+    private SolicitudBienDTO toSolicitudBienDTO(SolicitudBien solicitud) {
+        if (solicitud == null) return null;
+
+        ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+        if (solicitud.getBienesSolicitados() != null) {
+            for (Bien b : solicitud.getBienesSolicitados()) {
+                if (b != null) bienesDTO.add(toBienDTO(b));
+            }
+        }
+
+        return new SolicitudBienDTO(
+                solicitud.getCodigo(),
+                solicitud.getBeneficiario(),
+                bienesDTO,
+                solicitud.getEstado()
+        );
+    }
+
+    private BeneficiarioDTO toBeneficiarioDTO(Beneficiario beneficiario) {
+        if (beneficiario == null) return null;
+
+        UbicacionDTO ubicacionDTO = (beneficiario.getUbicacion() != null) ? toUbicacionDTO(beneficiario.getUbicacion()) : null;
+
+        return new BeneficiarioDTO(
+                beneficiario.getNombre(),
+                beneficiario.getApellido(),
+                beneficiario.getFecha_nac(),
+                beneficiario.getDni(),
+                beneficiario.getContacto(),
+                ubicacionDTO,
+                beneficiario.getCodigo(),
+                beneficiario.getUsername(),
+                beneficiario.getCantAcargo(),
+                beneficiario.getPrioridad()
+        );
+    }
+
+    private UbicacionDTO toUbicacionDTO(Ubicacion ubicacion) {
+        if (ubicacion == null) return null;
+
+        CoordenadaDTO coord = null;
+        if (ubicacion.getCoordenada() != null) {
+            coord = new CoordenadaDTO(
+                    ubicacion.getCoordenada().getLatitud(),
+                    ubicacion.getCoordenada().getLongitud(),
+                    ubicacion.getCoordenada().getCodigo()
+            );
+        }
+
+        return new UbicacionDTO(
+                ubicacion.getCodigo(),
+                ubicacion.getZona(),
+                ubicacion.getBarrio(),
+                ubicacion.getDireccion(),
+                coord
+        );
+    }
+
+    private Beneficiario toBeneficiario(BeneficiarioDTO dto) {
+        if (dto == null) return null;
+
+        Ubicacion ubicacion = (dto.getUbicacion() != null) ? toUbicacion(dto.getUbicacion()) : null;
+
+        try {
+            // en memoria: no cargamos entregas/solicitudes pesadas si no están
+            return new Beneficiario(
+                    dto.getNombre(),
+                    dto.getApellido(),
+                    dto.getFecha_nac(),
+                    dto.getDni(),
+                    dto.getContacto(),
+                    ubicacion,
+                    dto.getUsername(),
+                    dto.getCantAcargo(),
+                    dto.getPrioridad()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error convirtiendo BeneficiarioDTO a Beneficiario", e);
+        }
+    }
+
+    private SolicitudBien toSolicitudBien(SolicitudBienDTO dto)
+            throws DataNullException, DataDoubleException, StateChangeException, DataLengthException, DataDateException {
+
+        if (dto == null) return null;
+
+        ArrayList<Bien> bienes = new ArrayList<>();
+        if (dto.getBienesSolicitados() != null) {
+            for (BienDTO bDTO : dto.getBienesSolicitados()) {
+                if (bDTO != null) bienes.add(toBien(bDTO));
+            }
+        }
+
+        return new SolicitudBien(
+                dto.getCodigo(),
+                dto.getBeneficiario(),
+                bienes,
+                dto.getEstado()
+        );
+    }
+
+    private Ubicacion toUbicacion(UbicacionDTO dto) {
+        if (dto == null) return null;
+        try {
+            CoordenadaDTO c = dto.getCoordenada();
+            Coordenada coord = (c != null) ? new Coordenada(c.getLatitud(), c.getLongitud(), c.getCodigo()) : null;
+            return new Ubicacion(dto.getZona(), dto.getBarrio(), dto.getDireccion(), coord);
+        } catch (Exception e) {
+            throw new RuntimeException("Error convirtiendo UbicacionDTO a Ubicacion", e);
+        }
+    }
+
+    private Voluntario toVoluntario(VoluntarioDTO dto)
+            throws DataEmptyException, DataObjectException, DataNullException, DataDateException, DataLengthException, DataListException, DAOException {
+
+        if (dto == null) throw new DataNullException("VoluntarioDTO null");
+
+        Voluntario v = new Voluntario(
+                dto.getNombre(),
+                dto.getApellido(),
+                dto.getFecha_nac(),
+                dto.getContacto(),
+                dto.getDni(),
+                dto.getUsername(),
+                dto.getCodigo(),
+                new ArrayList<>()
+        );
+        v.setDisponible(dto.isDisponible());
+        return v;
+    }
+
+    private boolean bienNoVencido(Bien b) {
+        if (b == null) return false;
+        LocalDate fv = b.getFechaVencimiento();
+        if (fv == null) return true; // ropa/mueble/etc sin vencimiento
+        return !fv.isBefore(LocalDate.now());
+    }
+
+	@Override
+	public void registrarVisita(Visita visita) throws DAOException, DataNullException, DataLengthException {
+		// TODO Auto-generated method stub
 		
-		registrarVoluntario(v1);
 	}
 
 	@Override
-	public String obtenerEstadoOrdenPedido(String codOrdenPedido) {
-		if (codOrdenPedido == null || codOrdenPedido.trim().isEmpty()) {
-			return null;
-		}
-		for (OrdenPedido op : ordenes) {
-			if (op != null && codOrdenPedido.equalsIgnoreCase(op.getCodigo())) {
-				return op.getEstado() != null ? op.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
-			}
-		}
-		return null;
-	}
-
-
-	@Override
-	public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
-		if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-			throw new DataNullException("codigo de orden de retiro nulo/vacío");
-		}
-		OrdenRetiro target = null;
-		for (OrdenRetiro or : ordenesRetiro) {
-			if (or != null && codOrdenRetiro.equalsIgnoreCase(or.getCodigo())) {
-				target = or;
-				break;
-			}
-		}
-		if (target == null) {
-			throw new DAOException("No existe OrdenRetiro con código: " + codOrdenRetiro);
-		}
-		// Intentamos pasar a COMPLETADA respetando las reglas del modelo
-		try {
-			// Si está en PENDIENTE, primero la pasamos a EN_PROCESO
-			if (target.getEstado() != null && target.getEstado().toString().equalsIgnoreCase(EstadoOrden.PENDIENTE.toString())) {
-				target.ordenEstadoProceso();
-			}
-			target.ordenEstadoCompleta();
-		} catch (StateChangeException e) {
-			throw e;
-		}
-	}
-
-
-	@Override
-	public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException, DataListException, DataDateException, DataEmptyException {
-
-		if (retiro == null) {
-			throw new DataNullException("OrdenRetiroDTO es nula");
-		}
-
-		OrdenPedido pedido = findOrdenPedidoByCodigo(retiro.getPedido());
-		if (pedido == null) {
-			throw new DataNullException("No existe OrdenPedido con código: " + retiro.getPedido());
-		}
-
-		Voluntario voluntario = null;
-		if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
-			voluntario = findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
-		}
-
-		ArrayList<Visita> visitasOR = new ArrayList<>();
-		if (retiro.getCodVisitas() != null) {
-			for (String codV : retiro.getCodVisitas()) {
-				if (codV == null) continue;
-				for (Visita v : visitass) {
-					if (v != null && codV.equalsIgnoreCase(v.getCodigo())) {
-						visitasOR.add(v);
-						break;
-					}
-				}
-			}
-		}
-
-		String estado = (retiro.getEstado() != null) ? retiro.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
-		String codigo = retiro.getCodigo(); // si es null el modelo generará uno
-
-		OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
-
-		// Evitar duplicados por código
-		for (OrdenRetiro existente : ordenesRetiro) {
-			if (existente != null && or.getCodigo() != null && or.getCodigo().equalsIgnoreCase(existente.getCodigo())) {
-				return;
-			}
-		}
-		ordenesRetiro.add(or);
-	}
-
-
-	@Override
-	public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException {
-		if (orden == null) {
-			throw new DataNullException("OrdenPedidoDTO inválida");
-		}
-		try {
-			OrdenPedido op = new OrdenPedido(
-					orden.getFechaEmision(),
-					orden.isCargaPesada(),
-					orden.getObservaciones(),
-					orden.getCodDonacion()
-			);
-
-			// Si el DTO trae estado, lo aplicamos
-			if (orden.getEstado() != null) {
-				EstadoOrden nuevo = orden.getEstado();
-				if (nuevo != null) {
-					op.setEstado(nuevo);
-				}
-			}
-
-			ordenes.add(op);
-		} catch (Exception e) {
-			// En MemoryApi consolidamos como DataNullException para no cambiar la firma
-			throw new DataNullException(e.getMessage());
-		}
-	}
-
-
-	@Override
-	public OrdenRetiroDTO obtenerOrdenRetiro(String codOrdenRetiro) throws DAOException {
-		if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) {
-			return null;
-		}
-		for (OrdenRetiro orden : ordenesRetiro) {
-			if (orden != null && codOrdenRetiro.equalsIgnoreCase(orden.getCodigo())) {
-				return new OrdenRetiroDTO(
-						orden.getFechaEmision(),
-					    orden.getEstado() != null 
-					        ? orden.getEstado().toString() 
-					        : EstadoOrden.PENDIENTE.toString(),
-					    orden.getCodigo(),
-					    orden.getPedido() != null 
-					        ? orden.getPedido().getCodigo() : null,
-					    orden.getVoluntario() != null 
-					        ? orden.getVoluntario().getCodigo() : null,
-					    orden.getCodVisitas()
-				);
-			}
-		}
-		return null;
-	}
-
-
-	@Override
-	public ArrayList<DonacionDTO> obtenerDonacionesPendientes() throws DataNullException {
-		ArrayList<DonacionDTO> res = new ArrayList<>();
-		for (Donacion d : donaciones) {
-			if (d == null) continue;
-			OrdenPedido p = d.getPedido();
-			// Consideramos pendiente cuando el pedido no está COMPLETADA ni CANCELADA
-			EstadoOrden eo = (p != null && p.getEstado() != null) ? p.getEstado() : EstadoOrden.PENDIENTE;
-			if (eo != EstadoOrden.COMPLETADA && eo != EstadoOrden.CANCELADA) {
-				DonacionDTO dto = toDonacionDTO(d);
-				if (dto != null) res.add(dto);
-			}
-		}
-		return res;
-	}
-
-// no se como solucionarlo
-	@Override
-	public DonacionDTO obtenerDonacion(String ordenP) throws DataNullException {
-		if (ordenP == null || ordenP.trim().isEmpty()) {
-			throw new DataNullException("codigo de orden/pedido nulo/vacío");
-		}
-		for (Donacion d : donaciones) {
-			if (d == null) continue;
-			if (d.getPedido() != null && ordenP.equalsIgnoreCase(d.getPedido().getCodigo())) {
-				return toDonacionDTO(d);
-			}
-		}
-		return null;
-	}
-
-
-	@Override
-	public BienDTO obtenerBien(String codigo) {
-		for (BienDTO b : bienes) {
-		    if (b.getCodigo().equals(codigo)) return b;
-		}
-		return null;
-	}
-
-	//podriamos cambiarlo a cargar visita retiro o entrega o asta registrar visita
-	@Override
-	public void cargarVisita(VisitaDTO visita)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataDateException, DataEmptyException, DataListException, DataObjectException {
-
-		if (visita == null) {
-			throw new DataNullException("VisitaDTO es nula");
-		}
-
-		Visita v = toVisita(visita);
-
-		// Guardar en listas
-		visitass.add(v);
-		visitas.add(visita);
-
-		// Asociar a OrdenRetiro
-		OrdenRetiro or = null;
-		for (OrdenRetiro item : ordenesRetiro) {
-			if (item != null && visita.getCodOrden() != null
-					&& visita.getCodOrden().equalsIgnoreCase(item.getCodigo())) {
-				or = item;
-				break;
-			}
-		}
-
-		if (or == null) {
-			throw new DAOException("No existe OrdenRetiro con código: " + visita.getCodOrden());
-		}
-
-		// Agregar visita a la orden
-		or.agregarVisita(v);
-
-		// Incorporar bienes recolectados a inventario (lista bienes DTO)
-		if (visita.getBienesRecolectados() != null) {
-			for (BienDTO b : visita.getBienesRecolectados()) {
-				if (b != null) {
-					// evitar duplicados por código
-					boolean exists = false;
-					for (BienDTO inv : bienes) {
-						if (inv != null && inv.getCodigo() != null && inv.getCodigo().equalsIgnoreCase(b.getCodigo())) {
-							exists = true;
-							break;
-						}
-					}
-					if (!exists) bienes.add(b);
-				}
-			}
-		}
-
-		// Si es visita final, intentamos marcar la OR como COMPLETADA (respetando reglas)
-		if (visita.isEsFinal()) {
-			try {
-				if (or.getEstado() != null && or.getEstado().toString().equalsIgnoreCase(EstadoOrden.PENDIENTE.toString())) {
-					or.ordenEstadoProceso();
-				}
-				or.ordenEstadoCompleta();
-			} catch (StateChangeException e) {
-				// no frenamos la carga, pero propagamos si se quiere manejar arriba
-				throw e;
-			}
-		}
-	}
-
-
-	@Override
-	public void registrarDonacion(DonacionDTO donacion)
-			throws DataNullException, DataDoubleException, DataEmptyException, DataObjectException, DataDateException, DAOException, StateChangeException, DataLengthException, DataListException {
-
-		if (donacion == null) {
-			throw new DataNullException("DonacionDTO es nula");
-		}
-
-		Donante donante = findDonanteByCodigo(donacion.getCodDonante());
-		if (donante == null) {
-			throw new DataObjectException("No existe Donante con código: " + donacion.getCodDonante());
-		}
-
-		OrdenPedido pedido = findOrdenPedidoByCodigo(donacion.getCodPedido());
-		if (pedido == null) {
-			throw new DataObjectException("No existe OrdenPedido con código: " + donacion.getCodPedido());
-		}
-
-		ArrayList<Bien> bienesDom = new ArrayList<>();
-		if (donacion.getBienes() != null) {
-			for (BienDTO b : donacion.getBienes()) {
-				if (b != null) {
-					Bien bienDom = toBien(b);
-					bienesDom.add(bienDom);
-
-					// También lo registramos en el inventario (DTO) para búsquedas/listados
-					boolean exists = false;
-					for (BienDTO inv : bienes) {
-						if (inv != null && inv.getCodigo() != null && inv.getCodigo().equalsIgnoreCase(b.getCodigo())) {
-							exists = true;
-							break;
-						}
-					}
-					if (!exists) bienes.add(b);
-				}
-			}
-		}
-
-		Donacion dom = new Donacion(
-			donacion.getFechaDonacion(),
-			donacion.getObservacion(),
-			bienesDom,
-			donante,
-			pedido,
-			donacion.getCodigo()
-		);
-
-		donaciones.add(dom);
-	}
-
-
-	@Override
-	public void registrarUbicacion(Ubicacion ubicacion) throws DAOException {
-		if (ubicacion == null) return;
-		// En memoria simplemente la registramos por código (si existe)
-		try {
-			if (ubicacion.getCodigo() != null) {
-				ubicacionesByCodigo.put(ubicacion.getCodigo(), ubicacion);
-			}
-		} catch (Exception e) {
-			// Si falla por algún motivo, no bloqueamos
-		}
-	}
-
-
-	@Override
-	public List<DonanteDTO> obtenerDonantes() throws DAOException {
-		return donantesByUser.values().stream()
-				.filter(Objects::nonNull)
-				.map(this::toDonanteDTO)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
-	}
-
-
-	@Override
-	public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
-		if (codigo == null || codigo.trim().isEmpty()) {
-			throw new DataNullException("codigo de bien nulo/vacío");
-		}
-		bienes.removeIf(b -> b != null && codigo.equalsIgnoreCase(b.getCodigo()));
-	}
-
-
-	@Override
-	public List<BienDTO> obtenerTodosLosBienes() throws DAOException {
-		return new ArrayList<>(bienes);
-	}
-
-
-	@Override
-	public List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException {
-		if (tipo == null || tipo.trim().isEmpty()) {
-			throw new DataNullException("tipo nulo/vacío");
-		}
-		return bienes.stream()
-				.filter(Objects::nonNull)
-				.filter(b -> b.getTipo() != null && tipo.equalsIgnoreCase(b.getTipo()))
-				.collect(Collectors.toList());
-	}
-
-
-	@Override
-	public void InicializarContadores() {
-		// En memoria: ajustamos contadores estáticos según lo actualmente cargado.
-		try { Bien.setContadorBien(bienes != null ? bienes.size() : 0); } catch (Exception e) { }
-		try { Coordenada.setContadorCoordenada(ubicacionesByCodigo != null ? ubicacionesByCodigo.size() : 0); } catch (Exception e) { }
-		try { Donacion.setContadorDonacion(donaciones != null ? donaciones.size() : 0); } catch (Exception e) { }
-		try { Donante.setContadorDonante(donantesByUser != null ? donantesByUser.size() : 0); } catch (Exception e) { }
-		try { OrdenPedido.setContadorPedido(ordenes != null ? ordenes.size() : 0); } catch (Exception e) { }
-		try { OrdenRetiro.setContadorOrdenRetiro(ordenesRetiro != null ? ordenesRetiro.size() : 0); } catch (Exception e) { }
-	}
-
-
-	@Override
-	public void ModificarBienInventario(Bien bien) throws DAOException {
-		if (bien == null) return;
-		String codigo = bien.getCodigo();
-		if (codigo == null) return;
-		BienDTO dto = toBienDTO(bien);
-		boolean replaced = false;
-		for (int i = 0; i < bienes.size(); i++) {
-			BienDTO b = bienes.get(i);
-			if (b != null && codigo.equalsIgnoreCase(b.getCodigo())) {
-				bienes.set(i, dto);
-				replaced = true;
-				break;
-			}
-		}
-		if (!replaced) {
-			bienes.add(dto);
-		}
-	}
-
-
-	@Override
-	public Bien ObtenerBien(String codigo) throws DataNullException, DAOException {
-		if (codigo == null || codigo.trim().isEmpty()) {
-			throw new DataNullException("codigo nulo/vacío");
-		}
-		for (BienDTO b : bienes) {
-			if (b != null && codigo.equalsIgnoreCase(b.getCodigo())) {
-				try {
-					return toBien(b);
-				} catch (Exception e) {
-					throw new DAOException(e.getMessage());
-				}
-			}
-		}
-		return null;
-	}
-
-	public void registrarOrdenRetiro(OrdenRetiro retiroO) throws DataNullException, DataLengthException, DataDoubleException, StateChangeException {
-	       ordenesRetiro.add(retiroO);
-	       
-	       //simula que cada ves que pongas una nueva orden de retiro aga su visita
-	       try {
-	           inicializarVisitas(retiroO);
-	       } catch (Exception e) {
-	           // si falla la carga de visitas de prueba, continuamos
-	       }
-	}
-
-	@Override
-	public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException {
-
-		if (retiro == null) {
-			throw new DataNullException("OrdenRetiroDTO es nula");
-		}
-
-		OrdenPedido pedido = findOrdenPedidoByCodigo(retiro.getPedido());
-		if (pedido == null) {
-			throw new DataNullException("No existe OrdenPedido con código: " + retiro.getPedido());
-		}
-
-		Voluntario voluntario = null;
-		if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
-			voluntario = findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
-		}
-
-		ArrayList<Visita> visitasOR = new ArrayList<>();
-		if (retiro.getCodVisitas() != null) {
-			for (String codV : retiro.getCodVisitas()) {
-				if (codV == null) continue;
-				for (Visita v : visitas) {
-					if (v != null && codV.equalsIgnoreCase(v.getCodigo())) {
-						visitasOR.add(v);
-						break;
-					}
-				}
-			}
-		}
-
-		String estado = (retiro.getEstado() != null) ? retiro.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
-		String codigo = retiro.getCodigo(); // si es null el modelo generará uno
-
-		OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
-
-		// Evitar duplicados por código
-		for (OrdenRetiro existente : ordenesRetiro) {
-			if (existente != null && or.getCodigo() != null && or.getCodigo().equalsIgnoreCase(existente.getCodigo())) {
-				return;
-			}
-		}
-		ordenesRetiro.add(or);
-	}
-
-	@Override
-	public DonacionDTO obtenerDonacionPorPedido(String ordenP) throws DataNullException, DAOException,
-			DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void cargarVisitaRetiro(VisitaDTO visita)
-			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
-			DataDateException, DataEmptyException, DataListException, DataObjectException {
+	public void registrarOrdenPedido(OrdenPedido orden) throws DataNullException, DAOException, DataObjectException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException,
-			DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<BienDTO> obtenerBienesInventario() throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void eliminarBienInventario(String codBien) throws DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registrarBien(BienDTO bien, Boolean cargarEnInventario) throws DataNullException, DataDoubleException,
-			StateChangeException, DataLengthException, DataDateException, DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
-			DataLengthException, DataDateException, DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
-			DataLengthException, DataDateException, DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega)
-			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
-			DataDoubleException, StateChangeException, DataObjectException, DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cargarVisitaEntrega(VisitaDTO visita)
-			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
-			DataDoubleException, StateChangeException, DataObjectException, DAOException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes()
-			throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario)
-			throws DAOException, DataLengthException, DataIntException, DataListException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 
-	
 }
-
