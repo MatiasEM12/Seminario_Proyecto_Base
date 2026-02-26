@@ -130,12 +130,6 @@ public class TestFinal {
 			donacionDAO.create(donacionTest);
 			
 			
-			/*Como hicimos el sistema pensando en la perspectiva del ADM, representamos de la siguiente forma la creacion de la solicitud 
-			 * de Bienes por parte del beneficiario.
-			 * 		Decidimos pensar que desde la perspectiva del Benficiariom él podra elegir los bienes que se encuentran disponibles 
-			 * en el inventario, tal como si fuese un "carro de compras" que seleccionara los bienes que se encuentran disponibles en la
-			 * Organizacion. 
-			 * */
 			Bien alimentoTestSolicitud = new Bien(null,"Alimento",null,"Fideos","Fideos marca 'YYYY'",LocalDate.of(2026, 7, 12),null,null);
 			Bien ropaTestSolicitud = new Bien(null,"Ropa",null,"Pantalon","Pantalon nuevo",null,1.0,"algodon");
 			
