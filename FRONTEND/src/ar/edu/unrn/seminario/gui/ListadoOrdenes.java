@@ -107,7 +107,7 @@ public class ListadoOrdenes extends JFrame {
 					String codOrden = (String) tabla.getValueAt(filaSeleccionada, 0);	
 					String estado = (String) tabla.getValueAt(filaSeleccionada, 3);
 					//comprueba si no esta completada
-					if (!"COMPLETADA".equalsIgnoreCase(estado)&&!"CANCELADA".equalsIgnoreCase(estado)) {
+					if ("completada".equalsIgnoreCase(estado)&&"cancelada".equalsIgnoreCase(estado)) {
                 	try {
 	                	if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 						
