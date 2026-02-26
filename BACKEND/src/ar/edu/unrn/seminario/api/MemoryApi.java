@@ -22,17 +22,24 @@ public class MemoryApi implements IApi {
     //username-objeto
     private Map<String, Usuario> usuariosByUsername = new HashMap<>();
     private Map<String, Donante> donantesByUser = new HashMap<>();
+    private Map<String,Beneficiario> beneficiarioByUser = new HashMap<>();
     private Map<String, Voluntario> voluntariosByUser = new HashMap<>();
     private Map<String, Ubicacion> ubicacionesByCodigo = new HashMap<>();
-    
+    private Map<String, OrdenEntrega> entregasByCodigo = new HashMap<>();
+    private Map<String, OrdenPedido> pedidosByCodigo = new HashMap<>();
+    private Map<String, OrdenRetiro> retirosByCodigo = new HashMap<>();
+    private Map<String, Bien> bienByCodigo = new HashMap<>();
   
-    private ArrayList<BienDTO> bienes = new ArrayList<>();
-    private ArrayList<VisitaDTO> visitas = new ArrayList<>();
-    private List<OrdenPedido> ordenes = new ArrayList<>();
+    
+    private ArrayList<Bien> inventario = new ArrayList<>();
+    
+    private ArrayList<BienDTO> bienesDTO = new ArrayList<>();
+    private ArrayList<VisitaDTO> visitasDTO = new ArrayList<>();
+    private List<OrdenPedido> ordenesPedido = new ArrayList<>();
     private List<Donacion> donaciones = new ArrayList<>();
     private List<OrdenRetiro> ordenesRetiro = new ArrayList<>();
     private List<Voluntario> voluntarios = new ArrayList<>();
-    private List<Visita> visitass = new ArrayList<>();
+    private List<Visita> visitas = new ArrayList<>();
 
     public MemoryApi() throws DataNullException, StateChangeException, DataEmptyException, DataObjectException, DataDateException, DataLengthException {
         // datos iniciales
@@ -1322,7 +1329,7 @@ public class MemoryApi implements IApi {
 		if (retiro.getCodVisitas() != null) {
 			for (String codV : retiro.getCodVisitas()) {
 				if (codV == null) continue;
-				for (Visita v : visitass) {
+				for (Visita v : visitas) {
 					if (v != null && codV.equalsIgnoreCase(v.getCodigo())) {
 						visitasOR.add(v);
 						break;
@@ -1343,6 +1350,145 @@ public class MemoryApi implements IApi {
 			}
 		}
 		ordenesRetiro.add(or);
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacionPorPedido(String ordenP) throws DataNullException, DAOException,
+			DataEmptyException, DataObjectException, DataDateException, DataLengthException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void cargarVisitaRetiro(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataDateException, DataEmptyException, DataListException, DataObjectException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DonacionDTO obtenerDonacionDTO(String codPedido) throws DataNullException, DataEmptyException,
+			DataObjectException, DataDateException, DAOException, DataLengthException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesInventario() throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesTipoInventario(String tipo) throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesDisponiblesInventario() throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesNoDisponiblesInventario() throws DataNullException, DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void eliminarBienInventario(String codBien) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void modificarBienInventario(String codBien, String tipoBien, boolean disponible) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registrarBien(BienDTO bien, Boolean cargarEnInventario) throws DataNullException, DataDoubleException,
+			StateChangeException, DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void modificarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
+			DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminarBien(BienDTO bien) throws DataNullException, DataDoubleException, StateChangeException,
+			DataLengthException, DataDateException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public OrdenEntregaDTO obtenerOrdenEntrega(String codEntrega) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String obtenerUsernameVoluntario(String codVoluntario) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BienDTO> obtenerBienesPorOrdenEntrega(String codigo) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void registrarOrdenEntrega(OrdenEntregaDTO ordenEntrega)
+			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+			DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cargarVisitaEntrega(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException,
+			DataDoubleException, StateChangeException, DataObjectException, DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ArrayList<SolicitudBienDTO> obtenerSolicitudesPendientes()
+			throws DAOException, DataNullException, DataLengthException, DataIntException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario)
+			throws DAOException, DataLengthException, DataIntException, DataListException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 
