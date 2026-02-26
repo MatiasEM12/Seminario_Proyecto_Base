@@ -107,7 +107,7 @@ public class ListadoOrdenes extends JFrame {
 					String codOrden = (String) tabla.getValueAt(filaSeleccionada, 0);	
 					String estado = (String) tabla.getValueAt(filaSeleccionada, 3);
 					//comprueba si no esta completada
-					if (!"COMPLETADA".equalsIgnoreCase(estado)) {
+					if (!"COMPLETADA".equalsIgnoreCase(estado)&&!"CANCELADA".equalsIgnoreCase(estado)) {
                 	try {
 	                	if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 						
@@ -137,7 +137,12 @@ public class ListadoOrdenes extends JFrame {
 				}
                 }
 					else {
-						JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está completada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
+						if (!"COMPLETADA".equalsIgnoreCase(estado)){
+							JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está completada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
+						}
+						else {
+							JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está cancelada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
         		
