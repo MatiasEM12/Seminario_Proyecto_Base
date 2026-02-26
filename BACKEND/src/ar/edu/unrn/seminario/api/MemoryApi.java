@@ -909,19 +909,23 @@ public class MemoryApi implements IApi {
 
   	       
   	    } 
-	   if (v.tieneBienes()) {
-		   //si la visita tubo bienes entregados, quedan inavilitados del inventario
-	            for (Bien b : v.getBienesRecolectados()) {
-	                inventarioDAO.update(b.getCodigo(), b.getTipo(), false);;
-	            }
-	   } 
+		  
+		 // si la visita entregó bienes: quedan NO disponibles en inventario
+		  if (v.tieneBienes()) {
+		        for (Bien b : v.getBienesRecolectados()) {
+		            modificarBienInventario(b.getCodigo(), b.getTipo(), false);
+		        }
+		    }
 	   
 	   //si la entrega finalizo y hay bienes que no fueron entregados, re reincorporan nuevamente en el inventario
-	   if(entrega.getEstado().equals(Orden.EstadoOrden.COMPLETADA)) {
-		   for (Bien b : entrega.obtenerBienesFaltantes(entrega.getEntregados(), entrega.getSolicitud().getBienesSolicitados())) {
-               inventarioDAO.update(b.getCodigo(), b.getTipo(), true);;
-           }
-	   }  
+		  if (entrega.getEstado() == Orden.EstadoOrden.COMPLETADA) {
+		        for (Bien b : entrega.obtenerBienesFaltantes(
+		                entrega.getEntregados(),
+		                entrega.getSolicitud().getBienesSolicitados()
+		        )) {
+		            modificarBienInventario(b.getCodigo(), b.getTipo(), true);
+		        }
+		    } 
     }
 
     // =========================================================

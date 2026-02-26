@@ -44,7 +44,7 @@ public class VentanaOrdenPedido extends JFrame {
         // Títulos que coinciden con los datos que vamos a agregar 
         String[] titulos = {
             "CÓDIGO", "CARGA PESADA", "OBSERVACIONES",
-            "FECHA EMISIÓN", "ESTADO", "DONANTE", "DONACIÓN"
+            "FECHA EMISIÓN", "ESTADO", "DONACIÓN"
         };
 
         modelo = new DefaultTableModel(new Object[][] {}, titulos) {
@@ -118,7 +118,6 @@ public class VentanaOrdenPedido extends JFrame {
                 o.getObservaciones(),            // OBSERVACIONES
                 o.getFechaEmision(),             // FECHA EMISIÓN
                 o.getEstado(),                   // ESTADO
-                                                 // DONANTE
                 o.getCodDonacion()               // DONACIÓN
             });
         }
