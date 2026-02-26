@@ -532,67 +532,7 @@ public class MemoryApi implements IApi {
     public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException,
                    DataObjectException, DataListException, DataDateException, DataEmptyException {
-/*
- * 	 // validaciones básicas
-        if (retiro == null) {
-            throw new DataNullException("OrdenRetiro DTO es nula");
-        }
-
-        // Buscar voluntario (puede ser null si no se asignó)
-        Voluntario v = null;
-        if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
-            v = voluntarioDao.find(retiro.getCodVoluntario());
-           
-            if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
-        }
-
-        // Buscar pedido (obligatorio)
-        if (retiro.getPedido() == null || retiro.getPedido().trim().isEmpty()) {
-            throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
-        }
-        OrdenPedido pedido = null;
-		pedido = ordenPedidoDao.find(retiro.getPedido());
-        if (pedido == null) {
-            throw new DataNullException("No existe la OrdenPedido: " + retiro.getPedido());
-        }
-
-        // Construir lista de Visitas a partir de los códigos (si vienen)
-        ArrayList<Visita> visitas = new ArrayList<>();
-        String[] codVisitasArr = retiro.getCodVisitas(); // OrdenRetiroDTO tiene String[] getCodVisitas()
-        if (codVisitasArr != null) {
-            for (String codVis : codVisitasArr) {
-                if (codVis == null || codVis.trim().isEmpty()) continue;
-                Visita vFound = null;
-				vFound = visitaDao.find(codVis);
-				// requiere que visitaDao tenga find(String)
-                if (vFound != null) {
-                    visitas.add(vFound);
-                }
-       
-            }
-        }
-
-        // Estado: si DTO trae null, poner PENDIENTE por defecto (string)
-        String estado = Orden.EstadoOrden.PENDIENTE.toString();
-        if (estado == null || estado.trim().isEmpty()) {
-            estado = "PENDIENTE";
-        }
-
-        // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
-        OrdenRetiro orden = new OrdenRetiro(
-                retiro.getCodigo(),       
-                estado,
-                retiro.getFechaEmision(),
-                v,
-                pedido,
-                visitas
-        );
-
-        // Persistir
-        ordenRetiroDao.create(orden);
-        OrdenPedido A = orden.getPedido();
-        A.setEstado(Orden.EstadoOrden.EN_PROCESO);
-        ordenPedidoDao.update(orden.getPedido());*/    	
+  	
         if (retiro == null) throw new DataNullException("OrdenRetiroDTO es nula");
 
         Voluntario voluntario = null;
@@ -631,20 +571,28 @@ public class MemoryApi implements IApi {
                 }
             }
         }
-        // La OR nueva  arranca PENDIENTE 
-        String estado = (retiro.getEstado() != null)
-                ? retiro.getEstado().toString()
-                : EstadoOrden.PENDIENTE.toString();
-
-        String codigo = retiro.getCodigo();
-
-        OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
-        retirosByCodigo.put(or.getCodigo(), or);
-
-        // al registrarse la OR, el Pedido pasa a EN_PROCESO
-        if (pedido.getEstado() == null || pedido.getEstado() == EstadoOrden.PENDIENTE) {
-            pedido.setEstado(EstadoOrden.EN_PROCESO);
+        
+        // Estado: si DTO trae null, poner PENDIENTE por defecto (string)
+        String estado = Orden.EstadoOrden.PENDIENTE.toString();
+        if (estado == null || estado.trim().isEmpty()) {
+            estado = "PENDIENTE";
         }
+
+        // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
+        OrdenRetiro orden = new OrdenRetiro(
+                retiro.getCodigo(),       
+                estado,
+                retiro.getFechaEmision(),
+                voluntario,
+                pedido,
+                visitas
+        );
+        retirosByCodigo.put(orden.getCodigo(), orden);
+
+        // Persistir
+       
+       pedido.setEstado(Orden.EstadoOrden.EN_PROCESO);
+       pedidosByCodigo.put(pedido.getCodigo(), pedido);
     }
 
     @Override
