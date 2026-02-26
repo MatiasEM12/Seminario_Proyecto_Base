@@ -42,12 +42,15 @@ public class OrdenEntrega extends Orden{
 	public OrdenEntrega(LocalDate fechaEmision, String estado, String codigo,
 			LocalDate fechaHoraProgramada, ArrayList<Visita> visitas, Beneficiario beneficiario,
 			Voluntario voluntario)
-			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
+			throws DataDateException, DataEmptyException, DataNullException, DataObjectException, DataListException {
 		super(fechaEmision, estado, tipo);
 		
 		this.validarDate(fechaEmision);
 		this.validarDate(fechaHoraProgramada);
-		
+		this.validarObjectNull(voluntario);
+		this.validarObjectNull(beneficiario);
+		this.validarDate(fechaHoraProgramada);
+		this.validarListVisita(visitas);
 		if (codigo == null) {
 		    crearCodigo();
 		} else {
@@ -67,15 +70,21 @@ public class OrdenEntrega extends Orden{
 	public OrdenEntrega(LocalDate fechaEmision, String estado, String tipo, String codigo,
 			LocalDate fechaHoraProgramada, ArrayList<Visita> visitas,
 			SolicitudBien solicitud, Beneficiario beneficiario, Voluntario voluntario)
-			throws DataDateException, DataEmptyException, DataNullException, DataObjectException {
+			throws DataDateException, DataEmptyException, DataNullException, DataObjectException, DataListException {
 		super(fechaEmision, estado, tipo);
 		if (codigo == null) {
 		    crearCodigo();
 		} else {
 		    this.codigo = codigo;
 		}
+		this.validarObjectNull(voluntario);
+		this.validarObjectNull(beneficiario);
+		this.validarObjectNull(solicitud);
+		this.validarDate(fechaHoraProgramada);
+		this.validarListVisita(visitas);
 		this.fechaHoraProgramada = fechaHoraProgramada;
 		this.visitas = visitas;
+		
 		inicializarEntregados();
 		this.solicitud = solicitud;
 		this.beneficiario = beneficiario;
