@@ -100,7 +100,7 @@ public interface IApi {
 	public BienDTO obtenerBien (String codigo) throws DataNullException, DAOException;
 	public List<BienDTO> obtenerBienesPorOrdenRetiro(String codOrdenRetiro) throws DAOException, DataNullException, DataLengthException, DataDateException, DataEmptyException, DataListException ;
 	
-	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException;
+	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DAOException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException;
 
 	ArrayList<BienDTO> obtenerBienesPorOrdenPedido(String codOP) throws DataNullException, DataEmptyException, DataObjectException, DataDateException, DAOException, DataLengthException, DataListException;
 
@@ -169,6 +169,24 @@ public interface IApi {
 	public BeneficiarioDTO obtenerBeneficiarioDTO(String beneficiario) throws DAOException, DataLengthException, DataIntException, DataListException;
 
 	public boolean verificarDisponiblilidad(ArrayList<BienDTO> bienesSolicitados);
+
+	void cargarVisita(VisitaDTO visita)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataDateException, DataEmptyException, DataListException, DataObjectException;
+
+	void eliminarBineInventario(String codigo) throws DataNullException, DAOException;
+
+	List<BienDTO> obtenerTodosLosBienes() throws DAOException;
+
+	List<BienDTO> obtenerBienesPorTipo(String tipo) throws DataNullException, DAOException;
+
+	void ModificarBienInventario(Bien bien) throws DAOException;
+
+	Bien ObtenerBien(String codigo) throws DataNullException, DAOException;
+
+	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
+			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
+			DataObjectException, DataListException, DataDateException, DataEmptyException;
 	
 	
 }
