@@ -111,7 +111,7 @@ public class ListadoOrdenes extends JFrame {
 
 					if (estadoObj != Orden.EstadoOrden.COMPLETADA ||estadoObj != Orden.EstadoOrden.CANCELADA ) {
 
-					if ("completada".equalsIgnoreCase(estado)&&"cancelada".equalsIgnoreCase(estado)) {
+					
 
                 	try {
 	                	if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
@@ -147,7 +147,7 @@ public class ListadoOrdenes extends JFrame {
 				}
         		
         	}
-        });
+        	});
         panelButtom.add(btAgregarVisita);
         panelButtom.add(btnConsultarVisitas);
 
