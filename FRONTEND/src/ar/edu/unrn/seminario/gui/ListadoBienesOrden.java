@@ -45,7 +45,7 @@ public class ListadoBienesOrden extends JFrame {
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
-        // ===================== TABLA =====================
+        
         String[] titulos = {
                 "Seleccionar",
                 "Codigo", "Tipo", "Nombre", "Descripcion",
@@ -74,7 +74,7 @@ public class ListadoBienesOrden extends JFrame {
         scrollPane.setBounds(10, 11, 615, 200);
         contentPane.add(scrollPane);
 
-        // ===================== CARGA DE BIENES =====================
+ 
         for (BienDTO b : bienes) {
             modelo.addRow(new Object[] {
                     false, // checkbox
@@ -89,7 +89,7 @@ public class ListadoBienesOrden extends JFrame {
             });
         }
 
-        // ===================== BOTONES =====================
+       
         JButton btnSeleccionar = new JButton("Seleccionar");
         btnSeleccionar.setBounds(350, 230, 120, 25);
         contentPane.add(btnSeleccionar);
@@ -98,7 +98,6 @@ public class ListadoBienesOrden extends JFrame {
         btnCerrar.setBounds(505, 230, 120, 25);
         contentPane.add(btnCerrar);
 
-        // ===================== EVENTOS =====================
         btnSeleccionar.addActionListener(e -> seleccionarBienes());
 
         btnCerrar.addActionListener(e -> {
@@ -106,7 +105,7 @@ public class ListadoBienesOrden extends JFrame {
         });
     }
 
-    // ===================== MÉTODO SELECCIÓN =====================
+
     private void seleccionarBienes() {
 
         ArrayList<BienDTO> seleccionados = new ArrayList<>();

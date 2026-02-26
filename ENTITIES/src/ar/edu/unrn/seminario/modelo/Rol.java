@@ -11,7 +11,7 @@ public class Rol {
 	public Rol() {
 
 	}
-	// podriamos agregar un .isEmpty en la condicion para que codigo no pueda ""
+
 	public Rol(Integer codigo, String nombre )throws DataNullException {
 		super();
 		try {

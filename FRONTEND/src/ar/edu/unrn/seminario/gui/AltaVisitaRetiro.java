@@ -64,7 +64,7 @@ public class AltaVisitaRetiro extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
-        // ===================== ORDEN RETIRO =====================
+      
         JLabel lblCodigo = new JLabel("Codigo OrdenRetiro:");
         lblCodigo.setBounds(10, 10, 150, 14);
         contentPane.add(lblCodigo);
@@ -74,7 +74,7 @@ public class AltaVisitaRetiro extends JFrame {
         txtCodOR.setBounds(170, 7, 143, 20);
         contentPane.add(txtCodOR);
 
-        // ===================== TIPO =====================
+    
         JLabel lblTipo = new JLabel("Tipo:");
         lblTipo.setBounds(10, 52, 47, 14);
         contentPane.add(lblTipo);
@@ -84,8 +84,6 @@ public class AltaVisitaRetiro extends JFrame {
         comboTipo.addItem("RETIRO");
       
         contentPane.add(comboTipo);
-
-        // ===================== BIENES =====================
         JLabel lblSeleccion = new JLabel("Seleccionar bienes:");
         lblSeleccion.setBounds(10, 93, 120, 14);
         contentPane.add(lblSeleccion);
@@ -95,7 +93,6 @@ public class AltaVisitaRetiro extends JFrame {
         btnSeleccionBien.addActionListener(e -> abrirSelectorBienes(donacion));
         contentPane.add(btnSeleccionBien);
 
-        // ===================== VOLUNTARIO =====================
         JLabel lblVoluntario = new JLabel("Voluntario asignado:");
         lblVoluntario.setBounds(10, 135, 150, 14);
         contentPane.add(lblVoluntario);
@@ -105,7 +102,7 @@ public class AltaVisitaRetiro extends JFrame {
         textCodVoluntario.setBounds(170, 132, 143, 20);
         contentPane.add(textCodVoluntario);
 
-        // ===================== DONANTE =====================
+      
         JLabel lblCodDonante = new JLabel("Donante:");
         lblCodDonante.setBounds(10, 177, 170, 14);
         contentPane.add(lblCodDonante);
@@ -115,12 +112,12 @@ public class AltaVisitaRetiro extends JFrame {
         txtCodDonante.setBounds(170, 174, 143, 20);
         contentPane.add(txtCodDonante);
 
-        // ===================== FECHA =====================
+     
         JLabel lblFecha = new JLabel("Fecha Emision:");
         lblFecha.setBounds(10, 220, 84, 14);
         contentPane.add(lblFecha);
 
-        // ===================== OBSERVACIONES =====================
+        
         JLabel lblObserv = new JLabel("Observaciones:");
         lblObserv.setBounds(10, 436, 100, 14);
         contentPane.add(lblObserv);
@@ -165,7 +162,7 @@ public class AltaVisitaRetiro extends JFrame {
         setVisible(true);
     }
 
-    // ===================== MÉTODOS =====================
+
 
     private void abrirSelectorBienes(DonacionDTO donacion) {
 

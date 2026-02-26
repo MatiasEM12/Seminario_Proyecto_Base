@@ -48,9 +48,9 @@ public class MemoryApi implements IApi {
     // tipoBien por código de Bien (tabla inventario tenía tipoBien)
     private Map<String, String> inventarioTipo = new HashMap<>();
 
-    // =========================
+    
     // Datos de prueba
-    // =========================
+    
     private SolicitudBien solicitudTest;
     private Donacion donacionTest;
 
@@ -241,7 +241,7 @@ public class MemoryApi implements IApi {
         Usuario usuario = new Usuario(username, password, nombre, email, role, activo, null);
         putUsuario(usuario);
 
-        // crear perfil básico según rol (mínimos cambios)
+        // crear perfil básico según rol 
         String rn = role.getNombre();
         if ("DONANTE".equalsIgnoreCase(rn)) {
             Coordenada cor = new Coordenada(11111, 11111);
@@ -513,7 +513,7 @@ public class MemoryApi implements IApi {
         OrdenRetiro or = new OrdenRetiro(null, EstadoOrden.PENDIENTE.toString(), LocalDate.now(), null, pedido, new ArrayList<>());
         retirosByCodigo.put(or.getCodigo(), or);
 
-        // opcional: pasar pedido a EN_PROCESO si corresponde
+        
         try {
             if (pedido.getEstado() == EstadoOrden.PENDIENTE) {
                 pedido.setEstado(EstadoOrden.EN_PROCESO);
@@ -544,7 +544,7 @@ public class MemoryApi implements IApi {
 
         
         
-        // Buscar pedido (obligatorio)
+        // Buscar pedido 
         if (retiro.getPedido() == null || retiro.getPedido().trim().isEmpty()) {
             throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
         }
@@ -578,7 +578,7 @@ public class MemoryApi implements IApi {
             estado = "PENDIENTE";
         }
 
-        // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
+       
         OrdenRetiro orden = new OrdenRetiro(
                 retiro.getCodigo(),       
                 estado,
@@ -823,10 +823,10 @@ public class MemoryApi implements IApi {
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
                    DataDateException, DataEmptyException, DataListException, DataObjectException {
 
-        // Router: si es OR -> retiro; si no -> entrega
+        //  si es OR -> retiro; si no -> entrega
         if (visita == null) throw new DataNullException("VisitaDTO null");
 
-        // Si tu OrdenRetiro tiene helper esRetiro(cod): lo usamos, sino fallback por prefijo
+       
         boolean esRetiro = false;
         try {
             esRetiro = OrdenRetiro.esRetiro(visita.getCodOrden());
@@ -1057,7 +1057,7 @@ public class MemoryApi implements IApi {
         inventarioTipo.remove(codBien);
     }
 
-    // compat: en tu clase tenías también "eliminarBineInventario" con typo
+    
     @Override
     public void eliminarBineInventario(String codigo) throws DataNullException, DAOException {
         if (codigo == null || codigo.trim().isEmpty()) throw new DataNullException("codigo vacío");
@@ -1071,7 +1071,7 @@ public class MemoryApi implements IApi {
         Bien b = bienByCodigo.get(codBien);
         if (b == null) {
             // si no existe en bienes, inventario no puede referenciarlo
-            // (en BD esto sería FK). En memoria: no hacemos nada o tiramos.
+            // (en BD esto sería FK).
             throw new DAOException("No existe Bien con código: " + codBien);
         }
 
@@ -1090,7 +1090,7 @@ public class MemoryApi implements IApi {
         Bien b = bienByCodigo.get(codBien);
         if (b == null) throw new DAOException("No existe Bien con código: " + codBien);
 
-        // si no existe en inventario, lo agrega (mínimos cambios)
+        // si no existe en inventario, lo agrega 
         boolean exists = inventario.stream().anyMatch(x -> x != null && codBien.equalsIgnoreCase(x.getCodigo()));
         if (!exists) inventario.add(b);
 
@@ -1418,7 +1418,7 @@ public class MemoryApi implements IApi {
         }
 
         boolean esFinal = dto.isEsFinal();
-        // constructor equivalente al que usás en persistence (código puede venir)
+        
         Visita v = new Visita(
                 dto.getCodigo(),
                 dto.getFechaVisita(),

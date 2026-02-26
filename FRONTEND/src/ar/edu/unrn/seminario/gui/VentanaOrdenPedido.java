@@ -113,12 +113,12 @@ public class VentanaOrdenPedido extends JFrame {
         for (OrdenPedidoDTO o : ordenes) {
             
             modelo.addRow(new Object[]{
-                o.getCodigo(),                   // CÓDIGO
-                o.isCargaPesada(),               // CARGA PESADA (boolean)
-                o.getObservaciones(),            // OBSERVACIONES
-                o.getFechaEmision(),             // FECHA EMISIÓN
-                o.getEstado(),                   // ESTADO
-                o.getCodDonacion()               // DONACIÓN
+                o.getCodigo(),                  
+                o.isCargaPesada(),               
+                o.getObservaciones(),            
+                o.getFechaEmision(),             
+                o.getEstado(),                  
+                o.getCodDonacion()               
             });
         }
     }

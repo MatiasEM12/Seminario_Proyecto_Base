@@ -82,7 +82,7 @@ public class Voluntario extends Persona{
 
 	
 	public String toString() {
-	    return nombre + " " + apellido; // o como prefieras mostrarlo
+	    return nombre + " " + apellido; 
 	}
 	
 

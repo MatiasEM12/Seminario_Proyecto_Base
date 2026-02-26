@@ -308,7 +308,7 @@ public class PersistenceApi implements IApi {
 		
         if (us_autentificado == null) throw new DataNullException("No existe un usuario con el username: " + username);
         return us_autentificado.getContrasena().equals(password);
-    }        // pendiente: delegar a usuarioDao.autenticar si existe
+    }        
 
     // --- Órdenes ---
     @Override
@@ -583,11 +583,11 @@ public class PersistenceApi implements IApi {
             return resultado;
         }
 
-        // 1️⃣ Traer visitas del retiro
+        // Traer visitas del retiro
         ArrayList<Visita> visitas =
             visitaDao.findAllOrdenRetiro(codOrdenRetiro);
 
-        // 2️⃣ Recorrer bienes de cada visita
+        // Recorrer bienes de cada visita
         for (Visita v : visitas) {
             if (v.getBienesRecolectados() != null) {
                 for (Bien b : v.getBienesRecolectados()) {
@@ -823,7 +823,7 @@ public class PersistenceApi implements IApi {
     }
 
 
-    //funciona es el unico guardado rol que entra porque aunque vos nunca toques la descripcion lo toma como que le invias un dato	@Override
+
 	public void guardarRol(Integer codigo, String nombre, String descripcion, boolean estado) throws DataNullException, DAOException {
         Rol rol = new Rol(codigo, nombre, descripcion, estado);
         this.rolDao.create(rol);
@@ -868,7 +868,7 @@ public class PersistenceApi implements IApi {
 	        // Buscar el donante por código si existe
 	        Donante donante = null;
 	       
-//LocalDate fechaEmision, boolean cargaPesada,String observaciones, String codDonante, String codDonacion
+
 	        // Crear el objeto del modelo
 	        OrdenPedido pedido = new OrdenPedido(dto.getFechaEmision(),dto.isCargaPesada(),dto.getObservaciones(),dto.getCodDonacion() );
 
@@ -1032,7 +1032,7 @@ public class PersistenceApi implements IApi {
             if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
         }
 
-        // Buscar pedido (obligatorio)
+        // Buscar pedido
         if (retiro.getPedido() == null || retiro.getPedido().trim().isEmpty()) {
             throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
         }
@@ -1067,7 +1067,7 @@ public class PersistenceApi implements IApi {
             estado = "PENDIENTE";
         }
 
-        // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
+      
         OrdenRetiro orden = new OrdenRetiro(
                 retiro.getCodigo(),       
                 estado,

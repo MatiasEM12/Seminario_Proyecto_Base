@@ -226,7 +226,7 @@ public class ListadoOrdenes extends JFrame {
 
         modelo.setRowCount(0);
 
-        // ================= ORDEN RETIRO =================
+     
         if ("ORDEN_RETIRO".equals(filtro)) {
 
             List<OrdenRetiroDTO> retiros = ordenes.stream()
@@ -251,7 +251,7 @@ public class ListadoOrdenes extends JFrame {
                 });
             }
 
-        // ================= ORDEN PEDIDO =================
+      
         } else if ("ORDEN_PEDIDO".equals(filtro)) {
 
             List<OrdenPedidoDTO> pedidos = ordenes.stream()
@@ -275,8 +275,6 @@ public class ListadoOrdenes extends JFrame {
             }
 
   
-     
-        	// ================= ORDEN ENTREGA =================
         } else if ("ORDEN_ENTREGA".equals(filtro)) {
 
             List<OrdenEntregaDTO> entregas = ordenes.stream()
@@ -299,7 +297,7 @@ public class ListadoOrdenes extends JFrame {
                 });
             }
         } else {
-        	  // ================= TODOS =================
+        	
             modelo.setColumnIdentifiers(new String[]{
                 "Codigo", "Tipo", "Fecha", "Estado"
             });
