@@ -156,18 +156,26 @@ public class AltaOrdenEntrega extends JFrame {
 		contentPane.add(codSolicitud);
 		btnGuardar.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
-		      
+		     
 		    	String codigo = txtCodigoBeneficiario.getText();
 		    	String estado= "Pendiente";
 		    	String fechaTexto = txtFecha.getText();
 		  
 		    
-
+		    	
 		    	try {
 		    	    // Convertir texto a LocalDate
 		    	    LocalDate fecha = LocalDate.parse(fechaTexto);
 		    	    
 		    	    
+			    	if(voluntario==null) {
+			    	       JOptionPane.showMessageDialog(
+				    	            null,
+				    	            "el voluntario no puede ser nulo",
+				    	            "Error al cargar Entrega",
+				    	            JOptionPane.ERROR_MESSAGE
+				    	        );
+			    	}
 		    	    fechaProgramada = calendar.getDate()
 		    	            .toInstant()
 		    	            .atZone(ZoneId.systemDefault())
