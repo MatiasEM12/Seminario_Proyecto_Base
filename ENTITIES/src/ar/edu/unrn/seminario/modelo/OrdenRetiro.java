@@ -122,7 +122,7 @@ public class OrdenRetiro extends Orden{
 	    }
 	}
 
-	private void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
+	public void ordenEstadoCompleta() throws StateChangeException, DataObjectException {
 		
 		if(super.getEstadoString().equals(EstadoOrden.EN_PROCESO.toString()) || super.getEstadoString().equals(EstadoOrden.PENDIENTE.toString())) {
 			
@@ -134,7 +134,7 @@ public class OrdenRetiro extends Orden{
 		
 	}
 	
-	private void ordenEstadoProceso() throws StateChangeException, DataObjectException {
+	public void ordenEstadoProceso() throws StateChangeException, DataObjectException {
 	    EstadoOrden actual = super.getEstado();
 	    // Permitir que PENDIENTE pase a EN_PROCESO o que ya esté en EN_PROCESO y se mantenga
 	    if (actual == EstadoOrden.PENDIENTE || actual == EstadoOrden.EN_PROCESO) {
