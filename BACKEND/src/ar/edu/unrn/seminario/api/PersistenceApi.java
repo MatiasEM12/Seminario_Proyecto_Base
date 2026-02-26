@@ -3,6 +3,7 @@ package ar.edu.unrn.seminario.api;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -1042,18 +1043,21 @@ public class PersistenceApi implements IApi {
         }
 
         // Construir lista de Visitas a partir de los códigos (si vienen)
+  
         ArrayList<Visita> visitas = new ArrayList<>();
-        String[] codVisitasArr = retiro.getCodVisitas(); // OrdenRetiroDTO tiene String[] getCodVisitas()
+        String[] codVisitasArr = retiro.getCodVisitas();
+
         if (codVisitasArr != null) {
             for (String codVis : codVisitasArr) {
-                if (codVis == null || codVis.trim().isEmpty()) continue;
-                Visita vFound = null;
-				vFound = visitaDao.find(codVis);
-				// requiere que visitaDao tenga find(String)
-                if (vFound != null) {
-                    visitas.add(vFound);
+
+                if (codVis != null && !codVis.trim().isEmpty()) {
+
+                    Visita vFound = visitaDao.find(codVis); // que lance excepción
+
+                    if (vFound != null) {
+                        visitas.add(vFound);
+                    }
                 }
-       
             }
         }
 
