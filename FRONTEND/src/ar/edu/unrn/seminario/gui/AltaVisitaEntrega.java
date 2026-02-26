@@ -240,25 +240,35 @@ public class AltaVisitaEntrega extends JFrame {
 	        }
 	    }
 
-	    private ArrayList<BienDTO> noRetirados( List<BienDTO> listaBienesRetirados,  List<BienDTO> listaBienesARetirar) {
+	    private ArrayList<BienDTO> noRetirados(List<BienDTO> listaBienesRetirados,List<BienDTO> listaBienesARetirar) {
+
 	    	ArrayList<BienDTO> faltantes = new ArrayList<>();
 
-	        if (listaBienesARetirar == null) {
-	            return faltantes;
-	        }
+	    	if (listaBienesARetirar == null) {
+	    		return faltantes;
+	    	}
 
-	        if (listaBienesRetirados == null) {
-	            faltantes.addAll(listaBienesARetirar);
-	            return faltantes;
-	        }
+	    	java.util.Set<String> codigosRetirados = new java.util.HashSet<>();
 
-	        for (BienDTO bien : listaBienesARetirar) {
-	            if (!listaBienesRetirados.contains(bien)) {
-	                faltantes.add(bien);
-	            }
-	        }
+	    	if (listaBienesRetirados != null) {
+	    		for (BienDTO b : listaBienesRetirados) {
+	    			if (b != null && b.getCodigo() != null) {
+	    				codigosRetirados.add(b.getCodigo());
+	    			}
+	    		}
+	    	}
 
-	        return faltantes;
+	    	for (BienDTO bien : listaBienesARetirar) {
+
+	    		if (bien != null && bien.getCodigo() != null) {
+
+	    			if (!codigosRetirados.contains(bien.getCodigo())) {
+	    				faltantes.add(bien);
+	    			}
+	    		}
+	    	}
+
+	    	return faltantes;
 	    }
 }
 
