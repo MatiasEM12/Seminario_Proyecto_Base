@@ -303,101 +303,11 @@ public class MemoryApi implements IApi {
     }
 
     
-    
-    
-    // Pre-Carga Orden Pedido
-    private void inicializarOrdenesPedido() {
-        try {
    
-        	ArrayList<Bien> bienes1 = new ArrayList<>();
-        	bienes1.add(new Bien(null,"Alimento", 0.200,"Manteca", "Manteca sin sal",  LocalDate.now(), 0.0, null));
-        	Bien b2 = new Bien(null,"Ropa", 0.200,"Camisa","Camisa de ToyStory 23",null, 5.0,"algodon");
-        	
-        	
-        	bienes1.add(b2);
-            // crear donante ejemplo si no existe
-            Donante donante1 = donantesByUser.get("pedro_don");
-            
-            Donacion donacion1 = new Donacion(LocalDate.now(), "Entrega en sede central", bienes1, donante1,null,null);
-            
-            OrdenPedido ordenPedido =  new OrdenPedido(LocalDate.now(), true, "Entrega urgente", donante1.getCodigo());
-            
-            donacion1.setPedido(ordenPedido);
-            donacion1.setCodigo(ordenPedido.getCodigo());
-            
-            registrarDonacion(donacion1);
-            registrarOrdenPedido(ordenPedido);
-            //aqui esta el error
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(null, "Error al inicializar órdenes: " + e.getMessage());
-        }
-    }
 
-  //pre-carfa OrdenRetiro
-  	public void inicializarOrdenesRetiro(String codPedido) throws DataNullException, DataObjectException, DataListException, DataDateException, DataEmptyException, StateChangeException {
-  		if (codPedido == null || codPedido.trim().isEmpty()) {
-  	        return;
-  	    }
 
-  	    OrdenRetiro ordenRetiro = null;
-  	    // Intentar obtener una orden de retiro existente asociada al pedido.
-  	    try {
-  	        ordenRetiro = this.obtenerOrdenRetiroPorPedido(codPedido);
-  	    } catch (RuntimeException e) {
-  	        // Si no existe, la creamos a partir del OrdenPedido (si existe)
-  	        try {
-  	            OrdenPedido pedido = this.obtenerOrdenPedidoPorCodigo(codPedido);
-  	            ordenRetiro = new OrdenRetiro(LocalDate.now(), pedido, null); 
-  	            // registrar la nueva orden de retiro en la lista
-  	            this.ordenesRetiro.add(ordenRetiro);
-  	        } catch (RuntimeException ex2) {
-  	            // No existe pedido con ese código: abortar inicialización
-  	            System.out.println("No se encontró pedido para inicializar orden retiro: " + codPedido);
-  	            return;
-  	        }
-  	    }
-
-  	    
-  	    // Asignar voluntario de ejemplo si no tiene
-  	    try {
-  	        if (ordenRetiro.getVoluntario() == null) {
-  	            ordenRetiro.setVoluntario(this.obtenerVoluntarioPorUsername("juan_vol"));
-  	        }
-  	    } catch (Exception e) {
-  	        // evitar fallos si no existe el voluntario
-  	    }
-  	    
-  	}
   	
   	
-  	private void inicializarVisitas(OrdenRetiro retiro) throws DataNullException, DataLengthException, StateChangeException, DataListException, DataDateException, DataEmptyException {
-  	    if (retiro == null) {
-  	        return;
-  	    }
-  	    Visita v1 = new Visita(LocalDate.now(),"El donante estaba ausente","RETIRO",retiro.getCodigo(),new ArrayList<>(),false);
-  	    v1.setEstado("fallida");
-
-  	    // Convertir bienes a DTO
-  	    ArrayList<BienDTO> bienesDTOv1 = new ArrayList<>();
-  	    VisitaDTO dto1 = new VisitaDTO(v1.getCodigo(),v1.getFechaVisita(),null,retiro.getCodigo(),bienesDTOv1,v1.getObservaciones(),v1.getTipo(),v1.getEstado());
-  	    // Segunda visita (exitosa, con bienes del retiro)
-  	    ArrayList<BienDTO> bienesDTOv2 = new ArrayList<>();
-  	    for (Bien b : retiro.getRecolectados()) {
-  	        bienesDTOv2.add(toBienDTO(b));
-  	    }
-
-  	    Visita v2 = new Visita(LocalDate.now(),"Retiro realizado","RETIRO",retiro.getCodigo(),retiro.getRecolectados(),true);
-  	    v2.setEstado("realizada");
-  	    
-  	    VisitaDTO dto2 = new VisitaDTO(v2.getCodigo(),v2.getFechaVisita(),null
-  	    		,retiro.getCodigo(),bienesDTOv2,v2.getObservaciones(),v2.getTipo(),v2.getEstado());
-  	    this.visitas.add(dto2);
-
-  	    ArrayList<Visita> lista = new ArrayList<>();
-  	    lista.add(v1);
-  	    lista.add(v2);
-  	    retiro.setVisitas(lista);
-  	}
     
     // ORDEN PEDIDO
 
