@@ -1653,6 +1653,24 @@ public class PersistenceApi implements IApi {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String obtenerUserVoluntario(String codOrden) throws DAOException {
+	   OrdenRetiro OR=null;
+	   OrdenEntrega OE=null;
+	   String codVoluntario=null;
+		if(OrdenRetiro.esRetiro(codOrden)) {
+			OR = this.ordenRetiroDao.find(codOrden);
+			codVoluntario=OR.getVoluntario().getUsername();
+		}else {
+			OE=this.ordenEntregaDAO.find(codOrden);
+			codVoluntario=OE.getVoluntario().getUsername();
+			
+		}
+		
+		return codVoluntario;
+		
+	}
 		
 }
 

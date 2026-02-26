@@ -1706,4 +1706,24 @@ public class MemoryApi implements IApi {
 
 
 
+	@Override
+	public String obtenerUserVoluntario(String codOrden) throws DAOException {
+		   OrdenRetiro OR=null;
+		   OrdenEntrega OE=null;
+		   String codVoluntario=null;
+			if(OrdenRetiro.esRetiro(codOrden)) {
+				OR = retirosByCodigo.get(codOrden);
+				codVoluntario=OR.getVoluntario().getUsername();
+			}else {
+				OE= entregasByCodigo.get(codOrden);
+				codVoluntario=OE.getVoluntario().getUsername();
+				
+			}
+			
+			return codVoluntario;
+			
+		}
 }
+
+
+

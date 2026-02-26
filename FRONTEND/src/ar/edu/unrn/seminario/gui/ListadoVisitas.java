@@ -25,6 +25,7 @@ public class ListadoVisitas extends JFrame {
     private DefaultTableModel modelo;
     private IApi api;
     private java.util.List<VisitaDTO> visitas;
+    private String userVoluntario=null;
 
     public ListadoVisitas(IApi api, String codOrden) throws DataNullException, DataLengthException {
         this.api = api;
@@ -56,6 +57,7 @@ public class ListadoVisitas extends JFrame {
     private void cargarVisitas(String codOrden) throws DataNullException, DataLengthException {
         try {
 			visitas = api.obtenerVisitas(codOrden);
+			userVoluntario= api.obtenerUserVoluntario(codOrden);
 		} catch (DataNullException | DataLengthException | DAOException | DataDateException | DataEmptyException
 				| DataListException e) {
 			
@@ -65,16 +67,12 @@ public class ListadoVisitas extends JFrame {
 
         modelo.setRowCount(0);
         for (VisitaDTO v : visitas) {
-            String usuario = "";
-            try {
-            	OrdenRetiroDTO orden = api.obtenerOrdenRetiro(codOrden);
-            	usuario = api.obtenerUsernameVoluntario(orden.getCodVoluntario());
-            } catch (Exception ex) { usuario = ""; }
-
+           
+        
             modelo.addRow(new Object[] {
                     safeString(v.getCodigo()),
                     v.getFechaVisita(),
-                    usuario,
+                    userVoluntario,
                     safeString(v.getTipo()),
                     safeString(v.getObservaciones())
             });

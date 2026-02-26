@@ -187,6 +187,8 @@ public interface IApi {
 	void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
 			throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
 			DataObjectException, DataListException, DataDateException, DataEmptyException;
+
+	public String obtenerUserVoluntario(String codOrden) throws DAOException;
 	
 	
 }
