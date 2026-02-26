@@ -466,6 +466,7 @@ public class MemoryApi implements IApi {
     @Override
     public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException {
         if (orden == null) throw new DataNullException("OrdenPedidoDTO inválida");
+
         try {
             OrdenPedido op = new OrdenPedido(
                     orden.getFechaEmision(),
@@ -473,17 +474,21 @@ public class MemoryApi implements IApi {
                     orden.getObservaciones(),
                     orden.getCodDonacion()
             );
-            if (orden.getEstado() != null) {
-                try { op.setEstado(orden.getEstado()); } catch (Exception ignored) { }
-            }
+
+     
+
+  
+
+    
             pedidosByCodigo.put(op.getCodigo(), op);
 
-            // si existe donación con ese código, asociarla
+          
             Donacion d = donacionByCodigo.get(orden.getCodDonacion());
             if (d != null) {
                 d.setPedido(op);
                 donacionByCodigo.put(d.getCodigo(), d);
             }
+
         } catch (Exception e) {
             throw new DataNullException(e.getMessage());
         }
@@ -522,15 +527,21 @@ public class MemoryApi implements IApi {
         target.ordenEstadoCompleta();
     }
 
+    
     @Override
     public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
-            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DataObjectException,
-                   DataListException, DataDateException, DataEmptyException {
+            throws DataNullException, DataLengthException, DataDoubleException, StateChangeException,
+                   DataObjectException, DataListException, DataDateException, DataEmptyException {
 
         if (retiro == null) throw new DataNullException("OrdenRetiroDTO es nula");
 
         OrdenPedido pedido = pedidosByCodigo.get(retiro.getPedido());
         if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + retiro.getPedido());
+
+        //  Validación de flujo 
+        if (pedido.getEstado() == EstadoOrden.CANCELADA || pedido.getEstado() == EstadoOrden.COMPLETADA) {
+            throw new StateChangeException("No se puede crear OrdenRetiro: el Pedido está " + pedido.getEstado());
+        }
 
         Voluntario voluntario = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
@@ -540,24 +551,33 @@ public class MemoryApi implements IApi {
         ArrayList<Visita> visitasOR = new ArrayList<>();
         if (retiro.getCodVisitas() != null) {
             for (String codV : retiro.getCodVisitas()) {
-                if (codV == null) continue;
+                if (codV == null || codV.trim().isEmpty()) continue;
                 Visita v = visitasByCodigo.get(codV);
                 if (v != null) visitasOR.add(v);
             }
         }
 
-        String estado = (retiro.getEstado() != null) ? retiro.getEstado().toString() : EstadoOrden.PENDIENTE.toString();
+        // La OR nueva  arranca PENDIENTE 
+        String estado = (retiro.getEstado() != null)
+                ? retiro.getEstado().toString()
+                : EstadoOrden.PENDIENTE.toString();
+
         String codigo = retiro.getCodigo();
 
         OrdenRetiro or = new OrdenRetiro(codigo, estado, retiro.getFechaEmision(), voluntario, pedido, visitasOR);
         retirosByCodigo.put(or.getCodigo(), or);
+
+        // al registrarse la OR, el Pedido pasa a EN_PROCESO
+        if (pedido.getEstado() == null || pedido.getEstado() == EstadoOrden.PENDIENTE) {
+            pedido.setEstado(EstadoOrden.EN_PROCESO);
+        }
     }
 
     @Override
     public void registrarOrdenRetiro1(OrdenRetiroDTO retiro)
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException, DAOException,
                    DataObjectException, DataListException, DataDateException, DataEmptyException {
-        // en memoria: misma lógica que registrarOrdenRetiro
+        
         registrarOrdenRetiro(retiro);
     }
 
