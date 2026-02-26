@@ -284,7 +284,7 @@ public class Visita {
 	}
 
 	public void cancelar() throws StateChangeException {
-	    if (!estado.equalsIgnoreCase("En proceso")) {
+	    if (estado.equalsIgnoreCase("En proceso")) {
 	        throw new StateChangeException(
 	            "La visita solo puede cancelarse si está en proceso"
 	        );
