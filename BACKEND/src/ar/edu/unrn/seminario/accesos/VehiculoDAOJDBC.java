@@ -55,8 +55,7 @@ public class VehiculoDAOJDBC implements VehiculoDAO{
 			statement.setDouble(4, vehiculo.getCapacidadMaxCarga());
 			statement.setBoolean(5, vehiculo.isDisponibilidad());
 			statement.setString(6, vehiculo.getCronogramaMantenimiento());
-			//si queremos no actualisar la matricula que que es pk hai que eliminar en el set matricula y eliminar el primer get, la rason por la que quisieramos
-			//sacarlo es que como es pk si se cambia por una que existe saltaria error.
+		
 			statement.setString(7, vehiculo.getMatricula());
 			
 			int cantidad = statement.executeUpdate();

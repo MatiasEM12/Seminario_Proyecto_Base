@@ -165,7 +165,7 @@ public class VisitaDAOJDBC implements VisitaDao {
                     rs.getString("codigo")
                 );
 
-                // ✅ tu constructor no cargaba estado, lo seteamos
+              
                 visita.setEstado(rs.getString("estado"));
 
                 return visita;
@@ -192,7 +192,7 @@ public class VisitaDAOJDBC implements VisitaDao {
 
             while (rs.next()) {
                 String codigo = rs.getString("codigo");
-                // ✅ cambio mínimo: NO llamar this.find() dentro del while
+        
                 Visita v = this.find(codigo);
                 if (v != null) visitas.add(v);
             }

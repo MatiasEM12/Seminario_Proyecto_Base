@@ -143,7 +143,7 @@ public class OrdenEntregaDAOJDBC implements OrdenEntregaDAO {
                 }
                 LocalDate fechaProg = dProg.toLocalDate();
 
-                // ⚠️ Si tu BeneficiarioDAO.find carga colecciones y hace recursión, acá puede explotar.
+                
                 BeneficiarioDAO beneficiarioDAO = new BeneficiarioDAOJDBC();
                 Beneficiario beneficiario = beneficiarioDAO.find(rs.getString("codBeneficiario"));
 

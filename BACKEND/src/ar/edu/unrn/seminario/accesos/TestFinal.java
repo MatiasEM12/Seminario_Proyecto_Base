@@ -55,8 +55,7 @@ public class TestFinal {
 			
 			Usuario.setContadorUsuario(usuarioDAO.obtenerMaximoUsuarios());
 			
-			// se puede cambiar en el costructor en ves de pasarle el tipo de rol que lo busque por codigo, ej: Rol rolx = rolDAO.find(1);
-			// o directamente en el costructor ("perry_AD","87654321","Jeff","perry_AD12@mail.com",rolDAO.find(1),true,null);
+	
 			
 			Usuario usuario_1 = new Usuario("perry_AD", "87654321", "Jeff", "perry_AD12@mail.com", rol1, true, null);//admin
 			usuarioDAO.create(usuario_1);

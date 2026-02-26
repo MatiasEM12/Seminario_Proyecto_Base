@@ -160,11 +160,11 @@ public class OrdenPedidoDAOJDBC implements OrdenPedidoDao{
 		} catch (SQLException e) {
 			throw new DAOException("Error al procesar consulta. codigo error OP500");
 			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getSQLState(), e.getMessage());
+		
 		} catch (Exception e) {
 			throw new DAOException("Error al procesar consulta. codigo error OP501"+e);
 			// TODO: disparar Exception propia
-			// throw new AppException(e, e.getCause().getMessage(), e.getMessage());
+		
 		} finally {
 			ConnectionManager.disconnect();
 		}

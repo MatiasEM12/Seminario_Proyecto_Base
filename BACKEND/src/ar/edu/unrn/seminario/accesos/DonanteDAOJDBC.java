@@ -97,7 +97,7 @@ public class DonanteDAOJDBC implements DonanteDao{
 
 		} catch (SQLException e) {
 			throw new DAOException("Error al procesar consulta. codigo error UD201");
-			// TODO: disparar Exception propia
+		
 		} finally {
 			ConnectionManager.disconnect();
 		}

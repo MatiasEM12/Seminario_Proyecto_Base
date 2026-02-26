@@ -134,7 +134,7 @@ public class InventarioDAOJDBC implements InventarioDAO {
 
             while (rs.next()) {
                 String cod = rs.getString("codigoBien");
-                // ✅ CAMBIO MÍNIMO: NO llames findBien() (evita abrir otra conexión por fila)
+              
                 Bien b = bienDao.find(cod);
                 if (b != null) bienes.add(b);
             }
@@ -163,7 +163,7 @@ public class InventarioDAOJDBC implements InventarioDAO {
 
             while (rs.next()) {
                 String cod = rs.getString("codigoBien");
-                // ✅ CAMBIO MÍNIMO
+               
                 Bien b = bienDao.find(cod);
                 if (b != null) bienes.add(b);
             }
@@ -192,7 +192,7 @@ public class InventarioDAOJDBC implements InventarioDAO {
 
             while (rs.next()) {
                 String cod = rs.getString("codigoBien");
-                // ✅ CAMBIO MÍNIMO
+                
                 Bien b = bienDao.find(cod);
                 if (b != null) bienes.add(b);
             }

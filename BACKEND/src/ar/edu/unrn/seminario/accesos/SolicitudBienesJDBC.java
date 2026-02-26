@@ -45,7 +45,7 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
 
         } catch (Exception e) {
             try {
-                ConnectionManager.getConnection().rollback(); // si tu ConnectionManager devuelve SIEMPRE la misma conn por thread, ok
+                ConnectionManager.getConnection().rollback(); // investigamos es por si ConnectionManager devuelve siempre la misma conn por thread
             } catch (Exception ignore) {}
             throw new DAOException("Error CREATE SolicitudBien: " + e.getMessage()+ e);
         } finally {
@@ -79,7 +79,7 @@ public class SolicitudBienesJDBC implements SolicitudBienesDAO {
         }
     }
 
-    // ================= FIND =================
+
 
     @Override
     public SolicitudBien find(String codigo)
