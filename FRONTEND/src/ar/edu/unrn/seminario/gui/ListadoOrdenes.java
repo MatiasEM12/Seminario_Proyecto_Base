@@ -13,6 +13,7 @@ import ar.edu.unrn.seminario.exception.DataLengthException;
 import ar.edu.unrn.seminario.exception.DataListException;
 import ar.edu.unrn.seminario.exception.DataNullException;
 import ar.edu.unrn.seminario.exception.DataObjectException;
+import ar.edu.unrn.seminario.modelo.Orden;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -105,9 +106,9 @@ public class ListadoOrdenes extends JFrame {
 				if (filaSeleccionada >= 0) {
 					
 					String codOrden = (String) tabla.getValueAt(filaSeleccionada, 0);	
-					String estado = (String) tabla.getValueAt(filaSeleccionada, 3);
+					Object estadoObj = tabla.getValueAt(filaSeleccionada, 3);
 					//comprueba si no esta completada
-					if (!"COMPLETADA".equalsIgnoreCase(estado)&&!"CANCELADA".equalsIgnoreCase(estado)) {
+					if (estadoObj != Orden.EstadoOrden.COMPLETADA ||estadoObj != Orden.EstadoOrden.CANCELADA ) {
                 	try {
 	                	if("ORDEN_RETIRO".equals(tabla.getValueAt(filaSeleccionada, 1))) {
 						
@@ -137,12 +138,7 @@ public class ListadoOrdenes extends JFrame {
 				}
                 }
 					else {
-						if (!"COMPLETADA".equalsIgnoreCase(estado)){
-							JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está completada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
-						}
-						else {
-							JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está cancelada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
-						}
+						JOptionPane.showMessageDialog(null,"No se puede agregar una visita.\nLa orden está completada.","Operación no permitida",JOptionPane.ERROR_MESSAGE);
 					}
 				}
         		
