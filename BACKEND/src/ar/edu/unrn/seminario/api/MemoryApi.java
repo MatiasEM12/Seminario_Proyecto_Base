@@ -289,16 +289,25 @@ public class MemoryApi implements IApi {
 
     @Override
     public void eliminarUsuario(String username) {
-        Usuario u = usuariosByUsername.remove(username);
-        if (u != null && u.getCodigo() != null) usuariosByCodigo.remove(u.getCodigo());
 
-        // borrar perfiles asociados por username (si existieran)
-        // 
-        donantesByCodigo.values().removeIf(d -> d != null && username.equalsIgnoreCase(d.getUsername()));
-        voluntariosByCodigo.values().removeIf(v -> v != null && username.equalsIgnoreCase(v.getUsername()));
-        beneficiarioByCodigo.values().removeIf(b -> b != null && username.equalsIgnoreCase(b.getUsername()));
+        // Eliminar de usuarios por username
+        Usuario usuario = usuariosByUsername.remove(username);
+
+        // Si existe, eliminar también por código
+        if (usuario != null) {
+            usuariosByCodigo.remove(usuario.getCodigo());
+        }
+
+        // Eliminar perfiles asociados
+        donantesByCodigo.values()
+                .removeIf(d -> username.equalsIgnoreCase(d.getUsername()));
+
+        voluntariosByCodigo.values()
+                .removeIf(v -> username.equalsIgnoreCase(v.getUsername()));
+
+        beneficiarioByCodigo.values()
+                .removeIf(b -> username.equalsIgnoreCase(b.getUsername()));
     }
-
     @Override
     public void activarUsuario(String usuario) throws StateChangeException {
         Usuario user = usuariosByUsername.get(usuario);
@@ -312,8 +321,7 @@ public class MemoryApi implements IApi {
     }
 
     @Override
-    public void modificarContraseña(String usuario, String passWord)
-            throws DataEmptyException, DataNullException, DataLengthException {
+    public void modificarContraseña(String usuario, String passWord)throws DataEmptyException, DataNullException, DataLengthException {
         if (usuario == null || usuario.trim().isEmpty()) throw new DataNullException("usuario vacío");
         if (passWord == null || passWord.trim().isEmpty()) throw new DataEmptyException("contraseña vacía");
         Usuario user = usuariosByUsername.get(usuario);
@@ -465,20 +473,18 @@ public class MemoryApi implements IApi {
 
     @Override
     public void registrarOrdenPedido(OrdenPedidoDTO orden) throws DataNullException {
-        if (orden == null) throw new DataNullException("OrdenPedidoDTO inválida");
+ 
+    	
+    	if (orden == null) throw new DataNullException("OrdenPedidoDTO inválida");
 
         try {
             OrdenPedido op = new OrdenPedido(
-                    orden.getFechaEmision(),
-                    orden.isCargaPesada(),
-                    orden.getObservaciones(),
-                    orden.getCodDonacion()
+            	     orden.getCodigo(),
+ 	                orden.getFechaEmision(),
+ 	                orden.isCargaPesada(), 
+ 	                orden.getObservaciones(),
+ 	                orden.getCodDonacion()
             );
-
-     
-
-  
-
     
             pedidosByCodigo.put(op.getCodigo(), op);
 
@@ -517,14 +523,8 @@ public class MemoryApi implements IApi {
 
     @Override
     public void completarOrdenRetiro(String codOrdenRetiro) throws Exception {
-        if (codOrdenRetiro == null || codOrdenRetiro.trim().isEmpty()) throw new DataNullException("codigo OR vacío");
-        OrdenRetiro target = retirosByCodigo.get(codOrdenRetiro);
-        if (target == null) throw new DAOException("No existe OrdenRetiro: " + codOrdenRetiro);
-
-        if (target.getEstado() != null && target.getEstado() == EstadoOrden.PENDIENTE) {
-            target.ordenEstadoProceso();
-        }
-        target.ordenEstadoCompleta();
+    	// TODO Auto-generated method stub
+		
     }
 
     
@@ -532,31 +532,105 @@ public class MemoryApi implements IApi {
     public void registrarOrdenRetiro(OrdenRetiroDTO retiro)
             throws DataNullException, DataLengthException, DataDoubleException, StateChangeException,
                    DataObjectException, DataListException, DataDateException, DataEmptyException {
-
-        if (retiro == null) throw new DataNullException("OrdenRetiroDTO es nula");
-
-        OrdenPedido pedido = pedidosByCodigo.get(retiro.getPedido());
-        if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + retiro.getPedido());
-
-        //  Validación de flujo 
-        if (pedido.getEstado() == EstadoOrden.CANCELADA || pedido.getEstado() == EstadoOrden.COMPLETADA) {
-            throw new StateChangeException("No se puede crear OrdenRetiro: el Pedido está " + pedido.getEstado());
+/*
+ * 	 // validaciones básicas
+        if (retiro == null) {
+            throw new DataNullException("OrdenRetiro DTO es nula");
         }
 
-        Voluntario voluntario = null;
+        // Buscar voluntario (puede ser null si no se asignó)
+        Voluntario v = null;
         if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
-            voluntario = findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
+            v = voluntarioDao.find(retiro.getCodVoluntario());
+           
+            if (v == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
         }
 
-        ArrayList<Visita> visitasOR = new ArrayList<>();
-        if (retiro.getCodVisitas() != null) {
-            for (String codV : retiro.getCodVisitas()) {
-                if (codV == null || codV.trim().isEmpty()) continue;
-                Visita v = visitasByCodigo.get(codV);
-                if (v != null) visitasOR.add(v);
+        // Buscar pedido (obligatorio)
+        if (retiro.getPedido() == null || retiro.getPedido().trim().isEmpty()) {
+            throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
+        }
+        OrdenPedido pedido = null;
+		pedido = ordenPedidoDao.find(retiro.getPedido());
+        if (pedido == null) {
+            throw new DataNullException("No existe la OrdenPedido: " + retiro.getPedido());
+        }
+
+        // Construir lista de Visitas a partir de los códigos (si vienen)
+        ArrayList<Visita> visitas = new ArrayList<>();
+        String[] codVisitasArr = retiro.getCodVisitas(); // OrdenRetiroDTO tiene String[] getCodVisitas()
+        if (codVisitasArr != null) {
+            for (String codVis : codVisitasArr) {
+                if (codVis == null || codVis.trim().isEmpty()) continue;
+                Visita vFound = null;
+				vFound = visitaDao.find(codVis);
+				// requiere que visitaDao tenga find(String)
+                if (vFound != null) {
+                    visitas.add(vFound);
+                }
+       
             }
         }
 
+        // Estado: si DTO trae null, poner PENDIENTE por defecto (string)
+        String estado = Orden.EstadoOrden.PENDIENTE.toString();
+        if (estado == null || estado.trim().isEmpty()) {
+            estado = "PENDIENTE";
+        }
+
+        // constructor que acepta (String codigo, String estado, LocalDate fechaEmision, Voluntario voluntario, OrdenPedido ordenPedido, ArrayList<Visita> visitas)
+        OrdenRetiro orden = new OrdenRetiro(
+                retiro.getCodigo(),       
+                estado,
+                retiro.getFechaEmision(),
+                v,
+                pedido,
+                visitas
+        );
+
+        // Persistir
+        ordenRetiroDao.create(orden);
+        OrdenPedido A = orden.getPedido();
+        A.setEstado(Orden.EstadoOrden.EN_PROCESO);
+        ordenPedidoDao.update(orden.getPedido());*/    	
+        if (retiro == null) throw new DataNullException("OrdenRetiroDTO es nula");
+
+        Voluntario voluntario = null;
+        if (retiro.getCodVoluntario() != null && !retiro.getCodVoluntario().trim().isEmpty()) {
+            voluntario =findVoluntarioByCodigoOrUsername(retiro.getCodVoluntario());
+           
+            if (voluntario == null) throw new DataNullException("Voluntario no encontrado: " + retiro.getCodVoluntario());
+        }
+
+        
+        
+        // Buscar pedido (obligatorio)
+        if (retiro.getPedido() == null || retiro.getPedido().trim().isEmpty()) {
+            throw new DataNullException("La orden retiro debe referenciar a una orden de pedido");
+        }
+        
+    
+        OrdenPedido pedido = pedidosByCodigo.get(retiro.getPedido());
+        if (pedido == null) throw new DataObjectException("No existe OrdenPedido con código: " + retiro.getPedido());
+
+        // Construir lista de Visitas a partir de los códigos (si vienen)
+   
+        ArrayList<Visita> visitas = new ArrayList<>();
+        String[] codVisitasArr = retiro.getCodVisitas();
+
+        if (codVisitasArr != null) {
+            for (String codVis : codVisitasArr) {
+
+                if (codVis != null && !codVis.trim().isEmpty()) {
+
+                    Visita vFound = visitasByCodigo.get(codVis);
+
+                    if (vFound != null) {
+                        visitas.add(vFound);
+                    }
+                }
+            }
+        }
         // La OR nueva  arranca PENDIENTE 
         String estado = (retiro.getEstado() != null)
                 ? retiro.getEstado().toString()
