@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ar.edu.unrn.seminario.api.IApi;
+import ar.edu.unrn.seminario.dto.OrdenRetiroDTO;
 import ar.edu.unrn.seminario.dto.VisitaDTO;
 import ar.edu.unrn.seminario.exception.DAOException;
 import ar.edu.unrn.seminario.exception.DataDateException;
@@ -33,7 +34,6 @@ public class ListadoVisitas extends JFrame {
         contentPane.setBorder(new EmptyBorder(5,5,5,5));
         contentPane.setLayout(null);
         setContentPane(contentPane);
-
         String[] titulos = {"CÓDIGO", "FECHA", "VOLUNTARIO", "TIPO", "OBSERVACIONES"};
         modelo = new DefaultTableModel(new Object[][]{}, titulos) {
             private static final long serialVersionUID = 1L;
@@ -67,11 +67,8 @@ public class ListadoVisitas extends JFrame {
         for (VisitaDTO v : visitas) {
             String usuario = "";
             try {
-               
-                if (v.getCodVoluntario() != null) {
-                    usuario= api.obtenerUsernameVoluntario(v.getCodVoluntario());
-                  
-                }
+            	OrdenRetiroDTO orden = api.obtenerOrdenRetiro(codOrden);
+            	usuario = api.obtenerUsernameVoluntario(orden.getCodVoluntario());
             } catch (Exception ex) { usuario = ""; }
 
             modelo.addRow(new Object[] {
